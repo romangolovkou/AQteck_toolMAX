@@ -13,6 +13,8 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
                            resizeHeigthTop_Qwidget, resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, \
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
 from MouseEvent_func import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
+from custom_window_templates import main_frame_QFrame, title_bar_frame_QFrame, tool_panel_frame_QFrame, \
+                                    main_field_frame_QFrame
 
 
 class MainWindow(QMainWindow):
@@ -42,44 +44,13 @@ class MainWindow(QMainWindow):
 
 
         #MainWindowFrame
-        self.main_window_frame = QFrame(self)
-        self.main_window_frame.setGeometry(QRect(0, 0, self.width(), self.height()))
-        self.main_window_frame.setMaximumSize(QSize(16777215, 16777215))
-        self.main_window_frame.setStyleSheet("background-color: #1e1f22;\n")
-        self.main_window_frame.setObjectName("main_window_frame")
-
+        self.main_window_frame = main_frame_QFrame(self)
         #TitleBarFrame
-        self.title_bar_frame = QFrame(self.main_window_frame)
-        self.title_bar_frame.setGeometry(QRect(0, 0, self.main_window_frame.width(), 60))
-        self.title_bar_frame.setStyleSheet("background-color: #2b2d30;\n"
-                                          "border-top-left-radius: 0px;\n"
-                                          "border-top-right-radius: 0px;\n"
-                                          "border-bottom-left-radius: 0px;\n"
-                                          "border-bottom-right-radius: 0px;")
-        self.title_bar_frame.setObjectName("title_bar_frame")
-        # Добавляем обработку событий мыши для перетаскивания окна
-        self.title_bar_frame.mousePressEvent = partial(mousePressEvent_Dragging, self)
-        self.title_bar_frame.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self)
-        self.title_bar_frame.mouseReleaseEvent = partial(mouseReleaseEvent_Dragging, self)
-
+        self.title_bar_frame = title_bar_frame_QFrame(self, 60, MainName, self.AQicon, self.main_window_frame)
         # ToolPanelFrame
-        self.tool_panel_frame = QFrame(self.main_window_frame)
-        self.tool_panel_frame.setGeometry(QRect(0, self.title_bar_frame.height() + 2, self.main_window_frame.width(), 90))
-        self.tool_panel_frame.setStyleSheet("background-color: #2b2d30;\n"
-                                           "border-top-left-radius: 0px;\n"
-                                           "border-top-right-radius: 0px;\n"
-                                           "border-bottom-left-radius: 0px;\n"
-                                           "border-bottom-right-radius: 0px;")
-        self.tool_panel_frame.setObjectName("tool_panel_frame")
-
+        self.tool_panel_frame = tool_panel_frame_QFrame(self.title_bar_frame.height(), self.main_window_frame)
         # MainFieldFrame
-        self.main_field_frame = QFrame(self)
-        self.main_field_frame.setGeometry(QRect(0, (self.title_bar_frame.height()
-                                          + self.tool_panel_frame.height() + 2),
-                                          self.width(), self.height() - (self.title_bar_frame.height()
-                                          + self.tool_panel_frame.height() + 2)))
-        self.main_field_frame.setStyleSheet("background-color: #1e1f22;\n")
-        self.main_field_frame.setObjectName("main_field_frame")
+        self.main_field_frame = main_field_frame_QFrame(self.title_bar_frame.height() + self.tool_panel_frame.height(), self)
 
         # Создаем заставочную картинку для главного поля
         self.main_background_pic = QLabel(self.main_field_frame)
@@ -200,12 +171,12 @@ class MainWindow(QMainWindow):
         self.tool_panel_layout.addStretch(1)
 
 
-        # Создаем метку с названием приложения
-        self.title_name = QLabel(MainName, self.title_bar_frame)
-        self.title_name.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.title_name.setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта (серый)
-        self.title_name.setAlignment(Qt.AlignHCenter)  # Выравнивание по горизонтали по центру
-        self.title_name.setGeometry(0, 8, self.width(), 35)  # Устанавливаем геометрию метки
+        # # Создаем метку с названием приложения
+        # self.title_name = QLabel(MainName, self.title_bar_frame)
+        # self.title_name.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        # self.title_name.setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта (серый)
+        # self.title_name.setAlignment(Qt.AlignHCenter)  # Выравнивание по горизонтали по центру
+        # self.title_name.setGeometry(0, 8, self.width(), 35)  # Устанавливаем геометрию метки
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
@@ -217,10 +188,10 @@ class MainWindow(QMainWindow):
         self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self)
         self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self)
 
-        # Создаем QLabel для отображения иконки приложения
-        self.app_icon_label = QLabel(self.title_bar_frame)
-        self.app_icon_label.setPixmap(self.AQicon.pixmap(30, 30))  # Устанавливаем иконку и масштабируем ее
-        self.app_icon_label.setGeometry(2, 2, 30, 30)  # Устанавливаем координаты и размеры QLabel
+        # # Создаем QLabel для отображения иконки приложения
+        # self.app_icon_label = QLabel(self.title_bar_frame)
+        # self.app_icon_label.setPixmap(self.AQicon.pixmap(30, 30))  # Устанавливаем иконку и масштабируем ее
+        # self.app_icon_label.setGeometry(2, 2, 30, 30)  # Устанавливаем координаты и размеры QLabel
 
         # Создаем кнопку закрытия
         self.btn_close = QPushButton('', self.title_bar_frame)
@@ -262,6 +233,7 @@ class MainWindow(QMainWindow):
             # Переопределяем метод resizeEvent и вызываем resize для main_window_frame
             self.main_window_frame.resize(self.width(), self.height())
             self.title_bar_frame.resize(self.width(), self.title_bar_frame.height())
+            self.title_bar_frame.custom_resize()
             self.tool_panel_frame.resize(self.main_window_frame.width(), self.tool_panel_frame.height())
             self.main_field_frame.resize(self.main_window_frame.width(), self.height() -
                                         (self.title_bar_frame.height() + self.tool_panel_frame.height() + 2))
@@ -284,7 +256,7 @@ class MainWindow(QMainWindow):
             self.resizeDiag_TopLeft_widget.move(0, 0)
             self.resizeDiag_TopRigth_widget.move(self.width() - self.resizeLineWidth, 0)
             self.resizeDiag_BotLeft_widget.move(0, self.height() - self.resizeLineWidth)
-            self.title_name.setGeometry(0, 8, self.width(), 30)  # Устанавливаем геометрию метки
+            # self.title_name.setGeometry(0, 8, self.width(), 30)  # Устанавливаем геометрию метки
 
             replaceToolPanelWidget(self, self.tool_panel_layout)
 
@@ -303,41 +275,40 @@ class MainWindow(QMainWindow):
             print(f"Error occurred: {str(e)}")
 
     def open_dialog(self):
-        dialog = MyDialog()
-        dialog.exec_()
+        AddDevices_window = AddDevices_QDialog()
+        AddDevices_window.exec_()
 
 
-class MyDialog(QDialog):
+class AddDevices_QDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Модальное окно")
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setGeometry(300, 300, 300, 200)
+        self.screen_geometry = QApplication.desktop().screenGeometry()
+        self.setGeometry(0, 0,800, 600)
+        self.move(self.screen_geometry.width() // 2 - self.width() // 2,
+                  self.screen_geometry.height() // 2 - self.height() // 2,)
 
         PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
+        self.AQicon = QIcon(PROJ_DIR + 'Icons/AQico_silver.png')
+        self.icoMinimize = QIcon(PROJ_DIR + 'Icons/Minimize.png')
         self.icoClose = QIcon(PROJ_DIR + 'Icons/Close.png')
+        self.setWindowTitle('AddDevices')
+        self.setWindowIcon(self.AQicon)
+        self.not_titlebtn_zone = 0
 
         # MainWindowFrame
-        self.main_window_frame = QFrame(self)
-        self.main_window_frame.setGeometry(QRect(0, 0, self.width(), self.height()))
-        self.main_window_frame.setMaximumSize(QSize(16777215, 16777215))
-        self.main_window_frame.setStyleSheet("background-color: #1e1f22;\n")
-        self.main_window_frame.setObjectName("main_window_frame")
-
+        self.main_window_frame = main_frame_QFrame(self)
         # TitleBarFrame
-        self.title_bar_frame = QFrame(self.main_window_frame)
-        self.title_bar_frame.setGeometry(QRect(0, 0, self.main_window_frame.width(), 35))
-        self.title_bar_frame.setStyleSheet("background-color: #2b2d30;\n"
-                                           "border-top-left-radius: 0px;\n"
-                                           "border-top-right-radius: 0px;\n"
-                                           "border-bottom-left-radius: 0px;\n"
-                                           "border-bottom-right-radius: 0px;")
-        self.title_bar_frame.setObjectName("title_bar_frame")
-        # Добавляем обработку событий мыши для перетаскивания окна
-        self.title_bar_frame.mousePressEvent = partial(mousePressEvent_Dragging, self)
-        self.title_bar_frame.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self)
-        self.title_bar_frame.mouseReleaseEvent = partial(mouseReleaseEvent_Dragging, self)
+        self.title_bar_frame = title_bar_frame_QFrame(self, 35, 'AddDevices', self.AQicon, self.main_window_frame)
+
+        # Создаем кнопку свернуть
+        self.btn_minimize = QPushButton('', self.title_bar_frame)
+        self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
+        self.btn_minimize.setGeometry(self.title_bar_frame.width() - 70, 0, 35,
+                                      35)  # установите координаты и размеры кнопки
+        self.btn_minimize.clicked.connect(self.showMinimized)
+        self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
         # Создаем кнопку закрытия
         self.btn_close = QPushButton('', self.title_bar_frame)
