@@ -5,16 +5,16 @@ from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
-    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog
+    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
 from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, \
                            resizeHeigthTop_Qwidget, resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, \
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
-from MouseEvent_func import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 from custom_window_templates import main_frame_QFrame, title_bar_frame_QFrame, tool_panel_frame_QFrame, \
-                                    main_field_frame_QFrame
+                                    main_field_frame_QFrame, template_window_QDialog
+import serial.tools.list_ports
 
 
 class MainWindow(QMainWindow):
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
 
         # # Создаем кнопки панели инструментов
         self.panel_btn_add_dev = Btn_AddDevices(self.ico_btn_add_devise, self.tool_panel_frame)
-        self.panel_btn_add_dev.clicked.connect(self.open_dialog)
+        self.panel_btn_add_dev.clicked.connect(self.open_AddDevices)
         self.panel_btn_add_dev1 = Btn_DeleteDevices(self.ico_btn_delete_device, self.tool_panel_frame)
         self.panel_btn_add_dev2 = Btn_IPAdresess(self.ico_btn_ip_adresses, self.tool_panel_frame)
         self.panel_btn_add_dev3 = Btn_Read(self.ico_AddDev_btn, self.tool_panel_frame)
@@ -170,14 +170,6 @@ class MainWindow(QMainWindow):
         self.tool_panel_layout.addWidget(self.tool_separator7, 0)
         self.tool_panel_layout.addStretch(1)
 
-
-        # # Создаем метку с названием приложения
-        # self.title_name = QLabel(MainName, self.title_bar_frame)
-        # self.title_name.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        # self.title_name.setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта (серый)
-        # self.title_name.setAlignment(Qt.AlignHCenter)  # Выравнивание по горизонтали по центру
-        # self.title_name.setGeometry(0, 8, self.width(), 35)  # Устанавливаем геометрию метки
-
         # # Создаем виджеты для изменения размеров окна
         self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
         self.resizeWidthL_widget = resizeWidthL_Qwidget(self)
@@ -187,11 +179,6 @@ class MainWindow(QMainWindow):
         self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(self)
         self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self)
         self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self)
-
-        # # Создаем QLabel для отображения иконки приложения
-        # self.app_icon_label = QLabel(self.title_bar_frame)
-        # self.app_icon_label.setPixmap(self.AQicon.pixmap(30, 30))  # Устанавливаем иконку и масштабируем ее
-        # self.app_icon_label.setGeometry(2, 2, 30, 30)  # Устанавливаем координаты и размеры QLabel
 
         # Создаем кнопку закрытия
         self.btn_close = QPushButton('', self.title_bar_frame)
@@ -256,7 +243,6 @@ class MainWindow(QMainWindow):
             self.resizeDiag_TopLeft_widget.move(0, 0)
             self.resizeDiag_TopRigth_widget.move(self.width() - self.resizeLineWidth, 0)
             self.resizeDiag_BotLeft_widget.move(0, self.height() - self.resizeLineWidth)
-            # self.title_name.setGeometry(0, 8, self.width(), 30)  # Устанавливаем геометрию метки
 
             replaceToolPanelWidget(self, self.tool_panel_layout)
 
@@ -274,49 +260,37 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
 
-    def open_dialog(self):
-        AddDevices_window = AddDevices_QDialog()
+    def open_AddDevices(self):
+        AddDevices_window = AddDevices_QDialog('Add Devices')
         AddDevices_window.exec_()
 
 
-class AddDevices_QDialog(QDialog):
-    def __init__(self):
-        super().__init__()
+class AddDevices_QDialog(template_window_QDialog):
+    def __init__(self, name):
+        super().__init__(name)
 
-        self.setWindowFlags(Qt.FramelessWindowHint)
         self.screen_geometry = QApplication.desktop().screenGeometry()
-        self.setGeometry(0, 0,800, 600)
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
-        PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
-        self.AQicon = QIcon(PROJ_DIR + 'Icons/AQico_silver.png')
-        self.icoMinimize = QIcon(PROJ_DIR + 'Icons/Minimize.png')
-        self.icoClose = QIcon(PROJ_DIR + 'Icons/Close.png')
-        self.setWindowTitle('AddDevices')
-        self.setWindowIcon(self.AQicon)
-        self.not_titlebtn_zone = 0
+        # Создание комбо-бокса
+        self.combo_box = QComboBox(self.main_window_frame)
+        self.combo_box.setFixedHeight(35)
+        self.combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
+        self.combo_box.setFont(QFont("Verdana", 11))  # Задаем шрифт и размер
+        self.combo_box.setStyleSheet("border: 1px solid #9ef1d3; color: #D0D0D0;")  # Задаем цветную границу и цвет шрифта
+        self.combo_box.view().setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта в выпадающем списке
+        # Получаем список доступных COM-портов
+        com_ports = serial.tools.list_ports.comports()
+        # Заполняем выпадающий список COM-портами
+        for port in com_ports:
+            self.combo_box.addItem(port.description)
 
-        # MainWindowFrame
-        self.main_window_frame = main_frame_QFrame(self)
-        # TitleBarFrame
-        self.title_bar_frame = title_bar_frame_QFrame(self, 35, 'AddDevices', self.AQicon, self.main_window_frame)
+        self.serial = None
 
-        # Создаем кнопку свернуть
-        self.btn_minimize = QPushButton('', self.title_bar_frame)
-        self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
-        self.btn_minimize.setGeometry(self.title_bar_frame.width() - 70, 0, 35,
-                                      35)  # установите координаты и размеры кнопки
-        self.btn_minimize.clicked.connect(self.showMinimized)
-        self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
-
-        # Создаем кнопку закрытия
-        self.btn_close = QPushButton('', self.title_bar_frame)
-        self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
-        self.btn_close.setGeometry(self.title_bar_frame.width() - 35, 0, 35,
-                                   35)  # установите координаты и размеры кнопки
-        self.btn_close.clicked.connect(self.close)  # добавляем обработчик события нажатия на кнопку закрытия
-        self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+        layout = QVBoxLayout(self.main_window_frame)
+        layout.setContentsMargins(20, 0, 420, 0)  # Устанавливаем отступы макета
+        layout.addWidget(self.combo_box)
 
 
 if __name__ == '__main__':
