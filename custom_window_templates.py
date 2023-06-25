@@ -1,11 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton
+from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont
 from MouseEvent_func import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 from functools import partial
 
 #MainFrame
-class main_frame_QFrame(QFrame):
+class main_frame_AQFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setGeometry(QRect(0, 0, parent.width(), parent.height()))
@@ -15,7 +15,7 @@ class main_frame_QFrame(QFrame):
 
 
 #TitleBarFrame
-class title_bar_frame_QFrame(QFrame):
+class title_bar_frame_AQFrame(QFrame):
     def __init__(self, window_parent, height, name, icon, parent=None):
         super().__init__(parent)
         self.setGeometry(QRect(0, 0, parent.width(), height))
@@ -48,7 +48,7 @@ class title_bar_frame_QFrame(QFrame):
 
 
 # ToolPanelFrame
-class tool_panel_frame_QFrame(QFrame):
+class tool_panel_frame_AQFrame(QFrame):
     def __init__(self, shift_y, parent=None):
         super().__init__(parent)
         self.setGeometry(QRect(0, shift_y + 2, parent.width(), 90))
@@ -61,7 +61,7 @@ class tool_panel_frame_QFrame(QFrame):
 
 
 # MainFieldFrame
-class main_field_frame_QFrame(QFrame):
+class main_field_frame_AQFrame(QFrame):
     def __init__(self, shift_y, parent=None):
         super().__init__(parent)
         self.setGeometry(QRect(0, (shift_y + 2),
@@ -70,7 +70,7 @@ class main_field_frame_QFrame(QFrame):
         self.setObjectName("main_field_frame")
 
 
-class template_window_QDialog(QDialog):
+class template_window_AQDialog(QDialog):
     def __init__(self, name='default'):
         super().__init__()
 
@@ -91,10 +91,10 @@ class template_window_QDialog(QDialog):
         self.setStyleSheet("#template_window { border: 1px solid #9ef1d3;\n }")
 
         # MainWindowFrame
-        self.main_window_frame = main_frame_QFrame(self)
+        self.main_window_frame = main_frame_AQFrame(self)
         self.main_window_frame.setGeometry(1, 0, self.main_window_frame.width() - 2, self.main_window_frame.height() - 1)
         # TitleBarFrame
-        self.title_bar_frame = title_bar_frame_QFrame(self, 35, name, self.AQicon, self.main_window_frame)
+        self.title_bar_frame = title_bar_frame_AQFrame(self, 35, name, self.AQicon, self.main_window_frame)
 
         # Создаем кнопку свернуть
         self.btn_minimize = QPushButton('', self.title_bar_frame)
@@ -111,3 +111,27 @@ class template_window_QDialog(QDialog):
                                    35)  # установите координаты и размеры кнопки
         self.btn_close.clicked.connect(self.close)  # добавляем обработчик события нажатия на кнопку закрытия
         self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+
+
+# Создание комбо-бокса
+class template_AQComboBox(QComboBox):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedHeight(30)
+        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        # self.setStyleSheet("border: 1px solid #9ef1d3; color: #D0D0D0; background-color: #2b2d30;")  # Задаем цветную границу и цвет шрифта
+        # self.setStyleSheet("color: #D0D0D0; background-color: #2b2d30;")  # Задаем цветную границу и цвет шрифта
+        self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+                           "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+                           "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")  # Задаем цветную границу и цвет шрифта
+        self.view().setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта в выпадающем списке
+
+
+# Создаем текстовую метку
+class template_AQLabel(QLabel):
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        self.setStyleSheet("color: #D0D0D0; \n")
+        self.setFixedHeight(20)
+        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.setText(text)

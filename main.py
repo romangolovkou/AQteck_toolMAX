@@ -2,18 +2,19 @@ import sys
 import random
 import time
 from functools import partial
-from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont
-from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent
+from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor
+from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
-    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox
+    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
 from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, \
                            resizeHeigthTop_Qwidget, resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, \
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
-from custom_window_templates import main_frame_QFrame, title_bar_frame_QFrame, tool_panel_frame_QFrame, \
-                                    main_field_frame_QFrame, template_window_QDialog
+from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
+                                    main_field_frame_AQFrame, template_window_AQDialog, template_AQComboBox, \
+                                    template_AQLabel
 import serial.tools.list_ports
 
 
@@ -44,13 +45,13 @@ class MainWindow(QMainWindow):
 
 
         #MainWindowFrame
-        self.main_window_frame = main_frame_QFrame(self)
+        self.main_window_frame = main_frame_AQFrame(self)
         #TitleBarFrame
-        self.title_bar_frame = title_bar_frame_QFrame(self, 60, MainName, self.AQicon, self.main_window_frame)
+        self.title_bar_frame = title_bar_frame_AQFrame(self, 60, MainName, self.AQicon, self.main_window_frame)
         # ToolPanelFrame
-        self.tool_panel_frame = tool_panel_frame_QFrame(self.title_bar_frame.height(), self.main_window_frame)
+        self.tool_panel_frame = tool_panel_frame_AQFrame(self.title_bar_frame.height(), self.main_window_frame)
         # MainFieldFrame
-        self.main_field_frame = main_field_frame_QFrame(self.title_bar_frame.height() + self.tool_panel_frame.height(), self)
+        self.main_field_frame = main_field_frame_AQFrame(self.title_bar_frame.height() + self.tool_panel_frame.height(), self)
 
         # Создаем заставочную картинку для главного поля
         self.main_background_pic = QLabel(self.main_field_frame)
@@ -265,7 +266,7 @@ class MainWindow(QMainWindow):
         AddDevices_window.exec_()
 
 
-class AddDevices_QDialog(template_window_QDialog):
+class AddDevices_QDialog(template_window_AQDialog):
     def __init__(self, name):
         super().__init__(name)
 
@@ -273,24 +274,172 @@ class AddDevices_QDialog(template_window_QDialog):
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
+        # Создаем текстовую метку заголовка настроек соединения
+        self.title_text = template_AQLabel("Network parameters")
+        self.title_text.setStyleSheet("color: #D0D0D0; border-bottom: 1px double #5bb192;\n")
+        self.title_text.setFixedHeight(35)
+        self.title_text.setFont(QFont("Verdana", 12))  # Задаем шрифт и размер
+        self.title_text.setAlignment(Qt.AlignCenter)
+
+        # Создаем текстовую метку выбора интерфейса
+        self.interface_combo_box_text = template_AQLabel("Interface")
+
         # Создание комбо-бокса
-        self.combo_box = QComboBox(self.main_window_frame)
-        self.combo_box.setFixedHeight(35)
-        self.combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
-        self.combo_box.setFont(QFont("Verdana", 11))  # Задаем шрифт и размер
-        self.combo_box.setStyleSheet("border: 1px solid #9ef1d3; color: #D0D0D0;")  # Задаем цветную границу и цвет шрифта
-        self.combo_box.view().setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта в выпадающем списке
+        self.interface_combo_box = template_AQComboBox(self.main_window_frame)
+        self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
         # Получаем список доступных COM-портов
-        com_ports = serial.tools.list_ports.comports()
+        self.com_ports = serial.tools.list_ports.comports()
         # Заполняем выпадающий список COM-портами
-        for port in com_ports:
-            self.combo_box.addItem(port.description)
+        for port in self.com_ports:
+            self.interface_combo_box.addItem(port.description)
 
         self.serial = None
 
+        # Связываем сигнал activated с обработчиком handle_combobox_selection
+        self.interface_combo_box.activated.connect(self.handle_combobox_selection)
+
+        # Создаем поле ввода IP адресса
+        self.ip_line_edit_text = template_AQLabel("IP Address")
+
+        # # Создаем поле ввода IP-адреса
+        # self.ip_line_edit = QLineEdit()
+        # self.ip_line_edit.setValidator(QIntValidator(0, 255, self.ip_line_edit))  # Устанавливаем валидатор IP-адреса
+        # self.ip_line_edit.setInputMask("000.000.000.000")  # Задаем маску ввода
+        # self.ip_line_edit.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        # self.ip_line_edit.setStyleSheet("color: #D0D0D0; \n")
+        # self.ip_line_edit.setFixedHeight(20)
+        class IPLineEdit(QLineEdit):
+            def __init__(self, parent=None): #176 red
+                super().__init__(parent)
+                self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
+                self.setFixedHeight(30)
+                self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+                                   "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+                                   "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")  # Задаем цветную границу и цвет шрифта
+                self.timer = QTimer()
+                self.timer.setInterval(40)
+                self.timer.timeout.connect(self.err_blink)
+                self.anim_cnt = 0
+                self.color_code = 0x2b #Берется из цвета background-color, первые два символа после # соответствуют RED
+
+
+            def err_blink(self):
+                if self.anim_cnt < 34:
+                    self.anim_cnt += 1
+                    if self.anim_cnt < 18:
+                        self.color_code = self.color_code + 0xA
+                    else:
+                        self.color_code = self.color_code - 0xA
+
+                    hex_string = format(self.color_code, 'x')
+                    self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+                                       "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+                                       "color: #D0D0D0; background-color: #{}2d30; border-radius: 4px; \n".format(hex_string))
+                else:
+                    self.anim_cnt = 0
+                    self.color_code = 0x2b
+                    self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+                                       "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+                                       "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")
+                    self.timer.stop()
+            def keyPressEvent(self, event):
+                key = event.key()
+                if key == Qt.Key_Left:
+                    cursor_position = self.cursorPosition()
+                    self.setCursorPosition(cursor_position - 1)
+                    return
+                elif key == Qt.Key_Right:
+                    cursor_position = self.cursorPosition()
+                    if cursor_position == len(self.text()) - 1:
+                        left_character = self.text()[cursor_position - 1]
+                        if left_character.isdigit() and  self.text().count(".") < 3:
+                            self.insert('.')
+                    self.setCursorPosition(cursor_position + 1)
+                    return
+                elif key == Qt.Key_Backspace:
+                    cursor_position = self.cursorPosition()
+                    if cursor_position > 0:
+                        if cursor_position == len(self.text()) - 1 and self.text()[cursor_position - 1] == '.' and \
+                                self.text()[cursor_position] == '.':
+                            self.backspace()
+                            self.backspace()
+                            return
+                        if cursor_position > 1 and \
+                                self.text()[cursor_position - 2].isdigit() and \
+                                self.text()[cursor_position - 1] == '.':
+                            self.setCursorPosition(cursor_position - 1)
+                            self.backspace()
+                            return
+                        self.backspace()
+                    return
+
+                cursor_position = self.cursorPosition()
+                text = event.text()
+                if not text.isdigit():
+                #Если не цифра
+                    if text == '.' and self.text().count(".") < 3:
+                        if cursor_position == len(self.text()) - 1 and self.text()[cursor_position] == '.':
+                            self.insert('.')
+                        elif cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
+                            self.setCursorPosition(cursor_position + 1)
+                        else:
+                            self.insert('.')
+                    elif text == '.' and cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
+                        self.setCursorPosition(cursor_position + 1)
+                    return
+                #Если цифра
+                elif cursor_position == 0:
+                    self.insert(text + '.')
+                    self.setCursorPosition(1)
+                    return
+
+                #Лимит на ввод цифры в последнюю тетраду не больше трех
+                elif self.text().count(".") > 2 and self.text()[cursor_position - 3:cursor_position].isdigit():
+                    return
+                elif cursor_position >= 2:
+                    str_copy = self.text()
+                    str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                    start_pos = 0
+                    end_pos = len(str_copy)
+                    for i in range(cursor_position, -1, -1):
+                        if str_copy[i] == '.':
+                            start_pos = i + 1
+                            break
+                    for i in range(cursor_position, len(self.text()) + 1, +1):
+                        if str_copy[i] == '.':
+                            end_pos = i
+                            break
+                    str_tetrada = str_copy[start_pos:end_pos]  # Получаем подстроку
+                    tetrada = int(str_tetrada)  # Преобразуем подстроку в целое число
+                    if tetrada < 256:
+                        if  self.text()[cursor_position - 2:cursor_position].isdigit():
+                            if self.text().count(".") < 3:
+                                self.insert(text + '.')
+                            else:
+                                self.insert(text)
+                                self.setCursorPosition(cursor_position + 2)
+                            return
+                    else:
+                        self.timer.start()
+                        return
+
+                super().keyPressEvent(event)
+
+
+        self.ip_line_edit = IPLineEdit()
+        # self.ip_line_edit.setStyleSheet("color: #D0D0D0; \n")
+
         layout = QVBoxLayout(self.main_window_frame)
-        layout.setContentsMargins(20, 0, 420, 0)  # Устанавливаем отступы макета
-        layout.addWidget(self.combo_box)
+        layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета
+        layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
+        layout.addWidget(self.title_text)
+        layout.addWidget(self.interface_combo_box_text)
+        layout.addWidget(self.interface_combo_box)
+        layout.addWidget(self.ip_line_edit_text)
+        layout.addWidget(self.ip_line_edit)
+
+    def handle_combobox_selection(self, index):
+        selected_item = self.interface_combo_box.currentText()
 
 
 if __name__ == '__main__':
