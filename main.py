@@ -13,8 +13,8 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
                            resizeHeigthTop_Qwidget, resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, \
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
-                                    main_field_frame_AQFrame, template_window_AQDialog, template_AQComboBox, \
-                                    template_AQLabel
+                                    main_field_frame_AQFrame, AQDialog, AQComboBox, \
+                                    AQLabel
 import serial.tools.list_ports
 
 
@@ -262,11 +262,11 @@ class MainWindow(QMainWindow):
             print(f"Error occurred: {str(e)}")
 
     def open_AddDevices(self):
-        AddDevices_window = AddDevices_QDialog('Add Devices')
+        AddDevices_window = AddDevices_AQDialog('Add Devices')
         AddDevices_window.exec_()
 
 
-class AddDevices_QDialog(template_window_AQDialog):
+class AddDevices_AQDialog(AQDialog):
     def __init__(self, name):
         super().__init__(name)
 
@@ -275,17 +275,17 @@ class AddDevices_QDialog(template_window_AQDialog):
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
         # Создаем текстовую метку заголовка настроек соединения
-        self.title_text = template_AQLabel("Network parameters")
+        self.title_text = AQLabel("Network parameters")
         self.title_text.setStyleSheet("color: #D0D0D0; border-bottom: 1px double #5bb192;\n")
         self.title_text.setFixedHeight(35)
         self.title_text.setFont(QFont("Verdana", 12))  # Задаем шрифт и размер
         self.title_text.setAlignment(Qt.AlignCenter)
 
         # Создаем текстовую метку выбора интерфейса
-        self.interface_combo_box_text = template_AQLabel("Interface")
+        self.interface_combo_box_text = AQLabel("Interface")
 
         # Создание комбо-бокса
-        self.interface_combo_box = template_AQComboBox(self.main_window_frame)
+        self.interface_combo_box = AQComboBox(self.main_window_frame)
         self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
         # Получаем список доступных COM-портов
         self.com_ports = serial.tools.list_ports.comports()
@@ -299,7 +299,7 @@ class AddDevices_QDialog(template_window_AQDialog):
         self.interface_combo_box.activated.connect(self.handle_combobox_selection)
 
         # Создаем поле ввода IP адресса
-        self.ip_line_edit_text = template_AQLabel("IP Address")
+        self.ip_line_edit_text = AQLabel("IP Address")
 
         # # Создаем поле ввода IP-адреса
         # self.ip_line_edit = QLineEdit()
@@ -316,9 +316,9 @@ class AddDevices_QDialog(template_window_AQDialog):
                 self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
                                    "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
                                    "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")  # Задаем цветную границу и цвет шрифта
-                self.timer = QTimer()
-                self.timer.setInterval(40)
-                self.timer.timeout.connect(self.err_blink)
+                self.red_blink_timer = QTimer()
+                self.red_blink_timer.setInterval(40)
+                self.red_blink_timer.timeout.connect(self.err_blink)
                 self.anim_cnt = 0
                 self.color_code = 0x2b #Берется из цвета background-color, первые два символа после # соответствуют RED
 
@@ -341,7 +341,7 @@ class AddDevices_QDialog(template_window_AQDialog):
                     self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
                                        "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
                                        "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")
-                    self.timer.stop()
+                    self.red_blink_timer.stop()
             def keyPressEvent(self, event):
                 key = event.key()
                 if key == Qt.Key_Left:
@@ -388,7 +388,7 @@ class AddDevices_QDialog(template_window_AQDialog):
                         self.setCursorPosition(cursor_position + 1)
                     return
                 #Если цифра
-                elif cursor_position == 0:
+                elif cursor_position == 0 and self.text().count(".") < 3:
                     self.insert(text + '.')
                     self.setCursorPosition(1)
                     return
@@ -396,7 +396,7 @@ class AddDevices_QDialog(template_window_AQDialog):
                 #Лимит на ввод цифры в последнюю тетраду не больше трех
                 elif self.text().count(".") > 2 and self.text()[cursor_position - 3:cursor_position].isdigit():
                     return
-                elif cursor_position >= 2:
+                else: #cursor_position >= 2:
                     str_copy = self.text()
                     str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
                     start_pos = 0
@@ -411,7 +411,7 @@ class AddDevices_QDialog(template_window_AQDialog):
                             break
                     str_tetrada = str_copy[start_pos:end_pos]  # Получаем подстроку
                     tetrada = int(str_tetrada)  # Преобразуем подстроку в целое число
-                    if tetrada < 256:
+                    if tetrada < 256 and len(str_tetrada) < 4:
                         if  self.text()[cursor_position - 2:cursor_position].isdigit():
                             if self.text().count(".") < 3:
                                 self.insert(text + '.')
@@ -420,14 +420,25 @@ class AddDevices_QDialog(template_window_AQDialog):
                                 self.setCursorPosition(cursor_position + 2)
                             return
                     else:
-                        self.timer.start()
+                        self.red_blink_timer.start()
+                        self.show_err_label()
                         return
 
                 super().keyPressEvent(event)
 
+            def show_err_label(self):
+                # Получаем координаты поля ввода относительно диалогового окна fe3d3d
+                rect = self.geometry()
+                pos = self.mapTo(self, rect.topRight())
+                self.err_label = AQLabel('Invalid value, valid (0...255)', self.parent())
+                self.err_label.setStyleSheet("color: #fe2d2d; \n")
+                self.err_label.setFixedSize(190, 12)
+                self.err_label.move(pos.x() - 190, pos.y() - 15)
+                self.err_label.show()
+                # Устанавливаем задержку в 2 секунды и затем удаляем метку
+                QTimer.singleShot(3000, self.err_label.deleteLater)
 
         self.ip_line_edit = IPLineEdit()
-        # self.ip_line_edit.setStyleSheet("color: #D0D0D0; \n")
 
         layout = QVBoxLayout(self.main_window_frame)
         layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета

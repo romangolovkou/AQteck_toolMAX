@@ -70,7 +70,7 @@ class main_field_frame_AQFrame(QFrame):
         self.setObjectName("main_field_frame")
 
 
-class template_window_AQDialog(QDialog):
+class AQDialog(QDialog):
     def __init__(self, name='default'):
         super().__init__()
 
@@ -114,7 +114,7 @@ class template_window_AQDialog(QDialog):
 
 
 # Создание комбо-бокса
-class template_AQComboBox(QComboBox):
+class AQComboBox(QComboBox):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedHeight(30)
@@ -128,7 +128,7 @@ class template_AQComboBox(QComboBox):
 
 
 # Создаем текстовую метку
-class template_AQLabel(QLabel):
+class AQLabel(QLabel):
     def __init__(self, text, parent=None):
         super().__init__(parent)
         self.setStyleSheet("color: #D0D0D0; \n")
