@@ -14,7 +14,7 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
-                                    AQLabel
+                                    AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
 import serial.tools.list_ports
 
 
@@ -282,7 +282,7 @@ class AddDevices_AQDialog(AQDialog):
         self.title_text.setAlignment(Qt.AlignCenter)
 
         # Создаем текстовую метку выбора интерфейса
-        self.interface_combo_box_text = AQLabel("Interface")
+        self.interface_combo_box_label = AQLabel("Interface")
 
         # Создание комбо-бокса
         self.interface_combo_box = AQComboBox(self.main_window_frame)
@@ -299,158 +299,64 @@ class AddDevices_AQDialog(AQDialog):
         self.interface_combo_box.activated.connect(self.handle_combobox_selection)
 
         # Создаем поле ввода IP адресса
-        self.ip_line_edit_text = AQLabel("IP Address")
+        self.ip_line_edit_label = AQLabel("IP Address")
+        self.ip_line_edit = IP_AQLineEdit()
 
-        # # Создаем поле ввода IP-адреса
-        # self.ip_line_edit = QLineEdit()
-        # self.ip_line_edit.setValidator(QIntValidator(0, 255, self.ip_line_edit))  # Устанавливаем валидатор IP-адреса
-        # self.ip_line_edit.setInputMask("000.000.000.000")  # Задаем маску ввода
-        # self.ip_line_edit.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        # self.ip_line_edit.setStyleSheet("color: #D0D0D0; \n")
-        # self.ip_line_edit.setFixedHeight(20)
-        class IPLineEdit(QLineEdit):
-            def __init__(self, parent=None): #176 red
-                super().__init__(parent)
-                self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
-                self.setFixedHeight(30)
-                self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
-                                   "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
-                                   "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")  # Задаем цветную границу и цвет шрифта
-                self.red_blink_timer = QTimer()
-                self.red_blink_timer.setInterval(40)
-                self.red_blink_timer.timeout.connect(self.err_blink)
-                self.anim_cnt = 0
-                self.color_code = 0x2b #Берется из цвета background-color, первые два символа после # соответствуют RED
+        # Создаем поле ввода Slave ID
+        self.slave_id_line_edit_label = AQLabel("Slave ID")
+        self.slave_id_line_edit = Slave_ID_AQLineEdit()
 
-
-            def err_blink(self):
-                if self.anim_cnt < 34:
-                    self.anim_cnt += 1
-                    if self.anim_cnt < 18:
-                        self.color_code = self.color_code + 0xA
-                    else:
-                        self.color_code = self.color_code - 0xA
-
-                    hex_string = format(self.color_code, 'x')
-                    self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
-                                       "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
-                                       "color: #D0D0D0; background-color: #{}2d30; border-radius: 4px; \n".format(hex_string))
-                else:
-                    self.anim_cnt = 0
-                    self.color_code = 0x2b
-                    self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
-                                       "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
-                                       "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")
-                    self.red_blink_timer.stop()
-            def keyPressEvent(self, event):
-                key = event.key()
-                if key == Qt.Key_Left:
-                    cursor_position = self.cursorPosition()
-                    self.setCursorPosition(cursor_position - 1)
-                    return
-                elif key == Qt.Key_Right:
-                    cursor_position = self.cursorPosition()
-                    if cursor_position == len(self.text()) - 1:
-                        left_character = self.text()[cursor_position - 1]
-                        if left_character.isdigit() and  self.text().count(".") < 3:
-                            self.insert('.')
-                    self.setCursorPosition(cursor_position + 1)
-                    return
-                elif key == Qt.Key_Backspace:
-                    cursor_position = self.cursorPosition()
-                    if cursor_position > 0:
-                        if cursor_position == len(self.text()) - 1 and self.text()[cursor_position - 1] == '.' and \
-                                self.text()[cursor_position] == '.':
-                            self.backspace()
-                            self.backspace()
-                            return
-                        if cursor_position > 1 and \
-                                self.text()[cursor_position - 2].isdigit() and \
-                                self.text()[cursor_position - 1] == '.':
-                            self.setCursorPosition(cursor_position - 1)
-                            self.backspace()
-                            return
-                        self.backspace()
-                    return
-
-                cursor_position = self.cursorPosition()
-                text = event.text()
-                if not text.isdigit():
-                #Если не цифра
-                    if text == '.' and self.text().count(".") < 3:
-                        if cursor_position == len(self.text()) - 1 and self.text()[cursor_position] == '.':
-                            self.insert('.')
-                        elif cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
-                            self.setCursorPosition(cursor_position + 1)
-                        else:
-                            self.insert('.')
-                    elif text == '.' and cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
-                        self.setCursorPosition(cursor_position + 1)
-                    return
-                #Если цифра
-                elif cursor_position == 0 and self.text().count(".") < 3:
-                    self.insert(text + '.')
-                    self.setCursorPosition(1)
-                    return
-
-                #Лимит на ввод цифры в последнюю тетраду не больше трех
-                elif self.text().count(".") > 2 and self.text()[cursor_position - 3:cursor_position].isdigit():
-                    return
-                else: #cursor_position >= 2:
-                    str_copy = self.text()
-                    str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
-                    start_pos = 0
-                    end_pos = len(str_copy)
-                    for i in range(cursor_position, -1, -1):
-                        if str_copy[i] == '.':
-                            start_pos = i + 1
-                            break
-                    for i in range(cursor_position, len(self.text()) + 1, +1):
-                        if str_copy[i] == '.':
-                            end_pos = i
-                            break
-                    str_tetrada = str_copy[start_pos:end_pos]  # Получаем подстроку
-                    tetrada = int(str_tetrada)  # Преобразуем подстроку в целое число
-                    if tetrada < 256 and len(str_tetrada) < 4:
-                        if  self.text()[cursor_position - 2:cursor_position].isdigit():
-                            if self.text().count(".") < 3:
-                                self.insert(text + '.')
-                            else:
-                                self.insert(text)
-                                self.setCursorPosition(cursor_position + 2)
-                            return
-                    else:
-                        self.red_blink_timer.start()
-                        self.show_err_label()
-                        return
-
-                super().keyPressEvent(event)
-
-            def show_err_label(self):
-                # Получаем координаты поля ввода относительно диалогового окна fe3d3d
-                rect = self.geometry()
-                pos = self.mapTo(self, rect.topRight())
-                self.err_label = AQLabel('Invalid value, valid (0...255)', self.parent())
-                self.err_label.setStyleSheet("color: #fe2d2d; \n")
-                self.err_label.setFixedSize(190, 12)
-                self.err_label.move(pos.x() - 190, pos.y() - 15)
-                self.err_label.show()
-                # Устанавливаем задержку в 2 секунды и затем удаляем метку
-                QTimer.singleShot(3000, self.err_label.deleteLater)
-
-        self.ip_line_edit = IPLineEdit()
+        # Создаем кнопку поиска
+        self.find_btn = QPushButton("Find device", self)
+        # self.find_btn.setFixedHeight(30)
+        self.find_btn.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.find_btn.setFixedSize(100, 35)
+        # self.find_btn.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+        #                    "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+        #                    "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")  # Задаем цветную границу и цвет шрифта1c1e20
+        self.find_btn.setStyleSheet("""
+            QPushButton {
+                border-left: 1px solid #9ef1d3;
+                border-top: 1px solid #9ef1d3;
+                border-bottom: 1px solid #5bb192;
+                border-right: 1px solid #5bb192;
+                color: #D0D0D0;
+                background-color: #2b2d30;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #3c3e41;
+            }
+            QPushButton:pressed {
+                background-color: #429061;
+            }
+        """)
 
         layout = QVBoxLayout(self.main_window_frame)
         layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета
         layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
         layout.addWidget(self.title_text)
-        layout.addWidget(self.interface_combo_box_text)
+        layout.addWidget(self.interface_combo_box_label)
         layout.addWidget(self.interface_combo_box)
-        layout.addWidget(self.ip_line_edit_text)
+        layout.addWidget(self.ip_line_edit_label)
         layout.addWidget(self.ip_line_edit)
+        layout.addWidget(self.slave_id_line_edit_label)
+        layout.addWidget(self.slave_id_line_edit)
+        layout.addWidget(self.find_btn)
+        self.handle_combobox_selection()
 
-    def handle_combobox_selection(self, index):
+    def handle_combobox_selection(self, index = None):
         selected_item = self.interface_combo_box.currentText()
+        if selected_item == "Ethernet":
+            self.ip_line_edit_label.setVisible(True)
+            self.ip_line_edit.setVisible(True)
+            self.slave_id_line_edit_label.setVisible(False)
+            self.slave_id_line_edit.setVisible(False)
+        else:
+            self.ip_line_edit_label.setVisible(False)
+            self.ip_line_edit.setVisible(False)
+            self.slave_id_line_edit_label.setVisible(True)
+            self.slave_id_line_edit.setVisible(True)
 
 
 if __name__ == '__main__':
