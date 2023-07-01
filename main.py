@@ -16,12 +16,15 @@ from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame,
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
 import serial.tools.list_ports
-
+from pymodbus.client.tcp import ModbusTcpClient
+from pymodbus.client.serial import ModbusSerialClient
+from pymodbus.file_message import ReadFileRecordRequest
+from AQ_communication_func import read_device_name, read_version, read_serial_number, is_valid_ip
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        MainName = 'AQtech Tool MAX'
+        MainName = 'AQteck Tool MAX'
         PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
         self.AQicon = QIcon(PROJ_DIR + 'Icons/AQico_silver.png')
         self.icoClose = QIcon(PROJ_DIR + 'Icons/Close.png')
@@ -262,14 +265,44 @@ class MainWindow(QMainWindow):
             print(f"Error occurred: {str(e)}")
 
     def open_AddDevices(self):
-        AddDevices_window = AddDevices_AQDialog('Add Devices')
+        AddDevices_window = AddDevices_AQDialog('Add Devices', self)
         AddDevices_window.exec_()
+
+    def connect_to_device_COM(self, selected_port, slave_id):
+        # Если уже установлено соединение, закрываем его
+        # if self.serial and self.serial.is_open:
+        #     self.serial.close()
+
+        try:
+
+            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+            device_name = read_device_name(client, slave_id)
+            version = read_version(client, slave_id)
+            serial_number = read_serial_number(client, slave_id)
+
+        except serial.SerialException as e:
+            print(f"Ошибка при подключении к порту {selected_port}: {str(e)}")
+
+    def connect_to_device_IP(self, ip):
+        try:
+
+            client = client = ModbusTcpClient(ip)
+            slave_id = 1
+            device_name = read_device_name(client, slave_id)
+            version = read_version(client, slave_id)
+            serial_number = read_serial_number(client, slave_id)
+
+        except serial.SerialException as e:
+            print(f"Ошибка при подключении к IP {ip}: {str(e)}")
+
+
 
 
 class AddDevices_AQDialog(AQDialog):
-    def __init__(self, name):
+    def __init__(self, name, parent):
         super().__init__(name)
 
+        self.parent = parent
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
@@ -331,6 +364,8 @@ class AddDevices_AQDialog(AQDialog):
                 background-color: #429061;
             }
         """)
+        # Назначение обработчика событий для кнопки "Прочитать"
+        self.find_btn.clicked.connect(self.connect_to_device)
 
         layout = QVBoxLayout(self.main_window_frame)
         layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета
@@ -358,10 +393,40 @@ class AddDevices_AQDialog(AQDialog):
             self.slave_id_line_edit_label.setVisible(True)
             self.slave_id_line_edit.setVisible(True)
 
+    def connect_to_device (self):
+        selected_item = self.interface_combo_box.currentText()
+        if selected_item == "Ethernet":
+            try:
+                ip = self.ip_line_edit.text()
+            except:
+                self.ip_line_edit.red_blink_timer.start()
+                self.ip_line_edit.show_err_label()
+                return
+            if not is_valid_ip(ip):
+                self.ip_line_edit.red_blink_timer.start()
+                self.ip_line_edit.show_err_label()
+                return
+            self.parent.connect_to_device_IP(ip)
+            return
+        else:
+            try:
+                slave_id = int(self.slave_id_line_edit.text())
+            except:
+                self.slave_id_line_edit.red_blink_timer.start()
+                self.slave_id_line_edit.show_err_label()
+                return
+            for port in self.com_ports:
+                if port.description == selected_item:
+                    selected_port = port.device
+                    self.parent.connect_to_device_COM(selected_port, slave_id)
+                    break
+            return
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    splash = QSplashScreen(QPixmap("D:/git/AQtech/AQtech Tool MAX/Icons/Splash.png"))
+    splash = QSplashScreen(QPixmap("D:/git/AQtech/AQtech Tool MAX/Icons/Splash3.png"))
     splash.show()
 
     # Имитация загрузки (можно заменить на вашу реализацию)
