@@ -19,7 +19,7 @@ import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient
 from pymodbus.file_message import ReadFileRecordRequest
-from AQ_communication_func import read_device_name, read_version, read_serial_number, is_valid_ip
+from AQ_communication_func import read_device_name, read_version, read_serial_number, read_default_prg, is_valid_ip
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -279,6 +279,7 @@ class MainWindow(QMainWindow):
             device_name = read_device_name(client, slave_id)
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
+            default_prg = read_default_prg(client, slave_id)
 
         except serial.SerialException as e:
             print(f"Ошибка при подключении к порту {selected_port}: {str(e)}")
@@ -291,6 +292,7 @@ class MainWindow(QMainWindow):
             device_name = read_device_name(client, slave_id)
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
+            default_prg = read_default_prg(client, slave_id)
 
         except serial.SerialException as e:
             print(f"Ошибка при подключении к IP {ip}: {str(e)}")

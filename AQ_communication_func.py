@@ -1,5 +1,7 @@
 import ipaddress
 from AQ_parse_func import swap_modbus_bytes, remove_empty_bytes
+from pymodbus.file_message import ReadFileRecordRequest
+from Crypto.Cipher import DES
 
 
 def read_device_name(client, slave_id):
@@ -15,6 +17,7 @@ def read_device_name(client, slave_id):
     # Конвертируем строку в массив байт
     byte_array = bytes.fromhex(hex_string)
     byte_array = swap_modbus_bytes(byte_array, register_count)
+    # Расшифровуем в строку
     text = byte_array.decode('ANSI')
     device_name = remove_empty_bytes(text)
 
@@ -26,7 +29,7 @@ def read_device_name(client, slave_id):
 def read_version(client, slave_id):
     # Установка параметров подключения
     client.connect()
-    # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
+    # Читаем 16 регистров начиная с адреса 0xF010 (soft version)
     start_address = 0xF010
     register_count = 16
     # Выполняем запрос
@@ -36,6 +39,7 @@ def read_version(client, slave_id):
     # Конвертируем строку в массив байт
     byte_array = bytes.fromhex(hex_string)
     byte_array = swap_modbus_bytes(byte_array, register_count)
+    # Расшифровуем в строку
     text = byte_array.decode('ANSI')
     version = remove_empty_bytes(text)
 
@@ -47,7 +51,7 @@ def read_version(client, slave_id):
 def read_serial_number(client, slave_id):
     # Установка параметров подключения
     client.connect()
-    # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
+    # Читаем 16 регистров начиная с адреса 0xF086 (serial_number)
     start_address = 0xF086
     register_count = 16
     # Выполняем запрос
@@ -57,7 +61,9 @@ def read_serial_number(client, slave_id):
     # Конвертируем строку в массив байт
     byte_array = bytes.fromhex(hex_string)
     byte_array = swap_modbus_bytes(byte_array, register_count)
+    # Расшифровуем в строку
     text = byte_array.decode('ANSI')
+    # Обрезаем дляну до 20 символов
     text = text[:20]
     serial_number = remove_empty_bytes(text)
 
@@ -65,9 +71,63 @@ def read_serial_number(client, slave_id):
 
     return serial_number
 
+
+def read_default_prg(client, slave_id):
+    # Создание экземпляра структуры ReadFileRecordRequest
+    request = ReadFileRecordRequest(slave_id)
+    # Установка значений полей структуры
+    request.file_number = 0xFFE0
+    request.record_number = 0
+    request.record_length = 124
+
+    result = client.read_file_record(slave_id, [request])
+
+    # Закрытие соединения с Modbus-устройством
+    # client.close()
+
+    encrypt_res = result.records[0].record_data
+
+    decrypt_res = decrypt_data(b'superkey', encrypt_res)
+    # Получаем длину default_prg зашитую во вторые 4 байта заголовка
+    file_size = int.from_bytes((decrypt_res[4:8][::-1]), byteorder='big')
+    # Получаем колличество необходимых запросов по 124 записи
+    req_count = ((file_size // 2) // 124)
+    if (file_size // 2) % 124 or file_size % 2:
+        req_count = req_count + 1
+
+    encrypt_file = bytearray()
+
+    for i in range(req_count):
+        request.record_number = i * 124  # Установка значения record_number
+
+        result = client.read_file_record(1, [request])
+        encrypt_file += result.records[0].record_data
+        # Обрезаем длину файла до вычитанной из заголовка, в конце последнего пакета мусор
+        encrypt_file = encrypt_file[:file_size]
+
+    decrypt_file = decrypt_data(b'superkey', encrypt_file)
+
+    filename = 'default.prg'  # Имя файла с расширением .prg
+    with open(filename, 'wb') as file:
+        file.write(decrypt_file)
+
+    return decrypt_file
+
+
 def is_valid_ip(address):
     try:
         ipaddress.ip_address(address)
         return True
     except ValueError:
         return False
+
+
+def decrypt_data(iv, encrypted_data):
+    # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+    key = b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  #0x23B246FCA76F5524
+
+    # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+    cipher = DES.new(key, DES.MODE_CBC, iv)
+    decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
+
+    return decrypted_data
