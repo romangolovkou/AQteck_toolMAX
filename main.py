@@ -21,7 +21,7 @@ from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient
 from pymodbus.file_message import ReadFileRecordRequest
 from AQ_communication_func import read_device_name, read_version, read_serial_number, read_default_prg, is_valid_ip
-from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container
+from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -47,6 +47,10 @@ class MainWindow(QMainWindow):
         self.spacing_between_frame = 2
         self.not_titlebtn_zone = 0
         self.tool_panel_layout_mask = 0
+
+        text = "Часы реального времени"
+        bytes_sequence = text.encode('cp1251')
+        hex_sequence = bytes_sequence.hex()
 
 
         #MainWindowFrame
@@ -285,6 +289,7 @@ class MainWindow(QMainWindow):
             containers_count = get_conteiners_count(default_prg)
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
+            device_tree = parse_tree(storage_container)
 
         except serial.SerialException as e:
             print(f"Ошибка при подключении к порту {selected_port}: {str(e)}")
@@ -300,7 +305,8 @@ class MainWindow(QMainWindow):
             default_prg = read_default_prg(client, slave_id)
             containers_count = get_conteiners_count(default_prg)
             containers_offset = get_containers_offset(default_prg)
-
+            storage_container = get_storage_container(default_prg, containers_offset)
+            device_tree = parse_tree(storage_container)
 
         except serial.SerialException as e:
             print(f"Ошибка при подключении к IP {ip}: {str(e)}")
