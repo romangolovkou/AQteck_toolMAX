@@ -4,7 +4,8 @@ import time
 import array
 import os
 from functools import partial
-from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel
+from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
+                        QStandardItem
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation, QSettings
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
     QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView
@@ -50,7 +51,6 @@ class MainWindow(QMainWindow):
         self.spacing_between_frame = 2
         self.not_titlebtn_zone = 0
         self.tool_panel_layout_mask = 0
-        # self.auto_load_settings = QSettings()
         # Получаем текущий рабочий каталог (папку проекта)
         project_path = os.getcwd()
         # Объединяем путь к папке проекта с именем файла настроек
@@ -223,6 +223,43 @@ class MainWindow(QMainWindow):
         self.btn_maximize.clicked.connect(self.toggleMaximize)  # добавляем обработчик события нажатия на кнопку закрытия
         self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
+        # Создаем модель данных
+        model = QStandardItemModel()
+
+        # Создаем корневой элемент
+        root_item = model.invisibleRootItem()
+
+        # Создаем первый каталог
+        catalog1 = QStandardItem("Каталог 1")
+        root_item.appendRow(catalog1)
+
+        # Создаем элементы внутри первого каталога
+        item1 = QStandardItem("Элемент 1")
+        item2 = QStandardItem("Элемент 2")
+        catalog1.appendRow(item1)
+        catalog1.appendRow(item2)
+
+        # Создаем второй каталог
+        catalog2 = QStandardItem("Каталог 2")
+        root_item.appendRow(catalog2)
+
+        # Создаем элементы внутри второго каталога
+        item3 = QStandardItem("Элемент 3")
+        item4 = QStandardItem("Элемент 4")
+        catalog2.appendRow(item3)
+        catalog2.appendRow(item4)
+
+        # Создаем дерево
+        tree_view = QTreeView(self.main_field_frame)
+        tree_view.setModel(model)
+
+        tree_view.setHeaderHidden(True)
+        tree_view.setStyleSheet("QTreeView { border: 1px solid #9ef1d3; color: #D0D0D0; }")
+
+        # Разрешаем разворачивание и сворачивание каталогов
+        # tree_view.setAnimated(False)
+        # tree_view.setIndentation(20)
+
     def toggleMaximize(self):
         try:
             if self.isMaximized:
@@ -308,7 +345,6 @@ class MainWindow(QMainWindow):
                 tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
                 tree_view.setHeaderHidden(True)
                 tree_view.setStyleSheet("QTreeView { border: 1px solid #9ef1d3; color: #D0D0D0; }")
-                # tree_view.setStyleSheet("QTreeView { color: white; }")
                 tree_view.expandAll()
                 tree_view.show()
 
@@ -329,6 +365,15 @@ class MainWindow(QMainWindow):
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
             device_tree = parse_tree(storage_container)
+            if isinstance(device_tree, QStandardItemModel):
+                # Устанавливаем модель для QTreeView и отображаем его
+                tree_view = QTreeView(self.main_field_frame)
+                tree_view.setModel(device_tree)
+                tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
+                tree_view.setHeaderHidden(True)
+                tree_view.setStyleSheet("QTreeView { border: 1px solid #9ef1d3; color: #D0D0D0; }")
+                # tree_view.expandAll()
+                tree_view.show()
 
         except serial.SerialException as e:
             print(f"Ошибка при подключении к IP {ip}: {str(e)}")

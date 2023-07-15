@@ -24,9 +24,6 @@ def swap_modbus_bytes(data, num_pairs):
         if end_index <= len(data):
             # Меняем местами пару байт
             data[start_index:end_index] = data[start_index:end_index][::-1]
-            # temp = data[start_index]
-            # data[start_index] = data[end_index]
-            # data[end_index] = temp
 
     if str_flag:
         data = data.hex()  # Преобразуем массив байт в строку
@@ -176,7 +173,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
     current_catalog = 0
     # Рівень вкладенності каталогу
     level = 0
-    # Кількість єлементів у кталозі
+    # Кількість єлементів у каталозі
     row_count = 0
 
     while pos < len(node_area):
@@ -201,7 +198,6 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
             catalog_name = catalog_name_b.decode('cp1251')
             TT_names.append(catalog_name)
             current_catalog = QStandardItem(catalog_name)
-            current_catalog.setFlags(Qt.ItemIsEnabled)
             current_catalog_levels.append(current_catalog)
             level += 1
 
@@ -213,19 +209,22 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
                 invisible_catalog_flag -= 1
             else:
                 level -= 1
-                # Перевірка на корректність рівня, -1 - помилка.
+                # Перевірка на корректність рівня, -1 - помилка. Або нінець дерева (доробити)
                 if level < 0:
                     return -1
                 if level == 0:
-                    current_catalog_levels[level].setRowCount(row_count)  # Указываем количество дочерних элементов
                     current_catalog_levels[level].setFlags(Qt.ItemIsEnabled)
                     catalogs.append(current_catalog_levels[level])  # Добавление каталога в конец массива
+                    # Создаем элементы внутри второго каталога
                     root_item.appendRow(current_catalog_levels[level])
                     del current_catalog_levels[-1]
                     catalog_cnt += 1
                     row_count = 0
                 else:
-                    current_catalog_levels[level].appendRow(current_catalog)
+                    # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
+                    name = current_catalog_levels[level].text()
+                    cat_name = current_catalog_levels[level - 1].text()
+                    current_catalog_levels[level - 1].appendRow(current_catalog_levels[level])
                     row_count += 1
                     del current_catalog_levels[-1]
 
