@@ -2,11 +2,12 @@ import sys
 import random
 import time
 import array
+import os
 from functools import partial
-from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor
-from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation
+from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel
+from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation, QSettings
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
-    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit
+    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -22,6 +23,8 @@ from pymodbus.client.serial import ModbusSerialClient
 from pymodbus.file_message import ReadFileRecordRequest
 from AQ_communication_func import read_device_name, read_version, read_serial_number, read_default_prg, is_valid_ip
 from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
+from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
+                             load_last_combobox_state
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -47,6 +50,14 @@ class MainWindow(QMainWindow):
         self.spacing_between_frame = 2
         self.not_titlebtn_zone = 0
         self.tool_panel_layout_mask = 0
+        # self.auto_load_settings = QSettings()
+        # Получаем текущий рабочий каталог (папку проекта)
+        project_path = os.getcwd()
+        # Объединяем путь к папке проекта с именем файла настроек
+        settings_path = os.path.join(project_path, "auto_load_settings.ini")
+        # Используем полученный путь в QSettings
+        self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
+
 
         text = "Часы реального времени"
         bytes_sequence = text.encode('cp1251')
@@ -290,6 +301,17 @@ class MainWindow(QMainWindow):
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
             device_tree = parse_tree(storage_container)
+            if isinstance(device_tree, QStandardItemModel):
+                # Устанавливаем модель для QTreeView и отображаем его
+                tree_view = QTreeView(self.main_field_frame)
+                tree_view.setModel(device_tree)
+                tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
+                tree_view.setHeaderHidden(True)
+                tree_view.setStyleSheet("QTreeView { border: 1px solid #9ef1d3; color: #D0D0D0; }")
+                # tree_view.setStyleSheet("QTreeView { color: white; }")
+                tree_view.expandAll()
+                tree_view.show()
+
 
         except serial.SerialException as e:
             print(f"Ошибка при подключении к порту {selected_port}: {str(e)}")
@@ -318,6 +340,7 @@ class AddDevices_AQDialog(AQDialog):
     def __init__(self, name, parent):
         super().__init__(name)
 
+        self.setObjectName("AQ_Dialog_add_device")
         self.parent = parent
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
@@ -335,6 +358,7 @@ class AddDevices_AQDialog(AQDialog):
 
         # Создание комбо-бокса
         self.interface_combo_box = AQComboBox(self.main_window_frame)
+        self.interface_combo_box.setObjectName(self.objectName() + "interface_combo_box")
         self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
         # Получаем список доступных COM-портов
         self.com_ports = serial.tools.list_ports.comports()
@@ -347,13 +371,22 @@ class AddDevices_AQDialog(AQDialog):
         # Связываем сигнал activated с обработчиком handle_combobox_selection
         self.interface_combo_box.activated.connect(self.handle_combobox_selection)
 
+        # Встановлюємо попередне обране значення, якщо воно існує
+        load_last_combobox_state(parent.auto_load_settings, self.interface_combo_box)
+
         # Создаем поле ввода IP адресса
         self.ip_line_edit_label = AQLabel("IP Address")
         self.ip_line_edit = IP_AQLineEdit()
+        self.ip_line_edit.setObjectName(self.objectName() + "ip_line_edit")
+        # Встановлюємо попередне обране значення, якщо воно існує
+        load_last_text_value(parent.auto_load_settings, self.ip_line_edit)
 
         # Создаем поле ввода Slave ID
         self.slave_id_line_edit_label = AQLabel("Slave ID")
         self.slave_id_line_edit = Slave_ID_AQLineEdit()
+        self.slave_id_line_edit.setObjectName(self.objectName() + "slave_id_line_edit")
+        # Встановлюємо попередне обране значення, якщо воно існує
+        load_last_text_value(parent.auto_load_settings, self.slave_id_line_edit)
 
         # Создаем кнопку поиска
         self.find_btn = QPushButton("Find device", self)
@@ -411,6 +444,7 @@ class AddDevices_AQDialog(AQDialog):
 
     def connect_to_device (self):
         selected_item = self.interface_combo_box.currentText()
+        save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
         if selected_item == "Ethernet":
             try:
                 ip = self.ip_line_edit.text()
@@ -423,6 +457,7 @@ class AddDevices_AQDialog(AQDialog):
                 self.ip_line_edit.show_err_label()
                 return
             self.parent.connect_to_device_IP(ip)
+            save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
             return
         else:
             try:
@@ -435,6 +470,7 @@ class AddDevices_AQDialog(AQDialog):
                 if port.description == selected_item:
                     selected_port = port.device
                     self.parent.connect_to_device_COM(selected_port, slave_id)
+                    save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
                     break
             return
 

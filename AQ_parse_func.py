@@ -1,4 +1,5 @@
 import array
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 def swap_modbus_bytes(data, num_pairs):
@@ -161,19 +162,22 @@ def parse_tree(storage_container):
 
     add_nodes(root_item, node_area, cache_descr_offsets, descr_area)
 
-
-
-    test_area = storage_container[header_pos + 66:header_pos + 66 + 30]
-
-    return storage_container
+    return tree_model
 
 def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
     pos = 6
     catalog_cnt = 0
+    invisible_catalog_flag = 0
     # Создание пустого массива каталогов
     catalogs = []
+    # Создаем модель и корневой элемент
     TT_names = []
+    current_catalog_levels = []
     current_catalog = 0
+    # Рівень вкладенності каталогу
+    level = 0
+    # Кількість єлементів у кталозі
+    row_count = 0
 
     while pos < len(node_area):
         # Проверка на is_katalog
@@ -184,30 +188,47 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
             # Получаем имя каталога
             num_descr = int.from_bytes((node_area[pos + 4:pos + 6][::-1]), byteorder='big')
             descr_offset = cache_descr_offsets[num_descr]
-            # Проверка на атрибут невидимости
-            desr_size = descr_area[descr_offset]
-            attr = descr_area[descr_offset + desr_size - 1]
-            TT_descr = descr_area[descr_offset + 1:descr_offset + 1 + desr_size]
-            TT_name_length = descr_area[descr_offset + 2]
-
-            TT_catalog_name_b = descr_area[descr_offset + 3:descr_offset + 3 + TT_name_length]
-            TT_catalog_name = TT_catalog_name_b.decode('cp1251')
-            TT_names.append(TT_catalog_name)
-            if attr & 0x04:
+            # Проверка на длину дескриптора (костыль для пропуска неизвестных дескрипторов см. "Описание дескр. каталога")
+            descr_size = descr_area[descr_offset]
+            if descr_size < 10:
                 pos = pos + 6
+                invisible_catalog_flag += 1
                 continue
+
             lang_code = descr_area[descr_offset + 1]
             name_length = descr_area[descr_offset + 2]
-
-
-
             catalog_name_b = descr_area[descr_offset + 3:descr_offset + 3 + name_length]
             catalog_name = catalog_name_b.decode('cp1251')
+            TT_names.append(catalog_name)
             current_catalog = QStandardItem(catalog_name)
-            catalogs.append(current_catalog)  # Добавление каталога в конец массива
-            catalog_cnt += 1
+            current_catalog.setFlags(Qt.ItemIsEnabled)
+            current_catalog_levels.append(current_catalog)
+            level += 1
+
+
+
             pos = pos + 6
         elif prop == 0xFFFF:
+            if invisible_catalog_flag:
+                invisible_catalog_flag -= 1
+            else:
+                level -= 1
+                # Перевірка на корректність рівня, -1 - помилка.
+                if level < 0:
+                    return -1
+                if level == 0:
+                    current_catalog_levels[level].setRowCount(row_count)  # Указываем количество дочерних элементов
+                    current_catalog_levels[level].setFlags(Qt.ItemIsEnabled)
+                    catalogs.append(current_catalog_levels[level])  # Добавление каталога в конец массива
+                    root_item.appendRow(current_catalog_levels[level])
+                    del current_catalog_levels[-1]
+                    catalog_cnt += 1
+                    row_count = 0
+                else:
+                    current_catalog_levels[level].appendRow(current_catalog)
+                    row_count += 1
+                    del current_catalog_levels[-1]
+
             pos = pos + 2
         else:
             pos = pos + 8
