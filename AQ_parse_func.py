@@ -61,44 +61,6 @@ def get_storage_container(default_prg, containers_offset):
     ID = int.from_bytes((default_prg[pos:pos + 4][::-1]), byteorder='big')
     container_size = int.from_bytes((default_prg[pos + 4:pos + 8][::-1]), byteorder='big')
     storage_container = default_prg[pos:pos + container_size]
-    # in_size = int.from_bytes((storage_container[16:20][::-1]), byteorder='big')
-    # out_size = int.from_bytes((storage_container[20:24][::-1]), byteorder='big')
-    # area_count = int.from_bytes((storage_container[36:40][::-1]), byteorder='big')
-    # # 40 - позиция начала поля area (в исходках контейнерной, см. storage_container),
-    # # 8 - размер стркутуры SYNC_TABLE_AREA (в исходках контейнерной, см. containers.h)
-    # header_pos = 40 + (8 * area_count) + out_size + in_size
-    # # 66 - размер EXP_CONF_HEADER (в исходках контейнерной, см. EXP_CONF.h)
-    # exp_conf_header = storage_container[header_pos:header_pos + 66]
-    # # +2 - размер значения размера области свойств
-    # pos_prop_area = header_pos + 66 + 2
-    # size_prop_area = int.from_bytes((storage_container[pos_prop_area:pos_prop_area + 2][::-1]), byteorder='big')
-    # prop_area = storage_container[pos_prop_area + 2:pos_prop_area + 2 + size_prop_area]
-    # node_offset = int.from_bytes((exp_conf_header[56:60][::-1]), byteorder='big')
-    # str_offset = int.from_bytes((exp_conf_header[60:64][::-1]), byteorder='big')
-    # pos_node_area = header_pos + node_offset + 2
-    # size_node_area = int.from_bytes((storage_container[pos_node_area - 2:pos_node_area][::-1]), byteorder='big')
-    # node_area = storage_container[pos_node_area:pos_node_area + size_node_area]
-    # pos_descr_area = pos_node_area + size_node_area + 2
-    # size_descr_area = int.from_bytes((storage_container[pos_descr_area - 2:pos_descr_area][::-1]), byteorder='big')
-    # descr_area = storage_container[pos_descr_area:pos_descr_area + size_descr_area]
-    # pos_string_area = header_pos + str_offset + 2
-    # size_string_area = int.from_bytes((storage_container[pos_string_area - 2:pos_string_area][::-1]), byteorder='big')
-    # string_area = storage_container[pos_string_area:pos_string_area + size_string_area]
-    #
-    # end_pos_descr_area = pos_descr_area + size_descr_area
-    # descr = 0
-    # count_descr = 0
-    # while(descr < size_descr_area):
-    #     count_descr += 1
-    #     # +1 - байт содержащий размер конкретного дескриптора
-    #     descr += descr_area[descr] + 1
-    #
-    # cache_descr_offsets = array.array('i', [0] * count_descr)
-    # pos = 0
-    # for i in range(1, count_descr):
-    #     cache_descr_offsets[i] = cache_descr_offsets[i - 1] + descr_area[cache_descr_offsets[i - 1]] + 1
-
-    # test_area = storage_container[header_pos + 66:header_pos + 66 + 30]
 
     return storage_container
 
@@ -190,18 +152,18 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
             if descr_size < 10:
                 pos = pos + 6
                 invisible_catalog_flag += 1
+                TT_descr_area = descr_area[descr_offset:descr_offset + descr_size]
                 continue
 
             lang_code = descr_area[descr_offset + 1]
             name_length = descr_area[descr_offset + 2]
+            TT_descr_area = descr_area[descr_offset:descr_offset + descr_size]
             catalog_name_b = descr_area[descr_offset + 3:descr_offset + 3 + name_length]
             catalog_name = catalog_name_b.decode('cp1251')
             TT_names.append(catalog_name)
             current_catalog = QStandardItem(catalog_name)
             current_catalog_levels.append(current_catalog)
             level += 1
-
-
 
             pos = pos + 6
         elif prop == 0xFFFF:
@@ -230,5 +192,22 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
 
             pos = pos + 2
         else:
-            pos = pos + 8
+            if not invisible_catalog_flag:
+                num_descr = int.from_bytes((node_area[pos + 4:pos + 6][::-1]), byteorder='big')
+                descr_offset = cache_descr_offsets[num_descr]
+                descr_size = descr_area[descr_offset]
+                lang_code = descr_area[descr_offset + 1]
+                name_length = descr_area[descr_offset + 2]
+                TT_descr_area = descr_area[descr_offset:descr_offset + descr_size]
+                parameter_name_b = descr_area[descr_offset + 3:descr_offset + 3 + name_length]
+                parameter_name = parameter_name_b.decode('cp1251')
+                current_parameter = QStandardItem(parameter_name)
+                # current_catalog_levels.append(current_catalog)
+                # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
+                name = current_parameter.text()
+                cat_name = current_catalog_levels[level - 1].text()
+                current_catalog_levels[level - 1].appendRow(current_parameter)
+                pos = pos + 8
+            else:
+                pos = pos + 8
 

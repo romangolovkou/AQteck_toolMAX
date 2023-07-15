@@ -223,42 +223,7 @@ class MainWindow(QMainWindow):
         self.btn_maximize.clicked.connect(self.toggleMaximize)  # добавляем обработчик события нажатия на кнопку закрытия
         self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
-        # Создаем модель данных
-        model = QStandardItemModel()
 
-        # Создаем корневой элемент
-        root_item = model.invisibleRootItem()
-
-        # Создаем первый каталог
-        catalog1 = QStandardItem("Каталог 1")
-        root_item.appendRow(catalog1)
-
-        # Создаем элементы внутри первого каталога
-        item1 = QStandardItem("Элемент 1")
-        item2 = QStandardItem("Элемент 2")
-        catalog1.appendRow(item1)
-        catalog1.appendRow(item2)
-
-        # Создаем второй каталог
-        catalog2 = QStandardItem("Каталог 2")
-        root_item.appendRow(catalog2)
-
-        # Создаем элементы внутри второго каталога
-        item3 = QStandardItem("Элемент 3")
-        item4 = QStandardItem("Элемент 4")
-        catalog2.appendRow(item3)
-        catalog2.appendRow(item4)
-
-        # Создаем дерево
-        tree_view = QTreeView(self.main_field_frame)
-        tree_view.setModel(model)
-
-        tree_view.setHeaderHidden(True)
-        tree_view.setStyleSheet("QTreeView { border: 1px solid #9ef1d3; color: #D0D0D0; }")
-
-        # Разрешаем разворачивание и сворачивание каталогов
-        # tree_view.setAnimated(False)
-        # tree_view.setIndentation(20)
 
     def toggleMaximize(self):
         try:
@@ -371,8 +336,13 @@ class MainWindow(QMainWindow):
                 tree_view.setModel(device_tree)
                 tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
                 tree_view.setHeaderHidden(True)
-                tree_view.setStyleSheet("QTreeView { border: 1px solid #9ef1d3; color: #D0D0D0; }")
-                # tree_view.expandAll()
+                tree_view.setStyleSheet("QTreeView {"
+                                        "    border: 1px solid #9ef1d3;"
+                                        "    color: #D0D0D0;"
+                                        "}"
+                                        "QTreeView::branch:closed {"
+                                        "    color: #9ef1d3;"
+                                        "}")
                 tree_view.show()
 
         except serial.SerialException as e:
@@ -403,7 +373,7 @@ class AddDevices_AQDialog(AQDialog):
 
         # Создание комбо-бокса
         self.interface_combo_box = AQComboBox(self.main_window_frame)
-        self.interface_combo_box.setObjectName(self.objectName() + "interface_combo_box")
+        self.interface_combo_box.setObjectName(self.objectName() + "_" + "interface_combo_box")
         self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
         # Получаем список доступных COM-портов
         self.com_ports = serial.tools.list_ports.comports()
@@ -422,14 +392,14 @@ class AddDevices_AQDialog(AQDialog):
         # Создаем поле ввода IP адресса
         self.ip_line_edit_label = AQLabel("IP Address")
         self.ip_line_edit = IP_AQLineEdit()
-        self.ip_line_edit.setObjectName(self.objectName() + "ip_line_edit")
+        self.ip_line_edit.setObjectName(self.objectName() + "_" + "ip_line_edit")
         # Встановлюємо попередне обране значення, якщо воно існує
         load_last_text_value(parent.auto_load_settings, self.ip_line_edit)
 
         # Создаем поле ввода Slave ID
         self.slave_id_line_edit_label = AQLabel("Slave ID")
         self.slave_id_line_edit = Slave_ID_AQLineEdit()
-        self.slave_id_line_edit.setObjectName(self.objectName() + "slave_id_line_edit")
+        self.slave_id_line_edit.setObjectName(self.objectName() + "_" + "slave_id_line_edit")
         # Встановлюємо попередне обране значення, якщо воно існує
         load_last_text_value(parent.auto_load_settings, self.slave_id_line_edit)
 
