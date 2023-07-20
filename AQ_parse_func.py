@@ -102,6 +102,10 @@ def parse_tree(storage_container):
     size_string_area = int.from_bytes((storage_container[pos_string_area - 2:pos_string_area][::-1]), byteorder='big')
     string_area = storage_container[pos_string_area:pos_string_area + size_string_area]
 
+    # Разбиваем байты на строки по символу '\x00' и преобразуем их в строки
+    string_array = string_area.split(b'\x00')
+    string_array = [string.decode('cp1251') for string in string_array]
+
     end_pos_descr_area = pos_descr_area + size_descr_area
     descr = 0
     count_descr = 0
@@ -119,11 +123,11 @@ def parse_tree(storage_container):
     # Создание корневого элемента
     root_item = tree_model.invisibleRootItem()
 
-    add_nodes(root_item, node_area, cache_descr_offsets, descr_area)
+    add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area)
 
     return tree_model
 
-def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
+def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area):
     pos = 6
     catalog_cnt = 0
     invisible_catalog_flag = 0
@@ -171,7 +175,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
                 invisible_catalog_flag -= 1
             else:
                 level -= 1
-                # Перевірка на корректність рівня, -1 - помилка. Або нінець дерева (доробити)
+                # Перевірка на корректність рівня, -1 - помилка. Або кінець дерева (доробити)
                 if level < 0:
                     return -1
                 if level == 0:
@@ -197,17 +201,223 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area):
                 descr_offset = cache_descr_offsets[num_descr]
                 descr_size = descr_area[descr_offset]
                 lang_code = descr_area[descr_offset + 1]
+
+                #######
+                param_descr = descr_area[descr_offset:descr_offset + descr_size + 1]
+                prop_adr = int.from_bytes((node_area[pos:pos + 2][::-1]), byteorder='big')
+                prop_pos = prop_adr * 4
+                param_prop = prop_area[prop_pos:prop_pos + 4]
+                hex_sequence = param_prop.hex()
+                unpack_descr(param_descr, param_prop)
+                #######
+                # Перша перевірка на атрибут невидимості (останні версії контейнерної не додають імя у дескриптор якщо
+                # вказано невидимість)
+                if lang_code != 0x81 and lang_code != 0x82 and \
+                   lang_code != 0x83 and lang_code != 0x84:
+                    pos = pos + 8
+                    continue
                 name_length = descr_area[descr_offset + 2]
-                TT_descr_area = descr_area[descr_offset:descr_offset + descr_size]
+                param_descr = descr_area[descr_offset:descr_offset + descr_size + 1]
                 parameter_name_b = descr_area[descr_offset + 3:descr_offset + 3 + name_length]
                 parameter_name = parameter_name_b.decode('cp1251')
+                attr_offset = name_length + 3
+                attr_ID = param_descr[attr_offset]
+                attr = get_param_by_ID_2(param_descr, attr_ID, attr_offset)
+                # Друга перевірка на атрибут невидимості
+                if attr & 0x4:
+                    pos = pos + 8
+                    continue
                 current_parameter = QStandardItem(parameter_name)
                 # current_catalog_levels.append(current_catalog)
                 # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
                 name = current_parameter.text()
                 cat_name = current_catalog_levels[level - 1].text()
                 current_catalog_levels[level - 1].appendRow(current_parameter)
+
                 pos = pos + 8
             else:
                 pos = pos + 8
 
+
+def unpack_descr (param_descr, param_prop):
+    param_attributes = {}  # Создание пустого словаря
+    base_types = int.from_bytes((param_prop[0:2][::-1]), byteorder='big')
+    hex_sequence = param_prop[0:4][::-1].hex()
+    type = base_types & 0xF
+    if type == 0:
+        type = 'float'
+    elif type == 1:
+        type = 'fix_point_float'
+    elif type == 2:
+        type = 'unsigned'
+    elif type == 3:
+        type = 'signed'
+    elif type == 4:
+        type = 'enum'
+    elif type == 5:
+        type = 'date_time'
+    elif type == 6:
+        type = 'date'
+    elif type == 7:
+        type = 'time'
+    elif type == 8:
+        type = 'string'
+    elif type == 9:
+        type = 'stream'
+    else:
+        return -1  # Помилка
+    param_attributes['type'] = type
+    param_size = (base_types & 0x7F0) >> 4
+    param_attributes['param_size'] = param_size
+    packed = (base_types & 0x800) >> 11
+    param_attributes['packed'] = packed
+    W_Only = (base_types & 0x1000) >> 12
+    param_attributes['W_Only'] = W_Only
+    R_Only = (base_types & 0x2000) >> 13
+    param_attributes['R_Only'] = R_Only
+    is_operative = (base_types & 0x4000) >> 14
+    param_attributes['is_operative'] = is_operative
+    is_complex_type = (base_types & 0x2000) >> 15
+    param_attributes['is_complex_type'] = is_complex_type
+
+
+    descr_size = param_descr[0]
+    pos = 1
+    while pos < descr_size:
+        ID = param_descr[pos]
+        if ID == 44:
+            print('44')
+        pos = get_param_by_ID(param_descr, ID, pos + 1, param_attributes)
+        if pos == -1:
+            return -1 # Помилка - невідомий дескриптор
+
+
+
+def get_param_by_ID (param_descr, ID, pos, param_attributes):
+    if ID == 0:
+        # Атрибути відображення та доступу по мережі
+        attr = param_descr[pos]
+        pos += 1
+        param_attributes['invis_and_net'] = attr
+        # Для атрибуту невидимості повертаємо його значення (обробка та ігнорування парметру реалізовуюється
+        # тим, хто викликає get_param_by_ID)
+        return pos
+    elif ID == 1:
+        # Хеш ім'я параметру (спадщина від індус-протокол)
+        indus_hash = int.from_bytes((param_descr[pos:pos + 4][::-1]), byteorder='big')
+        pos += 4
+        param_attributes['indus_hash'] = indus_hash
+        return pos
+    elif ID == 2:
+        # Індекс параметру (спадщина від індус-протокол)
+        indus_index = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+        pos += 2
+        param_attributes['indus_index'] = indus_index
+        return pos
+    elif ID == 3:
+        # Номер регістру Modbus
+        modbus_reg = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+        pos += 2
+        param_attributes['modbus_reg'] = modbus_reg
+        return pos
+    elif ID == 4:
+        # Пароль доступу до параметру (число від 1 до 65535)
+        param_pass = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+        pos += 2
+        param_attributes['param_pass'] = param_pass
+        return pos
+    elif ID == 6:
+        # Значення за замовчуванням
+        if param_attributes.get('type', 0) == 'string': # 8 - string
+            str_length = param_descr[pos]
+            def_string_b = param_descr[pos + 1:pos + 1 + str_length]
+            def_string = def_string_b.decode('cp1251')
+            pos = pos + 1 + str_length
+            param_attributes['def_value'] = def_string
+        elif param_attributes.get('type', 0) == 'enum':
+            def_index = param_descr[pos]
+            pos = pos + 1
+            param_attributes['def_value'] = def_index
+        elif param_attributes.get('type', 0) == 0:
+            return -1 # Помилка
+        else:
+            def_value = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+            pos += param_attributes.get('param_size', 0)
+            param_attributes['def_value'] = def_value
+        return pos
+    elif ID == 7:
+        # Мінімальне значення
+        if param_attributes.get('type', 0) == 'enum':
+            def_index = param_descr[pos]
+            pos = pos + 1
+            param_attributes['min_limit'] = def_index
+        elif param_attributes.get('type', 0) == 0:
+            return -1 # Помилка
+        else:
+            min_limit = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+            pos += param_attributes.get('param_size', 0)
+            param_attributes['min_limit'] = min_limit
+        return pos
+    elif ID == 8:
+        # Максимальне значення
+        if param_attributes.get('type', 0) == 'enum':
+            def_index = param_descr[pos]
+            pos = pos + 1
+            param_attributes['max_limit'] = def_index
+        elif param_attributes.get('type', 0) == 0:
+            return -1 # Помилка
+        else:
+            max_limit = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+            pos += param_attributes.get('param_size', 0)
+            param_attributes['max_limit'] = max_limit
+        return pos
+    elif ID == 9:
+        # Формат відображення
+        visual_type = param_descr[pos]
+        if visual_type == 0:
+            visual_type = 'dec'
+        elif visual_type == 1:
+            visual_type = 'hex'
+        elif visual_type == 2:
+            visual_type = 'bin'
+        elif visual_type == 3:
+            visual_type = 'dec_with_err'
+        elif visual_type == 4:
+            visual_type = 'ip_format'
+        else:
+            return -1 # Помилка
+        pos += 1
+        param_attributes['visual_type'] = visual_type
+        return pos
+    elif ID == 0xA:
+        # Номер строкового параматру
+        string_num = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+        pos += 2
+        param_attributes['string_num'] = string_num
+        return pos
+    elif ID == 13:
+        # UID
+        pre_UID = param_descr[pos:pos + 4]
+        UID = int.from_bytes(pre_UID[::-1], byteorder='big')
+        pos += 4
+        param_attributes['UID'] = UID
+        return pos
+    elif ID == 0x81 or ID == 0x82 or ID == 0x83 or ID == 0x84:
+        # Ім'я параметру
+        name_length = param_descr[pos]
+        parameter_name_b = param_descr[pos + 1:pos + 1 + name_length]
+        parameter_name = parameter_name_b.decode('cp1251')
+        pos = pos + 1 + name_length
+        param_attributes['name'] = parameter_name
+        return pos
+    else:
+        return -1 # Помилка, невідомий дескриптор
+
+
+def get_param_by_ID_2 (param_descr, ID, param_offset):
+    if ID == 0:
+        # Атрибути відображення та доступу по мережі
+        attr = param_descr[param_offset + 1]
+        return attr
+    else:
+        return 0
