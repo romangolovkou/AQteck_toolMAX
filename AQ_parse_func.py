@@ -326,6 +326,12 @@ def get_param_by_ID (param_descr, ID, pos, param_attributes):
         pos += 2
         param_attributes['param_pass'] = param_pass
         return pos
+    elif ID == 5:
+        # Кількість знаків до/після коми (число від -127 до +128)
+        decimal_point = param_descr[pos]
+        pos += 1
+        param_attributes['decimal_point'] = decimal_point
+        return pos
     elif ID == 6:
         # Значення за замовчуванням
         if param_attributes.get('type', 0) == 'string': # 8 - string
@@ -395,12 +401,28 @@ def get_param_by_ID (param_descr, ID, pos, param_attributes):
         pos += 2
         param_attributes['string_num'] = string_num
         return pos
-    elif ID == 13:
+    elif ID == 0xB:
+        # Примусове додавання каналу CoDeSys (тимчасово просто зміщюемо pos)
+        pos += 1
+        return pos
+    elif ID == 0xD:
         # UID
         pre_UID = param_descr[pos:pos + 4]
         UID = int.from_bytes(pre_UID[::-1], byteorder='big')
         pos += 4
         param_attributes['UID'] = UID
+        return pos
+    elif ID == 0xE:
+        # Розширені атрибути доступу по мережі (MQTT)
+        mqtt_mask = param_descr[pos]
+        pos += 1
+        param_attributes['mqtt_mask'] = mqtt_mask
+        return pos
+    elif ID == 0xF:
+        # Ознака та пріорітет оперативного параметру зовнішнього модуля (ext_modules)
+        ext_modul_prio = param_descr[pos]
+        pos += 1
+        param_attributes['ext_modul_prio'] = ext_modul_prio
         return pos
     elif ID == 0x81 or ID == 0x82 or ID == 0x83 or ID == 0x84:
         # Ім'я параметру
@@ -409,6 +431,18 @@ def get_param_by_ID (param_descr, ID, pos, param_attributes):
         parameter_name = parameter_name_b.decode('cp1251')
         pos = pos + 1 + name_length
         param_attributes['name'] = parameter_name
+        return pos
+    elif ID == 0xD0 or ID == 0xD1 or ID == 0xD2 or ID == 0xD3 or ID == 0xD4:
+        # Посилання на ім'я вузла на різних мовах (невідомий дескриптор, поки що, пропускаємо)
+        pos = pos + 2
+        return pos
+    elif ID == 0x20 or ID == 0x21 or ID == 0x22 or ID == 0x23:
+        # Ім'я параметру для зовнішнього представлення MQTT та ін.
+        mqtt_name_length = param_descr[pos]
+        mqtt_parameter_name_b = param_descr[pos + 1:pos + 1 + mqtt_name_length]
+        mqtt_parameter_name = mqtt_parameter_name_b.decode('cp1251')
+        pos = pos + 1 + mqtt_name_length
+        param_attributes['mqtt_name'] = mqtt_parameter_name
         return pos
     else:
         return -1 # Помилка, невідомий дескриптор
