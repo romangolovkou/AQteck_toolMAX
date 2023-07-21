@@ -144,33 +144,40 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area):
 
     while pos < len(node_area):
         # Проверка на is_katalog
-        prop = int.from_bytes((node_area[pos:pos + 2][::-1]), byteorder='big')
+        is_catalog_check = int.from_bytes((node_area[pos:pos + 2][::-1]), byteorder='big')
         # 0xFFFF - признак конца каталога, 0x8000 - признак каталога (самый старший бит равен 1)
-        if prop & 0x8000 and prop != 0xFFFF:
-            # Создание элемента каталога
-            # Получаем имя каталога
+        if is_catalog_check & 0x8000 and is_catalog_check != 0xFFFF:
             num_descr = int.from_bytes((node_area[pos + 4:pos + 6][::-1]), byteorder='big')
             descr_offset = cache_descr_offsets[num_descr]
-            # Проверка на длину дескриптора (костыль для пропуска неизвестных дескрипторов см. "Описание дескр. каталога")
             descr_size = descr_area[descr_offset]
-            if descr_size < 10:
+            param_descr = descr_area[descr_offset:descr_offset + descr_size + 1]
+            prop_adr = int.from_bytes((node_area[pos:pos + 2][::-1]), byteorder='big')
+            prop_pos = prop_adr * 4
+            param_prop = prop_area[prop_pos:prop_pos + 4]
+            hex_sequence = param_prop.hex()
+            catalog_attributes = unpack_descr(param_descr, param_prop)
+            # Перевірка на атрибут невидимості (3й біт - ознака невидимості)
+            if catalog_attributes.get('invis_and_net', 0) & 0x4:
                 pos = pos + 6
                 invisible_catalog_flag += 1
-                TT_descr_area = descr_area[descr_offset:descr_offset + descr_size]
                 continue
-
-            lang_code = descr_area[descr_offset + 1]
-            name_length = descr_area[descr_offset + 2]
-            TT_descr_area = descr_area[descr_offset:descr_offset + descr_size]
-            catalog_name_b = descr_area[descr_offset + 3:descr_offset + 3 + name_length]
-            catalog_name = catalog_name_b.decode('cp1251')
-            TT_names.append(catalog_name)
-            current_catalog = QStandardItem(catalog_name)
+            # Друга перевірка на невидимість (останні версії контейнерної не додають ім'я, якщо каталог невидимий)
+            if catalog_attributes.get('name', 0) == 0:
+                pos = pos + 6
+                invisible_catalog_flag += 1
+                continue
+            # Примусове ігнорування контейнеру індус-клауд
+            if catalog_attributes.get('name', 0) == 'OwenCloud':
+                pos = pos + 6
+                invisible_catalog_flag += 1
+                continue
+            # Создание элемента каталога
+            current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
             current_catalog_levels.append(current_catalog)
             level += 1
 
             pos = pos + 6
-        elif prop == 0xFFFF:
+        elif is_catalog_check == 0xFFFF:
             if invisible_catalog_flag:
                 invisible_catalog_flag -= 1
             else:
@@ -200,35 +207,21 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area):
                 num_descr = int.from_bytes((node_area[pos + 4:pos + 6][::-1]), byteorder='big')
                 descr_offset = cache_descr_offsets[num_descr]
                 descr_size = descr_area[descr_offset]
-                lang_code = descr_area[descr_offset + 1]
-
-                #######
                 param_descr = descr_area[descr_offset:descr_offset + descr_size + 1]
                 prop_adr = int.from_bytes((node_area[pos:pos + 2][::-1]), byteorder='big')
                 prop_pos = prop_adr * 4
                 param_prop = prop_area[prop_pos:prop_pos + 4]
-                hex_sequence = param_prop.hex()
-                unpack_descr(param_descr, param_prop)
-                #######
-                # Перша перевірка на атрибут невидимості (останні версії контейнерної не додають імя у дескриптор якщо
-                # вказано невидимість)
-                if lang_code != 0x81 and lang_code != 0x82 and \
-                   lang_code != 0x83 and lang_code != 0x84:
+                param_attributes = unpack_descr(param_descr, param_prop)
+                # Перевірка на атрибут невидимості (3й біт - ознака невидимості)
+                if param_attributes.get('invis_and_net', 0) & 0x4:
                     pos = pos + 8
                     continue
-                name_length = descr_area[descr_offset + 2]
-                param_descr = descr_area[descr_offset:descr_offset + descr_size + 1]
-                parameter_name_b = descr_area[descr_offset + 3:descr_offset + 3 + name_length]
-                parameter_name = parameter_name_b.decode('cp1251')
-                attr_offset = name_length + 3
-                attr_ID = param_descr[attr_offset]
-                attr = get_param_by_ID_2(param_descr, attr_ID, attr_offset)
-                # Друга перевірка на атрибут невидимості
-                if attr & 0x4:
+                # Друга перевірка на невидимість (останні версії контейнерної не додають ім'я, якщо каталог невидимий)
+                if catalog_attributes.get('name', 0) == 0:
                     pos = pos + 8
                     continue
+                parameter_name = param_attributes.get('name', 'err_name')
                 current_parameter = QStandardItem(parameter_name)
-                # current_catalog_levels.append(current_catalog)
                 # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
                 name = current_parameter.text()
                 cat_name = current_catalog_levels[level - 1].text()
@@ -285,11 +278,11 @@ def unpack_descr (param_descr, param_prop):
     pos = 1
     while pos < descr_size:
         ID = param_descr[pos]
-        if ID == 44:
-            print('44')
         pos = get_param_by_ID(param_descr, ID, pos + 1, param_attributes)
         if pos == -1:
             return -1 # Помилка - невідомий дескриптор
+
+    return param_attributes
 
 
 
@@ -448,10 +441,4 @@ def get_param_by_ID (param_descr, ID, pos, param_attributes):
         return -1 # Помилка, невідомий дескриптор
 
 
-def get_param_by_ID_2 (param_descr, ID, param_offset):
-    if ID == 0:
-        # Атрибути відображення та доступу по мережі
-        attr = param_descr[param_offset + 1]
-        return attr
-    else:
-        return 0
+
