@@ -120,14 +120,17 @@ def parse_tree(storage_container):
         cache_descr_offsets[i] = cache_descr_offsets[i - 1] + descr_area[cache_descr_offsets[i - 1]] + 1
 
     tree_model = QStandardItemModel()
+    tree_model.setColumnCount(6)
+    tree_model.setHorizontalHeaderLabels(["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
+
     # Создание корневого элемента
     root_item = tree_model.invisibleRootItem()
 
-    add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area)
+    add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, string_array)
 
     return tree_model
 
-def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area):
+def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, string_array):
     pos = 6
     catalog_cnt = 0
     invisible_catalog_flag = 0
@@ -156,6 +159,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area):
             param_prop = prop_area[prop_pos:prop_pos + 4]
             hex_sequence = param_prop.hex()
             catalog_attributes = unpack_descr(param_descr, param_prop)
+            catalog_attributes['is_catalog'] = 1
             # Перевірка на атрибут невидимості (3й біт - ознака невидимості)
             if catalog_attributes.get('invis_and_net', 0) & 0x4:
                 pos = pos + 6
@@ -222,10 +226,35 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area):
                     continue
                 parameter_name = param_attributes.get('name', 'err_name')
                 current_parameter = QStandardItem(parameter_name)
+                current_parameter.setData(param_attributes, Qt.UserRole)
+                cur_par_value = QStandardItem()
+
+                if param_attributes.get('type', '') == 'enum':
+                    cur_par_min = QStandardItem()
+                else:
+                    cur_par_min = QStandardItem(str(param_attributes.get('min_limit', '')))
+
+                if param_attributes.get('type', '') == 'enum':
+                    cur_par_max = QStandardItem()
+                else:
+                    cur_par_max = QStandardItem(str(param_attributes.get('max_limit', '')))
+
+                string_num = param_attributes.get('string_num', '')
+                if string_num == '' or param_attributes.get('type', '') == 'enum':
+                    cur_par_unit = QStandardItem()
+                else:
+                    unit_str = string_array[string_num]
+                    cur_par_unit = QStandardItem(unit_str)
+
+                if param_attributes.get('type', '') == 'enum':
+                    cur_par_default = QStandardItem()
+                else:
+                    cur_par_default = QStandardItem(str(param_attributes.get('def_value', '')))
                 # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
                 name = current_parameter.text()
                 cat_name = current_catalog_levels[level - 1].text()
-                current_catalog_levels[level - 1].appendRow(current_parameter)
+                current_catalog_levels[level - 1].appendRow([current_parameter, cur_par_value, cur_par_min, cur_par_max,
+                                                             cur_par_unit, cur_par_default])
 
                 pos = pos + 8
             else:

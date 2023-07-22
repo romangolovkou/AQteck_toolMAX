@@ -8,7 +8,7 @@ from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpV
                         QStandardItem
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation, QSettings
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
-    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView
+    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -26,6 +26,7 @@ from AQ_communication_func import read_device_name, read_version, read_serial_nu
 from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
+from AQ_tree_prapare_func import traverse_items
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -224,7 +225,6 @@ class MainWindow(QMainWindow):
         self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
 
-
     def toggleMaximize(self):
         try:
             if self.isMaximized:
@@ -279,6 +279,9 @@ class MainWindow(QMainWindow):
             # Устанавливаем положение картинки
             self.main_background_pic.move(x, y)
 
+            if self.tree_view is not None:
+                self.tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
+
             event.accept()
         except Exception as e:
             print(f"Error occurred: {str(e)}")
@@ -330,20 +333,46 @@ class MainWindow(QMainWindow):
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
             device_tree = parse_tree(storage_container)
+            # Створення порожнього массиву параметрів
+            self.parameter_list = []
+            root = device_tree.invisibleRootItem()
+            traverse_items(root, self.parameter_list)
+            # Перебор элементов массива
+            for row in self.parameter_list:
+                # Получаем индекс элемента, для которого хотим установить данные в столбце column
+                index = device_tree.indexFromItem(row)
+                # Устанавливаем данные для индекса
+                parameter_attributes = row.data(Qt.UserRole)
+                # device_tree.setData(index, parameter_attributes.get('min_limit', 'none'), role=Qt.DisplayRole)
+
             if isinstance(device_tree, QStandardItemModel):
                 # Устанавливаем модель для QTreeView и отображаем его
-                tree_view = QTreeView(self.main_field_frame)
-                tree_view.setModel(device_tree)
-                tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
-                tree_view.setHeaderHidden(True)
-                tree_view.setStyleSheet("QTreeView {"
-                                        "    border: 1px solid #9ef1d3;"
-                                        "    color: #D0D0D0;"
-                                        "}"
-                                        "QTreeView::branch:closed {"
-                                        "    color: #9ef1d3;"
-                                        "}")
-                tree_view.show()
+                self.tree_view = QTreeView(self.main_field_frame)
+                self.tree_view.setModel(device_tree)
+                self.tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
+                # Получение количества колонок в модели
+                column_count = device_tree.columnCount()
+                for column in range(column_count):
+                    self.tree_view.setColumnWidth(column, 200)
+                self.tree_view.setStyleSheet("""
+                    QTreeView {
+                        border: 1px solid #9ef1d3;
+                        color: #D0D0D0;
+                    }
+
+                    QTreeView::item {
+                        border: 1px solid #2b2d30;
+                    }
+
+                    QHeaderView::section {
+                        border: 1px solid #1e1f22;
+                        color: #D0D0D0;
+                        background-color: #2b2d30;
+                        padding-left: 6px;
+                    }
+                """)
+
+                self.tree_view.show()
 
         except serial.SerialException as e:
             print(f"Ошибка при подключении к IP {ip}: {str(e)}")
