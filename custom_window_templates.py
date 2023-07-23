@@ -339,7 +339,7 @@ class IP_AQLineEdit(QLineEdit):
         super().keyPressEvent(event)
 
     def show_err_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна fe3d3d
+        # Получаем координаты поля ввода относительно диалогового окна
         rect = self.geometry()
         pos = self.mapTo(self, rect.topRight())
         self.err_label = AQLabel('Invalid value, valid (0...255)', self.parent())

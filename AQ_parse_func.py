@@ -127,7 +127,9 @@ def parse_tree(storage_container):
     # Создание корневого элемента
     root_item = tree_model.invisibleRootItem()
 
-    add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, string_array)
+    err_check = add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, string_array)
+    if err_check == -1:
+        return -1
 
     return tree_model
 
@@ -187,9 +189,9 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 invisible_catalog_flag -= 1
             else:
                 level -= 1
-                # Перевірка на корректність рівня, -1 - помилка. Або кінець дерева (доробити)
+                # кінець дерева (доробити)
                 if level < 0:
-                    return -1
+                    return 0
                 if level == 0:
                     current_catalog_levels[level].setFlags(Qt.ItemIsEnabled)
                     catalogs.append(current_catalog_levels[level])  # Добавление каталога в конец массива
@@ -217,6 +219,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 prop_pos = prop_adr * 4
                 param_prop = prop_area[prop_pos:prop_pos + 4]
                 param_attributes = unpack_descr(param_descr, param_prop)
+                if param_attributes == -1:
+                    return -1 # Помилка
                 # Перевірка на атрибут невидимості (3й біт - ознака невидимості)
                 if param_attributes.get('invis_and_net', 0) & 0x4:
                     pos = pos + 8

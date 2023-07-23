@@ -18,6 +18,7 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
+from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient
@@ -302,6 +303,11 @@ class MainWindow(QMainWindow):
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
             default_prg = read_default_prg(client, slave_id)
+        except:
+        # "Ошибка при подключении к IP
+            raise Connect_err('Ошибка при подключении к COM')
+
+        try:
             containers_count = get_conteiners_count(default_prg)
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
@@ -329,6 +335,11 @@ class MainWindow(QMainWindow):
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
             default_prg = read_default_prg(client, slave_id)
+        except :
+            # "Ошибка при подключении к IP
+            raise Connect_err('Ошибка при подключении к IP')
+
+        try:
             containers_count = get_conteiners_count(default_prg)
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
@@ -338,12 +349,12 @@ class MainWindow(QMainWindow):
             root = device_tree.invisibleRootItem()
             traverse_items(root, self.parameter_list)
             # Перебор элементов массива
-            for row in self.parameter_list:
-                # Получаем индекс элемента, для которого хотим установить данные в столбце column
-                index = device_tree.indexFromItem(row)
-                # Устанавливаем данные для индекса
-                parameter_attributes = row.data(Qt.UserRole)
-                # device_tree.setData(index, parameter_attributes.get('min_limit', 'none'), role=Qt.DisplayRole)
+            # for row in self.parameter_list:
+            #     # Получаем индекс элемента, для которого хотим установить данные в столбце column
+            #     index = device_tree.indexFromItem(row)
+            #     # Устанавливаем данные для индекса
+            #     parameter_attributes = row.data(Qt.UserRole)
+            #     # device_tree.setData(index, parameter_attributes.get('min_limit', 'none'), role=Qt.DisplayRole)
 
             if isinstance(device_tree, QStandardItemModel):
                 # Устанавливаем модель для QTreeView и отображаем его
@@ -374,8 +385,8 @@ class MainWindow(QMainWindow):
 
                 self.tree_view.show()
 
-        except serial.SerialException as e:
-            print(f"Ошибка при подключении к IP {ip}: {str(e)}")
+        except:
+            print(f"Помилка парсінгу")
 
 
 
@@ -434,12 +445,8 @@ class AddDevices_AQDialog(AQDialog):
 
         # Создаем кнопку поиска
         self.find_btn = QPushButton("Find device", self)
-        # self.find_btn.setFixedHeight(30)
         self.find_btn.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
         self.find_btn.setFixedSize(100, 35)
-        # self.find_btn.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
-        #                    "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
-        #                    "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")  # Задаем цветную границу и цвет шрифта1c1e20
         self.find_btn.setStyleSheet("""
             QPushButton {
                 border-left: 1px solid #9ef1d3;
@@ -500,7 +507,10 @@ class AddDevices_AQDialog(AQDialog):
                 self.ip_line_edit.red_blink_timer.start()
                 self.ip_line_edit.show_err_label()
                 return
-            self.parent.connect_to_device_IP(ip)
+            try:
+                self.parent.connect_to_device_IP(ip)
+            except Connect_err:
+                self.show_connect_err_label()
             save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
             return
         else:
@@ -513,11 +523,46 @@ class AddDevices_AQDialog(AQDialog):
             for port in self.com_ports:
                 if port.description == selected_item:
                     selected_port = port.device
-                    self.parent.connect_to_device_COM(selected_port, slave_id)
+                    try:
+                        self.parent.connect_to_device_COM(selected_port, slave_id)
+                    except Connect_err:
+                        self.show_connect_err_label()
                     save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
                     break
             return
 
+    def show_connect_err_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.connect_err_label = AQLabel("<html>The connection to device could not be established.<br>Check the connection lines and network parameters and repeat the search.<html>", self)
+        self.connect_err_label.setStyleSheet("background-color: #9d2d30; color: #D0D0D0; \n")
+        self.connect_err_label.setFont(QFont("Verdana", 12))  # Задаем шрифт и размер
+        self.connect_err_label.setAlignment(Qt.AlignCenter)
+        self.connect_err_label.setFixedSize(self.width(), 50)
+        self.connect_err_label.move(0, self.height())
+        self.connect_err_label.show()
+        # Создаем анимацию для перемещения плашки вверх и вниз
+        self.animation = QPropertyAnimation(self.connect_err_label, b"geometry")
+        # Показываем плашку с помощью анимации
+        start_rect = self.connect_err_label.geometry()
+        end_rect = QRect(start_rect.x(), start_rect.y() - 50, start_rect.width(), start_rect.height())
+        self.animation.setStartValue(start_rect)
+        self.animation.setEndValue(end_rect)
+        self.animation.setDuration(800)  # Продолжительность анимации в миллисекундах
+        self.animation.start()
+
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.hide_connect_err_label)
+        # Устанавливаем задержку в 2 секунды и затем удаляем метку
+        # QTimer.singleShot(4000, self.connect_err_label.deleteLater)
+
+    def hide_connect_err_label(self):
+        # Скрываем плашку с помощью анимации
+        start_rect = self.connect_err_label.geometry()
+        end_rect = QRect(start_rect.x(), start_rect.y() + 50, start_rect.width(), start_rect.height())
+        self.animation.setStartValue(start_rect)
+        self.animation.setEndValue(end_rect)
+        self.animation.setDuration(800)  # Продолжительность анимации в миллисекундах
+        self.animation.start()
 
 
 if __name__ == '__main__':
