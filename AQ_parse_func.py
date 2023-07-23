@@ -1,4 +1,5 @@
 import array
+import struct
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
@@ -229,15 +230,66 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 current_parameter.setData(param_attributes, Qt.UserRole)
                 cur_par_value = QStandardItem()
 
-                if param_attributes.get('type', '') == 'enum':
+                if param_attributes.get('type', '') == 'enum' or param_attributes.get('visual_type', '') == 'ip_format':
                     cur_par_min = QStandardItem()
                 else:
-                    cur_par_min = QStandardItem(str(param_attributes.get('min_limit', '')))
+                    if param_attributes.get('min_limit', '') == '':
+                        param_type = param_attributes.get('type', '')
+                        size = param_attributes.get('param_size', 0)
+                        if param_type == 'float':
+                            if size == 4:
+                                cur_par_min = QStandardItem('-3.402283E+38')
+                            elif size == 8:
+                                cur_par_min = QStandardItem('-1.7976931348623E+308')
+                        elif param_type == 'signed':
+                            if size == 1:
+                                cur_par_min = QStandardItem('-127')
+                            if size == 2:
+                                cur_par_min = QStandardItem('-32768')
+                            if size == 4:
+                                cur_par_min = QStandardItem('-2147483648')
+                            if size == 8:
+                                cur_par_min = QStandardItem('-9223372036854775808')
+                        elif param_type == 'unsigned':
+                            cur_par_min = QStandardItem('0')
+                        else:
+                            cur_par_min = QStandardItem()
+                    else:
+                        cur_par_min = QStandardItem(str(param_attributes.get('min_limit', '')))
 
-                if param_attributes.get('type', '') == 'enum':
+                if param_attributes.get('type', '') == 'enum'  or param_attributes.get('visual_type', '') == 'ip_format':
                     cur_par_max = QStandardItem()
                 else:
-                    cur_par_max = QStandardItem(str(param_attributes.get('max_limit', '')))
+                    if param_attributes.get('max_limit', '') == '':
+                        param_type = param_attributes.get('type', '')
+                        size = param_attributes.get('param_size', 0)
+                        if param_type == 'float':
+                            if size == 4:
+                                cur_par_max = QStandardItem('3.402283E+38')
+                            elif size == 8:
+                                cur_par_max = QStandardItem('1.7976931348623E+308')
+                        elif param_type == 'signed':
+                            if size == 1:
+                                cur_par_max = QStandardItem('128')
+                            if size == 2:
+                                cur_par_max = QStandardItem('32767')
+                            if size == 4:
+                                cur_par_max = QStandardItem('2147483647')
+                            if size == 8:
+                                cur_par_max = QStandardItem('9223372036854775807')
+                        elif param_type == 'unsigned':
+                            if size == 1:
+                                cur_par_max = QStandardItem('255')
+                            if size == 2:
+                                cur_par_max = QStandardItem('65535')
+                            if size == 4:
+                                cur_par_max = QStandardItem('4294967295')
+                            if size == 8:
+                                cur_par_max = QStandardItem('18446744073709551615')
+                        else:
+                            cur_par_max = QStandardItem()
+                    else:
+                        cur_par_max = QStandardItem(str(param_attributes.get('max_limit', '')))
 
                 string_num = param_attributes.get('string_num', '')
                 if string_num == '' or param_attributes.get('type', '') == 'enum':
@@ -247,6 +299,15 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     cur_par_unit = QStandardItem(unit_str)
 
                 if param_attributes.get('type', '') == 'enum':
+                    string_num = param_attributes.get('string_num', '')
+                    r_only = param_attributes.get('R_Only', 0)
+                    w_only = param_attributes.get('W_Only', 0)
+                    if string_num == '' or (r_only == 1 and w_only == 0):
+                        cur_par_default = QStandardItem()
+                    else:
+                        def_str = string_array[string_num]
+                        cur_par_default = QStandardItem(def_str)
+                elif param_attributes.get('visual_type', '') == 'ip_format':
                     cur_par_default = QStandardItem()
                 else:
                     cur_par_default = QStandardItem(str(param_attributes.get('def_value', '')))
@@ -356,7 +417,9 @@ def get_param_by_ID (param_descr, ID, pos, param_attributes):
         return pos
     elif ID == 6:
         # Значення за замовчуванням
-        if param_attributes.get('type', 0) == 'string': # 8 - string
+        if param_attributes.get('type', 0) == 0:
+            return -1  # Помилка
+        elif param_attributes.get('type', 0) == 'string': # 8 - string
             str_length = param_descr[pos]
             def_string_b = param_descr[pos + 1:pos + 1 + str_length]
             def_string = def_string_b.decode('cp1251')
@@ -366,36 +429,49 @@ def get_param_by_ID (param_descr, ID, pos, param_attributes):
             def_index = param_descr[pos]
             pos = pos + 1
             param_attributes['def_value'] = def_index
-        elif param_attributes.get('type', 0) == 0:
-            return -1 # Помилка
         else:
-            def_value = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+            size = param_attributes.get('param_size', 0)
+            param_type = param_attributes.get('type', 0)
+            if size == 0:
+                return -1  # Помилка
+
+            def_value = get_float_signed_unsigned_by_size(param_descr, pos, size, param_type)
             pos += param_attributes.get('param_size', 0)
             param_attributes['def_value'] = def_value
         return pos
     elif ID == 7:
         # Мінімальне значення
-        if param_attributes.get('type', 0) == 'enum':
+        if param_attributes.get('type', 0) == 0:
+            return -1  # Помилка
+        elif param_attributes.get('type', 0) == 'enum':
             def_index = param_descr[pos]
             pos = pos + 1
             param_attributes['min_limit'] = def_index
-        elif param_attributes.get('type', 0) == 0:
-            return -1 # Помилка
         else:
-            min_limit = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
-            pos += param_attributes.get('param_size', 0)
+            size = param_attributes.get('param_size', 0)
+            param_type = param_attributes.get('type', 0)
+            if size == 0:
+                return -1  # Помилка
+
+            min_limit = get_float_signed_unsigned_by_size(param_descr, pos, size, param_type)
+            pos += size
             param_attributes['min_limit'] = min_limit
         return pos
     elif ID == 8:
         # Максимальне значення
-        if param_attributes.get('type', 0) == 'enum':
+        if param_attributes.get('type', 0) == 0:
+            return -1  # Помилка
+        elif param_attributes.get('type', 0) == 'enum':
             def_index = param_descr[pos]
             pos = pos + 1
             param_attributes['max_limit'] = def_index
-        elif param_attributes.get('type', 0) == 0:
-            return -1 # Помилка
         else:
-            max_limit = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+            size = param_attributes.get('param_size', 0)
+            param_type = param_attributes.get('type', 0)
+            if size == 0:
+                return -1  # Помилка
+
+            max_limit = get_float_signed_unsigned_by_size(param_descr, pos, size, param_type)
             pos += param_attributes.get('param_size', 0)
             param_attributes['max_limit'] = max_limit
         return pos
@@ -470,4 +546,34 @@ def get_param_by_ID (param_descr, ID, pos, param_attributes):
         return -1 # Помилка, невідомий дескриптор
 
 
+def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
+    if param_type == 'float':
+        if size == 4:
+            # Распаковка в формате "f" (float)
+            result = struct.unpack('f', param_descr[pos:pos + size])
+            value = result[0]
+        if size == 8:
+            # Распаковка в формате "d" (double)
+            result = struct.unpack('d', param_descr[pos:pos + size])
+            value = result[0]
+    elif param_type == 'signed':
+        if size == 1:
+            # Распаковка в формате "b" (int8)
+            result = struct.unpack('b', param_descr[pos:pos + size])
+            value = result[0]
+        if size == 2:
+            # Распаковка в формате "h" (int16)
+            result = struct.unpack('h', param_descr[pos:pos + size])
+            value = result[0]
+        if size == 4:
+            # Распаковка в формате "i" (int32)
+            result = struct.unpack('i', param_descr[pos:pos + size])
+            value = result[0]
+        if size == 8:
+            # Распаковка в формате "q" (int64)
+            result = struct.unpack('q', param_descr[pos:pos + size])
+            value = result[0]
+    else:
+        value = int.from_bytes((param_descr[pos:pos + size][::-1]), byteorder='big')
 
+    return value
