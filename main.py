@@ -3,12 +3,15 @@ import random
 import time
 import array
 import os
+import threading
 from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
-                        QStandardItem
-from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation, QSettings
+                        QStandardItem, QTransform, QPainter
+from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation, QSettings, QEasingCurve, \
+    QThread, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
-    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView
+    QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView, \
+    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -28,6 +31,7 @@ from AQ_parse_func import get_conteiners_count, get_containers_offset, get_stora
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 from AQ_tree_prapare_func import traverse_items
+PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -303,28 +307,55 @@ class MainWindow(QMainWindow):
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
             default_prg = read_default_prg(client, slave_id)
+            return default_prg
         except:
-        # "Ошибка при подключении к IP
-            raise Connect_err('Ошибка при подключении к COM')
+        # "Ошибка при подключении к COM
+        #     raise Connect_err('Ошибка при подключении к COM')
+            return 'connect_err'
 
+    def parse_default_prg (self, default_prg):
         try:
             containers_count = get_conteiners_count(default_prg)
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
             device_tree = parse_tree(storage_container)
+            # Створення порожнього массиву параметрів
+            self.parameter_list = []
+            root = device_tree.invisibleRootItem()
+            traverse_items(root, self.parameter_list)
+
             if isinstance(device_tree, QStandardItemModel):
                 # Устанавливаем модель для QTreeView и отображаем его
-                tree_view = QTreeView(self.main_field_frame)
-                tree_view.setModel(device_tree)
-                tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
-                tree_view.setHeaderHidden(True)
-                tree_view.setStyleSheet("QTreeView { border: 1px solid #9ef1d3; color: #D0D0D0; }")
-                tree_view.expandAll()
-                tree_view.show()
+                self.tree_view = QTreeView(self.main_field_frame)
+                self.tree_view.setModel(device_tree)
+                self.tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252,
+                                           self.main_field_frame.height() - 4)
+                # Получение количества колонок в модели
+                column_count = device_tree.columnCount()
+                for column in range(column_count):
+                    self.tree_view.setColumnWidth(column, 200)
+                self.tree_view.setStyleSheet("""
+                    QTreeView {
+                        border: 1px solid #9ef1d3;
+                        color: #D0D0D0;
+                    }
 
+                    QTreeView::item {
+                        border: 1px solid #2b2d30;
+                    }
 
-        except serial.SerialException as e:
-            print(f"Ошибка при подключении к порту {selected_port}: {str(e)}")
+                    QHeaderView::section {
+                        border: 1px solid #1e1f22;
+                        color: #D0D0D0;
+                        background-color: #2b2d30;
+                        padding-left: 6px;
+                    }
+                """)
+
+                self.tree_view.show()
+
+        except:
+            print(f"Помилка парсінгу")
 
     def connect_to_device_IP(self, ip):
         try:
@@ -335,7 +366,7 @@ class MainWindow(QMainWindow):
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
             default_prg = read_default_prg(client, slave_id)
-        except :
+        except:
             # "Ошибка при подключении к IP
             raise Connect_err('Ошибка при подключении к IP')
 
@@ -348,13 +379,6 @@ class MainWindow(QMainWindow):
             self.parameter_list = []
             root = device_tree.invisibleRootItem()
             traverse_items(root, self.parameter_list)
-            # Перебор элементов массива
-            # for row in self.parameter_list:
-            #     # Получаем индекс элемента, для которого хотим установить данные в столбце column
-            #     index = device_tree.indexFromItem(row)
-            #     # Устанавливаем данные для индекса
-            #     parameter_attributes = row.data(Qt.UserRole)
-            #     # device_tree.setData(index, parameter_attributes.get('min_limit', 'none'), role=Qt.DisplayRole)
 
             if isinstance(device_tree, QStandardItemModel):
                 # Устанавливаем модель для QTreeView и отображаем его
@@ -395,11 +419,55 @@ class AddDevices_AQDialog(AQDialog):
     def __init__(self, name, parent):
         super().__init__(name)
 
+        PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
+
         self.setObjectName("AQ_Dialog_add_device")
         self.parent = parent
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
+
+        self.gear_big_image = QPixmap(PROJ_DIR + 'Icons/gear182.png')
+        self.gear_big_label = QLabel(self)
+        self.gear_big_label.setPixmap(self.gear_big_image)
+        self.gear_big_label.setAlignment(Qt.AlignCenter)
+        self.gear_big_label.move(700, 500)
+
+
+        # Установим точку трансформации в центр изображения
+        # self.gear_big_label.setTransformOriginPoint(self.gear_big_image.width() / 2, self.gear_big_image.height() / 2)
+
+        # self.gear_small_image = QPixmap(PROJ_DIR + 'Icons/gear127.png')
+        # self.gear_small_label = QLabel(self)
+        # self.gear_small_label.setPixmap(self.gear_small_image)
+        # self.gear_small_label.move(610, 540)
+        # # Установим точку трансформации в центр изображения
+        # # self.gear_small_label.setTransformOriginPoint(self.gear_small_image.width() / 2, self.gear_small_image.height() / 2)
+        # # Создадим анимацию вращения
+        # self.anim_gear_small = QPropertyAnimation(self.gear_small_label, b"rotation")
+        # self.anim_gear_small.setDuration(2000)  # Продолжительность анимации в миллисекундах
+        # self.anim_gear_small.setStartValue(0)
+        # self.anim_gear_small.setEndValue(360)
+        # self.anim_gear_small.setLoopCount(-1)  # Бесконечное повторение анимации
+        # self.anim_gear_small.start()
+
+
+
+        # Создаем QGraphicsPixmapItem и добавляем его в сцену
+        self.gear_small = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear127.png'), 40, 2)
+
+        # Создаем виджет QGraphicsView и устанавливаем его для окна
+        self.view = QGraphicsView(self)
+        self.view.setStyleSheet("background: transparent;")
+        self.view.setFrameStyle(QFrame.NoFrame)  # Убираем рамку
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Создаем сцену и устанавливаем ее для виджета
+        self.scene = QGraphicsScene(self)
+        self.scene.addItem(self.gear_small)
+        self.view.setScene(self.scene)
+        self.view.setGeometry(610, 540, 127, 127)
+
 
         # Создаем текстовую метку заголовка настроек соединения
         self.title_text = AQLabel("Network parameters")
@@ -465,7 +533,7 @@ class AddDevices_AQDialog(AQDialog):
             }
         """)
         # Назначение обработчика событий для кнопки "Прочитать"
-        self.find_btn.clicked.connect(self.connect_to_device)
+        self.find_btn.clicked.connect(self.on_find_button_clicked)
 
         layout = QVBoxLayout(self.main_window_frame)
         layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета
@@ -493,9 +561,41 @@ class AddDevices_AQDialog(AQDialog):
             self.slave_id_line_edit_label.setVisible(True)
             self.slave_id_line_edit.setVisible(True)
 
+
+    def connect_finished(self, default_prg):
+        self.gear_small.stop()
+        if default_prg == 'connect_err':
+            self.show_connect_err_label()
+        elif default_prg == 'empty_field':
+            self.slave_id_line_edit.red_blink_timer.start()
+            self.slave_id_line_edit.show_err_label()
+        else:
+            self.parent.parse_default_prg(default_prg)
+
+    def on_find_button_clicked(self):
+        self.gear_small.start()
+        # Запускаем функцию connect_to_device в отдельном потоке
+        self.connect_thread = ConnectDeviceThread(self)
+        self.connect_thread.finished.connect(self.on_connect_thread_finished)
+        self.connect_thread.error.connect(self.on_connect_thread_error)
+        self.connect_thread.result_signal.connect(self.connect_finished)
+        self.connect_thread.start()
+
+    def on_connect_thread_finished(self):
+        # Выполняется после успешного завершения connect_to_device
+        # В этом слоте можно выполнить действия, которые должны произойти после завершения функции
+        self.gear_small.stop()
+
+    def on_connect_thread_error(self, error_message):
+        # Выполняется в случае ошибки при выполнении connect_to_device
+        # В этом слоте можно выполнить действия, которые должны произойти в случае ошибки
+        self.show_connect_err_label()
+        self.gear_small.stop()
+
     def connect_to_device (self):
         selected_item = self.interface_combo_box.currentText()
         save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
+        default_prg = 0
         if selected_item == "Ethernet":
             try:
                 ip = self.ip_line_edit.text()
@@ -517,19 +617,19 @@ class AddDevices_AQDialog(AQDialog):
             try:
                 slave_id = int(self.slave_id_line_edit.text())
             except:
-                self.slave_id_line_edit.red_blink_timer.start()
-                self.slave_id_line_edit.show_err_label()
-                return
+                # self.slave_id_line_edit.red_blink_timer.start()
+                # self.slave_id_line_edit.show_err_label()
+                return 'empty_field'
             for port in self.com_ports:
                 if port.description == selected_item:
                     selected_port = port.device
                     try:
-                        self.parent.connect_to_device_COM(selected_port, slave_id)
+                        default_prg = self.parent.connect_to_device_COM(selected_port, slave_id)
                     except Connect_err:
                         self.show_connect_err_label()
                     save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
                     break
-            return
+            return default_prg
 
     def show_connect_err_label(self):
         # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
@@ -563,6 +663,49 @@ class AddDevices_AQDialog(AQDialog):
         self.animation.setEndValue(end_rect)
         self.animation.setDuration(800)  # Продолжительность анимации в миллисекундах
         self.animation.start()
+
+class ConnectDeviceThread(QThread):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
+    result_signal = pyqtSignal(object)  # Сигнал для передачи данных в главное окно
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):
+        try:
+            # Здесь выполняем ваш код функции connect_to_device
+            # self.parent.connect_to_device()
+            result_data = self.parent.connect_to_device()  # Данные, которые нужно передать в главное окно
+            self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
+            # По завершении успешного выполнения
+            self.finished.emit()
+        except Exception as e:
+            # В случае ошибки передаем текст ошибки обратно в главный поток
+            self.error.emit(str(e))
+
+
+class RotatingGear(QGraphicsPixmapItem):
+    def __init__(self, pixmap, interval, angle_degree):
+        super().__init__()
+        self.setPixmap(pixmap)
+        self.setTransformOriginPoint(self.boundingRect().center())
+        self.angle = 0
+        self.angle_rotate = angle_degree
+        self.interval = interval
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.rotate_gear)
+
+    def rotate_gear(self):
+        self.angle += self.angle_rotate  # Угол поворота в градусах
+        self.setRotation(self.angle)
+
+    def start(self):
+        self.timer.start(self.interval)  # Установите интервал вращения в миллисекундах
+
+    def stop(self):
+        self.timer.stop()
+
 
 
 if __name__ == '__main__':
