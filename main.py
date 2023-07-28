@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAni
     QThread, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
     QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView, \
-    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
+    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -301,16 +301,35 @@ class MainWindow(QMainWindow):
         #     self.serial.close()
 
         try:
-
+            device_data = {}
             client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+            device_name = read_device_name(client, slave_id)
+            version = read_version(client, slave_id)
+            serial_number = read_serial_number(client, slave_id)
+            default_prg = read_default_prg(client, slave_id)
+            device_data['device_name'] = device_name
+            device_data['version'] = version
+            device_data['serial_number'] = serial_number
+            device_data['default_prg'] = default_prg
+            return device_data
+        except:
+        # "Ошибка при подключении к COM
+        #     raise Connect_err('Ошибка при подключении к COM')
+            return 'connect_err'
+
+    def connect_to_device_IP(self, ip):
+        try:
+
+            client = client = ModbusTcpClient(ip)
+            slave_id = 1
             device_name = read_device_name(client, slave_id)
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
             default_prg = read_default_prg(client, slave_id)
             return default_prg
         except:
-        # "Ошибка при подключении к COM
-        #     raise Connect_err('Ошибка при подключении к COM')
+            # "Ошибка при подключении к IP
+            # raise Connect_err('Ошибка при подключении к IP')
             return 'connect_err'
 
     def parse_default_prg (self, default_prg):
@@ -357,62 +376,6 @@ class MainWindow(QMainWindow):
         except:
             print(f"Помилка парсінгу")
 
-    def connect_to_device_IP(self, ip):
-        try:
-
-            client = client = ModbusTcpClient(ip)
-            slave_id = 1
-            device_name = read_device_name(client, slave_id)
-            version = read_version(client, slave_id)
-            serial_number = read_serial_number(client, slave_id)
-            default_prg = read_default_prg(client, slave_id)
-        except:
-            # "Ошибка при подключении к IP
-            raise Connect_err('Ошибка при подключении к IP')
-
-        try:
-            containers_count = get_conteiners_count(default_prg)
-            containers_offset = get_containers_offset(default_prg)
-            storage_container = get_storage_container(default_prg, containers_offset)
-            device_tree = parse_tree(storage_container)
-            # Створення порожнього массиву параметрів
-            self.parameter_list = []
-            root = device_tree.invisibleRootItem()
-            traverse_items(root, self.parameter_list)
-
-            if isinstance(device_tree, QStandardItemModel):
-                # Устанавливаем модель для QTreeView и отображаем его
-                self.tree_view = QTreeView(self.main_field_frame)
-                self.tree_view.setModel(device_tree)
-                self.tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
-                # Получение количества колонок в модели
-                column_count = device_tree.columnCount()
-                for column in range(column_count):
-                    self.tree_view.setColumnWidth(column, 200)
-                self.tree_view.setStyleSheet("""
-                    QTreeView {
-                        border: 1px solid #9ef1d3;
-                        color: #D0D0D0;
-                    }
-
-                    QTreeView::item {
-                        border: 1px solid #2b2d30;
-                    }
-
-                    QHeaderView::section {
-                        border: 1px solid #1e1f22;
-                        color: #D0D0D0;
-                        background-color: #2b2d30;
-                        padding-left: 6px;
-                    }
-                """)
-
-                self.tree_view.show()
-
-        except:
-            print(f"Помилка парсінгу")
-
-
 
 
 class AddDevices_AQDialog(AQDialog):
@@ -433,28 +396,8 @@ class AddDevices_AQDialog(AQDialog):
         self.gear_big_label.setAlignment(Qt.AlignCenter)
         self.gear_big_label.move(700, 500)
 
-
-        # Установим точку трансформации в центр изображения
-        # self.gear_big_label.setTransformOriginPoint(self.gear_big_image.width() / 2, self.gear_big_image.height() / 2)
-
-        # self.gear_small_image = QPixmap(PROJ_DIR + 'Icons/gear127.png')
-        # self.gear_small_label = QLabel(self)
-        # self.gear_small_label.setPixmap(self.gear_small_image)
-        # self.gear_small_label.move(610, 540)
-        # # Установим точку трансформации в центр изображения
-        # # self.gear_small_label.setTransformOriginPoint(self.gear_small_image.width() / 2, self.gear_small_image.height() / 2)
-        # # Создадим анимацию вращения
-        # self.anim_gear_small = QPropertyAnimation(self.gear_small_label, b"rotation")
-        # self.anim_gear_small.setDuration(2000)  # Продолжительность анимации в миллисекундах
-        # self.anim_gear_small.setStartValue(0)
-        # self.anim_gear_small.setEndValue(360)
-        # self.anim_gear_small.setLoopCount(-1)  # Бесконечное повторение анимации
-        # self.anim_gear_small.start()
-
-
-
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
-        self.gear_small = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear127.png'), 40, 2)
+        self.gear_small = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear127.png'), 40, 4)
 
         # Создаем виджет QGraphicsView и устанавливаем его для окна
         self.view = QGraphicsView(self)
@@ -535,20 +478,51 @@ class AddDevices_AQDialog(AQDialog):
         # Назначение обработчика событий для кнопки "Прочитать"
         self.find_btn.clicked.connect(self.on_find_button_clicked)
 
-        layout = QVBoxLayout(self.main_window_frame)
-        layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета
-        layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
-        layout.addWidget(self.title_text)
-        layout.addWidget(self.interface_combo_box_label)
-        layout.addWidget(self.interface_combo_box)
-        layout.addWidget(self.ip_line_edit_label)
-        layout.addWidget(self.ip_line_edit)
-        layout.addWidget(self.slave_id_line_edit_label)
-        layout.addWidget(self.slave_id_line_edit)
-        layout.addWidget(self.find_btn)
+        self.layout = QVBoxLayout(self.main_window_frame)
+        self.layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета
+        self.layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
+        self.layout.addWidget(self.title_text)
+        self.layout.addWidget(self.interface_combo_box_label)
+        self.layout.addWidget(self.interface_combo_box)
+        self.layout.addWidget(self.ip_line_edit_label)
+        self.layout.addWidget(self.ip_line_edit)
+        self.layout.addWidget(self.slave_id_line_edit_label)
+        self.layout.addWidget(self.slave_id_line_edit)
+        self.layout.addWidget(self.find_btn)
         self.handle_combobox_selection()
 
-    def handle_combobox_selection(self, index = None):
+        # Создаем QTableWidget с 4 столбцами
+        self.table_widget = QTableWidget(self.main_window_frame)
+        self.table_widget.setColumnCount(4)
+        self.table_widget.horizontalHeader().setMinimumSectionSize(8)
+
+        # Добавляем заголовки столбцов
+        self.table_widget.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])
+        self.table_widget.setGeometry(self.main_window_frame.width()//2 - 28, self.title_bar_frame.height() + 5,
+                                      self.main_window_frame.width()//2 + 20,
+                                      self.main_window_frame.height() - self.title_bar_frame.height() - 200)
+        # Устанавливаем ширину столбцов
+        cur_width = self.table_widget.width()
+        self.table_widget.setColumnWidth(0, int(cur_width * 0.05))
+        self.table_widget.setColumnWidth(1, int(cur_width * 0.48))
+        self.table_widget.setColumnWidth(2, int(cur_width * 0.27))
+        self.table_widget.setColumnWidth(3, int(cur_width * 0.20))
+        self.table_widget.verticalHeader().setVisible(False)
+        self.table_widget.horizontalHeader().setStyleSheet(
+            "QHeaderView::section { background-color: #2b2d30; color: #D0D0D0; border: 1px solid #1e1f22; }")
+        # Убираем рамку таблицы
+        self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
+                                           QTableWidget::item { padding-left: 3px; }""")
+
+    def set_style_table_widget(self, err_flag=0):
+        if err_flag == 0:
+            self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
+                                            QTableWidget::item { padding-left: 3px; background-color: #429061}""")
+        else:
+            self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
+                                                        QTableWidget::item { padding-left: 3px; background-color: #9d4d4f}""")
+
+    def handle_combobox_selection(self):
         selected_item = self.interface_combo_box.currentText()
         if selected_item == "Ethernet":
             self.ip_line_edit_label.setVisible(True)
@@ -561,15 +535,47 @@ class AddDevices_AQDialog(AQDialog):
             self.slave_id_line_edit_label.setVisible(True)
             self.slave_id_line_edit.setVisible(True)
 
+    def add_device_to_table_widget(self, index, device_data, err_flag = 0):
+        self.table_widget.setRowCount(index + 1)
+        # Создаем элементы таблицы для каждой строки
+        self.checkbox_item = QTableWidgetItem()
+        xx = device_data.get('device_name')
+        self.name_item = QTableWidgetItem(device_data.get('device_name') + ' S/N' +device_data.get('serial_number'))
+        self.address_item = QTableWidgetItem(device_data.get('address'))
+        self.version_item = QTableWidgetItem(device_data.get('version'))
 
-    def connect_finished(self, default_prg):
+        # Устанавливаем элементы таблицы
+        self.table_widget.setItem(index, 0, self.checkbox_item)
+        self.table_widget.setItem(index, 1, self.name_item)
+        self.table_widget.setItem(index, 2, self.address_item)
+        self.table_widget.setItem(index, 3, self.version_item)
+
+        # Устанавливаем чекбокс в первую колонку
+        checkbox = QCheckBox()
+        checkbox.setChecked(True)
+        self.table_widget.setCellWidget(index, 0, checkbox)
+        item = self.table_widget.item(index, 0)
+        item.setTextAlignment(Qt.AlignCenter)
+
+        self.set_style_table_widget(err_flag)
+
+
+    def connect_finished(self, device_data):
+        # Ищем индекс элемента default_prg в списке
+        default_prg = device_data.get('default_prg')
         self.gear_small.stop()
         if default_prg == 'connect_err':
             self.show_connect_err_label()
-        elif default_prg == 'empty_field':
+        elif default_prg == 'empty_field_slave_id':
             self.slave_id_line_edit.red_blink_timer.start()
             self.slave_id_line_edit.show_err_label()
+        elif default_prg == 'empty_field_ip' or default_prg == 'invalid_ip':
+            self.ip_line_edit.red_blink_timer.start()
+            self.ip_line_edit.show_err_label()
+        elif default_prg == 'decrypt_err':
+            self.add_device_to_table_widget(0, device_data, 1)
         else:
+            self.add_device_to_table_widget(0, device_data, 1)
             self.parent.parse_default_prg(default_prg)
 
     def on_find_button_clicked(self):
@@ -595,41 +601,47 @@ class AddDevices_AQDialog(AQDialog):
     def connect_to_device (self):
         selected_item = self.interface_combo_box.currentText()
         save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
-        default_prg = 0
+        device_data = {}
         if selected_item == "Ethernet":
             try:
                 ip = self.ip_line_edit.text()
             except:
-                self.ip_line_edit.red_blink_timer.start()
-                self.ip_line_edit.show_err_label()
-                return
+                # self.ip_line_edit.red_blink_timer.start()
+                # self.ip_line_edit.show_err_label()
+                return 'empty_field_ip'
             if not is_valid_ip(ip):
-                self.ip_line_edit.red_blink_timer.start()
-                self.ip_line_edit.show_err_label()
-                return
+                # self.ip_line_edit.red_blink_timer.start()
+                # self.ip_line_edit.show_err_label()
+                return 'invalid_ip'
+
+            save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
+
             try:
-                self.parent.connect_to_device_IP(ip)
+                default_prg = self.parent.connect_to_device_IP(ip)
             except Connect_err:
                 self.show_connect_err_label()
-            save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
-            return
+
+            return default_prg
         else:
             try:
                 slave_id = int(self.slave_id_line_edit.text())
             except:
                 # self.slave_id_line_edit.red_blink_timer.start()
                 # self.slave_id_line_edit.show_err_label()
-                return 'empty_field'
+                return 'empty_field_slave_id'
             for port in self.com_ports:
                 if port.description == selected_item:
+                    save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
                     selected_port = port.device
                     try:
-                        default_prg = self.parent.connect_to_device_COM(selected_port, slave_id)
+                        device_data = self.parent.connect_to_device_COM(selected_port, slave_id)
+                        device_data['address'] = str(slave_id) + ' (' + str(selected_port) + ')'
                     except Connect_err:
                         self.show_connect_err_label()
-                    save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
+
                     break
-            return default_prg
+
+            return device_data
 
     def show_connect_err_label(self):
         # Получаем координаты поля ввода относительно диалогового окна #9d4d4f

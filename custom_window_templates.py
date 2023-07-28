@@ -76,7 +76,7 @@ class AQDialog(QDialog):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         # self.screen_geometry = QApplication.desktop().screenGeometry()
-        self.setGeometry(0, 0,800, 600)
+        self.setGeometry(0, 0, 800, 600)
         # self.move(self.screen_geometry.width() // 2 - self.width() // 2,
         #           self.screen_geometry.height() // 2 - self.height() // 2,)
 

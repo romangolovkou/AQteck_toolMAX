@@ -90,7 +90,7 @@ def read_default_prg(client, slave_id):
     try:
         decrypt_res = decrypt_data(b'superkey', encrypt_res)
     except:
-        return -2 # Помилка дешифрування
+        return 'decrypt_err' # Помилка дешифрування
     # Получаем длину default_prg зашитую во вторые 4 байта заголовка
     file_size = int.from_bytes((decrypt_res[4:8][::-1]), byteorder='big')
     # Получаем колличество необходимых запросов по 124 записи
@@ -111,7 +111,7 @@ def read_default_prg(client, slave_id):
     try:
         decrypt_file = decrypt_data(b'superkey', encrypt_file)
     except:
-        return -2 # Помилка дешифрування
+        return 'decrypt_err' # Помилка дешифрування
 
     filename = 'default.prg'  # Имя файла с расширением .prg
     with open(filename, 'wb') as file:
