@@ -63,12 +63,8 @@ class MainWindow(QMainWindow):
         settings_path = os.path.join(project_path, "auto_load_settings.ini")
         # Используем полученный путь в QSettings
         self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
-
-
-        text = "Часы реального времени"
-        bytes_sequence = text.encode('cp1251')
-        hex_sequence = bytes_sequence.hex()
-
+        # Порожній список для дерев девайсів
+        self.devices_trees = []
 
         #MainWindowFrame
         self.main_window_frame = main_frame_AQFrame(self)
@@ -342,6 +338,14 @@ class MainWindow(QMainWindow):
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
             device_tree = parse_tree(storage_container)
+            self.devices_trees.append(device_tree)
+        except:
+            return 'parsing_err'
+
+
+    def add_tree_view(self):
+        try:
+            device_tree = self.devices_trees[0]
             # Створення порожнього массиву параметрів
             self.parameter_list = []
             root = device_tree.invisibleRootItem()
@@ -362,11 +366,11 @@ class MainWindow(QMainWindow):
                         border: 1px solid #9ef1d3;
                         color: #D0D0D0;
                     }
-
+    
                     QTreeView::item {
                         border: 1px solid #2b2d30;
                     }
-
+    
                     QHeaderView::section {
                         border: 1px solid #1e1f22;
                         color: #D0D0D0;
@@ -376,7 +380,6 @@ class MainWindow(QMainWindow):
                 """)
 
                 self.tree_view.show()
-
         except:
             print(f"Помилка парсінгу")
 
@@ -394,11 +397,6 @@ class AddDevices_AQDialog(AQDialog):
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
-        # self.gear_big_image = QPixmap(PROJ_DIR + 'Icons/gear182.png')
-        # self.gear_big_label = QLabel(self)
-        # self.gear_big_label.setPixmap(self.gear_big_image)
-        # self.gear_big_label.setAlignment(Qt.AlignCenter)
-        # self.gear_big_label.move(700, 500)
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
         self.gear_big = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear182.png'), 40, 1)
 
@@ -493,7 +491,6 @@ class AddDevices_AQDialog(AQDialog):
                 background-color: #429061;
             }
         """)
-        # Назначение обработчика событий для кнопки "Прочитать"
         self.find_btn.clicked.connect(self.on_find_button_clicked)
 
         self.layout = QVBoxLayout(self.main_window_frame)
@@ -516,15 +513,18 @@ class AddDevices_AQDialog(AQDialog):
 
         # Добавляем заголовки столбцов
         self.table_widget.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])
-        self.table_widget.setGeometry(self.main_window_frame.width()//2 - 28, self.title_bar_frame.height() + 5,
-                                      self.main_window_frame.width()//2 + 20,
-                                      self.main_window_frame.height() - self.title_bar_frame.height() - 200)
+        # self.table_widget.setGeometry(self.main_window_frame.width()//2 - 28, self.title_bar_frame.height() + 5,
+        #                               self.main_window_frame.width()//2 + 20,
+        #                               self.main_window_frame.height() - self.title_bar_frame.height() - 200)
+        self.table_widget.move(self.main_window_frame.width()//2 - 28, self.title_bar_frame.height() + 5)
+        self.table_widget.setFixedWidth(self.main_window_frame.width()//2 + 20)
         # Устанавливаем ширину столбцов
         cur_width = self.table_widget.width()
         self.table_widget.setColumnWidth(0, int(cur_width * 0.05))
         self.table_widget.setColumnWidth(1, int(cur_width * 0.48))
         self.table_widget.setColumnWidth(2, int(cur_width * 0.27))
         self.table_widget.setColumnWidth(3, int(cur_width * 0.20))
+        # Установите высоту строк по умолчанию
         self.table_widget.verticalHeader().setVisible(False)
         self.table_widget.horizontalHeader().setStyleSheet(
             "QHeaderView::section { background-color: #2b2d30; color: #D0D0D0; border: 1px solid #1e1f22; }")
@@ -557,7 +557,6 @@ class AddDevices_AQDialog(AQDialog):
         self.table_widget.setRowCount(index + 1)
         # Создаем элементы таблицы для каждой строки
         self.checkbox_item = QTableWidgetItem()
-        xx = device_data.get('device_name')
         self.name_item = QTableWidgetItem(device_data.get('device_name') + ' S/N' + device_data.get('serial_number'))
         self.name_item.setFlags(self.name_item.flags() & ~Qt.ItemIsEditable)
         self.address_item = QTableWidgetItem(device_data.get('address'))
@@ -570,6 +569,7 @@ class AddDevices_AQDialog(AQDialog):
         self.table_widget.setItem(index, 1, self.name_item)
         self.table_widget.setItem(index, 2, self.address_item)
         self.table_widget.setItem(index, 3, self.version_item)
+        self.table_widget.setFixedHeight(self.table_widget.height() + self.table_widget.rowCount() * 25)
 
         # Устанавливаем чекбокс в первую колонку
         checkbox = QCheckBox()
@@ -585,6 +585,35 @@ class AddDevices_AQDialog(AQDialog):
         item.setTextAlignment(Qt.AlignCenter)
 
         self.set_style_table_widget(err_flag)
+
+        bottom_right_corner_table_widget = self.table_widget.mapTo(self.main_window_frame, self.table_widget.rect().bottomRight())
+
+        # Создаем кнопку поиска
+        self.add_btn = QPushButton("Add device", self.main_window_frame)
+        self.add_btn.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.add_btn.setFixedSize(100, 35)
+        self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
+                          bottom_right_corner_table_widget.y() + 5)
+        self.add_btn.clicked.connect(self.parent.add_tree_view)
+        self.add_btn.setStyleSheet("""
+                    QPushButton {
+                        border-left: 1px solid #9ef1d3;
+                        border-top: 1px solid #9ef1d3;
+                        border-bottom: 1px solid #5bb192;
+                        border-right: 1px solid #5bb192;
+                        color: #D0D0D0;
+                        background-color: #2b2d30;
+                        border-radius: 4px;
+                    }
+                    QPushButton:hover {
+                        background-color: #3c3e41;
+                    }
+                    QPushButton:pressed {
+                        background-color: #429061;
+                    }
+                """)
+        self.add_btn.show()
+
 
 
     def connect_finished(self, device_data):
@@ -603,8 +632,9 @@ class AddDevices_AQDialog(AQDialog):
         elif default_prg == 'decrypt_err':
             self.add_device_to_table_widget(0, device_data, 1)
         else:
-            self.add_device_to_table_widget(0, device_data, 0)
             self.parent.parse_default_prg(default_prg)
+            self.add_device_to_table_widget(0, device_data, 0)
+
 
     def on_find_button_clicked(self):
         self.gear_small.start()
