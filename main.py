@@ -319,14 +319,18 @@ class MainWindow(QMainWindow):
 
     def connect_to_device_IP(self, ip):
         try:
-
+            device_data = {}
             client = client = ModbusTcpClient(ip)
             slave_id = 1
             device_name = read_device_name(client, slave_id)
             version = read_version(client, slave_id)
             serial_number = read_serial_number(client, slave_id)
             default_prg = read_default_prg(client, slave_id)
-            return default_prg
+            device_data['device_name'] = device_name
+            device_data['version'] = version
+            device_data['serial_number'] = serial_number
+            device_data['default_prg'] = default_prg
+            return device_data
         except:
             # "Ошибка при подключении к IP
             # raise Connect_err('Ошибка при подключении к IP')
@@ -390,26 +394,40 @@ class AddDevices_AQDialog(AQDialog):
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
-        self.gear_big_image = QPixmap(PROJ_DIR + 'Icons/gear182.png')
-        self.gear_big_label = QLabel(self)
-        self.gear_big_label.setPixmap(self.gear_big_image)
-        self.gear_big_label.setAlignment(Qt.AlignCenter)
-        self.gear_big_label.move(700, 500)
+        # self.gear_big_image = QPixmap(PROJ_DIR + 'Icons/gear182.png')
+        # self.gear_big_label = QLabel(self)
+        # self.gear_big_label.setPixmap(self.gear_big_image)
+        # self.gear_big_label.setAlignment(Qt.AlignCenter)
+        # self.gear_big_label.move(700, 500)
+        # Создаем QGraphicsPixmapItem и добавляем его в сцену
+        self.gear_big = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear182.png'), 40, 1)
+
+        # Создаем виджет QGraphicsView и устанавливаем его для окна
+        self.gear_big_view = QGraphicsView(self)
+        self.gear_big_view.setStyleSheet("background: transparent;")
+        self.gear_big_view.setFrameStyle(QFrame.NoFrame)  # Убираем рамку
+        self.gear_big_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        # Создаем сцену и устанавливаем ее для виджета
+        self.gear_big_scene = QGraphicsScene(self)
+        self.gear_big_scene.addItem(self.gear_big)
+        self.gear_big_view.setScene(self.gear_big_scene)
+        self.gear_big_view.setGeometry(700, 500, 182, 182)
 
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
         self.gear_small = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear127.png'), 40, 4)
 
         # Создаем виджет QGraphicsView и устанавливаем его для окна
-        self.view = QGraphicsView(self)
-        self.view.setStyleSheet("background: transparent;")
-        self.view.setFrameStyle(QFrame.NoFrame)  # Убираем рамку
-        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.gear_small_view = QGraphicsView(self)
+        self.gear_small_view.setStyleSheet("background: transparent;")
+        self.gear_small_view.setFrameStyle(QFrame.NoFrame)  # Убираем рамку
+        self.gear_small_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # Создаем сцену и устанавливаем ее для виджета
-        self.scene = QGraphicsScene(self)
-        self.scene.addItem(self.gear_small)
-        self.view.setScene(self.scene)
-        self.view.setGeometry(610, 540, 127, 127)
+        self.gear_small_scene = QGraphicsScene(self)
+        self.gear_small_scene.addItem(self.gear_small)
+        self.gear_small_view.setScene(self.gear_small_scene)
+        self.gear_small_view.setGeometry(610, 540, 127, 127)
 
 
         # Создаем текстовую метку заголовка настроек соединения
@@ -540,9 +558,12 @@ class AddDevices_AQDialog(AQDialog):
         # Создаем элементы таблицы для каждой строки
         self.checkbox_item = QTableWidgetItem()
         xx = device_data.get('device_name')
-        self.name_item = QTableWidgetItem(device_data.get('device_name') + ' S/N' +device_data.get('serial_number'))
+        self.name_item = QTableWidgetItem(device_data.get('device_name') + ' S/N' + device_data.get('serial_number'))
+        self.name_item.setFlags(self.name_item.flags() & ~Qt.ItemIsEditable)
         self.address_item = QTableWidgetItem(device_data.get('address'))
+        self.address_item.setFlags(self.address_item.flags() & ~Qt.ItemIsEditable)
         self.version_item = QTableWidgetItem(device_data.get('version'))
+        self.version_item.setFlags(self.version_item.flags() & ~Qt.ItemIsEditable)
 
         # Устанавливаем элементы таблицы
         self.table_widget.setItem(index, 0, self.checkbox_item)
@@ -552,7 +573,13 @@ class AddDevices_AQDialog(AQDialog):
 
         # Устанавливаем чекбокс в первую колонку
         checkbox = QCheckBox()
-        checkbox.setChecked(True)
+        if err_flag == 0:
+            checkbox.setChecked(True)
+        else:
+            checkbox.setChecked(False)
+            checkbox.setEnabled(False)
+
+        checkbox.setStyleSheet("QCheckBox { background-color: transparent; border: none;}")
         self.table_widget.setCellWidget(index, 0, checkbox)
         item = self.table_widget.item(index, 0)
         item.setTextAlignment(Qt.AlignCenter)
@@ -564,6 +591,7 @@ class AddDevices_AQDialog(AQDialog):
         # Ищем индекс элемента default_prg в списке
         default_prg = device_data.get('default_prg')
         self.gear_small.stop()
+        self.gear_big.stop()
         if default_prg == 'connect_err':
             self.show_connect_err_label()
         elif default_prg == 'empty_field_slave_id':
@@ -575,11 +603,12 @@ class AddDevices_AQDialog(AQDialog):
         elif default_prg == 'decrypt_err':
             self.add_device_to_table_widget(0, device_data, 1)
         else:
-            self.add_device_to_table_widget(0, device_data, 1)
+            self.add_device_to_table_widget(0, device_data, 0)
             self.parent.parse_default_prg(default_prg)
 
     def on_find_button_clicked(self):
         self.gear_small.start()
+        self.gear_big.start()
         # Запускаем функцию connect_to_device в отдельном потоке
         self.connect_thread = ConnectDeviceThread(self)
         self.connect_thread.finished.connect(self.on_connect_thread_finished)
@@ -591,6 +620,7 @@ class AddDevices_AQDialog(AQDialog):
         # Выполняется после успешного завершения connect_to_device
         # В этом слоте можно выполнить действия, которые должны произойти после завершения функции
         self.gear_small.stop()
+        self.gear_big.stop()
 
     def on_connect_thread_error(self, error_message):
         # Выполняется в случае ошибки при выполнении connect_to_device
@@ -606,28 +636,23 @@ class AddDevices_AQDialog(AQDialog):
             try:
                 ip = self.ip_line_edit.text()
             except:
-                # self.ip_line_edit.red_blink_timer.start()
-                # self.ip_line_edit.show_err_label()
                 return 'empty_field_ip'
             if not is_valid_ip(ip):
-                # self.ip_line_edit.red_blink_timer.start()
-                # self.ip_line_edit.show_err_label()
                 return 'invalid_ip'
 
             save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
 
             try:
-                default_prg = self.parent.connect_to_device_IP(ip)
+                device_data = self.parent.connect_to_device_IP(ip)
+                device_data['address'] = str(ip)
             except Connect_err:
                 self.show_connect_err_label()
 
-            return default_prg
+            return device_data
         else:
             try:
                 slave_id = int(self.slave_id_line_edit.text())
             except:
-                # self.slave_id_line_edit.red_blink_timer.start()
-                # self.slave_id_line_edit.show_err_label()
                 return 'empty_field_slave_id'
             for port in self.com_ports:
                 if port.description == selected_item:

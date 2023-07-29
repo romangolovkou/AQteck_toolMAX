@@ -315,6 +315,13 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     cur_par_default = QStandardItem()
                 else:
                     cur_par_default = QStandardItem(str(param_attributes.get('def_value', '')))
+
+                current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
+                cur_par_min.setFlags(cur_par_min.flags() & ~Qt.ItemIsEditable)
+                cur_par_max.setFlags(cur_par_max.flags() & ~Qt.ItemIsEditable)
+                cur_par_unit.setFlags(cur_par_unit.flags() & ~Qt.ItemIsEditable)
+                cur_par_default.setFlags(cur_par_default.flags() & ~Qt.ItemIsEditable)
+
                 # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
                 name = current_parameter.text()
                 cat_name = current_catalog_levels[level - 1].text()
