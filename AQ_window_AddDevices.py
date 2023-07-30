@@ -277,9 +277,11 @@ class AddDevices_AQDialog(AQDialog):
         elif default_prg == 'decrypt_err':
             self.add_device_to_table_widget(0, device_data, 1)
         else:
-            self.parent.parse_default_prg(default_prg)
-            self.add_device_to_table_widget(0, device_data, 0)
-
+            try:
+                self.parent.parse_default_prg(default_prg)
+                self.add_device_to_table_widget(0, device_data, 0)
+            except:
+                self.add_device_to_table_widget(0, device_data, 1)
 
     def on_find_button_clicked(self):
         self.gear_small.start()

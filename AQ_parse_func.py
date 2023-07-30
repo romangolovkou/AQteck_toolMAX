@@ -1,7 +1,6 @@
 import array
 import struct
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 def swap_modbus_bytes(data, num_pairs):
     str_flag = 0
@@ -232,7 +231,26 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 parameter_name = param_attributes.get('name', 'err_name')
                 current_parameter = QStandardItem(parameter_name)
                 current_parameter.setData(param_attributes, Qt.UserRole)
+
+                delegate_attributes = {}
                 cur_par_value = QStandardItem()
+                if param_attributes.get('type') == 'enum':
+                    enum_srtings = []
+                    string_num = param_attributes.get('string_num', '')
+                    bit_size = param_attributes.get('param_size', 0)
+                    max_lim_from_bits = 2**bit_size - 1
+                    enum_max_lim = param_attributes.get('max_limit', 0)
+
+                    if enum_max_lim > max_lim_from_bits or enum_max_lim == 0:
+                        enum_max_lim = max_lim_from_bits
+                    delegate_attributes['type'] = param_attributes.get('type')
+                    delegate_attributes['enum_max_lim'] = enum_max_lim
+                    for i in range(enum_max_lim + 1):
+                        enum_str = string_array[string_num + i]
+                        enum_srtings.append(enum_str)
+                    delegate_attributes['enum_strings'] = enum_srtings
+                    cur_par_value.setData(delegate_attributes, Qt.UserRole)
+
 
                 if param_attributes.get('type', '') == 'enum' or param_attributes.get('visual_type', '') == 'ip_format':
                     cur_par_min = QStandardItem()

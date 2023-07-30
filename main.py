@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAni
     QThread, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
     QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView, \
-    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox
+    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox, QStyledItemDelegate
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -33,6 +33,89 @@ from AQ_settings_func import save_current_text_value, save_combobox_current_stat
 from AQ_tree_prapare_func import traverse_items
 from AQ_window_AddDevices import AddDevices_AQDialog
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
+
+
+class CustomTreeDelegate(QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def createEditor(self, parent, option, index):
+        # Получаем данные из модели для текущего индекса
+        delegate_attributes = index.data(Qt.UserRole)
+        if delegate_attributes is not None:
+            if delegate_attributes.get('type', '') == 'enum':
+                combo_box = QComboBox(parent)
+                combo_box.view().setStyleSheet("color: #D0D0D0;")
+                # combo_box.setStyleSheet("color: #D0D0D0;") #background-color: #2b2d30;")
+                combo_box.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
+                enum_strings = delegate_attributes.get('enum_strings', '')
+                for i in range(len(enum_strings)):
+                    enum_str = enum_strings[i]
+                    combo_box.addItem(enum_str)
+
+                # Устанавливаем комбо бокс как постоянный редактор для этого индекса
+                # self.openPersistentEditor(index)
+                return combo_box
+
+    def setEditorData(self, editor, index):
+        editor.setCurrentText(index.data(Qt.EditRole))
+
+    def setModelData(self, editor, model, index):
+        model.setData(index, editor.currentText())
+
+    def openPersistentEditor(self, index):
+        # Устанавливаем комбобокс как постоянный редактор для ячейки
+        if index.isValid():
+            self.parent().openPersistentEditor(index)
+
+    def editorEvent(self, event, model, option, index):
+        if index.isValid() and event.type() == event.MouseButtonPress and event.button() == Qt.LeftButton:
+            col = index.column()
+            if col == 1:  # Колонка, в которой должен отображаться комбо бокс
+                self.openPersistentEditor(index)
+                return True
+        return super().editorEvent(event, model, option, index)
+
+
+class AQ_TreeView(QTreeView):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def show(self):
+        # Вызываем стандартный метод show() у родительского класса
+        super().show()
+
+        # Вызываем метод для открытия постоянных редакторов
+        # self.openPersistentEditors(self.rootIndex())
+        # root = self.model().itemFromIndex(self.rootIndex())
+        # self.traverse_items_show_delegate(root)
+
+    # def openPersistentEditors(self):
+    #     for row in range(self.model().rowCount()):
+    #         index = self.model().index(row, 1)
+    #         self.openPersistentEditor(index)
+    def openPersistentEditors(self, parent_index):
+        for row in range(self.model().rowCount(parent_index)):
+            index = self.model().index(row, 1, parent_index)
+            if index.isValid():
+                self.openPersistentEditor(index)
+
+            # Рекурсивно вызываем метод для каждого дочернего элемента (каталога)
+            self.openPersistentEditors(index)
+
+    def traverse_items_show_delegate(self, item):
+        for row in range(item.rowCount()):
+            child_item = item.child(row)
+            parameter_attributes = child_item.data(Qt.UserRole)
+            if parameter_attributes is not None:
+                if parameter_attributes.get('type', '') == 'enum':
+                    # Получаем индекс элемента и открываем для него постоянный редактор
+                    index = self.model().index(row, 1, item.index())
+                    if index.isValid():
+                        self.openPersistentEditor(index)
+            if child_item is not None:
+                self.traverse_items_show_delegate(child_item)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -226,7 +309,6 @@ class MainWindow(QMainWindow):
         self.btn_maximize.clicked.connect(self.toggleMaximize)  # добавляем обработчик события нажатия на кнопку закрытия
         self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
-
     def toggleMaximize(self):
         try:
             if self.isMaximized:
@@ -354,8 +436,13 @@ class MainWindow(QMainWindow):
 
             if isinstance(device_tree, QStandardItemModel):
                 # Устанавливаем модель для QTreeView и отображаем его
-                self.tree_view = QTreeView(self.main_field_frame)
+                self.tree_view = AQ_TreeView(self.main_field_frame)
+                delegate = CustomTreeDelegate(self.tree_view)
+                # Устанавливаем делегат только для второй колонки (столбца с индексом 1)
+                self.tree_view.setItemDelegateForColumn(1, delegate)
                 self.tree_view.setModel(device_tree)
+                # root_index = self.tree_view.model().index(0, 0)  # Получаем индекс корневого элемента дерева
+                # self.tree_view.openPersistentEditor(root_index)
                 self.tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252,
                                            self.main_field_frame.height() - 4)
                 # Получение количества колонок в модели
@@ -384,8 +471,13 @@ class MainWindow(QMainWindow):
                 """)
 
                 self.tree_view.show()
-        except:
-            print(f"Помилка парсінгу")
+                # root = self.tree_view.model().itemFromIndex(self.tree_view.rootIndex())
+                root = device_tree.invisibleRootItem()
+                self.tree_view.traverse_items_show_delegate(root)
+        # except:
+            # print(f"Помилка парсінгу")
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
 
 
 if __name__ == '__main__':
