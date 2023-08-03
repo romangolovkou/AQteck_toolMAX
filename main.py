@@ -46,62 +46,31 @@ class CustomTreeDelegate(QStyledItemDelegate):
             if delegate_attributes.get('type', '') == 'enum':
                 combo_box = QComboBox(parent)
                 combo_box.view().setStyleSheet("color: #D0D0D0;")
-                # combo_box.setStyleSheet("color: #D0D0D0;") #background-color: #2b2d30;")
                 combo_box.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
                 enum_strings = delegate_attributes.get('enum_strings', '')
                 for i in range(len(enum_strings)):
                     enum_str = enum_strings[i]
                     combo_box.addItem(enum_str)
-
-                # Устанавливаем комбо бокс как постоянный редактор для этого индекса
-                # self.openPersistentEditor(index)
                 return combo_box
 
     def setEditorData(self, editor, index):
-        editor.setCurrentText(index.data(Qt.EditRole))
+        delegate_attributes = index.data(Qt.UserRole)
+        if delegate_attributes is not None:
+            if delegate_attributes.get('type', '') == 'enum':
+                user_data = index.data(Qt.EditRole)
+                if user_data is not None:
+                    editor.setCurrentIndex(user_data)
 
     def setModelData(self, editor, model, index):
-        model.setData(index, editor.currentText())
-
-    def openPersistentEditor(self, index):
-        # Устанавливаем комбобокс как постоянный редактор для ячейки
-        if index.isValid():
-            self.parent().openPersistentEditor(index)
-
-    def editorEvent(self, event, model, option, index):
-        if index.isValid() and event.type() == event.MouseButtonPress and event.button() == Qt.LeftButton:
-            col = index.column()
-            if col == 1:  # Колонка, в которой должен отображаться комбо бокс
-                self.openPersistentEditor(index)
-                return True
-        return super().editorEvent(event, model, option, index)
+        delegate_attributes = index.data(Qt.UserRole)
+        if delegate_attributes is not None:
+            if delegate_attributes.get('type', '') == 'enum':
+                model.setData(index, editor.currentIndex())
 
 
 class AQ_TreeView(QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent)
-
-    def show(self):
-        # Вызываем стандартный метод show() у родительского класса
-        super().show()
-
-        # Вызываем метод для открытия постоянных редакторов
-        # self.openPersistentEditors(self.rootIndex())
-        # root = self.model().itemFromIndex(self.rootIndex())
-        # self.traverse_items_show_delegate(root)
-
-    # def openPersistentEditors(self):
-    #     for row in range(self.model().rowCount()):
-    #         index = self.model().index(row, 1)
-    #         self.openPersistentEditor(index)
-    def openPersistentEditors(self, parent_index):
-        for row in range(self.model().rowCount(parent_index)):
-            index = self.model().index(row, 1, parent_index)
-            if index.isValid():
-                self.openPersistentEditor(index)
-
-            # Рекурсивно вызываем метод для каждого дочернего элемента (каталога)
-            self.openPersistentEditors(index)
 
     def traverse_items_show_delegate(self, item):
         for row in range(item.rowCount()):
@@ -109,12 +78,27 @@ class AQ_TreeView(QTreeView):
             parameter_attributes = child_item.data(Qt.UserRole)
             if parameter_attributes is not None:
                 if parameter_attributes.get('type', '') == 'enum':
-                    # Получаем индекс элемента и открываем для него постоянный редактор
-                    index = self.model().index(row, 1, item.index())
-                    if index.isValid():
-                        self.openPersistentEditor(index)
+                    if parameter_attributes.get('W_Only', 0) == 1:
+                        # Получаем индекс элемента и открываем для него постоянный редактор
+                        index = self.model().index(row, 1, item.index())
+                        if index.isValid():
+                            self.openPersistentEditor(index)
+                    else:
+                        index = self.model().index(row, 1, item.index())
+                        if index.isValid():
+                            item_cur_value = self.model().itemFromIndex(index)
+                            item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
+                            self.setValue(1, index)
             if child_item is not None:
                 self.traverse_items_show_delegate(child_item)
+
+    def setValue(self, value, index):
+        delegate_attributes = index.data(Qt.UserRole)
+        if delegate_attributes is not None:
+            if delegate_attributes.get('type', '') == 'enum':
+                enum_strings = delegate_attributes.get('enum_strings', '')
+                enum_str = enum_strings[value]
+                self.model().setData(index, enum_str, Qt.DisplayRole)
 
 
 class MainWindow(QMainWindow):
@@ -474,6 +458,7 @@ class MainWindow(QMainWindow):
                 # root = self.tree_view.model().itemFromIndex(self.tree_view.rootIndex())
                 root = device_tree.invisibleRootItem()
                 self.tree_view.traverse_items_show_delegate(root)
+                # self.tree_view.traverse_items_set_unediteble(root)
         # except:
             # print(f"Помилка парсінгу")
         except Exception as e:

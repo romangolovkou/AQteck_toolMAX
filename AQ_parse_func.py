@@ -249,6 +249,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                         enum_str = string_array[string_num + i]
                         enum_srtings.append(enum_str)
                     delegate_attributes['enum_strings'] = enum_srtings
+                    delegate_attributes['R_Only'] = param_attributes.get('R_Only')
+                    delegate_attributes['W_Only'] = param_attributes.get('W_Only')
                     cur_par_value.setData(delegate_attributes, Qt.UserRole)
 
 
