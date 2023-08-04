@@ -179,6 +179,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 continue
             # Создание элемента каталога
             current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
+            current_catalog.setData(catalog_attributes, Qt.UserRole)
             current_catalog_levels.append(current_catalog)
             level += 1
 

@@ -92,6 +92,19 @@ class AQ_TreeView(QTreeView):
             if child_item is not None:
                 self.traverse_items_show_delegate(child_item)
 
+    def traverse_items_R_Only_catalog_check(self, item):
+        write_flag = 0
+        for row in range(item.rowCount()):
+            child_item = item.child(row)
+            parameter_attributes = child_item.data(Qt.UserRole)
+            if parameter_attributes is not None:
+                if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
+                    write_flag += 1
+            if child_item is not None:
+                write_flag += self.traverse_items_R_Only_catalog_check(child_item)
+
+        return write_flag
+
     def setValue(self, value, index):
         delegate_attributes = index.data(Qt.UserRole)
         if delegate_attributes is not None:
@@ -99,6 +112,59 @@ class AQ_TreeView(QTreeView):
                 enum_strings = delegate_attributes.get('enum_strings', '')
                 enum_str = enum_strings[value]
                 self.model().setData(index, enum_str, Qt.DisplayRole)
+
+    def contextMenuEvent(self, event):
+        index = self.indexAt(event.pos())
+        if index.isValid() and index.column() == 0:
+            # Получаем элемент модели по индексу
+            item = self.model().itemFromIndex(index)
+            cat_or_param_attributes = index.data(Qt.UserRole)
+            if item:
+                if cat_or_param_attributes.get('is_catalog', 0) == 1:
+                    # Создаем контекстное меню
+                    context_menu = QMenu(self)
+                    context_menu.setStyleSheet("""
+                                                                QMenu {
+                                                                    color: #D0D0D0;
+                                                                }
+
+                                                                QMenu::item:selected {
+                                                                    background-color: #3a3a3a;
+                                                                    color: #FFFFFF;
+                                                                }
+                                                            """)
+                    # Добавляем действие в контекстное меню
+                    action_read = context_menu.addAction("Read parameters")
+                    if self.traverse_items_R_Only_catalog_check(item) > 0:
+                        action_write = context_menu.addAction("Write parameters")
+                    # Подключаем обработчик события выбора действия
+                    # action.triggered.connect(lambda: self.on_action_triggered(item))
+                    # Показываем контекстное меню
+                    context_menu.exec_(event.globalPos())
+                else:
+                    # Создаем контекстное меню
+                    context_menu = QMenu(self)
+                    context_menu.setStyleSheet("""
+                                            QMenu {
+                                                color: #D0D0D0;
+                                            }
+                                        
+                                            QMenu::item:selected {
+                                                background-color: #3a3a3a;
+                                                color: #FFFFFF;
+                                            }
+                                        """)
+                    # Добавляем действие в контекстное меню
+                    action_read = context_menu.addAction("Read parameter")
+                    if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
+                        action_write = context_menu.addAction("Write parameter")
+                    # Подключаем обработчик события выбора действия
+                    # action.triggered.connect(lambda: self.on_action_triggered(item))
+                    # Показываем контекстное меню
+                    context_menu.exec_(event.globalPos())
+        else:
+            # Если индекс недействителен, вызывается обработчик события контекстного меню по умолчанию
+            super().contextMenuEvent(event)
 
 
 class MainWindow(QMainWindow):
