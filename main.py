@@ -5,6 +5,7 @@ import array
 import os
 import struct
 import threading
+import socket
 from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
                         QStandardItem, QTransform, QPainter
@@ -145,9 +146,14 @@ class AQ_TreeView(QTreeView):
             if delegate_attributes.get('type', '') == 'enum':
                 enum_strings = delegate_attributes.get('enum_strings', '')
                 enum_str = enum_strings[value]
-                self.model().setData(index, enum_str, Qt.DisplayRole)
+                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+                    self.model().setData(index, enum_str, Qt.DisplayRole)
+                else:
+                    self.model().setData(index, value, Qt.EditRole)
             elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed' \
                     or delegate_attributes.get('type', '') == 'string' or delegate_attributes.get('type', '') == 'float':
+                if delegate_attributes.get('visual_type', '') == 'ip_format':
+                    value = socket.inet_ntoa(struct.pack('!L', value))
                 if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
                     self.model().setData(index, value, Qt.DisplayRole)
                 else:

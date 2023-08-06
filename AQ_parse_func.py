@@ -256,6 +256,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 delegate_attributes['type'] = param_attributes.get('type')
                 delegate_attributes['R_Only'] = param_attributes.get('R_Only')
                 delegate_attributes['W_Only'] = param_attributes.get('W_Only')
+                if param_attributes.get('visual_type', '') != '':
+                    delegate_attributes['visual_type'] = param_attributes.get('visual_type')
                 if param_attributes.get('type') == 'enum':
                     enum_srtings = []
                     string_num = param_attributes.get('string_num', '')
