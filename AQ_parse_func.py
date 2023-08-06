@@ -32,6 +32,24 @@ def swap_modbus_bytes(data, num_pairs):
 
     return data
 
+def swap_modbus_registers(data):
+    # Проверяем, что количество байтов четное, иначе возвращаем исходный массив без изменений
+    if len(data) % 4 != 0:
+        return data
+
+    swapped_data = bytearray(data)
+    for i in range(0, len(swapped_data), 4):
+        # Меняем местами пары байтов
+        swapped_data[i:i + 4] = swapped_data[i + 2:i + 4] + swapped_data[i:i + 2]
+
+    return swapped_data
+
+def reverse_modbus_registers(data):
+    if len(data) % 2 != 0:
+        raise ValueError("The data length must be even.")
+
+    reversed_pairs = [data[i:i+2][::-1] for i in range(0, len(data), 2)]
+    return b''.join(reversed_pairs)[::-1]
 
 def remove_empty_bytes(string):
     # Используем метод rstrip() для удаления пустых байтов справа
@@ -235,6 +253,9 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                 delegate_attributes = {}
                 cur_par_value = QStandardItem()
+                delegate_attributes['type'] = param_attributes.get('type')
+                delegate_attributes['R_Only'] = param_attributes.get('R_Only')
+                delegate_attributes['W_Only'] = param_attributes.get('W_Only')
                 if param_attributes.get('type') == 'enum':
                     enum_srtings = []
                     string_num = param_attributes.get('string_num', '')
@@ -244,14 +265,14 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                     if enum_max_lim > max_lim_from_bits or enum_max_lim == 0:
                         enum_max_lim = max_lim_from_bits
-                    delegate_attributes['type'] = param_attributes.get('type')
                     delegate_attributes['enum_max_lim'] = enum_max_lim
                     for i in range(enum_max_lim + 1):
                         enum_str = string_array[string_num + i]
                         enum_srtings.append(enum_str)
                     delegate_attributes['enum_strings'] = enum_srtings
-                    delegate_attributes['R_Only'] = param_attributes.get('R_Only')
-                    delegate_attributes['W_Only'] = param_attributes.get('W_Only')
+                    cur_par_value.setData(delegate_attributes, Qt.UserRole)
+                elif param_attributes.get('type') == 'unsigned' or param_attributes.get('type') == 'signed' \
+                            or param_attributes.get('type') == 'string' or param_attributes.get('type') == 'float':
                     cur_par_value.setData(delegate_attributes, Qt.UserRole)
 
 

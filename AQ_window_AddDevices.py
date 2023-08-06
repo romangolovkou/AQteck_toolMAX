@@ -219,7 +219,7 @@ class AddDevices_AQDialog(AQDialog):
         self.add_btn.setFixedSize(100, 35)
         self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
                           bottom_right_corner_table_widget.y() + 5)
-        self.add_btn.clicked.connect(self.parent.add_tree_view)
+        self.add_btn.clicked.connect(lambda: self.parent.add_tree_view(0))
         self.add_btn.setStyleSheet("""
                     QPushButton {
                         border-left: 1px solid #9ef1d3;
@@ -279,6 +279,7 @@ class AddDevices_AQDialog(AQDialog):
         else:
             try:
                 self.parent.parse_default_prg(default_prg)
+                self.parent.add_data_to_devices(device_data)
                 self.add_device_to_table_widget(0, device_data, 0)
             except:
                 self.add_device_to_table_widget(0, device_data, 1)

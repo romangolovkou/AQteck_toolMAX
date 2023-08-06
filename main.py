@@ -3,6 +3,7 @@ import random
 import time
 import array
 import os
+import struct
 import threading
 from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
@@ -26,8 +27,10 @@ import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient
 from pymodbus.file_message import ReadFileRecordRequest
-from AQ_communication_func import read_device_name, read_version, read_serial_number, read_default_prg, is_valid_ip
-from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
+from AQ_communication_func import read_device_name, read_version, read_serial_number, read_default_prg, is_valid_ip, \
+                            read_parameter
+from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree, \
+                            swap_modbus_registers, swap_modbus_bytes, reverse_modbus_registers
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 from AQ_tree_prapare_func import traverse_items
@@ -69,8 +72,39 @@ class CustomTreeDelegate(QStyledItemDelegate):
 
 
 class AQ_TreeView(QTreeView):
-    def __init__(self, parent=None):
+    def __init__(self, dev_index, device_tree, address, parent=None):
         super().__init__(parent)
+        self.dev_index = dev_index
+        self.dev_address = address
+        delegate = CustomTreeDelegate(self)
+        self.setItemDelegateForColumn(1, delegate)
+        self.setModel(device_tree)
+        self.setGeometry(250, 2, parent.width() - 252,
+                                   parent.height() - 4)
+        # Получение количества колонок в модели
+        column_count = device_tree.columnCount()
+        for column in range(column_count):
+            self.setColumnWidth(column, 200)
+        self.setStyleSheet("""
+                            QTreeView {
+                                border: 1px solid #9ef1d3;
+                                color: #D0D0D0;
+                            }
+
+                            QTreeView::item {
+                                border: 1px solid #2b2d30;
+                            }
+
+                            QHeaderView::section {
+                                border: 1px solid #1e1f22;
+                                color: #D0D0D0;
+                                background-color: #2b2d30;
+                                padding-left: 6px;
+                            }
+                            QTreeView QScrollBar { 
+                                background-color: #F0F0F0; 
+                                width: 10px; }
+                        """)
 
     def traverse_items_show_delegate(self, item):
         for row in range(item.rowCount()):
@@ -112,6 +146,45 @@ class AQ_TreeView(QTreeView):
                 enum_strings = delegate_attributes.get('enum_strings', '')
                 enum_str = enum_strings[value]
                 self.model().setData(index, enum_str, Qt.DisplayRole)
+            elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed' \
+                    or delegate_attributes.get('type', '') == 'string' or delegate_attributes.get('type', '') == 'float':
+                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+                    self.model().setData(index, value, Qt.DisplayRole)
+                else:
+                    self.model().setData(index, value, Qt.EditRole)
+
+    def read_value_by_modbus(self, index):
+        cat_or_param_attributes = index.data(Qt.UserRole)
+        if cat_or_param_attributes.get('is_catalog', 0) == 1:
+            return
+        else:
+            modbus_reg = cat_or_param_attributes.get('modbus_reg', '')
+            if cat_or_param_attributes.get('type', '') == 'enum':
+                reg_count = 1
+                byte_size = 1
+            else:
+                byte_size = cat_or_param_attributes.get('param_size', 0)
+                if byte_size < 2:
+                    reg_count = 1
+                else:
+                    reg_count = byte_size // 2
+
+        if is_valid_ip(self.dev_address):
+            ip = self.dev_address
+            client = client = ModbusTcpClient(ip)
+            slave_id = 1
+            param_type = cat_or_param_attributes.get('type', '')
+            param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+
+        next_column_index = index.sibling(index.row(), index.column() + 1)
+        self.setValue(param_value, next_column_index)
+
+        # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
+        # self.connect_thread.finished.connect(self.on_connect_thread_finished)
+        # self.connect_thread.error.connect(self.on_connect_thread_error)
+        # self.connect_thread.result_signal.connect(self.connect_finished)
+        # self.connect_thread.start()
+        return param_value
 
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
@@ -138,7 +211,7 @@ class AQ_TreeView(QTreeView):
                     if self.traverse_items_R_Only_catalog_check(item) > 0:
                         action_write = context_menu.addAction("Write parameters")
                     # Подключаем обработчик события выбора действия
-                    # action.triggered.connect(lambda: self.on_action_triggered(item))
+                    # action_read.triggered.connect(lambda: self.read_value_by_modbus(index))
                     # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
                 else:
@@ -159,12 +232,47 @@ class AQ_TreeView(QTreeView):
                     if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
                         action_write = context_menu.addAction("Write parameter")
                     # Подключаем обработчик события выбора действия
-                    # action.triggered.connect(lambda: self.on_action_triggered(item))
+                    action_read.triggered.connect(lambda: self.read_value_by_modbus(index))
                     # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
         else:
             # Если индекс недействителен, вызывается обработчик события контекстного меню по умолчанию
             super().contextMenuEvent(event)
+
+
+class Read_value_by_modbus_Thread(QThread):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
+    result_signal = pyqtSignal(object)  # Сигнал для передачи данных в главное окно
+    def __init__(self, parent, modus_reg):
+        super().__init__(parent)
+        self.parent = parent
+        self.modbus_reg = modus_reg
+
+    def run(self):
+        try:
+            # Здесь выполняем ваш код функции connect_to_device
+            # self.parent.connect_to_device()
+            # client.connect()
+            # # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
+            # start_address = 0xF000
+            # register_count = 16
+            # # Выполняем запрос
+            # response = client.read_holding_registers(start_address, register_count, slave_id)
+            # # Конвертируем значения регистров в строку
+            # hex_string = ''.join(format(value, '04X') for value in response.registers)
+            # # Конвертируем строку в массив байт
+            # byte_array = bytes.fromhex(hex_string)
+            # byte_array = swap_modbus_bytes(byte_array, register_count)
+            #
+            # client.close()
+            result_data = self.parent.connect_to_device()  # Данные, которые нужно передать в главное окно
+            self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
+            # По завершении успешного выполнения
+            self.finished.emit()
+        except Exception as e:
+            # В случае ошибки передаем текст ошибки обратно в главный поток
+            self.error.emit(str(e))
 
 
 class MainWindow(QMainWindow):
@@ -199,6 +307,8 @@ class MainWindow(QMainWindow):
         self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
         # Порожній список для дерев девайсів
         self.devices_trees = []
+        self.devices = []
+        self.current_active_dev_index = 0
 
         #MainWindowFrame
         self.main_window_frame = main_frame_AQFrame(self)
@@ -413,8 +523,11 @@ class MainWindow(QMainWindow):
             # Устанавливаем положение картинки
             self.main_background_pic.move(x, y)
 
-            if self.tree_view is not None:
-                self.tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
+            device_data = self.devices[self.current_active_dev_index]
+            if device_data is not None:
+                tree_view = device_data.get('tree_view')
+                if tree_view is not None:
+                    tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
 
             event.accept()
         except Exception as e:
@@ -476,9 +589,11 @@ class MainWindow(QMainWindow):
             return 'parsing_err'
 
 
-    def add_tree_view(self):
+    def add_tree_view(self, dev_index):
         try:
-            device_tree = self.devices_trees[0]
+            # device_tree = self.devices_trees[0]
+            device_data = self.devices[dev_index]
+            device_tree = device_data.get('device_tree')
             # Створення порожнього массиву параметрів
             self.parameter_list = []
             root = device_tree.invisibleRootItem()
@@ -486,49 +601,31 @@ class MainWindow(QMainWindow):
 
             if isinstance(device_tree, QStandardItemModel):
                 # Устанавливаем модель для QTreeView и отображаем его
-                self.tree_view = AQ_TreeView(self.main_field_frame)
-                delegate = CustomTreeDelegate(self.tree_view)
-                # Устанавливаем делегат только для второй колонки (столбца с индексом 1)
-                self.tree_view.setItemDelegateForColumn(1, delegate)
-                self.tree_view.setModel(device_tree)
-                # root_index = self.tree_view.model().index(0, 0)  # Получаем индекс корневого элемента дерева
-                # self.tree_view.openPersistentEditor(root_index)
-                self.tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252,
-                                           self.main_field_frame.height() - 4)
-                # Получение количества колонок в модели
-                column_count = device_tree.columnCount()
-                for column in range(column_count):
-                    self.tree_view.setColumnWidth(column, 200)
-                self.tree_view.setStyleSheet("""
-                    QTreeView {
-                        border: 1px solid #9ef1d3;
-                        color: #D0D0D0;
-                    }
-    
-                    QTreeView::item {
-                        border: 1px solid #2b2d30;
-                    }
-    
-                    QHeaderView::section {
-                        border: 1px solid #1e1f22;
-                        color: #D0D0D0;
-                        background-color: #2b2d30;
-                        padding-left: 6px;
-                    }
-                    QTreeView QScrollBar { 
-                        background-color: #F0F0F0; 
-                        width: 10px; }
-                """)
-
-                self.tree_view.show()
+                address = device_data.get('address')
+                device_data['tree_view'] = AQ_TreeView(dev_index, device_tree, address, self.main_field_frame)
+                # device_data['tree_view'] = self.tree_view
+                # self.tree_view.show()
+                device_data.get('tree_view').show()
                 # root = self.tree_view.model().itemFromIndex(self.tree_view.rootIndex())
                 root = device_tree.invisibleRootItem()
-                self.tree_view.traverse_items_show_delegate(root)
+                # self.tree_view.traverse_items_show_delegate(root)
+                device_data.get('tree_view').traverse_items_show_delegate(root)
                 # self.tree_view.traverse_items_set_unediteble(root)
         # except:
             # print(f"Помилка парсінгу")
         except Exception as e:
             print(f"Error occurred: {str(e)}")
+
+
+    def add_data_to_devices(self, device_data):
+        device_dict = {}
+        device_dict['device_tree'] = self.devices_trees[0]
+        device_dict['device_name'] = device_data.get('device_name', 'err_name')
+        device_dict['serial_number'] = device_data.get('serial_number', 'err_S/N')
+        device_dict['address'] = device_data.get('address', 'err_address')
+        device_dict['version'] = device_data.get('version', 'err_version')
+        self.devices.append(device_dict)
+
 
 
 if __name__ == '__main__':

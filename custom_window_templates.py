@@ -64,6 +64,7 @@ class tool_panel_frame_AQFrame(QFrame):
 class main_field_frame_AQFrame(QFrame):
     def __init__(self, shift_y, parent=None):
         super().__init__(parent)
+        self.parent = parent
         self.setGeometry(QRect(0, (shift_y + 2),
                                           parent.width(), parent.height() - (shift_y + 2)))
         self.setStyleSheet("background-color: #1e1f22;\n")

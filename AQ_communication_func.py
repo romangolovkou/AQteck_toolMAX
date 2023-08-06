@@ -1,8 +1,53 @@
 import ipaddress
-from AQ_parse_func import swap_modbus_bytes, remove_empty_bytes
+import struct
+from AQ_parse_func import swap_modbus_bytes, remove_empty_bytes, reverse_modbus_registers
 from pymodbus.file_message import ReadFileRecordRequest
 from Crypto.Cipher import DES
 
+
+def read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size):
+    # Установка параметров подключения
+    client.connect()
+
+    # Выполняем запрос
+    response = client.read_holding_registers(modbus_reg, reg_count, slave_id)
+    # Конвертируем значения регистров в строку
+    hex_string = ''.join(format(value, '04X') for value in response.registers)
+    # Конвертируем строку в массив байт
+    byte_array = bytes.fromhex(hex_string)
+    if param_type == 'unsigned':
+        if byte_size == 1:
+            param_value = struct.unpack('>H', byte_array)[0]
+        elif byte_size == 2:
+            param_value = struct.unpack('>H', byte_array)[0]
+        elif byte_size == 4:
+            byte_array = reverse_modbus_registers(byte_array)
+            param_value = struct.unpack('>I', byte_array)[0]
+        elif byte_size == 8:
+            byte_array = reverse_modbus_registers(byte_array)
+            param_value = struct.unpack('>Q', byte_array)[0]
+    if param_type == 'signed':
+        if byte_size == 1:
+            param_value = struct.unpack('b', byte_array[1])[0]
+        elif byte_size == 2:
+            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+        elif byte_size == 4 or byte_size == 8:
+            byte_array = reverse_modbus_registers(byte_array)
+            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+    elif param_type == 'string':
+        byte_array = swap_modbus_bytes(byte_array, reg_count)
+        # Расшифровуем в строку
+        text = byte_array.decode('ANSI')
+        param_value = remove_empty_bytes(text)
+    elif param_type == 'enum':
+        param_value = struct.unpack('>H', byte_array)[0]
+    elif param_type == 'float':
+        byte_array = swap_modbus_bytes(byte_array, reg_count)
+        param_value = struct.unpack('f', byte_array)[0]
+
+    client.close()
+
+    return param_value
 
 def read_device_name(client, slave_id):
     # Установка параметров подключения
