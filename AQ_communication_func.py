@@ -44,6 +44,10 @@ def read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_siz
     elif param_type == 'float':
         byte_array = swap_modbus_bytes(byte_array, reg_count)
         param_value = struct.unpack('f', byte_array)[0]
+    elif param_type == 'date_time':
+        if byte_size == 4:
+            byte_array = reverse_modbus_registers(byte_array)
+            param_value = struct.unpack('>I', byte_array)[0]
 
     client.close()
 

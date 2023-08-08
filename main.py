@@ -1,6 +1,7 @@
 import sys
 import random
 import time
+import datetime
 import array
 import os
 import struct
@@ -56,6 +57,14 @@ class CustomTreeDelegate(QStyledItemDelegate):
                     enum_str = enum_strings[i]
                     combo_box.addItem(enum_str)
                 return combo_box
+            elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed'\
+                    or delegate_attributes.get('type', '') == 'string' or \
+                    delegate_attributes.get('type', '') == 'float':
+                if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
+                    # Здесь создаем стандартный редактор для unsigned (например, QLineEdit)
+                    editor = QLineEdit(parent)
+                    editor.setStyleSheet("border: none; color: #D0D0D0;")  # Устанавливаем стиль
+                    return editor
 
     def setEditorData(self, editor, index):
         delegate_attributes = index.data(Qt.UserRole)
@@ -64,6 +73,13 @@ class CustomTreeDelegate(QStyledItemDelegate):
                 user_data = index.data(Qt.EditRole)
                 if user_data is not None:
                     editor.setCurrentIndex(user_data)
+            if delegate_attributes.get('type', '') == 'unsigned' or \
+                    delegate_attributes.get('type', '') == 'signed' or \
+                    delegate_attributes.get('type', '') == 'string' or \
+                    delegate_attributes.get('type', '') == 'float':
+                user_data = index.data(Qt.EditRole)
+                if user_data is not None:
+                    editor.setText(str(user_data))
 
     def setModelData(self, editor, model, index):
         delegate_attributes = index.data(Qt.UserRole)
@@ -124,6 +140,14 @@ class AQ_TreeView(QTreeView):
                             item_cur_value = self.model().itemFromIndex(index)
                             item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
                             self.setValue(1, index)
+                elif parameter_attributes.get('type', '') == 'unsigned' or \
+                        parameter_attributes.get('type', '') == 'signed' or \
+                        parameter_attributes.get('type', '') == 'string' or \
+                        parameter_attributes.get('type', '') == 'float':
+                    if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
+                        index = self.model().index(row, 1, item.index())
+                        if index.isValid():
+                            self.openPersistentEditor(index)
             if child_item is not None:
                 self.traverse_items_show_delegate(child_item)
 
@@ -154,6 +178,14 @@ class AQ_TreeView(QTreeView):
                     or delegate_attributes.get('type', '') == 'string' or delegate_attributes.get('type', '') == 'float':
                 if delegate_attributes.get('visual_type', '') == 'ip_format':
                     value = socket.inet_ntoa(struct.pack('!L', value))
+                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+                    self.model().setData(index, value, Qt.DisplayRole)
+                else:
+                    self.model().setData(index, value, Qt.EditRole)
+            elif delegate_attributes.get('type', '') == 'date_time':
+                value += datetime.datetime(2000, 1, 1).timestamp()
+                datetime_obj = datetime.datetime.fromtimestamp(value)
+                value = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
                 if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
                     self.model().setData(index, value, Qt.DisplayRole)
                 else:

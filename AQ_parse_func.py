@@ -274,7 +274,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     delegate_attributes['enum_strings'] = enum_srtings
                     cur_par_value.setData(delegate_attributes, Qt.UserRole)
                 elif param_attributes.get('type') == 'unsigned' or param_attributes.get('type') == 'signed' \
-                            or param_attributes.get('type') == 'string' or param_attributes.get('type') == 'float':
+                            or param_attributes.get('type') == 'string' or param_attributes.get('type') == 'float'\
+                            or param_attributes.get('type') == 'date_time':
                     cur_par_value.setData(delegate_attributes, Qt.UserRole)
 
 
