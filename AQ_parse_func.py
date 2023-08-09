@@ -253,10 +253,11 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                 delegate_attributes = {}
                 cur_par_value = QStandardItem()
-                # cur_par_value.setForeground(QColor("#808080"))
                 delegate_attributes['type'] = param_attributes.get('type')
                 delegate_attributes['R_Only'] = param_attributes.get('R_Only')
                 delegate_attributes['W_Only'] = param_attributes.get('W_Only')
+                delegate_attributes['param_size'] = param_attributes.get('param_size')
+
                 if param_attributes.get('visual_type', '') != '':
                     delegate_attributes['visual_type'] = param_attributes.get('visual_type')
                 if param_attributes.get('type') == 'enum':

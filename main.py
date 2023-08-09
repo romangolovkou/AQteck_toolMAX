@@ -188,13 +188,28 @@ class AQ_TreeView(QTreeView):
                 else:
                     self.model().setData(index, value, Qt.EditRole)
             elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed' \
-                    or delegate_attributes.get('type', '') == 'string' or delegate_attributes.get('type', '') == 'float':
+                    or delegate_attributes.get('type', '') == 'string':
                 if delegate_attributes.get('visual_type', '') == 'ip_format':
                     value = socket.inet_ntoa(struct.pack('!L', value))
+                elif delegate_attributes.get('visual_type', '') == 'bin' and delegate_attributes.get('type', '') == 'unsigned':
+                    par_size = delegate_attributes.get('param_size', 0)
+                    binary_string = format(value, f'0{par_size * 8}b')
+                    grouped_binary_string = ' '.join(
+                        [binary_string[i:i + 4] for i in range(0, len(binary_string), 4)])
+                    # Создаем объект BitArray из байтового массива
+                    value = grouped_binary_string
                 if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
                     self.model().setData(index, value, Qt.DisplayRole)
                 else:
                     self.model().setData(index, value, Qt.EditRole)
+            elif delegate_attributes.get('type', '') == 'float':
+                # Округлюємо до 7 знака після коми
+                value = round(value, 7)
+                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+                    self.model().setData(index, value, Qt.DisplayRole)
+                else:
+                    self.model().setData(index, value, Qt.EditRole)
+
             elif delegate_attributes.get('type', '') == 'date_time':
                 value += datetime.datetime(2000, 1, 1).timestamp()
                 datetime_obj = datetime.datetime.fromtimestamp(value)
@@ -222,7 +237,7 @@ class AQ_TreeView(QTreeView):
 
         if is_valid_ip(self.dev_address):
             ip = self.dev_address
-            client = client = ModbusTcpClient(ip)
+            client = ModbusTcpClient(ip)
             slave_id = 1
             param_type = cat_or_param_attributes.get('type', '')
             param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
