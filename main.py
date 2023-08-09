@@ -63,8 +63,15 @@ class CustomTreeDelegate(QStyledItemDelegate):
                 if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
                     # Здесь создаем стандартный редактор для unsigned (например, QLineEdit)
                     editor = QLineEdit(parent)
-                    editor.setStyleSheet("border: none; color: #D0D0D0;")  # Устанавливаем стиль
+                    # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
+                    # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
+                    # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
+                    # "Segoe UI"
+                    font = QFont("Segoe UI", 9)
+                    editor.setFont(font)
+                    editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
                     return editor
+
 
     def setEditorData(self, editor, index):
         delegate_attributes = index.data(Qt.UserRole)
@@ -144,10 +151,16 @@ class AQ_TreeView(QTreeView):
                         parameter_attributes.get('type', '') == 'signed' or \
                         parameter_attributes.get('type', '') == 'string' or \
                         parameter_attributes.get('type', '') == 'float':
+                    index = self.model().index(row, 1, item.index())
                     if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
-                        index = self.model().index(row, 1, item.index())
                         if index.isValid():
+                            item_cur_value = self.model().itemFromIndex(index)
                             self.openPersistentEditor(index)
+                    else:
+                        if index.isValid():
+                            item_cur_value = self.model().itemFromIndex(index)
+                            item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
+                            item_cur_value.setForeground(QColor("#909090"))
             if child_item is not None:
                 self.traverse_items_show_delegate(child_item)
 
@@ -641,14 +654,9 @@ class MainWindow(QMainWindow):
                 # Устанавливаем модель для QTreeView и отображаем его
                 address = device_data.get('address')
                 device_data['tree_view'] = AQ_TreeView(dev_index, device_tree, address, self.main_field_frame)
-                # device_data['tree_view'] = self.tree_view
-                # self.tree_view.show()
                 device_data.get('tree_view').show()
-                # root = self.tree_view.model().itemFromIndex(self.tree_view.rootIndex())
                 root = device_tree.invisibleRootItem()
-                # self.tree_view.traverse_items_show_delegate(root)
                 device_data.get('tree_view').traverse_items_show_delegate(root)
-                # self.tree_view.traverse_items_set_unediteble(root)
         # except:
             # print(f"Помилка парсінгу")
         except Exception as e:

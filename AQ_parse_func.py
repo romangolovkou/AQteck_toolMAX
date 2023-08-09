@@ -253,6 +253,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                 delegate_attributes = {}
                 cur_par_value = QStandardItem()
+                # cur_par_value.setForeground(QColor("#808080"))
                 delegate_attributes['type'] = param_attributes.get('type')
                 delegate_attributes['R_Only'] = param_attributes.get('R_Only')
                 delegate_attributes['W_Only'] = param_attributes.get('W_Only')
@@ -301,6 +302,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                                 cur_par_min = QStandardItem('-9223372036854775808')
                         elif param_type == 'unsigned':
                             cur_par_min = QStandardItem('0')
+                        elif param_type == 'date_time':
+                            cur_par_min = QStandardItem('01.01.2000 0:00:00')
                         else:
                             cur_par_min = QStandardItem()
                     else:
@@ -335,6 +338,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                                 cur_par_max = QStandardItem('4294967295')
                             if size == 8:
                                 cur_par_max = QStandardItem('18446744073709551615')
+                        elif param_type == 'date_time':
+                            cur_par_max = QStandardItem('07.02.2136 6:28:15')
                         else:
                             cur_par_max = QStandardItem()
                     else:
