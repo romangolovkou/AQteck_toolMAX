@@ -222,6 +222,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
                     name = current_catalog_levels[level].text()
                     cat_name = current_catalog_levels[level - 1].text()
+                    current_catalog_levels[level].setFlags(current_catalog_levels[level].flags() & ~Qt.ItemIsEditable)
                     current_catalog_levels[level - 1].appendRow(current_catalog_levels[level])
                     row_count += 1
                     del current_catalog_levels[-1]

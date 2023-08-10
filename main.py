@@ -7,6 +7,7 @@ import os
 import struct
 import threading
 import socket
+import re
 from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
                         QStandardItem, QTransform, QPainter
@@ -238,8 +239,19 @@ class AQ_TreeView(QTreeView):
             ip = self.dev_address
             client = ModbusTcpClient(ip)
             slave_id = 1
-            param_type = cat_or_param_attributes.get('type', '')
-            param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+        else:
+            # Регулярний вираз для розбору адреси ком-порту
+            pattern = r'(\d+)\s*\((\w+)\)'
+            match = re.match(pattern, self.dev_address)
+
+            if match:
+                slave_id = int(match.group(1))
+                selected_port = match.group(2)
+            else:
+                print("Pattern not found in the string")
+            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+        param_type = cat_or_param_attributes.get('type', '')
+        param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
 
         next_column_index = index.sibling(index.row(), index.column() + 1)
         self.setValue(param_value, next_column_index)
@@ -269,22 +281,33 @@ class AQ_TreeView(QTreeView):
                             ip = self.dev_address
                             client = ModbusTcpClient(ip)
                             slave_id = 1
-                            param_type = child_attributes.get('type', '')
-                            modbus_reg = child_attributes.get('modbus_reg', '')
-                            if child_attributes.get('type', '') == 'enum':
-                                reg_count = 1
-                                byte_size = 1
+                        else:
+                            # Регулярний вираз для розбору адреси ком-порту
+                            pattern = r'(\d+)\s*\((\w+)\)'
+                            match = re.match(pattern, self.dev_address)
+
+                            if match:
+                                slave_id = int(match.group(1))
+                                selected_port = match.group(2)
                             else:
-                                byte_size = child_attributes.get('param_size', 0)
-                                if byte_size < 2:
-                                    reg_count = 1
-                                else:
-                                    reg_count = byte_size // 2
+                                print("Pattern not found in the string")
+                            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+                        param_type = child_attributes.get('type', '')
+                        modbus_reg = child_attributes.get('modbus_reg', '')
+                        if child_attributes.get('type', '') == 'enum':
+                            reg_count = 1
+                            byte_size = 1
+                        else:
+                            byte_size = child_attributes.get('param_size', 0)
+                            if byte_size < 2:
+                                reg_count = 1
+                            else:
+                                reg_count = byte_size // 2
 
-                            param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+                        param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
 
-                            next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
-                            self.setValue(param_value, next_column_index)
+                        next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
+                        self.setValue(param_value, next_column_index)
 
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
