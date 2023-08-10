@@ -247,6 +247,10 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 if catalog_attributes.get('name', 0) == 0:
                     pos = pos + 8
                     continue
+                # Перевірка на наявність регістру модбас у параметрі
+                if param_attributes.get('modbus_reg', 'not_reg') == 'not_reg':
+                    pos = pos + 8
+                    continue
                 parameter_name = param_attributes.get('name', 'err_name')
                 current_parameter = QStandardItem(parameter_name)
                 current_parameter.setData(param_attributes, Qt.UserRole)

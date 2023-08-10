@@ -154,7 +154,6 @@ class AQ_TreeView(QTreeView):
                     index = self.model().index(row, 1, item.index())
                     if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
                         if index.isValid():
-                            item_cur_value = self.model().itemFromIndex(index)
                             self.openPersistentEditor(index)
                     else:
                         if index.isValid():
@@ -252,6 +251,41 @@ class AQ_TreeView(QTreeView):
         # self.connect_thread.start()
         return param_value
 
+    def read_catalog_by_modbus(self, index):
+        cat_or_param_attributes = index.data(Qt.UserRole)
+        if cat_or_param_attributes.get('is_catalog', 0) == 0:
+            return
+        else:
+            item_cur_cat = self.model().itemFromIndex(index)
+            for row in range(item_cur_cat.rowCount()):
+                child_item = item_cur_cat.child(row)
+                child_index = self.model().index(row, 0, index)
+                child_attributes = child_item.data(Qt.UserRole)
+                if child_attributes is not None:
+                    if child_attributes.get('is_catalog', 0) == 1:
+                        self.read_catalog_by_modbus(child_index)
+                    else:
+                        if is_valid_ip(self.dev_address):
+                            ip = self.dev_address
+                            client = ModbusTcpClient(ip)
+                            slave_id = 1
+                            param_type = child_attributes.get('type', '')
+                            modbus_reg = child_attributes.get('modbus_reg', '')
+                            if child_attributes.get('type', '') == 'enum':
+                                reg_count = 1
+                                byte_size = 1
+                            else:
+                                byte_size = child_attributes.get('param_size', 0)
+                                if byte_size < 2:
+                                    reg_count = 1
+                                else:
+                                    reg_count = byte_size // 2
+
+                            param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+
+                            next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
+                            self.setValue(param_value, next_column_index)
+
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
         if index.isValid() and index.column() == 0:
@@ -277,7 +311,7 @@ class AQ_TreeView(QTreeView):
                     if self.traverse_items_R_Only_catalog_check(item) > 0:
                         action_write = context_menu.addAction("Write parameters")
                     # Подключаем обработчик события выбора действия
-                    # action_read.triggered.connect(lambda: self.read_value_by_modbus(index))
+                    action_read.triggered.connect(lambda: self.read_catalog_by_modbus(index))
                     # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
                 else:
