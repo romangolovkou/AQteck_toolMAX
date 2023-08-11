@@ -342,6 +342,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                                 cur_par_max = QStandardItem('65535')
                             if size == 4:
                                 cur_par_max = QStandardItem('4294967295')
+                            if size == 6: # MAC address
+                                cur_par_max = QStandardItem('FF:FF:FF:FF:FF:FF')
                             if size == 8:
                                 cur_par_max = QStandardItem('18446744073709551615')
                         elif param_type == 'date_time':
@@ -618,7 +620,7 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
         if size == 4:
             # Распаковка в формате "f" (float)
             result = struct.unpack('f', param_descr[pos:pos + size])
-            value = result[0]
+            value = round(result[0], 7)
         if size == 8:
             # Распаковка в формате "d" (double)
             result = struct.unpack('d', param_descr[pos:pos + size])

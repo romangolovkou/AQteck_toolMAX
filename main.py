@@ -8,6 +8,7 @@ import struct
 import threading
 import socket
 import re
+import binascii
 from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
                         QStandardItem, QTransform, QPainter
@@ -193,6 +194,10 @@ class AQ_TreeView(QTreeView):
                     or delegate_attributes.get('type', '') == 'string':
                 if delegate_attributes.get('visual_type', '') == 'ip_format':
                     value = socket.inet_ntoa(struct.pack('!L', value))
+                elif delegate_attributes.get('visual_type', '') == 'hex':
+                    mac_address = binascii.hexlify(value).decode('utf-8').upper()
+                    mac_address_with_colons = ':'.join(mac_address[i:i + 2] for i in range(0, len(mac_address), 2))
+                    value = mac_address_with_colons
                 elif delegate_attributes.get('visual_type', '') == 'bin' and delegate_attributes.get('type', '') == 'unsigned':
                     par_size = delegate_attributes.get('param_size', 0)
                     binary_string = format(value, f'0{par_size * 8}b')

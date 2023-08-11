@@ -138,9 +138,6 @@ class AddDevices_AQDialog(AQDialog):
 
         # Добавляем заголовки столбцов
         self.table_widget.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])
-        # self.table_widget.setGeometry(self.main_window_frame.width()//2 - 28, self.title_bar_frame.height() + 5,
-        #                               self.main_window_frame.width()//2 + 20,
-        #                               self.main_window_frame.height() - self.title_bar_frame.height() - 200)
         self.table_widget.move(self.main_window_frame.width()//2 - 28, self.title_bar_frame.height() + 5)
         self.table_widget.setFixedWidth(self.main_window_frame.width()//2 + 20)
         # Устанавливаем ширину столбцов
@@ -156,6 +153,8 @@ class AddDevices_AQDialog(AQDialog):
         # Убираем рамку таблицы
         self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
                                            QTableWidget::item { padding-left: 3px; }""")
+
+        self.finded_dev_count = 0
 
     def set_style_table_widget(self, err_flag=0):
         if err_flag == 0:
@@ -194,7 +193,10 @@ class AddDevices_AQDialog(AQDialog):
         self.table_widget.setItem(index, 1, self.name_item)
         self.table_widget.setItem(index, 2, self.address_item)
         self.table_widget.setItem(index, 3, self.version_item)
-        self.table_widget.setFixedHeight(self.table_widget.height() + self.table_widget.rowCount() * 25)
+        new_height = self.table_widget.height() + self.table_widget.rowHeight(index)
+        if new_height > 420:
+            new_height = 420
+        self.table_widget.setFixedHeight(new_height)
 
         # Устанавливаем чекбокс в первую колонку
         checkbox = QCheckBox()
@@ -213,6 +215,8 @@ class AddDevices_AQDialog(AQDialog):
 
         bottom_right_corner_table_widget = self.table_widget.mapTo(self.main_window_frame, self.table_widget.rect().bottomRight())
 
+        if hasattr(self, 'add_btn'):
+            self.add_btn.deleteLater()
         # Создаем кнопку поиска
         self.add_btn = QPushButton("Add device", self.main_window_frame)
         self.add_btn.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
@@ -275,14 +279,17 @@ class AddDevices_AQDialog(AQDialog):
             self.ip_line_edit.red_blink_timer.start()
             self.ip_line_edit.show_err_label()
         elif default_prg == 'decrypt_err':
-            self.add_device_to_table_widget(0, device_data, 1)
+            self.add_device_to_table_widget(self.finded_dev_count, device_data, 1)
+            self.finded_dev_count += 1
         else:
             try:
                 self.parent.parse_default_prg(default_prg)
                 self.parent.add_data_to_devices(device_data)
-                self.add_device_to_table_widget(0, device_data, 0)
+                self.add_device_to_table_widget(self.finded_dev_count, device_data, 0)
+                self.finded_dev_count += 1
             except:
-                self.add_device_to_table_widget(0, device_data, 1)
+                self.add_device_to_table_widget(self.finded_dev_count, device_data, 1)
+                self.finded_dev_count += 1
 
     def on_find_button_clicked(self):
         self.gear_small.start()

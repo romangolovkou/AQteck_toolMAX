@@ -23,10 +23,13 @@ def read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_siz
         elif byte_size == 4:
             byte_array = reverse_modbus_registers(byte_array)
             param_value = struct.unpack('>I', byte_array)[0]
+        elif byte_size == 6: # MAC address
+            byte_array = reverse_modbus_registers(byte_array)
+            param_value = byte_array # struct.unpack('>I', byte_array)[0]
         elif byte_size == 8:
             byte_array = reverse_modbus_registers(byte_array)
             param_value = struct.unpack('>Q', byte_array)[0]
-    if param_type == 'signed':
+    elif param_type == 'signed':
         if byte_size == 1:
             param_value = struct.unpack('b', byte_array[1])[0]
         elif byte_size == 2:
