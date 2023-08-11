@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit
+from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont
 from MouseEvent_func import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
@@ -350,3 +350,31 @@ class IP_AQLineEdit(QLineEdit):
         self.err_label.show()
         # Устанавливаем задержку в 2 секунды и затем удаляем метку
         QTimer.singleShot(3000, self.err_label.deleteLater)
+
+
+class AQ_wait_progress_bar_widget(QWidget):
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.frame = QFrame(self)
+        self.frame.setGeometry(0, 0, 340, 50)
+        self.frame.setStyleSheet("border: 1px solid #9ef1d3; border-radius: 25px;")
+        self.text_label = AQLabel(text, self)
+        self.text_label.move(30, 5)
+        self.text_label.setStyleSheet("border: none; color: #D0D0D0")
+        self.progress_bar = QProgressBar(self)
+        self.progress_bar.setGeometry(30, 30, 280, 6)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setFormat("")  # Убираем текст с процентами
+        self.progress_bar.setStyleSheet('''
+                    QProgressBar {
+                        border: 1px solid #FFFFFF; /* Изменение цвета рамки */
+                        border-radius: 2px; /* Скругление углов */
+                    }
+                    QProgressBar::chunk {
+                        background-color: #9ef1d3; /* Цвет заполнения */
+                        text-align: none; /* Убираем метку с процентами */
+                    }
+                ''')
+        # self.progress_bar.show()
+        self.show()

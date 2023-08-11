@@ -15,7 +15,8 @@ from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAni
     QThread, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
     QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView, \
-    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox, QStyledItemDelegate
+    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox, QStyledItemDelegate,\
+    QProgressBar
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -24,7 +25,7 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
-                                    AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
+                                    AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
@@ -99,6 +100,7 @@ class CustomTreeDelegate(QStyledItemDelegate):
 class AQ_TreeView(QTreeView):
     def __init__(self, dev_index, device_tree, address, parent=None):
         super().__init__(parent)
+        self.parent = parent
         self.dev_index = dev_index
         self.dev_address = address
         delegate = CustomTreeDelegate(self)
@@ -263,19 +265,28 @@ class AQ_TreeView(QTreeView):
         # self.connect_thread.start()
         return param_value
 
-    def read_catalog_by_modbus(self, index):
+    def read_catalog_by_modbus(self, index, show_prorgess_flag):
         cat_or_param_attributes = index.data(Qt.UserRole)
+        if show_prorgess_flag == 1:
+            self.read_wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
+            self.read_wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
+
         if cat_or_param_attributes.get('is_catalog', 0) == 0:
             return
         else:
             item_cur_cat = self.model().itemFromIndex(index)
+            if show_prorgess_flag == 1:
+                max_value = 100  # Максимальное значение для прогресс-бара
+                row_count = item_cur_cat.rowCount()
+                step_value = max_value // row_count
+
             for row in range(item_cur_cat.rowCount()):
                 child_item = item_cur_cat.child(row)
                 child_index = self.model().index(row, 0, index)
                 child_attributes = child_item.data(Qt.UserRole)
                 if child_attributes is not None:
                     if child_attributes.get('is_catalog', 0) == 1:
-                        self.read_catalog_by_modbus(child_index)
+                        self.read_catalog_by_modbus(child_index, 0)
                     else:
                         if is_valid_ip(self.dev_address):
                             ip = self.dev_address
@@ -309,6 +320,30 @@ class AQ_TreeView(QTreeView):
                         next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
                         self.setValue(param_value, next_column_index)
 
+                if show_prorgess_flag == 1:
+                    self.read_wait_widget.progress_bar.setValue((row + 1) * step_value)
+
+            if show_prorgess_flag == 1:
+                self.read_wait_widget.progress_bar.setValue(max_value)
+                self.read_wait_widget.hide()
+                self.read_wait_widget.deleteLater()
+
+    def read_all_tree_by_modbus(self, item):
+        self.read_wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
+        self.read_wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
+
+        max_value = 100  # Максимальное значение для прогресс-бара
+        row_count = item.rowCount()
+        step_value = max_value // row_count
+        for row in range(item.rowCount()):
+            index = self.model().index(row, 0, item.index())
+            self.read_catalog_by_modbus(index, 0)
+            self.read_wait_widget.progress_bar.setValue((row + 1) * step_value)
+
+        self.read_wait_widget.progress_bar.setValue(max_value)
+        self.read_wait_widget.hide()
+        self.read_wait_widget.deleteLater()
+
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
         if index.isValid() and index.column() == 0:
@@ -334,7 +369,7 @@ class AQ_TreeView(QTreeView):
                     if self.traverse_items_R_Only_catalog_check(item) > 0:
                         action_write = context_menu.addAction("Write parameters")
                     # Подключаем обработчик события выбора действия
-                    action_read.triggered.connect(lambda: self.read_catalog_by_modbus(index))
+                    action_read.triggered.connect(lambda: self.read_catalog_by_modbus(index, 1))
                     # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
                 else:
@@ -467,6 +502,7 @@ class MainWindow(QMainWindow):
         self.panel_btn_add_dev1 = Btn_DeleteDevices(self.ico_btn_delete_device, self.tool_panel_frame)
         self.panel_btn_add_dev2 = Btn_IPAdresess(self.ico_btn_ip_adresses, self.tool_panel_frame)
         self.panel_btn_add_dev3 = Btn_Read(self.ico_AddDev_btn, self.tool_panel_frame)
+        self.panel_btn_add_dev3.clicked.connect(self.read_parameters)
         self.panel_btn_add_dev4 = Btn_Write(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev5 = Btn_FactorySettings(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev6 = Btn_WatchList(self.ico_AddDev_btn, self.tool_panel_frame)
@@ -729,6 +765,7 @@ class MainWindow(QMainWindow):
                 device_data.get('tree_view').show()
                 root = device_tree.invisibleRootItem()
                 device_data.get('tree_view').traverse_items_show_delegate(root)
+                device_data.get('tree_view').read_all_tree_by_modbus(root)
         # except:
             # print(f"Помилка парсінгу")
         except Exception as e:
@@ -744,6 +781,11 @@ class MainWindow(QMainWindow):
         device_dict['version'] = device_data.get('version', 'err_version')
         self.devices.append(device_dict)
 
+    def read_parameters(self):
+        device_data = self.devices[self.current_active_dev_index]
+        device_tree = device_data.get('device_tree')
+        root = device_tree.invisibleRootItem()
+        device_data.get('tree_view').read_all_tree_by_modbus(root)
 
 
 if __name__ == '__main__':
