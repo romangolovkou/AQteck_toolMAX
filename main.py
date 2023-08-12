@@ -756,7 +756,8 @@ class MainWindow(QMainWindow):
     def add_tree_view(self, dev_index):
         try:
             # device_tree = self.devices_trees[0]
-            device_data = self.devices[dev_index]
+            device_count = len(self.devices)
+            device_data = self.devices[device_count - 1]
             device_tree = device_data.get('device_tree')
             # Створення порожнього массиву параметрів
             self.parameter_list = []

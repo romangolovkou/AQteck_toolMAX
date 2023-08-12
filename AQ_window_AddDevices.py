@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtGui import QPixmap, QFont, QColor
 from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QFrame, QGraphicsView, QGraphicsScene, \
                             QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox
@@ -156,13 +156,17 @@ class AddDevices_AQDialog(AQDialog):
 
         self.finded_dev_count = 0
 
-    def set_style_table_widget(self, err_flag=0):
+    def set_style_table_widget(self, row, err_flag=0):
         if err_flag == 0:
-            self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
-                                            QTableWidget::item { padding-left: 3px; background-color: #429061}""")
+            # self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
+            #                                 QTableWidget::item { padding-left: 3px; background-color: #429061}""")
+            for i in range(4):
+                self.table_widget.item(row, i).setBackground(QColor("#429061"))
         else:
-            self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
-                                                        QTableWidget::item { padding-left: 3px; background-color: #9d4d4f}""")
+            # self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
+            #                                             QTableWidget::item { padding-left: 3px; background-color: #9d4d4f}""")
+            for i in range(4):
+                self.table_widget.item(row, i).setBackground(QColor("#9d4d4f"))
 
     def handle_combobox_selection(self):
         selected_item = self.interface_combo_box.currentText()
@@ -211,7 +215,7 @@ class AddDevices_AQDialog(AQDialog):
         item = self.table_widget.item(index, 0)
         item.setTextAlignment(Qt.AlignCenter)
 
-        self.set_style_table_widget(err_flag)
+        self.set_style_table_widget(self.finded_dev_count, err_flag)
 
         bottom_right_corner_table_widget = self.table_widget.mapTo(self.main_window_frame, self.table_widget.rect().bottomRight())
 
@@ -241,27 +245,38 @@ class AddDevices_AQDialog(AQDialog):
                         background-color: #429061;
                     }
                 """)
-        if err_flag != 0:
-            self.add_btn.setEnabled(False)
-            self.add_btn.setStyleSheet("""
-                                QPushButton {
-                                    border-left: 1px solid #9ef1d3;
-                                    border-top: 1px solid #9ef1d3;
-                                    border-bottom: 1px solid #5bb192;
-                                    border-right: 1px solid #5bb192;
-                                    color: #3c3e41;
-                                    background-color: #2b2d30;
-                                    border-radius: 4px;
-                                }
-                                QPushButton:hover {
-                                    background-color: #3c3e41;
-                                }
-                                QPushButton:pressed {
-                                    background-color: #429061;
-                                }
-                            """)
+        # if err_flag != 0:
+        #     self.add_btn.setEnabled(False)
+        #     self.add_btn.setStyleSheet("""
+        #                         QPushButton {
+        #                             border-left: 1px solid #9ef1d3;
+        #                             border-top: 1px solid #9ef1d3;
+        #                             border-bottom: 1px solid #5bb192;
+        #                             border-right: 1px solid #5bb192;
+        #                             color: #3c3e41;
+        #                             background-color: #2b2d30;
+        #                             border-radius: 4px;
+        #                         }
+        #                         QPushButton:hover {
+        #                             background-color: #3c3e41;
+        #                         }
+        #                         QPushButton:pressed {
+        #                             background-color: #429061;
+        #                         }
+        #                     """)
 
         self.add_btn.show()
+
+    def add_finded_devices(self):
+        devices_count = self.table_widget.rowCount()
+        for i in range(devices_count):
+            checkbox_item = self.table_widget.cellWidget(i, 0)
+            if checkbox_item is not None and isinstance(checkbox_item, QCheckBox):
+                if checkbox_item.checkState() == Qt.Checked:
+                    self.parent.add_tree_view()
+                else:
+                    print("Галочка не установлена")
+
 
 
 
