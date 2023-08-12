@@ -227,7 +227,7 @@ class AddDevices_AQDialog(AQDialog):
         self.add_btn.setFixedSize(100, 35)
         self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
                           bottom_right_corner_table_widget.y() + 5)
-        self.add_btn.clicked.connect(lambda: self.parent.add_tree_view(0))
+        self.add_btn.clicked.connect(self.add_finded_devices)
         self.add_btn.setStyleSheet("""
                     QPushButton {
                         border-left: 1px solid #9ef1d3;
@@ -273,7 +273,14 @@ class AddDevices_AQDialog(AQDialog):
             checkbox_item = self.table_widget.cellWidget(i, 0)
             if checkbox_item is not None and isinstance(checkbox_item, QCheckBox):
                 if checkbox_item.checkState() == Qt.Checked:
-                    self.parent.add_tree_view()
+                    item = self.table_widget.item(i, 2)
+                    dev_address = item.text()
+                    for j in range(len(self.parent.ready_to_add_devices)):
+                        ready_device_data = self.parent.ready_to_add_devices[j]
+                        if dev_address == ready_device_data.get('address', ''):
+                            self.parent.devices.append(self.parent.ready_to_add_devices[j])
+                            self.parent.add_tree_view()
+                            break
                 else:
                     print("Галочка не установлена")
 
@@ -299,7 +306,7 @@ class AddDevices_AQDialog(AQDialog):
         else:
             try:
                 self.parent.parse_default_prg(default_prg)
-                self.parent.add_data_to_devices(device_data)
+                self.parent.add_data_to_ready_devices(device_data)
                 self.add_device_to_table_widget(self.finded_dev_count, device_data, 0)
                 self.finded_dev_count += 1
             except:

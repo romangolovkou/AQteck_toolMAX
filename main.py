@@ -469,6 +469,8 @@ class MainWindow(QMainWindow):
         # Используем полученный путь в QSettings
         self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
         # Порожній список для дерев девайсів
+        self.ready_to_add_devices_trees = []
+        self.ready_to_add_devices = []
         self.devices_trees = []
         self.devices = []
         self.current_active_dev_index = 0
@@ -748,16 +750,15 @@ class MainWindow(QMainWindow):
             containers_offset = get_containers_offset(default_prg)
             storage_container = get_storage_container(default_prg, containers_offset)
             device_tree = parse_tree(storage_container)
-            self.devices_trees.append(device_tree)
+            self.ready_to_add_devices_trees.append(device_tree)
         except:
             return 'parsing_err'
 
 
-    def add_tree_view(self, dev_index):
+    def add_tree_view(self):
         try:
             # device_tree = self.devices_trees[0]
-            device_count = len(self.devices)
-            device_data = self.devices[device_count - 1]
+            device_data = self.devices[-1]
             device_tree = device_data.get('device_tree')
             # Створення порожнього массиву параметрів
             self.parameter_list = []
@@ -767,7 +768,7 @@ class MainWindow(QMainWindow):
             if isinstance(device_tree, QStandardItemModel):
                 # Устанавливаем модель для QTreeView и отображаем его
                 address = device_data.get('address')
-                device_data['tree_view'] = AQ_TreeView(dev_index, device_tree, address, self.main_field_frame)
+                device_data['tree_view'] = AQ_TreeView(len(self.devices) - 1, device_tree, address, self.main_field_frame)
                 device_data.get('tree_view').show()
                 root = device_tree.invisibleRootItem()
                 device_data.get('tree_view').traverse_items_show_delegate(root)
@@ -778,14 +779,14 @@ class MainWindow(QMainWindow):
             print(f"Error occurred: {str(e)}")
 
 
-    def add_data_to_devices(self, device_data):
+    def add_data_to_ready_devices(self, device_data):
         device_dict = {}
-        device_dict['device_tree'] = self.devices_trees[0]
+        device_dict['device_tree'] = self.ready_to_add_devices_trees[-1]
         device_dict['device_name'] = device_data.get('device_name', 'err_name')
         device_dict['serial_number'] = device_data.get('serial_number', 'err_S/N')
         device_dict['address'] = device_data.get('address', 'err_address')
         device_dict['version'] = device_data.get('version', 'err_version')
-        self.devices.append(device_dict)
+        self.ready_to_add_devices.append(device_dict)
 
     def read_parameters(self):
         device_data = self.devices[self.current_active_dev_index]
