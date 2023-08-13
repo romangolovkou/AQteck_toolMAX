@@ -26,7 +26,8 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
-                                    AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget
+                                    AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
+                                    AQ_left_device_widget
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
@@ -773,6 +774,8 @@ class MainWindow(QMainWindow):
                 root = device_tree.invisibleRootItem()
                 device_data.get('tree_view').traverse_items_show_delegate(root)
                 device_data.get('tree_view').read_all_tree_by_modbus(root)
+                self.add_dev_widget_to_left_panel(len(self.devices) - 1, device_data)
+
         # except:
             # print(f"Помилка парсінгу")
         except Exception as e:
@@ -787,6 +790,23 @@ class MainWindow(QMainWindow):
         device_dict['address'] = device_data.get('address', 'err_address')
         device_dict['version'] = device_data.get('version', 'err_version')
         self.ready_to_add_devices.append(device_dict)
+
+    def add_dev_widget_to_left_panel(self, index, dev_data):
+        if not hasattr(self, 'left_panel_frame'):
+            self.left_panel_frame = QFrame(self.main_field_frame)
+            self.left_panel_frame.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
+            self.left_panel_layout = QVBoxLayout(self.left_panel_frame)
+            # self.left_panel_layout.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
+            self.left_panel_layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
+            self.left_panel_layout.setContentsMargins(4, 4, 4, 4)
+
+        name = dev_data.get('device_name', 'err_name')
+        address = dev_data.get('address', 'err_address')
+        serial = dev_data.get('serial_number', 'err_serial')
+        dev_widget = AQ_left_device_widget(index, name, address, serial, self.left_panel_frame)
+        self.left_panel_layout.addWidget(dev_widget)
+
+        self.left_panel_frame.show()
 
     def read_parameters(self):
         device_data = self.devices[self.current_active_dev_index]

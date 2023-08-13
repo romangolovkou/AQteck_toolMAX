@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize
-from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont
+from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QColor
 from MouseEvent_func import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 from functools import partial
 
-#MainFrame
+
+PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 class main_frame_AQFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -378,3 +379,68 @@ class AQ_wait_progress_bar_widget(QWidget):
                 ''')
         # self.progress_bar.show()
         self.show()
+
+
+class AQ_left_device_widget(QWidget):
+    def __init__(self, index, name, address, serial, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.index = index
+        self.is_active_now = 1
+        self.setFixedHeight(70)
+        self.ico_label = QLabel(self)
+        pixmap = QPixmap('Icons/test_Button.png')
+        self.ico_label.setGeometry(0, 0, 40, 70)
+        new_pixmap = pixmap.scaled(self.ico_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.ico_label.setPixmap(new_pixmap)
+        self.ico_label.setStyleSheet("background-color: transparent;")
+        self.ico_label.show()
+        self.name_label = AQLabel(name, self)
+        font = QFont("Segoe UI", 14)
+        self.name_label.setFont(font)
+        self.name_label.move(50, 5)
+        self.name_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;")
+        self.address_label = AQLabel('address:' + address, self)
+        self.address_label.move(50, 27)
+        self.address_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
+        self.serial_label = AQLabel('S/N' + serial, self)
+        self.serial_label.move(50, 47)
+        self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
+
+        # Создаем палитру с фоновыми цветами
+        self.normal_palette = self.palette()
+        self.hover_palette = QPalette()
+        self.hover_palette.setColor(QPalette.Window, QColor("#429061"))
+
+
+        self.show()
+
+    def enterEvent(self, event):
+        # Применяем палитру при наведении
+        if self.is_active_now == 0:
+            self.setPalette(self.hover_palette)
+            self.setAutoFillBackground(True)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        # Возвращаем обычную палитру при уходе курсора
+        if self.is_active_now == 0:
+            self.setPalette(self.normal_palette)
+            self.setAutoFillBackground(False)
+        super().leaveEvent(event)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            child_widgets = self.parent.findChildren(AQ_left_device_widget)
+            for child_widget in child_widgets:
+                child_widget.setPalette(self.normal_palette)
+                child_widget.setAutoFillBackground(False)
+                child_widget.is_active_now = 0
+
+            self.setPalette(self.hover_palette)
+            self.setAutoFillBackground(True)
+            self.is_active_now = 1
+
+            # Эта функция будет вызвана при нажатии левой кнопки мыши на виджет
+            print("Левая кнопка мыши нажата на виджет!")
+        super().mousePressEvent(event)

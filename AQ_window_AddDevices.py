@@ -334,6 +334,8 @@ class AddDevices_AQDialog(AQDialog):
         # В этом слоте можно выполнить действия, которые должны произойти в случае ошибки
         self.show_connect_err_label()
         self.gear_small.stop()
+        self.gear_big.stop()
+
 
     def connect_to_device (self):
         selected_item = self.interface_combo_box.currentText()
