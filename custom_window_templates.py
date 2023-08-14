@@ -388,6 +388,13 @@ class AQ_left_device_widget(QWidget):
         self.index = index
         self.is_active_now = 1
         self.setFixedHeight(70)
+        self.setMinimumWidth(240)
+        # Створюємо фонове поле для відображення підсвітки активного приладу в момент додавання нового девайсу
+        # поле використовується тільки один раз для підсвітки одразу після додавання нового приладу, оскільки
+        # стандартні палітри чомусь не працюють на момент створення віджету.
+        self.background_field = QFrame(self)
+        self.background_field.setGeometry(0, 0, 240, 70)
+        self.background_field.setStyleSheet("background-color: #429061;")
         self.ico_label = QLabel(self)
         pixmap = QPixmap('Icons/test_Button.png')
         self.ico_label.setGeometry(0, 0, 40, 70)
@@ -411,9 +418,9 @@ class AQ_left_device_widget(QWidget):
         self.normal_palette = self.palette()
         self.hover_palette = QPalette()
         self.hover_palette.setColor(QPalette.Window, QColor("#429061"))
-
-
-        self.show()
+        self.setPalette(self.hover_palette)
+        self.setAutoFillBackground(True)
+        self.set_active_cur_widget()
 
     def enterEvent(self, event):
         # Применяем палитру при наведении
@@ -431,16 +438,22 @@ class AQ_left_device_widget(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            child_widgets = self.parent.findChildren(AQ_left_device_widget)
-            for child_widget in child_widgets:
-                child_widget.setPalette(self.normal_palette)
-                child_widget.setAutoFillBackground(False)
-                child_widget.is_active_now = 0
-
-            self.setPalette(self.hover_palette)
-            self.setAutoFillBackground(True)
-            self.is_active_now = 1
+            self.set_active_cur_widget()
 
             # Эта функция будет вызвана при нажатии левой кнопки мыши на виджет
             print("Левая кнопка мыши нажата на виджет!")
         super().mousePressEvent(event)
+
+    def set_active_cur_widget(self):
+        child_widgets = self.parent.findChildren(AQ_left_device_widget)
+        for child_widget in child_widgets:
+            if not child_widget == self:
+                child_widget.background_field.setStyleSheet("background-color: transparent;")
+                child_widget.setPalette(self.normal_palette)
+                child_widget.setAutoFillBackground(False)
+                child_widget.is_active_now = 0
+
+        self.setPalette(self.hover_palette)
+        self.setAutoFillBackground(True)
+        self.is_active_now = 1
+        self.parent.set_active_cur_device(self.index)

@@ -803,7 +803,9 @@ class MainWindow(QMainWindow):
         name = dev_data.get('device_name', 'err_name')
         address = dev_data.get('address', 'err_address')
         serial = dev_data.get('serial_number', 'err_serial')
-        dev_widget = AQ_left_device_widget(index, name, address, serial, self.left_panel_frame)
+        # Створювати ці віджети потрібно обов'язково з прив'язкою до головного вікна (parent - main_window)
+        # тому що віджету потрібен доступ до массиву доданих девайсів через parent.
+        dev_widget = AQ_left_device_widget(index, name, address, serial, self)
         self.left_panel_layout.addWidget(dev_widget)
 
         self.left_panel_frame.show()
@@ -813,6 +815,22 @@ class MainWindow(QMainWindow):
         device_tree = device_data.get('device_tree')
         root = device_tree.invisibleRootItem()
         device_data.get('tree_view').read_all_tree_by_modbus(root)
+
+    def set_active_cur_device(self, index):
+        # Ховаємо всі дерева девайсів
+        for i in range(len(self.devices)):
+            device_data = self.devices[i]
+            tree_view = device_data.get('tree_view', '')
+            if not tree_view == '':
+                tree_view.hide()
+
+        # Відображаємо поточний активний прилад
+        device_data = self.devices[index]
+        tree_view = device_data.get('tree_view', '')
+        if not tree_view == '':
+            tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
+            tree_view.show()
+            self.current_active_dev_index = index
 
 
 if __name__ == '__main__':
