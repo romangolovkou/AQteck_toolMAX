@@ -234,8 +234,12 @@ class AQ_TreeView(QTreeView):
         else:
             modbus_reg = cat_or_param_attributes.get('modbus_reg', '')
             if cat_or_param_attributes.get('type', '') == 'enum':
-                reg_count = 1
-                byte_size = 1
+                if cat_or_param_attributes.get('param_size', 0) > 16:
+                    reg_count = 2
+                    byte_size = 4
+                else:
+                    reg_count = 1
+                    byte_size = 1
             else:
                 byte_size = cat_or_param_attributes.get('param_size', 0)
                 if byte_size < 2:
@@ -312,8 +316,12 @@ class AQ_TreeView(QTreeView):
                         param_type = child_attributes.get('type', '')
                         modbus_reg = child_attributes.get('modbus_reg', '')
                         if child_attributes.get('type', '') == 'enum':
-                            reg_count = 1
-                            byte_size = 1
+                            if child_attributes.get('param_size', 0) > 16:
+                                reg_count = 2
+                                byte_size = 4
+                            else:
+                                reg_count = 1
+                                byte_size = 1
                         else:
                             byte_size = child_attributes.get('param_size', 0)
                             if byte_size < 2:

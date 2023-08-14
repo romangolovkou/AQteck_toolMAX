@@ -43,7 +43,12 @@ def read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_siz
         text = byte_array.decode('ANSI')
         param_value = remove_empty_bytes(text)
     elif param_type == 'enum':
-        param_value = struct.unpack('>H', byte_array)[0]
+        # костиль для enum з розміром два регістра
+        if byte_size == 4:
+            param_value = struct.unpack('>I', byte_array)[0]
+        else:
+            param_value = struct.unpack('>H', byte_array)[0]
+
     elif param_type == 'float':
         byte_array = swap_modbus_bytes(byte_array, reg_count)
         param_value = struct.unpack('f', byte_array)[0]
@@ -161,9 +166,15 @@ def read_default_prg(client, slave_id):
         encrypt_file = encrypt_file[:file_size]
 
     try:
+        # Перевірка на кратність 8 байтам, потрібно для DES
+        if (len(encrypt_file) % 8) > 0:
+            padding = 8 - (len(encrypt_file) % 8)
+            encrypt_file = encrypt_file + bytes([padding] * padding)
         decrypt_file = decrypt_data(b'superkey', encrypt_file)
-    except:
-        return 'decrypt_err' # Помилка дешифрування
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+    # except:
+    #     return 'decrypt_err' # Помилка дешифрування
 
     filename = 'default.prg'  # Имя файла с расширением .prg
     with open(filename, 'wb') as file:
