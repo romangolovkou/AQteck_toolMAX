@@ -61,6 +61,69 @@ def read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_siz
 
     return param_value
 
+
+def write_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size, value):
+    # Установка параметров подключения
+    client.connect()
+
+    # Выполняем запрос
+    # response = client.read_holding_registers(modbus_reg, reg_count, slave_id)
+    # Конвертируем значения регистров в строку
+    # hex_string = ''.join(format(value, '04X') for value in response.registers)
+    # # Конвертируем строку в массив байт
+    # byte_array = bytes.fromhex(hex_string)
+    if param_type == 'unsigned':
+        if byte_size == 1:
+            packed_data = struct.pack('H', value)
+        elif byte_size == 2:
+            packed_data = struct.pack('H', value)
+        elif byte_size == 4:
+            packed_data = struct.pack('I', value)
+        elif byte_size == 6: # MAC address
+            packed_data = struct.pack('H', value)
+        elif byte_size == 8:
+            packed_data = struct.pack('Q', value)
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+    # elif param_type == 'signed':
+    #     if byte_size == 1:
+    #         param_value = struct.unpack('b', byte_array[1])[0]
+    #     elif byte_size == 2:
+    #         param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+    #     elif byte_size == 4 or byte_size == 8:
+    #         byte_array = reverse_modbus_registers(byte_array)
+    #         param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+    elif param_type == 'string':
+        text_bytes = value.encode('ANSI')
+        registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
+    elif param_type == 'enum':
+        # костиль для enum з розміром два регістра
+        if byte_size == 4:
+            packed_data = struct.pack('I', value)
+            registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        else:
+            packed_data = struct.pack('H', value)
+            registers = struct.unpack('H', packed_data)
+    elif param_type == 'float':
+        # Преобразование float в 16-битные значения (short int)
+        # Здесь используется формат 'e' для представления float
+        # в виде числа с плавающей запятой в формате IEEE 754
+        if byte_size == 4:
+            floats = struct.pack('f', value)
+            registers = struct.unpack('HH', floats)  # Возвращает два short int значения
+        elif byte_size == 8:
+            floats_doubble = struct.pack('d', value)
+            registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
+    # elif param_type == 'date_time':
+    #     if byte_size == 4:
+    #         byte_array = reverse_modbus_registers(byte_array)
+    #         param_value = struct.unpack('>I', byte_array)[0]
+
+    client.write_registers(modbus_reg, registers, slave_id)
+
+    client.close()
+
+
 def read_device_name(client, slave_id):
     # Установка параметров подключения
     client.connect()

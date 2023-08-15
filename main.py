@@ -34,7 +34,7 @@ from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient
 from pymodbus.file_message import ReadFileRecordRequest
 from AQ_communication_func import read_device_name, read_version, read_serial_number, read_default_prg, is_valid_ip, \
-                            read_parameter
+                            read_parameter, write_parameter
 from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree, \
                             swap_modbus_registers, swap_modbus_bytes, reverse_modbus_registers
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
@@ -97,6 +97,15 @@ class CustomTreeDelegate(QStyledItemDelegate):
         if delegate_attributes is not None:
             if delegate_attributes.get('type', '') == 'enum':
                 model.setData(index, editor.currentIndex())
+            elif delegate_attributes.get('type', '') == 'unsigned':
+                model.setData(index, int(editor.text(), 10))
+            elif delegate_attributes.get('type', '') == 'signed':
+                model.setData(index, int(editor.text(), 10))
+            elif delegate_attributes.get('type', '') == 'string':
+                model.setData(index, editor.text())
+            elif delegate_attributes.get('type', '') == 'float':
+                model.setData(index, float(editor.text()))
+
 
 
 class AQ_TreeView(QTreeView):
@@ -273,7 +282,7 @@ class AQ_TreeView(QTreeView):
         # self.connect_thread.error.connect(self.on_connect_thread_error)
         # self.connect_thread.result_signal.connect(self.connect_finished)
         # self.connect_thread.start()
-        return param_value
+        # return param_value
 
     def read_catalog_by_modbus(self, index, show_prorgess_flag):
         cat_or_param_attributes = index.data(Qt.UserRole)
@@ -358,6 +367,54 @@ class AQ_TreeView(QTreeView):
         self.read_wait_widget.hide()
         self.read_wait_widget.deleteLater()
 
+    def write_value_by_modbus(self, index):
+        cat_or_param_attributes = index.data(Qt.UserRole)
+        if cat_or_param_attributes.get('is_catalog', 0) == 1:
+            return
+        else:
+            modbus_reg = cat_or_param_attributes.get('modbus_reg', '')
+            if cat_or_param_attributes.get('type', '') == 'enum':
+                if cat_or_param_attributes.get('param_size', 0) > 16:
+                    reg_count = 2
+                    byte_size = 4
+                else:
+                    reg_count = 1
+                    byte_size = 1
+            else:
+                byte_size = cat_or_param_attributes.get('param_size', 0)
+                if byte_size < 2:
+                    reg_count = 1
+                else:
+                    reg_count = byte_size // 2
+
+        if is_valid_ip(self.dev_address):
+            ip = self.dev_address
+            client = ModbusTcpClient(ip)
+            slave_id = 1
+        else:
+            # Регулярний вираз для розбору адреси ком-порту
+            pattern = r'(\d+)\s*\((\w+)\)'
+            match = re.match(pattern, self.dev_address)
+
+            if match:
+                slave_id = int(match.group(1))
+                selected_port = match.group(2)
+            else:
+                print("Pattern not found in the string")
+            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+
+        param_type = cat_or_param_attributes.get('type', '')
+
+        next_column_index = index.sibling(index.row(), index.column() + 1)
+        value = self.model().data(next_column_index, Qt.EditRole)
+        write_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size, value)
+
+        # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
+        # self.connect_thread.finished.connect(self.on_connect_thread_finished)
+        # self.connect_thread.error.connect(self.on_connect_thread_error)
+        # self.connect_thread.result_signal.connect(self.connect_finished)
+        # self.connect_thread.start()
+
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
         if index.isValid() and index.column() == 0:
@@ -401,10 +458,13 @@ class AQ_TreeView(QTreeView):
                                         """)
                     # Добавляем действие в контекстное меню
                     action_read = context_menu.addAction("Read parameter")
-                    if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
-                        action_write = context_menu.addAction("Write parameter")
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.read_value_by_modbus(index))
+                    if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
+                        action_write = context_menu.addAction("Write parameter")
+                        # Подключаем обработчик события выбора действия
+                        action_write.triggered.connect(lambda: self.write_value_by_modbus(index))
+
                     # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
         else:
