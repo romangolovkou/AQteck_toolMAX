@@ -102,6 +102,9 @@ def write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_
         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
     elif param_type == 'string':
         text_bytes = value.encode('ANSI')
+        # Добавляем нулевой байт в конец, если длина списка не кратна 2
+        if len(text_bytes) % 2 != 0:
+            text_bytes += b'\x00'
         registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
     elif param_type == 'enum':
         # костиль для enum з розміром два регістра

@@ -290,8 +290,8 @@ class AQ_TreeView(QTreeView):
     def read_catalog_by_modbus(self, index, show_prorgess_flag):
         cat_or_param_attributes = index.data(Qt.UserRole)
         if show_prorgess_flag == 1:
-            self.read_wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-            self.read_wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
+            self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
+            self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
 
         if cat_or_param_attributes.get('is_catalog', 0) == 0:
             return
@@ -347,16 +347,16 @@ class AQ_TreeView(QTreeView):
                         self.setValue(param_value, next_column_index)
 
                 if show_prorgess_flag == 1:
-                    self.read_wait_widget.progress_bar.setValue((row + 1) * step_value)
+                    self.wait_widget.progress_bar.setValue((row + 1) * step_value)
 
             if show_prorgess_flag == 1:
-                self.read_wait_widget.progress_bar.setValue(max_value)
-                self.read_wait_widget.hide()
-                self.read_wait_widget.deleteLater()
+                self.wait_widget.progress_bar.setValue(max_value)
+                self.wait_widget.hide()
+                self.wait_widget.deleteLater()
 
     def read_all_tree_by_modbus(self, item):
-        self.read_wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-        self.read_wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
+        self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
+        self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
 
         max_value = 100  # Максимальное значение для прогресс-бара
         row_count = item.rowCount()
@@ -364,11 +364,11 @@ class AQ_TreeView(QTreeView):
         for row in range(item.rowCount()):
             index = self.model().index(row, 0, item.index())
             self.read_catalog_by_modbus(index, 0)
-            self.read_wait_widget.progress_bar.setValue((row + 1) * step_value)
+            self.wait_widget.progress_bar.setValue((row + 1) * step_value)
 
-        self.read_wait_widget.progress_bar.setValue(max_value)
-        self.read_wait_widget.hide()
-        self.read_wait_widget.deleteLater()
+        self.wait_widget.progress_bar.setValue(max_value)
+        self.wait_widget.hide()
+        self.wait_widget.deleteLater()
 
     def write_value_by_modbus(self, index):
         cat_or_param_attributes = index.data(Qt.UserRole)
@@ -420,6 +420,91 @@ class AQ_TreeView(QTreeView):
         # self.connect_thread.result_signal.connect(self.connect_finished)
         # self.connect_thread.start()
 
+    def write_catalog_by_modbus(self, index, show_prorgess_flag):
+        cat_or_param_attributes = index.data(Qt.UserRole)
+        if show_prorgess_flag == 1:
+            self.wait_widget = AQ_wait_progress_bar_widget('Writing new values...', self.parent)
+            self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
+
+        if cat_or_param_attributes.get('is_catalog', 0) == 0:
+            return
+        else:
+            item_cur_cat = self.model().itemFromIndex(index)
+            if show_prorgess_flag == 1:
+                max_value = 100  # Максимальное значение для прогресс-бара
+                row_count = item_cur_cat.rowCount()
+                step_value = max_value // row_count
+
+            for row in range(item_cur_cat.rowCount()):
+                child_item = item_cur_cat.child(row)
+                child_index = self.model().index(row, 0, index)
+                child_attributes = child_item.data(Qt.UserRole)
+                if child_attributes is not None:
+                    if child_attributes.get('is_catalog', 0) == 1:
+                        self.write_catalog_by_modbus(child_index, 0)
+                    elif not (child_attributes.get('R_Only', 0) == 1 and child_attributes.get('W_Only', 0) == 0):
+                        if is_valid_ip(self.dev_address):
+                            ip = self.dev_address
+                            client = ModbusTcpClient(ip)
+                            slave_id = 1
+                        else:
+                            # Регулярний вираз для розбору адреси ком-порту
+                            pattern = r'(\d+)\s*\((\w+)\)'
+                            match = re.match(pattern, self.dev_address)
+
+                            if match:
+                                slave_id = int(match.group(1))
+                                selected_port = match.group(2)
+                            else:
+                                print("Pattern not found in the string")
+                            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+                        modbus_reg = child_attributes.get('modbus_reg', '')
+                        if child_attributes.get('type', '') == 'enum':
+                            if child_attributes.get('param_size', 0) > 16:
+                                reg_count = 2
+                                byte_size = 4
+                            else:
+                                reg_count = 1
+                                byte_size = 1
+                        else:
+                            byte_size = child_attributes.get('param_size', 0)
+                            if byte_size < 2:
+                                reg_count = 1
+                            else:
+                                reg_count = byte_size // 2
+
+                        param_type = child_attributes.get('type', '')
+                        visual_type = child_attributes.get('visual_type', '')
+
+                        next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
+                        value = self.model().data(next_column_index, Qt.EditRole)
+
+                        write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
+
+                if show_prorgess_flag == 1:
+                    self.wait_widget.progress_bar.setValue((row + 1) * step_value)
+
+            if show_prorgess_flag == 1:
+                self.wait_widget.progress_bar.setValue(max_value)
+                self.wait_widget.hide()
+                self.wait_widget.deleteLater()
+
+    def write_all_tree_by_modbus(self, item):
+        self.wait_widget = AQ_wait_progress_bar_widget('Writing new values...', self.parent)
+        self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
+
+        max_value = 100  # Максимальное значение для прогресс-бара
+        row_count = item.rowCount()
+        step_value = max_value // row_count
+        for row in range(item.rowCount()):
+            index = self.model().index(row, 0, item.index())
+            self.write_catalog_by_modbus(index, 0)
+            self.wait_widget.progress_bar.setValue((row + 1) * step_value)
+
+        self.wait_widget.progress_bar.setValue(max_value)
+        self.wait_widget.hide()
+        self.wait_widget.deleteLater()
+
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
         if index.isValid() and index.column() == 0:
@@ -442,10 +527,12 @@ class AQ_TreeView(QTreeView):
                                                             """)
                     # Добавляем действие в контекстное меню
                     action_read = context_menu.addAction("Read parameters")
-                    if self.traverse_items_R_Only_catalog_check(item) > 0:
-                        action_write = context_menu.addAction("Write parameters")
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.read_catalog_by_modbus(index, 1))
+                    if self.traverse_items_R_Only_catalog_check(item) > 0:
+                        action_write = context_menu.addAction("Write parameters")
+                        # Подключаем обработчик события выбора действия
+                        action_write.triggered.connect(lambda: self.write_catalog_by_modbus(index, 1))
                     # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
                 else:
@@ -585,6 +672,7 @@ class MainWindow(QMainWindow):
         self.panel_btn_add_dev3 = Btn_Read(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev3.clicked.connect(self.read_parameters)
         self.panel_btn_add_dev4 = Btn_Write(self.ico_AddDev_btn, self.tool_panel_frame)
+        self.panel_btn_add_dev4.clicked.connect(self.read_parameters)
         self.panel_btn_add_dev5 = Btn_FactorySettings(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev6 = Btn_WatchList(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev7 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
@@ -888,6 +976,12 @@ class MainWindow(QMainWindow):
         device_tree = device_data.get('device_tree')
         root = device_tree.invisibleRootItem()
         device_data.get('tree_view').read_all_tree_by_modbus(root)
+
+    def write_parameters(self):
+        device_data = self.devices[self.current_active_dev_index]
+        device_tree = device_data.get('device_tree')
+        root = device_tree.invisibleRootItem()
+        device_data.get('tree_view').write_all_tree_by_modbus(root)
 
     def set_active_cur_device(self, index):
         # Ховаємо всі дерева девайсів
