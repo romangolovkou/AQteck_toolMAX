@@ -98,7 +98,10 @@ class CustomTreeDelegate(QStyledItemDelegate):
             if delegate_attributes.get('type', '') == 'enum':
                 model.setData(index, editor.currentIndex())
             elif delegate_attributes.get('type', '') == 'unsigned':
-                model.setData(index, int(editor.text(), 10))
+                if delegate_attributes.get('visual_type', '') == 'ip_format':
+                    model.setData(index, editor.text())
+                else:
+                    model.setData(index, int(editor.text(), 10))
             elif delegate_attributes.get('type', '') == 'signed':
                 model.setData(index, int(editor.text(), 10))
             elif delegate_attributes.get('type', '') == 'string':
@@ -404,10 +407,12 @@ class AQ_TreeView(QTreeView):
             client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
 
         param_type = cat_or_param_attributes.get('type', '')
+        visual_type = cat_or_param_attributes.get('visual_type', '')
 
         next_column_index = index.sibling(index.row(), index.column() + 1)
         value = self.model().data(next_column_index, Qt.EditRole)
-        write_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size, value)
+
+        write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
 
         # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
         # self.connect_thread.finished.connect(self.on_connect_thread_finished)
