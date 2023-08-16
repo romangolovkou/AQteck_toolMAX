@@ -284,12 +284,11 @@ class AddDevices_AQDialog(AQDialog):
                 else:
                     print("Галочка не установлена")
 
-
-
-
     def connect_finished(self, device_data):
-        # Ищем индекс элемента default_prg в списке
-        default_prg = device_data.get('default_prg')
+        if isinstance(device_data, dict):
+            default_prg = device_data.get('default_prg')
+        else:
+            default_prg = device_data
         self.gear_small.stop()
         self.gear_big.stop()
         if default_prg == 'connect_err':
