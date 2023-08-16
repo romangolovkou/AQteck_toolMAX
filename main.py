@@ -27,7 +27,7 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
-                                    AQ_left_device_widget
+                                    AQ_left_device_widget, AQ_IP_tree_QLineEdit
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
@@ -66,16 +66,22 @@ class CustomTreeDelegate(QStyledItemDelegate):
                     or delegate_attributes.get('type', '') == 'string' or \
                     delegate_attributes.get('type', '') == 'float':
                 if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
-                    # Здесь создаем стандартный редактор для unsigned (например, QLineEdit)
-                    editor = QLineEdit(parent)
-                    # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
-                    # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
-                    # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
-                    # "Segoe UI"
-                    font = QFont("Segoe UI", 9)
-                    editor.setFont(font)
-                    editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
-                    editor.textChanged.connect(self.commit_editor_data)
+                    if delegate_attributes.get('visual_type', '') == 'ip_format':
+                        editor = AQ_IP_tree_QLineEdit(parent)
+                        font = QFont("Segoe UI", 9)
+                        editor.setFont(font)
+                        editor.textChanged.connect(self.commit_editor_data)
+                    else:
+                        # Здесь создаем стандартный редактор для unsigned (например, QLineEdit)
+                        editor = QLineEdit(parent)
+                        # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
+                        # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
+                        # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
+                        # "Segoe UI"
+                        font = QFont("Segoe UI", 9)
+                        editor.setFont(font)
+                        editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
+                        editor.textChanged.connect(self.commit_editor_data)
                     return editor
 
     def commit_editor_data(self):
