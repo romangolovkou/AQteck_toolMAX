@@ -60,6 +60,7 @@ class CustomTreeDelegate(QStyledItemDelegate):
                 for i in range(len(enum_strings)):
                     enum_str = enum_strings[i]
                     combo_box.addItem(enum_str)
+                combo_box.currentIndexChanged.connect(self.commit_editor_data)
                 return combo_box
             elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed'\
                     or delegate_attributes.get('type', '') == 'string' or \
@@ -74,8 +75,17 @@ class CustomTreeDelegate(QStyledItemDelegate):
                     font = QFont("Segoe UI", 9)
                     editor.setFont(font)
                     editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
+                    editor.textChanged.connect(self.commit_editor_data)
                     return editor
 
+    def commit_editor_data(self):
+        editor = self.sender()  # Получаем отправителя события
+        if editor:
+            if isinstance(editor, QComboBox):
+                self.commitData.emit(editor)  # Вызываем commitData для делегата
+            else:
+                if editor.text() != '':
+                    self.commitData.emit(editor)  # Вызываем commitData для делегата
 
     def setEditorData(self, editor, index):
         delegate_attributes = index.data(Qt.UserRole)
@@ -672,7 +682,7 @@ class MainWindow(QMainWindow):
         self.panel_btn_add_dev3 = Btn_Read(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev3.clicked.connect(self.read_parameters)
         self.panel_btn_add_dev4 = Btn_Write(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev4.clicked.connect(self.read_parameters)
+        self.panel_btn_add_dev4.clicked.connect(self.write_parameters)
         self.panel_btn_add_dev5 = Btn_FactorySettings(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev6 = Btn_WatchList(self.ico_AddDev_btn, self.tool_panel_frame)
         self.panel_btn_add_dev7 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
