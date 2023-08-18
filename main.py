@@ -41,12 +41,23 @@ from AQ_settings_func import save_current_text_value, save_combobox_current_stat
                              load_last_combobox_state
 from AQ_tree_prapare_func import traverse_items
 from AQ_window_AddDevices import AddDevices_AQDialog
+# Defines
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
+AQ_CHANGED_FLAG = 2
+
 
 
 class AQ_ValueTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.changed_dict = {}  # Словник для флагів змін значення
+        self.set_by_prog_flag_dict = {}  # Словник для флагів змін значення
+
+    def set_item_chandeg_flag(self, index, flag):
+            self.changed_dict[index] = flag
+
+    def set_by_prog_flag(self, index, flag):
+            self.set_by_prog_flag_dict[index] = flag
 
     def createEditor(self, parent, option, index):
         # Получаем данные из модели для текущего индекса
@@ -107,18 +118,16 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                 user_data = index.data(Qt.EditRole)
                 if user_data is not None:
                     editor.setText(str(user_data))
-            set_by_program_flag = index.data(Qt.UserRole + 1)
-            if set_by_program_flag is None or set_by_program_flag is False:
+            set_by_program_flag = self.set_by_prog_flag_dict.get(index, True)
+            if set_by_program_flag is not True:
+                self.set_item_chandeg_flag(index, True)
                 new_index = index.sibling(index.row(), 0)
                 self.parent().setLineColor(new_index, '#429061')
             else:
-                self.parent().model().setData(index, False, Qt.UserRole + 1)
+                self.set_by_prog_flag_dict[index] = False
 
     def setModelData(self, editor, model, index):
         delegate_attributes = index.data(Qt.UserRole)
-        # new_index = index.sibling(index.row(), 0)
-        # # item_cur_value = model.itemFromIndex(new_index)
-        # self.parent().setLineColor(new_index, '#429061')
         if delegate_attributes is not None:
             if delegate_attributes.get('type', '') == 'enum':
                 model.setData(index, editor.currentIndex())
@@ -243,11 +252,22 @@ class AQ_TreeView(QTreeView):
     def setLineColor(self, index, color):
         delegate_for_column = self.itemDelegateForColumn(0)
         delegate_for_column.set_item_color(index, QColor(color))
+        # Також встановлюємо підсвітку відповідних каталогів
+        catalog_index = index.parent()
+        self.travers_up_set_cat_line_color(catalog_index, color)
+
+    def travers_up_set_cat_line_color(self, index, color):
+        if index.isValid():
+            delegate_for_column = self.itemDelegateForColumn(0)
+            delegate_for_column.set_item_color(index, QColor(color))
+            parent_index = index.parent()
+            self.travers_up_set_cat_line_color(parent_index, color)
 
     def setValue(self, value, index):
         delegate_attributes = index.data(Qt.UserRole)
         # Ставимо мітку що значення змінюється зсередини коду, а не користувачем (для не відображення підсвітки рядка)
-        self.model().setData(index, True, Qt.UserRole + 1)
+        delegate_for_column = self.itemDelegateForColumn(1)
+        delegate_for_column.set_by_prog_flag(index, True)
         if delegate_attributes is not None:
             if delegate_attributes.get('type', '') == 'enum':
                 enum_strings = delegate_attributes.get('enum_strings', '')
@@ -532,9 +552,12 @@ class AQ_TreeView(QTreeView):
                         visual_type = child_attributes.get('visual_type', '')
 
                         next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
-                        value = self.model().data(next_column_index, Qt.EditRole)
+                        delegate_for_column = self.itemDelegateForColumn(1)
+                        if delegate_for_column.changed_dict.get(next_column_index, False) == True:
+                            value = self.model().data(next_column_index, Qt.EditRole)
 
-                        write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
+                            write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
+                            delegate_for_column.set_item_chandeg_flag(next_column_index, False)
 
                 if show_prorgess_flag == 1:
                     self.wait_widget.progress_bar.setValue((row + 1) * step_value)
