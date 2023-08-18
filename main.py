@@ -11,7 +11,7 @@ import re
 import binascii
 from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
-                        QStandardItem, QTransform, QPainter
+                        QStandardItem, QTransform, QPainter, QBrush
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation, QSettings, QEasingCurve, \
     QThread, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
@@ -44,7 +44,7 @@ from AQ_window_AddDevices import AddDevices_AQDialog
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
 
-class CustomTreeDelegate(QStyledItemDelegate):
+class AQ_ValueTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -107,9 +107,18 @@ class CustomTreeDelegate(QStyledItemDelegate):
                 user_data = index.data(Qt.EditRole)
                 if user_data is not None:
                     editor.setText(str(user_data))
+            set_by_program_flag = index.data(Qt.UserRole + 1)
+            if set_by_program_flag is None or set_by_program_flag is False:
+                new_index = index.sibling(index.row(), 0)
+                self.parent().setLineColor(new_index, '#429061')
+            else:
+                self.parent().model().setData(index, False, Qt.UserRole + 1)
 
     def setModelData(self, editor, model, index):
         delegate_attributes = index.data(Qt.UserRole)
+        # new_index = index.sibling(index.row(), 0)
+        # # item_cur_value = model.itemFromIndex(new_index)
+        # self.parent().setLineColor(new_index, '#429061')
         if delegate_attributes is not None:
             if delegate_attributes.get('type', '') == 'enum':
                 model.setData(index, editor.currentIndex())
@@ -127,14 +136,36 @@ class CustomTreeDelegate(QStyledItemDelegate):
 
 
 
+class AQ_NameTreeDelegate(QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.color_dict = {}  # Словарь для хранения цветов фона
+
+    def set_item_color(self, index, color):
+        self.color_dict[index] = color
+
+    def paint(self, painter, option, index):
+        data = index.data(Qt.DisplayRole)  # Получаем данные
+        if data is not None:
+            painter.save()
+
+            # Определяем цвет фона из словаря или белый цвет по умолчанию
+            background_color = self.color_dict.get(index, QColor('#1e1f22'))
+            painter.fillRect(option.rect, background_color)
+            painter.restore()
+            super().paint(painter, option, index)
+
+
 class AQ_TreeView(QTreeView):
     def __init__(self, dev_index, device_tree, address, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.dev_index = dev_index
         self.dev_address = address
-        delegate = CustomTreeDelegate(self)
-        self.setItemDelegateForColumn(1, delegate)
+        name_delegate = AQ_NameTreeDelegate(self)
+        self.setItemDelegateForColumn(0, name_delegate)
+        value_delegate = AQ_ValueTreeDelegate(self)
+        self.setItemDelegateForColumn(1, value_delegate)
         self.setModel(device_tree)
         self.setGeometry(250, 2, parent.width() - 252,
                                    parent.height() - 4)
@@ -179,7 +210,7 @@ class AQ_TreeView(QTreeView):
                         if index.isValid():
                             item_cur_value = self.model().itemFromIndex(index)
                             item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
-                            self.setValue(1, index)
+                            # self.setValue(1, index)
                 elif parameter_attributes.get('type', '') == 'unsigned' or \
                         parameter_attributes.get('type', '') == 'signed' or \
                         parameter_attributes.get('type', '') == 'string' or \
@@ -209,8 +240,14 @@ class AQ_TreeView(QTreeView):
 
         return write_flag
 
+    def setLineColor(self, index, color):
+        delegate_for_column = self.itemDelegateForColumn(0)
+        delegate_for_column.set_item_color(index, QColor(color))
+
     def setValue(self, value, index):
         delegate_attributes = index.data(Qt.UserRole)
+        # Ставимо мітку що значення змінюється зсередини коду, а не користувачем (для не відображення підсвітки рядка)
+        self.model().setData(index, True, Qt.UserRole + 1)
         if delegate_attributes is not None:
             if delegate_attributes.get('type', '') == 'enum':
                 enum_strings = delegate_attributes.get('enum_strings', '')
@@ -295,6 +332,7 @@ class AQ_TreeView(QTreeView):
 
         next_column_index = index.sibling(index.row(), index.column() + 1)
         self.setValue(param_value, next_column_index)
+        self.setLineColor(index, '#1e1f22')
 
         # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
         # self.connect_thread.finished.connect(self.on_connect_thread_finished)
@@ -361,6 +399,7 @@ class AQ_TreeView(QTreeView):
 
                         next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
                         self.setValue(param_value, next_column_index)
+                        self.setLineColor(child_index, '#1e1f22')
 
                 if show_prorgess_flag == 1:
                     self.wait_widget.progress_bar.setValue((row + 1) * step_value)
