@@ -256,12 +256,32 @@ class AQ_TreeView(QTreeView):
         catalog_index = index.parent()
         self.travers_up_set_cat_line_color(catalog_index, color)
 
-    def travers_up_set_cat_line_color(self, index, color):
-        if index.isValid():
+    def travers_up_set_cat_line_color(self, cat_index, color):
+        if cat_index.isValid():
             delegate_for_column = self.itemDelegateForColumn(0)
-            delegate_for_column.set_item_color(index, QColor(color))
-            parent_index = index.parent()
-            self.travers_up_set_cat_line_color(parent_index, color)
+            parent_index = cat_index.parent()
+            have_changed = self.travers_have_changed_check(cat_index)
+            if have_changed > 0:
+                delegate_for_column.set_item_color(cat_index, QColor('#429061'))
+                self.travers_up_set_cat_line_color(parent_index, '#429061')
+            else:
+                delegate_for_column.set_item_color(cat_index, QColor(color))
+                self.travers_up_set_cat_line_color(parent_index, color)
+
+    def travers_have_changed_check(self, cat_index):
+        delegate_for_column = self.itemDelegateForColumn(1) #Делегат другої колонки зі значеннями
+        have_changed = 0
+        row_count = self.model().rowCount(cat_index)
+        for row in range(row_count):
+            child_index = self.model().index(row, 0, cat_index)  # Первый столбец
+            next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1) # Второй столбец
+            if delegate_for_column.changed_dict.get(next_column_index, False) == True:
+                have_changed += 1
+            # Если у текущего дочернего индекса есть дочерние элементы, рекурсивно обойдем их
+            if self.model().hasChildren(child_index):
+                have_changed += self.travers_have_changed_check(child_index)
+
+        return have_changed
 
     def setValue(self, value, index):
         delegate_attributes = index.data(Qt.UserRole)
@@ -311,6 +331,8 @@ class AQ_TreeView(QTreeView):
                     self.model().setData(index, value, Qt.DisplayRole)
                 else:
                     self.model().setData(index, value, Qt.EditRole)
+
+            delegate_for_column.set_item_chandeg_flag(index, False)
 
 
     def read_value_by_modbus(self, index):
