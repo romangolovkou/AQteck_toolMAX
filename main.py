@@ -502,9 +502,12 @@ class AQ_TreeView(QTreeView):
         visual_type = cat_or_param_attributes.get('visual_type', '')
 
         next_column_index = index.sibling(index.row(), index.column() + 1)
+        delegate_for_column = self.itemDelegateForColumn(1)
+        # if delegate_for_column.changed_dict.get(next_column_index, False) == True:
         value = self.model().data(next_column_index, Qt.EditRole)
-
         write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
+        delegate_for_column.set_item_chandeg_flag(next_column_index, False)
+        self.setLineColor(index, '#1e1f22')
 
         # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
         # self.connect_thread.finished.connect(self.on_connect_thread_finished)
@@ -575,6 +578,7 @@ class AQ_TreeView(QTreeView):
 
                             write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
                             delegate_for_column.set_item_chandeg_flag(next_column_index, False)
+                            self.setLineColor(child_index, '#1e1f22')
 
                 if show_prorgess_flag == 1:
                     self.wait_widget.progress_bar.setValue((row + 1) * step_value)
