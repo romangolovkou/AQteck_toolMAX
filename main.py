@@ -312,6 +312,7 @@ class AQ_TreeView(QTreeView):
                 else:
                     self.model().setData(index, value, Qt.EditRole)
 
+
     def read_value_by_modbus(self, index):
         cat_or_param_attributes = index.data(Qt.UserRole)
         if cat_or_param_attributes.get('is_catalog', 0) == 1:
@@ -354,12 +355,6 @@ class AQ_TreeView(QTreeView):
         self.setValue(param_value, next_column_index)
         self.setLineColor(index, '#1e1f22')
 
-        # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
-        # self.connect_thread.finished.connect(self.on_connect_thread_finished)
-        # self.connect_thread.error.connect(self.on_connect_thread_error)
-        # self.connect_thread.result_signal.connect(self.connect_finished)
-        # self.connect_thread.start()
-        # return param_value
 
     def read_catalog_by_modbus(self, index, show_prorgess_flag):
         cat_or_param_attributes = index.data(Qt.UserRole)
