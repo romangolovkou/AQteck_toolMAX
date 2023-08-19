@@ -43,14 +43,13 @@ from AQ_tree_prapare_func import traverse_items
 from AQ_window_AddDevices import AddDevices_AQDialog
 # Defines
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
-AQ_CHANGED_FLAG = 2
-
 
 
 class AQ_ValueTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.changed_dict = {}  # Словник для флагів змін значення
+        self.error_dict = {}  # Словник для флагів наявності помилок у значеннях
         self.set_by_prog_flag_dict = {}  # Словник для флагів змін значення
 
     def set_item_chandeg_flag(self, index, flag):
@@ -58,6 +57,34 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
 
     def set_by_prog_flag(self, index, flag):
             self.set_by_prog_flag_dict[index] = flag
+
+    def set_error_flag(self, index, flag):
+            self.error_dict[index] = flag
+
+    def value_is_valid(self, index):
+        user_data = index.data(Qt.EditRole)
+        min_limit_index = index.sibling(index.row(), 2)
+        max_limit_index = index.sibling(index.row(), 3)
+        min_limit = min_limit_index.data(Qt.DisplayRole)
+        max_limit = max_limit_index.data(Qt.DisplayRole)
+        if min_limit is not None:
+            try:
+                min_limit = int(min_limit)
+            except:
+                print("min_limit не є числом")
+                return False
+            if user_data < min_limit:
+                return False
+        if max_limit is not None:
+            try:
+                max_limit = int(max_limit)
+            except:
+                print("max_limit не є числом")
+                return False
+            if user_data > int(max_limit):
+                return False
+
+        return True
 
     def createEditor(self, parent, option, index):
         # Получаем данные из модели для текущего индекса
@@ -112,8 +139,15 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                 if user_data is not None:
                     editor.setCurrentIndex(user_data)
             if delegate_attributes.get('type', '') == 'unsigned' or \
-                    delegate_attributes.get('type', '') == 'signed' or \
-                    delegate_attributes.get('type', '') == 'string' or \
+                    delegate_attributes.get('type', '') == 'signed':
+                user_data = index.data(Qt.EditRole)
+                if user_data is not None:
+                    if self.value_is_valid(index):
+                        editor.setText(str(user_data))
+                        self.set_error_flag(index, False)
+                    else:
+                        self.set_error_flag(index, True)
+            elif delegate_attributes.get('type', '') == 'string' or \
                     delegate_attributes.get('type', '') == 'float':
                 user_data = index.data(Qt.EditRole)
                 if user_data is not None:
@@ -126,6 +160,11 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
             else:
                 self.set_by_prog_flag_dict[index] = False
 
+            have_error = self.error_dict.get(index, False)
+            if have_error is True:
+                new_index = index.sibling(index.row(), 0)
+                self.parent().setLineColor(new_index, '#9d4d4f')
+
     def setModelData(self, editor, model, index):
         delegate_attributes = index.data(Qt.UserRole)
         if delegate_attributes is not None:
@@ -133,7 +172,9 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                 model.setData(index, editor.currentIndex())
             elif delegate_attributes.get('type', '') == 'unsigned':
                 if delegate_attributes.get('visual_type', '') == 'ip_format':
-                    model.setData(index, editor.text())
+                    ip = editor.text()
+                    if is_valid_ip(ip):
+                        model.setData(index, ip)
                 else:
                     model.setData(index, int(editor.text(), 10))
             elif delegate_attributes.get('type', '') == 'signed':
@@ -142,7 +183,6 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                 model.setData(index, editor.text())
             elif delegate_attributes.get('type', '') == 'float':
                 model.setData(index, float(editor.text()))
-
 
 
 class AQ_NameTreeDelegate(QStyledItemDelegate):
@@ -261,9 +301,14 @@ class AQ_TreeView(QTreeView):
             delegate_for_column = self.itemDelegateForColumn(0)
             parent_index = cat_index.parent()
             have_changed = self.travers_have_changed_check(cat_index)
-            if have_changed > 0:
-                delegate_for_column.set_item_color(cat_index, QColor('#429061'))
-                self.travers_up_set_cat_line_color(parent_index, '#429061')
+            have_error = self.travers_have_error_check(cat_index)
+            if have_changed > 0 or have_error > 0:
+                if have_error > 0:
+                    delegate_for_column.set_item_color(cat_index, QColor('#9d4d4f'))
+                    self.travers_up_set_cat_line_color(parent_index, '#9d4d4f')
+                else:
+                    delegate_for_column.set_item_color(cat_index, QColor('#429061'))
+                    self.travers_up_set_cat_line_color(parent_index, '#429061')
             else:
                 delegate_for_column.set_item_color(cat_index, QColor(color))
                 self.travers_up_set_cat_line_color(parent_index, color)
@@ -282,6 +327,21 @@ class AQ_TreeView(QTreeView):
                 have_changed += self.travers_have_changed_check(child_index)
 
         return have_changed
+
+    def travers_have_error_check(self, cat_index):
+        delegate_for_column = self.itemDelegateForColumn(1) #Делегат другої колонки зі значеннями
+        have_error = 0
+        row_count = self.model().rowCount(cat_index)
+        for row in range(row_count):
+            child_index = self.model().index(row, 0, cat_index)  # Первый столбец
+            next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1) # Второй столбец
+            if delegate_for_column.error_dict.get(next_column_index, False) == True:
+                have_error += 1
+            # Если у текущего дочернего индекса есть дочерние элементы, рекурсивно обойдем их
+            if self.model().hasChildren(child_index):
+                have_error += self.travers_have_error_check(child_index)
+
+        return have_error
 
     def setValue(self, value, index):
         delegate_attributes = index.data(Qt.UserRole)
