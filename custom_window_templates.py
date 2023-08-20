@@ -512,6 +512,20 @@ class AQ_wait_progress_bar_widget(QWidget):
         self.show()
 
 
+class AQ_have_error_widget(QWidget):
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.frame = QFrame(self)
+        self.frame.setGeometry(0, 0, 230, 80)
+        self.frame.setStyleSheet("border: 2px solid #fe2d2d; border-radius: 5px; background-color: #1e1f22")
+        self.text_label = QLabel(text, self)
+        self.text_label.setFont(QFont("Segoe UI", 12))
+        self.text_label.move(30, 5)
+        self.text_label.setStyleSheet("border: none; color: #E0E0E0; background-color: transparent")
+        self.show()
+
+
 class AQ_left_device_widget(QWidget):
     def __init__(self, index, name, address, serial, parent=None):
         super().__init__(parent)

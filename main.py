@@ -13,7 +13,7 @@ from functools import partial
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
                         QStandardItem, QTransform, QPainter, QBrush
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent, QRegExp, QPropertyAnimation, QSettings, QEasingCurve, \
-    QThread, pyqtSignal
+    QThread, pyqtSignal, QModelIndex
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
     QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView, \
     QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox, QStyledItemDelegate,\
@@ -27,7 +27,7 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
-                                    AQ_left_device_widget, AQ_IP_tree_QLineEdit
+                                    AQ_left_device_widget, AQ_IP_tree_QLineEdit, AQ_have_error_widget
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
@@ -340,6 +340,15 @@ class AQ_TreeView(QTreeView):
             # Если у текущего дочернего индекса есть дочерние элементы, рекурсивно обойдем их
             if self.model().hasChildren(child_index):
                 have_error += self.travers_have_error_check(child_index)
+
+        return have_error
+
+    def travers_all_tree_have_error_check(self, root_item):
+        have_error = 0
+        for row in range(root_item.rowCount()):
+            child_item = root_item.child(row)
+            child_index = self.model().indexFromItem(child_item)
+            have_error += self.travers_have_error_check(child_index)
 
         return have_error
 
@@ -707,19 +716,19 @@ class AQ_TreeView(QTreeView):
                     # Создаем контекстное меню
                     context_menu = QMenu(self)
                     context_menu.setStyleSheet("""
-                        QMenu {
-                            color: #D0D0D0;
-                        }
-
-                        QMenu::item:selected {
-                            background-color: #3a3a3a;
-                            color: #FFFFFF;
-                        }
-
-                        QMenu::item:disabled {
-                            color: #808080; /* Цвет для неактивных действий */
-                        }
-                    """)
+                                            QMenu {
+                                                color: #D0D0D0;
+                                            }
+                    
+                                            QMenu::item:selected {
+                                                background-color: #3a3a3a;
+                                                color: #FFFFFF;
+                                            }
+                    
+                                            QMenu::item:disabled {
+                                                color: #808080; /* Цвет для неактивных действий */
+                                            }
+                                        """)
                     # Добавляем действие в контекстное меню
                     action_read = context_menu.addAction("Read parameter")
                     # Подключаем обработчик события выбора действия
@@ -1158,7 +1167,12 @@ class MainWindow(QMainWindow):
         device_data = self.devices[self.current_active_dev_index]
         device_tree = device_data.get('device_tree')
         root = device_tree.invisibleRootItem()
-        device_data.get('tree_view').write_all_tree_by_modbus(root)
+        device_tree_view = device_data.get('tree_view')
+        have_error = device_tree_view.travers_all_tree_have_error_check(root)
+        if have_error > 0:
+            self.show_have_error_label()
+        else:
+            device_data.get('tree_view').write_all_tree_by_modbus(root)
 
     def set_active_cur_device(self, index):
         # Ховаємо всі дерева девайсів
@@ -1175,6 +1189,16 @@ class MainWindow(QMainWindow):
             tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
             tree_view.show()
             self.current_active_dev_index = index
+
+    def show_have_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.write_err_widget = AQ_have_error_widget("<html>Writing is not possible.<br>One or more parameters<br>\
+                                                        have incorrect values<html>", self.main_field_frame)
+        self.write_err_widget.move(self.main_field_frame.width() // 2 - self.write_err_widget.width() // 2,
+                                    self.main_field_frame.height() // 2 - self.write_err_widget.height() // 2)
+        self.write_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.write_err_widget.deleteLater)
 
 
 if __name__ == '__main__':
