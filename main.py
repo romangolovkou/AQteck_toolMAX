@@ -564,10 +564,12 @@ class AQ_TreeView(QTreeView):
         next_column_index = index.sibling(index.row(), index.column() + 1)
         delegate_for_column = self.itemDelegateForColumn(1)
         # if delegate_for_column.changed_dict.get(next_column_index, False) == True:
-        value = self.model().data(next_column_index, Qt.EditRole)
-        write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
-        delegate_for_column.set_item_chandeg_flag(next_column_index, False)
-        self.setLineColor(index, '#1e1f22')
+        have_error = delegate_for_column.error_dict.get(next_column_index, False)
+        if have_error is False:
+            value = self.model().data(next_column_index, Qt.EditRole)
+            write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value)
+            delegate_for_column.set_item_chandeg_flag(next_column_index, False)
+            self.setLineColor(index, '#1e1f22')
 
         # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
         # self.connect_thread.finished.connect(self.on_connect_thread_finished)
@@ -675,21 +677,28 @@ class AQ_TreeView(QTreeView):
                     # Создаем контекстное меню
                     context_menu = QMenu(self)
                     context_menu.setStyleSheet("""
-                                                                QMenu {
-                                                                    color: #D0D0D0;
-                                                                }
+                                            QMenu {
+                                                color: #D0D0D0;
+                                            }
 
-                                                                QMenu::item:selected {
-                                                                    background-color: #3a3a3a;
-                                                                    color: #FFFFFF;
-                                                                }
-                                                            """)
+                                            QMenu::item:selected {
+                                                background-color: #3a3a3a;
+                                                color: #FFFFFF;
+                                            }
+
+                                            QMenu::item:disabled {
+                                                color: #808080; /* Цвет для неактивных действий */
+                                            }
+                                        """)
                     # Добавляем действие в контекстное меню
                     action_read = context_menu.addAction("Read parameters")
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.read_catalog_by_modbus(index, 1))
                     if self.traverse_items_R_Only_catalog_check(item) > 0:
                         action_write = context_menu.addAction("Write parameters")
+                        have_error = self.travers_have_error_check(index)
+                        if have_error > 0:
+                            action_write.setDisabled(True)
                         # Подключаем обработчик события выбора действия
                         action_write.triggered.connect(lambda: self.write_catalog_by_modbus(index, 1))
                     # Показываем контекстное меню
@@ -698,21 +707,30 @@ class AQ_TreeView(QTreeView):
                     # Создаем контекстное меню
                     context_menu = QMenu(self)
                     context_menu.setStyleSheet("""
-                                            QMenu {
-                                                color: #D0D0D0;
-                                            }
-                                        
-                                            QMenu::item:selected {
-                                                background-color: #3a3a3a;
-                                                color: #FFFFFF;
-                                            }
-                                        """)
+                        QMenu {
+                            color: #D0D0D0;
+                        }
+
+                        QMenu::item:selected {
+                            background-color: #3a3a3a;
+                            color: #FFFFFF;
+                        }
+
+                        QMenu::item:disabled {
+                            color: #808080; /* Цвет для неактивных действий */
+                        }
+                    """)
                     # Добавляем действие в контекстное меню
                     action_read = context_menu.addAction("Read parameter")
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.read_value_by_modbus(index))
                     if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
                         action_write = context_menu.addAction("Write parameter")
+                        delegate_for_column = self.itemDelegateForColumn(1)
+                        next_column_index = index.sibling(index.row(), index.column() + 1)
+                        have_error = delegate_for_column.error_dict.get(next_column_index, False)
+                        if have_error is True:
+                            action_write.setDisabled(True)
                         # Подключаем обработчик события выбора действия
                         action_write.triggered.connect(lambda: self.write_value_by_modbus(index))
 
