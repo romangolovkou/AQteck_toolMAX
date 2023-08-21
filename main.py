@@ -110,7 +110,16 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                         editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")
                         editor.textChanged.connect(self.commit_editor_data)
                     else:
-                        editor = AQ_int_tree_QLineEdit(parent)
+                        min_limit_index = index.sibling(index.row(), 2)
+                        max_limit_index = index.sibling(index.row(), 3)
+                        min_limit = min_limit_index.data(Qt.DisplayRole)
+                        if min_limit is not None:
+                            min_limit = int(min_limit)
+
+                        max_limit = max_limit_index.data(Qt.DisplayRole)
+                        if max_limit is not None:
+                            max_limit = int(max_limit)
+                        editor = AQ_int_tree_QLineEdit(min_limit, max_limit, parent)
                         # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
                         # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
                         # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
