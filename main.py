@@ -28,7 +28,7 @@ from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame,
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
                                     AQ_left_device_widget, AQ_IP_tree_QLineEdit, AQ_have_error_widget, \
-                                    AQ_int_tree_QLineEdit
+                                    AQ_int_tree_QLineEdit, AQ_uint_tree_QLineEdit
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
@@ -101,7 +101,7 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                     combo_box.addItem(enum_str)
                 combo_box.currentIndexChanged.connect(self.commit_editor_data)
                 return combo_box
-            elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed':
+            elif delegate_attributes.get('type', '') == 'unsigned':
                 if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
                     if delegate_attributes.get('visual_type', '') == 'ip_format':
                         editor = AQ_IP_tree_QLineEdit(parent)
@@ -119,7 +119,7 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                         max_limit = max_limit_index.data(Qt.DisplayRole)
                         if max_limit is not None:
                             max_limit = int(max_limit)
-                        editor = AQ_int_tree_QLineEdit(min_limit, max_limit, parent)
+                        editor = AQ_uint_tree_QLineEdit(min_limit, max_limit, parent)
                         # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
                         # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
                         # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
@@ -128,6 +128,28 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                         editor.setFont(font)
                         editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
                         editor.textChanged.connect(self.commit_editor_data)
+                    return editor
+            elif delegate_attributes.get('type', '') == 'signed':
+                if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
+                    min_limit_index = index.sibling(index.row(), 2)
+                    max_limit_index = index.sibling(index.row(), 3)
+                    min_limit = min_limit_index.data(Qt.DisplayRole)
+                    if min_limit is not None:
+                        min_limit = int(min_limit)
+
+                    max_limit = max_limit_index.data(Qt.DisplayRole)
+                    if max_limit is not None:
+                        max_limit = int(max_limit)
+
+                    editor = AQ_int_tree_QLineEdit(min_limit, max_limit, parent)
+                    # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
+                    # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
+                    # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
+                    # "Segoe UI"
+                    font = QFont("Segoe UI", 9)
+                    editor.setFont(font)
+                    editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
+                    editor.textChanged.connect(self.commit_editor_data)
                     return editor
             elif delegate_attributes.get('type', '') == 'string' or delegate_attributes.get('type', '') == 'float':
                 if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
