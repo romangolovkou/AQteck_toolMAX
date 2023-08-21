@@ -545,6 +545,16 @@ class AQ_int_tree_QLineEdit(QLineEdit):
                         self.setCursorPosition(0)
                         self.insert(text)
                         self.setCursorPosition(cursor_position + 1)
+                        str_copy = self.text()
+                        user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                        if self.min_limit is not None:
+                            if user_data < self.min_limit:
+                                self.red_blink_timer.start()
+                                self.show_err_label()
+                        if self.max_limit is not None:
+                            if user_data > self.max_limit:
+                                self.red_blink_timer.start()
+                                self.show_err_label()
                         return
                 else:
                     self.setCursorPosition(0)
@@ -653,6 +663,113 @@ class AQ_uint_tree_QLineEdit(QLineEdit):
         pos = self.mapTo(self, rect.topRight())
         self.err_label = AQLabel('Invalid value, valid ({}...{})'.format(self.min_limit, self.max_limit), self.parent())
         self.err_label.setStyleSheet("color: #fe2d2d; \n")
+        self.err_label.move(pos.x() - 190, pos.y() - 15)
+        self.err_label.show()
+        # Устанавливаем задержку в 2 секунды и затем удаляем метку
+        QTimer.singleShot(3000, self.err_label.deleteLater)
+
+
+class AQ_float_tree_QLineEdit(QLineEdit):
+    def __init__(self, min_limit, max_limit, parent=None):
+        super().__init__(parent)
+        self.min_limit = min_limit
+        self.max_limit = max_limit
+        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30; \n")  # Задаем цветную границу и цвет шрифта
+        self.red_blink_timer = QTimer()
+        self.red_blink_timer.setInterval(40)
+        self.red_blink_timer.timeout.connect(self.err_blink)
+        self.anim_cnt = 0
+        self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
+
+    def err_blink(self):
+        if self.anim_cnt < 34:
+            self.anim_cnt += 1
+            if self.anim_cnt < 18:
+                self.color_code = self.color_code + 0xA
+            else:
+                self.color_code = self.color_code - 0xA
+
+            hex_string = format(self.color_code, 'x')
+            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #{}2d30;\n".format(hex_string))
+        else:
+            self.anim_cnt = 0
+            self.color_code = 0x2b
+            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30;\n")
+            self.red_blink_timer.stop()
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == Qt.Key_Left:
+            cursor_position = self.cursorPosition()
+            self.setCursorPosition(cursor_position - 1)
+            return
+        elif key == Qt.Key_Right:
+            cursor_position = self.cursorPosition()
+            self.setCursorPosition(cursor_position + 1)
+            return
+        elif key == Qt.Key_Backspace:
+            self.backspace()
+            str_copy = self.text()
+            if not str_copy.strip():
+                self.insert('0')
+            return
+
+        cursor_position = self.cursorPosition()
+        text = event.text()
+        if not text.isdigit() and text != '-':
+            # Якщо не цифра та не мінус
+            return
+        # Если цифра
+        else:
+            str_copy = self.text()
+            if text == '-':
+                # Перевірка чи не порожня строка
+                if str_copy.strip():
+                    if str_copy[0] == '-':
+                        return
+                    else:
+                        self.setCursorPosition(0)
+                        self.insert(text)
+                        self.setCursorPosition(cursor_position + 1)
+                        str_copy = self.text()
+                        user_data = float(str_copy)  # Преобразуем подстроку в целое число
+                        if self.min_limit is not None:
+                            if user_data < self.min_limit:
+                                self.red_blink_timer.start()
+                                self.show_err_label()
+                        if self.max_limit is not None:
+                            if user_data > self.max_limit:
+                                self.red_blink_timer.start()
+                                self.show_err_label()
+                        return
+                else:
+                    self.setCursorPosition(0)
+                    self.insert(text)
+                    self.setCursorPosition(1)
+                    return
+
+            str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+            user_data = float(str_copy)  # Преобразуем подстроку в целое число
+            if self.min_limit is not None:
+                if user_data < self.min_limit:
+                    self.red_blink_timer.start()
+                    self.show_err_label()
+            if self.max_limit is not None:
+                if user_data > self.max_limit:
+                    self.red_blink_timer.start()
+                    self.show_err_label()
+
+
+        super().keyPressEvent(event)
+
+    def show_err_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна
+        rect = self.geometry()
+        pos = self.mapTo(self, rect.topRight())
+        self.err_label = AQLabel('Invalid value, valid ({}...{})'.format(self.min_limit, self.max_limit), self.parent())
+        self.err_label.setStyleSheet("color: #fe2d2d; \n")
+        # self.err_label.setFixedSize(190, 12)
         self.err_label.move(pos.x() - 190, pos.y() - 15)
         self.err_label.show()
         # Устанавливаем задержку в 2 секунды и затем удаляем метку

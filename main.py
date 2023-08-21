@@ -28,7 +28,7 @@ from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame,
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
                                     AQ_left_device_widget, AQ_IP_tree_QLineEdit, AQ_have_error_widget, \
-                                    AQ_int_tree_QLineEdit, AQ_uint_tree_QLineEdit
+                                    AQ_int_tree_QLineEdit, AQ_uint_tree_QLineEdit, AQ_float_tree_QLineEdit
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
@@ -62,28 +62,47 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
     def set_error_flag(self, index, flag):
             self.error_dict[index] = flag
 
-    def value_is_valid(self, index):
+    def value_is_valid(self, index, param_type):
         user_data = index.data(Qt.EditRole)
         min_limit_index = index.sibling(index.row(), 2)
         max_limit_index = index.sibling(index.row(), 3)
         min_limit = min_limit_index.data(Qt.DisplayRole)
         max_limit = max_limit_index.data(Qt.DisplayRole)
-        if min_limit is not None:
-            try:
-                min_limit = int(min_limit)
-            except:
-                print("min_limit не є числом")
-                return False
-            if user_data < min_limit:
-                return False
-        if max_limit is not None:
-            try:
-                max_limit = int(max_limit)
-            except:
-                print("max_limit не є числом")
-                return False
-            if user_data > int(max_limit):
-                return False
+
+        if param_type == 'unsigned' or param_type == 'signed':
+            if min_limit is not None:
+                try:
+                    min_limit = int(min_limit)
+                except:
+                    print("min_limit не є числом")
+                    return False
+                if user_data < min_limit:
+                    return False
+            if max_limit is not None:
+                try:
+                    max_limit = int(max_limit)
+                except:
+                    print("max_limit не є числом")
+                    return False
+                if user_data > int(max_limit):
+                    return False
+        elif param_type == 'float':
+            if min_limit is not None:
+                try:
+                    min_limit = float(min_limit)
+                except:
+                    print("min_limit не є числом")
+                    return False
+                if user_data < min_limit:
+                    return False
+            if max_limit is not None:
+                try:
+                    max_limit = float(max_limit)
+                except:
+                    print("max_limit не є числом")
+                    return False
+                if user_data > float(max_limit):
+                    return False
 
         return True
 
@@ -120,10 +139,6 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                         if max_limit is not None:
                             max_limit = int(max_limit)
                         editor = AQ_uint_tree_QLineEdit(min_limit, max_limit, parent)
-                        # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
-                        # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
-                        # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
-                        # "Segoe UI"
                         font = QFont("Segoe UI", 9)
                         editor.setFont(font)
                         editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
@@ -142,27 +157,36 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                         max_limit = int(max_limit)
 
                     editor = AQ_int_tree_QLineEdit(min_limit, max_limit, parent)
-                    # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
-                    # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
-                    # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
-                    # "Segoe UI"
                     font = QFont("Segoe UI", 9)
                     editor.setFont(font)
                     editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
                     editor.textChanged.connect(self.commit_editor_data)
                     return editor
-            elif delegate_attributes.get('type', '') == 'string' or delegate_attributes.get('type', '') == 'float':
+            elif delegate_attributes.get('type', '') == 'string':
                 if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
                     editor = QLineEdit(parent)
-                    # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
-                    # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
-                    # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
-                    # "Segoe UI"
                     font = QFont("Segoe UI", 9)
                     editor.setFont(font)
                     editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
                     editor.textChanged.connect(self.commit_editor_data)
+            elif delegate_attributes.get('type', '') == 'float':
+                if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
+                    min_limit_index = index.sibling(index.row(), 2)
+                    max_limit_index = index.sibling(index.row(), 3)
+                    min_limit = min_limit_index.data(Qt.DisplayRole)
+                    if min_limit is not None:
+                        min_limit = float(min_limit)
 
+                    max_limit = max_limit_index.data(Qt.DisplayRole)
+                    if max_limit is not None:
+                        max_limit = float(max_limit)
+
+                    editor = AQ_float_tree_QLineEdit(min_limit, max_limit, parent)
+                    font = QFont("Segoe UI", 9)
+                    editor.setFont(font)
+                    editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
+                    editor.textChanged.connect(self.commit_editor_data)
+                    return editor
     def commit_editor_data(self):
         editor = self.sender()  # Получаем отправителя события
         if editor:
@@ -180,19 +204,27 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                 if user_data is not None:
                     editor.setCurrentIndex(user_data)
             if delegate_attributes.get('type', '') == 'unsigned' or \
-                    delegate_attributes.get('type', '') == 'signed':
+                    delegate_attributes.get('type', '') == 'signed' or delegate_attributes.get('type', '') == 'float':
                 user_data = index.data(Qt.EditRole)
                 if user_data is not None:
-                    if self.value_is_valid(index):
+                    if self.value_is_valid(index, delegate_attributes.get('type', '')):
                         editor.setText(str(user_data))
                         self.set_error_flag(index, False)
                     else:
                         self.set_error_flag(index, True)
-            elif delegate_attributes.get('type', '') == 'string' or \
-                    delegate_attributes.get('type', '') == 'float':
+            elif delegate_attributes.get('type', '') == 'string':
                 user_data = index.data(Qt.EditRole)
                 if user_data is not None:
                     editor.setText(str(user_data))
+            # elif delegate_attributes.get('type', '') == 'float':
+            #     user_data = index.data(Qt.EditRole)
+            #     if user_data is not None:
+            #         if self.value_is_valid(index, delegate_attributes.get('type', '')):
+            #             editor.setText(str(user_data))
+            #             self.set_error_flag(index, False)
+            #         else:
+            #             self.set_error_flag(index, True)
+
             set_by_program_flag = self.set_by_prog_flag_dict.get(index, True)
             if set_by_program_flag is not True:
                 self.set_item_chandeg_flag(index, True)
@@ -230,7 +262,7 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                     model.setData(index, user_data)
             elif delegate_attributes.get('type', '') == 'float':
                 user_data = editor.text()
-                if user_data != '':
+                if user_data != '' and user_data != '-':
                     model.setData(index, float(user_data))
 
 
