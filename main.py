@@ -27,7 +27,8 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
-                                    AQ_left_device_widget, AQ_IP_tree_QLineEdit, AQ_have_error_widget
+                                    AQ_left_device_widget, AQ_IP_tree_QLineEdit, AQ_have_error_widget, \
+                                    AQ_int_tree_QLineEdit
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
@@ -100,18 +101,16 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                     combo_box.addItem(enum_str)
                 combo_box.currentIndexChanged.connect(self.commit_editor_data)
                 return combo_box
-            elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed'\
-                    or delegate_attributes.get('type', '') == 'string' or \
-                    delegate_attributes.get('type', '') == 'float':
+            elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed':
                 if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
                     if delegate_attributes.get('visual_type', '') == 'ip_format':
                         editor = AQ_IP_tree_QLineEdit(parent)
                         font = QFont("Segoe UI", 9)
                         editor.setFont(font)
+                        editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")
                         editor.textChanged.connect(self.commit_editor_data)
                     else:
-                        # Здесь создаем стандартный редактор для unsigned (например, QLineEdit)
-                        editor = QLineEdit(parent)
+                        editor = AQ_int_tree_QLineEdit(parent)
                         # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
                         # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
                         # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
@@ -121,6 +120,17 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                         editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
                         editor.textChanged.connect(self.commit_editor_data)
                     return editor
+            elif delegate_attributes.get('type', '') == 'string' or delegate_attributes.get('type', '') == 'float':
+                if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
+                    editor = QLineEdit(parent)
+                    # Оскільки стандартні комірки в дереві використорують системний шрифт, встановлюємо його і для
+                    # кастомних віджетів редагування. "MS Shell Dlg 2" що стоїть у стандартних комірках - НЕ шрифт,
+                    # а вказівка викристовувати шрифт системи. На різних компах може бути жеппа, якщо система не знайде
+                    # "Segoe UI"
+                    font = QFont("Segoe UI", 9)
+                    editor.setFont(font)
+                    editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
+                    editor.textChanged.connect(self.commit_editor_data)
 
     def commit_editor_data(self):
         editor = self.sender()  # Получаем отправителя события
@@ -176,13 +186,21 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                     if is_valid_ip(ip):
                         model.setData(index, ip)
                 else:
-                    model.setData(index, int(editor.text(), 10))
+                    user_data = editor.text()
+                    if user_data != '':
+                        model.setData(index, int(user_data, 10))
             elif delegate_attributes.get('type', '') == 'signed':
-                model.setData(index, int(editor.text(), 10))
+                user_data = editor.text()
+                if user_data != '' and user_data != '-':
+                    model.setData(index, int(user_data, 10))
             elif delegate_attributes.get('type', '') == 'string':
-                model.setData(index, editor.text())
+                user_data = editor.text()
+                if user_data != '':
+                    model.setData(index, user_data)
             elif delegate_attributes.get('type', '') == 'float':
-                model.setData(index, float(editor.text()))
+                user_data = editor.text()
+                if user_data != '':
+                    model.setData(index, float(user_data))
 
 
 class AQ_NameTreeDelegate(QStyledItemDelegate):

@@ -484,6 +484,104 @@ class AQ_IP_tree_QLineEdit(QLineEdit):
         QTimer.singleShot(3000, self.err_label.deleteLater)
 
 
+class AQ_int_tree_QLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # self.setFixedHeight(30)
+        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+                           "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+                           "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")  # Задаем цветную границу и цвет шрифта
+        self.red_blink_timer = QTimer()
+        self.red_blink_timer.setInterval(40)
+        self.red_blink_timer.timeout.connect(self.err_blink)
+        self.anim_cnt = 0
+        self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
+
+    def err_blink(self):
+        if self.anim_cnt < 34:
+            self.anim_cnt += 1
+            if self.anim_cnt < 18:
+                self.color_code = self.color_code + 0xA
+            else:
+                self.color_code = self.color_code - 0xA
+
+            hex_string = format(self.color_code, 'x')
+            self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+                               "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+                               "color: #D0D0D0; background-color: #{}2d30; border-radius: 4px; \n".format(hex_string))
+        else:
+            self.anim_cnt = 0
+            self.color_code = 0x2b
+            self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
+                               "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
+                               "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")
+            self.red_blink_timer.stop()
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == Qt.Key_Left:
+            cursor_position = self.cursorPosition()
+            self.setCursorPosition(cursor_position - 1)
+            return
+        elif key == Qt.Key_Right:
+            cursor_position = self.cursorPosition()
+            self.setCursorPosition(cursor_position + 1)
+            return
+        elif key == Qt.Key_Backspace:
+            self.backspace()
+            return
+
+        cursor_position = self.cursorPosition()
+        text = event.text()
+        if not text.isdigit() and text != '-':
+            # Якщо не цифра та не мінус
+            return
+        # Если цифра
+        else:
+            str_copy = self.text()
+            if text == '-':
+                # Перевірка чи не порожня строка
+                if str_copy.strip():
+                    if str_copy[0] == '-':
+                        return
+                    else:
+                        self.setCursorPosition(0)
+                        self.insert(text)
+                        self.setCursorPosition(cursor_position + 1)
+                        return
+                else:
+                    self.setCursorPosition(0)
+                    self.insert(text)
+                    self.setCursorPosition(1)
+                    return
+
+            str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+            slave_id = int(str_copy)  # Преобразуем подстроку в целое число
+            if slave_id < 248 and len(str_copy) < 4:
+                self.insert(text)
+                self.setCursorPosition(cursor_position + 1)
+                return
+            else:
+                self.red_blink_timer.start()
+                self.show_err_label()
+                return
+
+        super().keyPressEvent(event)
+
+    def show_err_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна
+        rect = self.geometry()
+        pos = self.mapTo(self, rect.topRight())
+        self.err_label = AQLabel('Invalid value, valid (0...247)', self.parent())
+        self.err_label.setStyleSheet("color: #fe2d2d; \n")
+        self.err_label.setFixedSize(190, 12)
+        self.err_label.move(pos.x() - 190, pos.y() - 15)
+        self.err_label.show()
+        # Устанавливаем задержку в 2 секунды и затем удаляем метку
+        QTimer.singleShot(3000, self.err_label.deleteLater)
+
+
 class AQ_wait_progress_bar_widget(QWidget):
     def __init__(self, text, parent=None):
         super().__init__(parent)
