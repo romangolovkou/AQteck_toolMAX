@@ -115,9 +115,6 @@ def write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_
             packed_data = struct.pack('H', value)
             registers = struct.unpack('H', packed_data)
     elif param_type == 'float':
-        # Преобразование float в 16-битные значения (short int)
-        # Здесь используется формат 'e' для представления float
-        # в виде числа с плавающей запятой в формате IEEE 754
         if byte_size == 4:
             floats = struct.pack('f', value)
             registers = struct.unpack('HH', floats)  # Возвращает два short int значения

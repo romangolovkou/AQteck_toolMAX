@@ -358,7 +358,7 @@ class AQ_IP_tree_QLineEdit(QLineEdit):
         super().__init__(parent)
         self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
         # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setStyleSheet("color: #D0D0D0; background-color: #2b2d30; border-radius: 3px; \n")  # Задаем цветную границу и цвет шрифта
+        self.setStyleSheet("color: #D0D0D0; background-color: transparent; border-radius: 3px; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
@@ -375,15 +375,11 @@ class AQ_IP_tree_QLineEdit(QLineEdit):
                 self.color_code = self.color_code - 0xA
 
             hex_string = format(self.color_code, 'x')
-            self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
-                               "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
-                               "color: #D0D0D0; background-color: #{}2d30; border-radius: 3px; \n".format(hex_string))
+            self.setStyleSheet("color: #D0D0D0; background-color: #{}2d30; border-radius: 3px; \n".format(hex_string))
         else:
             self.anim_cnt = 0
             self.color_code = 0x2b
-            self.setStyleSheet("border-left: 1px solid #9ef1d3; border-top: 1px solid #9ef1d3; \n"
-                               "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
-                               "color: #D0D0D0; background-color: #2b2d30; border-radius: 3px; \n")
+            self.setStyleSheet("color: #D0D0D0; background-color: transparent; border-radius: 3px; \n")
             self.red_blink_timer.stop()
     def keyPressEvent(self, event):
         key = event.key()
@@ -487,8 +483,8 @@ class AQ_int_tree_QLineEdit(QLineEdit):
         super().__init__(parent)
         self.min_limit = min_limit
         self.max_limit = max_limit
-        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30; \n")  # Задаем цветную границу и цвет шрифта
+        # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
@@ -508,7 +504,7 @@ class AQ_int_tree_QLineEdit(QLineEdit):
         else:
             self.anim_cnt = 0
             self.color_code = 0x2b
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30;\n")
+            self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
             self.red_blink_timer.stop()
 
     def keyPressEvent(self, event):
@@ -594,8 +590,8 @@ class AQ_uint_tree_QLineEdit(QLineEdit):
         super().__init__(parent)
         self.min_limit = min_limit
         self.max_limit = max_limit
-        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30; \n")  # Задаем цветную границу и цвет шрифта
+        # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
@@ -615,7 +611,7 @@ class AQ_uint_tree_QLineEdit(QLineEdit):
         else:
             self.anim_cnt = 0
             self.color_code = 0x2b
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30;\n")
+            self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
             self.red_blink_timer.stop()
 
     def keyPressEvent(self, event):
@@ -674,8 +670,8 @@ class AQ_float_tree_QLineEdit(QLineEdit):
         super().__init__(parent)
         self.min_limit = min_limit
         self.max_limit = max_limit
-        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30; \n")  # Задаем цветную границу и цвет шрифта
+        # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.setStyleSheet("border: none; color: #D0D0D0; background-color: trnsparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
@@ -695,7 +691,7 @@ class AQ_float_tree_QLineEdit(QLineEdit):
         else:
             self.anim_cnt = 0
             self.color_code = 0x2b
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #2b2d30;\n")
+            self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
             self.red_blink_timer.stop()
 
     def keyPressEvent(self, event):
@@ -813,7 +809,7 @@ class AQ_have_error_widget(QWidget):
         self.frame.setStyleSheet("border: 2px solid #fe2d2d; border-radius: 5px; background-color: #1e1f22")
         self.text_label = QLabel(text, self)
         self.text_label.setFont(QFont("Segoe UI", 12))
-        self.text_label.move(30, 5)
+        self.text_label.move(10, 5)
         self.text_label.setStyleSheet("border: none; color: #E0E0E0; background-color: transparent")
         self.show()
 

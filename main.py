@@ -51,7 +51,7 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
         super().__init__(parent)
         self.changed_dict = {}  # Словник для флагів змін значення
         self.error_dict = {}  # Словник для флагів наявності помилок у значеннях
-        self.set_by_prog_flag_dict = {}  # Словник для флагів змін значення
+        self.set_by_prog_flag_dict = {}  # Словник для флагів змін значення зсередини коду (не користувачем)
 
     def set_item_chandeg_flag(self, index, flag):
             self.changed_dict[index] = flag
@@ -169,6 +169,7 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                     editor.setFont(font)
                     editor.setStyleSheet("border: none; border-style: outset; color: #D0D0D0;")  # Устанавливаем стиль
                     editor.textChanged.connect(self.commit_editor_data)
+                    return editor
             elif delegate_attributes.get('type', '') == 'float':
                 if not (delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0):
                     min_limit_index = index.sibling(index.row(), 2)
@@ -216,14 +217,6 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
                 user_data = index.data(Qt.EditRole)
                 if user_data is not None:
                     editor.setText(str(user_data))
-            # elif delegate_attributes.get('type', '') == 'float':
-            #     user_data = index.data(Qt.EditRole)
-            #     if user_data is not None:
-            #         if self.value_is_valid(index, delegate_attributes.get('type', '')):
-            #             editor.setText(str(user_data))
-            #             self.set_error_flag(index, False)
-            #         else:
-            #             self.set_error_flag(index, True)
 
             set_by_program_flag = self.set_by_prog_flag_dict.get(index, True)
             if set_by_program_flag is not True:
@@ -486,115 +479,129 @@ class AQ_TreeView(QTreeView):
 
 
     def read_value_by_modbus(self, index):
-        cat_or_param_attributes = index.data(Qt.UserRole)
-        if cat_or_param_attributes.get('is_catalog', 0) == 1:
-            return
-        else:
-            modbus_reg = cat_or_param_attributes.get('modbus_reg', '')
-            if cat_or_param_attributes.get('type', '') == 'enum':
-                if cat_or_param_attributes.get('param_size', 0) > 16:
-                    reg_count = 2
-                    byte_size = 4
-                else:
-                    reg_count = 1
-                    byte_size = 1
+        try:
+            cat_or_param_attributes = index.data(Qt.UserRole)
+            if cat_or_param_attributes.get('is_catalog', 0) == 1:
+                return
             else:
-                byte_size = cat_or_param_attributes.get('param_size', 0)
-                if byte_size < 2:
-                    reg_count = 1
+                modbus_reg = cat_or_param_attributes.get('modbus_reg', '')
+                if cat_or_param_attributes.get('type', '') == 'enum':
+                    if cat_or_param_attributes.get('param_size', 0) > 16:
+                        reg_count = 2
+                        byte_size = 4
+                    else:
+                        reg_count = 1
+                        byte_size = 1
                 else:
-                    reg_count = byte_size // 2
+                    byte_size = cat_or_param_attributes.get('param_size', 0)
+                    if byte_size < 2:
+                        reg_count = 1
+                    else:
+                        reg_count = byte_size // 2
 
-        if is_valid_ip(self.dev_address):
-            ip = self.dev_address
-            client = ModbusTcpClient(ip)
-            slave_id = 1
-        else:
-            # Регулярний вираз для розбору адреси ком-порту
-            pattern = r'(\d+)\s*\((\w+)\)'
-            match = re.match(pattern, self.dev_address)
-
-            if match:
-                slave_id = int(match.group(1))
-                selected_port = match.group(2)
+            if is_valid_ip(self.dev_address):
+                ip = self.dev_address
+                client = ModbusTcpClient(ip)
+                slave_id = 1
             else:
-                print("Pattern not found in the string")
-            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
-        param_type = cat_or_param_attributes.get('type', '')
-        param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+                # Регулярний вираз для розбору адреси ком-порту
+                pattern = r'(\d+)\s*\((\w+)\)'
+                match = re.match(pattern, self.dev_address)
 
-        next_column_index = index.sibling(index.row(), index.column() + 1)
-        self.setValue(param_value, next_column_index)
-        self.setLineColor(index, '#1e1f22')
+                if match:
+                    slave_id = int(match.group(1))
+                    selected_port = match.group(2)
+                else:
+                    print("Pattern not found in the string")
+                client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+            param_type = cat_or_param_attributes.get('type', '')
+            param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+
+            next_column_index = index.sibling(index.row(), index.column() + 1)
+            self.setValue(param_value, next_column_index)
+            self.setLineColor(index, '#1e1f22')
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            self.show_read_error_label()
 
 
     def read_catalog_by_modbus(self, index, show_prorgess_flag):
-        cat_or_param_attributes = index.data(Qt.UserRole)
-        if show_prorgess_flag == 1:
-            self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-            self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
-
-        if cat_or_param_attributes.get('is_catalog', 0) == 0:
-            return
-        else:
-            item_cur_cat = self.model().itemFromIndex(index)
+        try:
+            cat_or_param_attributes = index.data(Qt.UserRole)
             if show_prorgess_flag == 1:
-                max_value = 100  # Максимальное значение для прогресс-бара
-                row_count = item_cur_cat.rowCount()
-                step_value = max_value // row_count
+                self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
+                self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
 
-            for row in range(item_cur_cat.rowCount()):
-                child_item = item_cur_cat.child(row)
-                child_index = self.model().index(row, 0, index)
-                child_attributes = child_item.data(Qt.UserRole)
-                if child_attributes is not None:
-                    if child_attributes.get('is_catalog', 0) == 1:
-                        self.read_catalog_by_modbus(child_index, 0)
-                    else:
-                        if is_valid_ip(self.dev_address):
-                            ip = self.dev_address
-                            client = ModbusTcpClient(ip)
-                            slave_id = 1
+            if cat_or_param_attributes.get('is_catalog', 0) == 0:
+                return
+            else:
+                item_cur_cat = self.model().itemFromIndex(index)
+                if show_prorgess_flag == 1:
+                    max_value = 100  # Максимальное значение для прогресс-бара
+                    row_count = item_cur_cat.rowCount()
+                    step_value = max_value // row_count
+
+                for row in range(item_cur_cat.rowCount()):
+                    child_item = item_cur_cat.child(row)
+                    child_index = self.model().index(row, 0, index)
+                    child_attributes = child_item.data(Qt.UserRole)
+                    if child_attributes is not None:
+                        if child_attributes.get('is_catalog', 0) == 1:
+                            self.read_catalog_by_modbus(child_index, 0)
                         else:
-                            # Регулярний вираз для розбору адреси ком-порту
-                            pattern = r'(\d+)\s*\((\w+)\)'
-                            match = re.match(pattern, self.dev_address)
-
-                            if match:
-                                slave_id = int(match.group(1))
-                                selected_port = match.group(2)
+                            if is_valid_ip(self.dev_address):
+                                ip = self.dev_address
+                                client = ModbusTcpClient(ip)
+                                slave_id = 1
                             else:
-                                print("Pattern not found in the string")
-                            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
-                        param_type = child_attributes.get('type', '')
-                        modbus_reg = child_attributes.get('modbus_reg', '')
-                        if child_attributes.get('type', '') == 'enum':
-                            if child_attributes.get('param_size', 0) > 16:
-                                reg_count = 2
-                                byte_size = 4
-                            else:
-                                reg_count = 1
-                                byte_size = 1
-                        else:
-                            byte_size = child_attributes.get('param_size', 0)
-                            if byte_size < 2:
-                                reg_count = 1
-                            else:
-                                reg_count = byte_size // 2
+                                # Регулярний вираз для розбору адреси ком-порту
+                                pattern = r'(\d+)\s*\((\w+)\)'
+                                match = re.match(pattern, self.dev_address)
 
-                        param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+                                if match:
+                                    slave_id = int(match.group(1))
+                                    selected_port = match.group(2)
+                                else:
+                                    print("Pattern not found in the string")
+                                client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
+                            param_type = child_attributes.get('type', '')
+                            modbus_reg = child_attributes.get('modbus_reg', '')
+                            if child_attributes.get('type', '') == 'enum':
+                                if child_attributes.get('param_size', 0) > 16:
+                                    reg_count = 2
+                                    byte_size = 4
+                                else:
+                                    reg_count = 1
+                                    byte_size = 1
+                            else:
+                                byte_size = child_attributes.get('param_size', 0)
+                                if byte_size < 2:
+                                    reg_count = 1
+                                else:
+                                    reg_count = byte_size // 2
 
-                        next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
-                        self.setValue(param_value, next_column_index)
-                        self.setLineColor(child_index, '#1e1f22')
+                            param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
+
+                            next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
+                            self.setValue(param_value, next_column_index)
+                            self.setLineColor(child_index, '#1e1f22')
+
+                    if show_prorgess_flag == 1:
+                        self.wait_widget.progress_bar.setValue((row + 1) * step_value)
 
                 if show_prorgess_flag == 1:
-                    self.wait_widget.progress_bar.setValue((row + 1) * step_value)
-
-            if show_prorgess_flag == 1:
-                self.wait_widget.progress_bar.setValue(max_value)
+                    self.wait_widget.progress_bar.setValue(max_value)
+                    self.wait_widget.hide()
+                    self.wait_widget.deleteLater()
+                return 'ok'
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            if hasattr(self, 'wait_widget'):
                 self.wait_widget.hide()
                 self.wait_widget.deleteLater()
+            self.show_read_error_label()
+            return 'read_error'
+
 
     def read_all_tree_by_modbus(self, item):
         self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
@@ -605,7 +612,11 @@ class AQ_TreeView(QTreeView):
         step_value = max_value // row_count
         for row in range(item.rowCount()):
             index = self.model().index(row, 0, item.index())
-            self.read_catalog_by_modbus(index, 0)
+            result = self.read_catalog_by_modbus(index, 0)
+            if result == 'read_error':
+                self.wait_widget.hide()
+                self.wait_widget.deleteLater()
+                return
             self.wait_widget.progress_bar.setValue((row + 1) * step_value)
 
         self.wait_widget.progress_bar.setValue(max_value)
@@ -653,7 +664,6 @@ class AQ_TreeView(QTreeView):
 
         next_column_index = index.sibling(index.row(), index.column() + 1)
         delegate_for_column = self.itemDelegateForColumn(1)
-        # if delegate_for_column.changed_dict.get(next_column_index, False) == True:
         have_error = delegate_for_column.error_dict.get(next_column_index, False)
         if have_error is False:
             value = self.model().data(next_column_index, Qt.EditRole)
@@ -661,11 +671,6 @@ class AQ_TreeView(QTreeView):
             delegate_for_column.set_item_chandeg_flag(next_column_index, False)
             self.setLineColor(index, '#1e1f22')
 
-        # self.read_modbus_thread = Read_value_by_modbus_Thread(self, modbus_reg)
-        # self.connect_thread.finished.connect(self.on_connect_thread_finished)
-        # self.connect_thread.error.connect(self.on_connect_thread_error)
-        # self.connect_thread.result_signal.connect(self.connect_finished)
-        # self.connect_thread.start()
 
     def write_catalog_by_modbus(self, index, show_prorgess_flag):
         cat_or_param_attributes = index.data(Qt.UserRole)
@@ -829,6 +834,36 @@ class AQ_TreeView(QTreeView):
         else:
             # Если индекс недействителен, вызывается обработчик события контекстного меню по умолчанию
             super().contextMenuEvent(event)
+
+    def show_have_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.have_err_widget = AQ_have_error_widget("<html>Writing is not possible.<br>One or more parameters<br>\
+                                                        have incorrect values<html>", self.parent)
+        self.have_err_widget.move(self.parent.width() // 2 - self.have_err_widget.width() // 2,
+                                    self.parent.height() // 3 - self.have_err_widget.height() // 2)
+        self.have_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.have_err_widget.deleteLater)
+
+    def show_read_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.read_err_widget = AQ_have_error_widget("<html>Failed to read value.<br>The device is offline, connect<br>\
+                                                        the device and try again<html>", self.parent)
+        self.read_err_widget.move(self.parent.width() // 2 - self.read_err_widget.width() // 2,
+                                    self.parent.height() // 3 - self.read_err_widget.height() // 2)
+        self.read_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.read_err_widget.deleteLater)
+
+    def show_write_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.write_err_widget = AQ_have_error_widget("<html>Writing is not possible.<br>One or more parameters<br>\
+                                                        have incorrect values<html>", self.parent)
+        self.write_err_widget.move(self.parent.width() // 2 - self.write_err_widget.width() // 2,
+                                    self.parent.height() // 3 - self.write_err_widget.height() // 2)
+        self.write_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.write_err_widget.deleteLater)
 
 
 class Read_value_by_modbus_Thread(QThread):
@@ -1251,7 +1286,7 @@ class MainWindow(QMainWindow):
         device_tree_view = device_data.get('tree_view')
         have_error = device_tree_view.travers_all_tree_have_error_check(root)
         if have_error > 0:
-            self.show_have_error_label()
+            device_data.get('tree_view').show_have_error_label()
         else:
             device_data.get('tree_view').write_all_tree_by_modbus(root)
 
@@ -1270,16 +1305,6 @@ class MainWindow(QMainWindow):
             tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
             tree_view.show()
             self.current_active_dev_index = index
-
-    def show_have_error_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
-        self.write_err_widget = AQ_have_error_widget("<html>Writing is not possible.<br>One or more parameters<br>\
-                                                        have incorrect values<html>", self.main_field_frame)
-        self.write_err_widget.move(self.main_field_frame.width() // 2 - self.write_err_widget.width() // 2,
-                                    self.main_field_frame.height() // 2 - self.write_err_widget.height() // 2)
-        self.write_err_widget.show()
-        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
-        QTimer.singleShot(4000, self.write_err_widget.deleteLater)
 
 
 if __name__ == '__main__':
