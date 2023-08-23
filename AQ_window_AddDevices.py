@@ -279,6 +279,8 @@ class AddDevices_AQDialog(AQDialog):
                         ready_device_data = self.parent.ready_to_add_devices[j]
                         if dev_address == ready_device_data.get('address', ''):
                             self.parent.devices.append(self.parent.ready_to_add_devices[j])
+                            # Видаляємо зі списку ready доданий девайс
+                            self.parent.ready_to_add_devices.pop(j)
                             self.parent.add_tree_view()
                             break
                 else:
