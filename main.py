@@ -42,6 +42,7 @@ from AQ_settings_func import save_current_text_value, save_combobox_current_stat
                              load_last_combobox_state
 from AQ_tree_prapare_func import traverse_items
 from AQ_window_AddDevices import AddDevices_AQDialog
+from AQ_toolbar_layaout import AQ_toolbar_layout
 # Defines
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
@@ -971,118 +972,119 @@ class MainWindow(QMainWindow):
         self.main_background_pic.setGeometry(0, 0, 450, 326)
 
         #Создаем горизонтальный макет панели инструментов
-        self.tool_panel_layout = QHBoxLayout(self.tool_panel_frame)
-        self.tool_panel_layout.setContentsMargins(4, 0, 0, 0)
-        self.tool_panel_layout.setSpacing(0)
-
-        self.tool_separator1 = VLine_separator(self.tool_panel_frame.height())
-        self.tool_separator2 = VLine_separator(self.tool_panel_frame.height())
-        self.tool_separator3 = VLine_separator(self.tool_panel_frame.height())
-        self.tool_separator4 = VLine_separator(self.tool_panel_frame.height())
-        self.tool_separator5 = VLine_separator(self.tool_panel_frame.height())
-        self.tool_separator6 = VLine_separator(self.tool_panel_frame.height())
-        self.tool_separator7 = VLine_separator(self.tool_panel_frame.height())
-
-        # # Создаем кнопки панели инструментов
-        self.panel_btn_add_dev = Btn_AddDevices(self.ico_btn_add_devise, self.tool_panel_frame)
-        self.panel_btn_add_dev.clicked.connect(self.open_AddDevices)
-        self.panel_btn_add_dev1 = Btn_DeleteDevices(self.ico_btn_delete_device, self.tool_panel_frame)
-        self.panel_btn_add_dev2 = Btn_IPAdresess(self.ico_btn_ip_adresses, self.tool_panel_frame)
-        self.panel_btn_add_dev3 = Btn_Read(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev3.clicked.connect(self.read_parameters)
-        self.panel_btn_add_dev4 = Btn_Write(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev4.clicked.connect(self.write_parameters)
-        self.panel_btn_add_dev5 = Btn_FactorySettings(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev6 = Btn_WatchList(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev7 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev8 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev9 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev10 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev11 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev12 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev13 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev14 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev15 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev16 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev17 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        self.panel_btn_add_dev18 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-
-        # Создаем горизонтальный макет группы коннекта
-        self.connect_group_layout = QHBoxLayout(self.tool_panel_frame)
-        self.connect_group_layout.setContentsMargins(2, 0, 2, 0)
-        self.connect_group_layout.setSpacing(0)
-
-        # Создаем горизонтальный макет группы обмена
-        self.MB_exchange_group_layout = QHBoxLayout(self.tool_panel_frame)
-        self.MB_exchange_group_layout.setContentsMargins(2, 0, 2, 0)
-        self.MB_exchange_group_layout.setSpacing(0)
-
-        # Создаем горизонтальный макет группы настройки
-        self.settings_group_layout = QHBoxLayout(self.tool_panel_frame)
-        self.settings_group_layout.setContentsMargins(2, 0, 2, 0)
-        self.settings_group_layout.setSpacing(0)
-
-        # Создаем горизонтальный макет группы архива
-        self.archive_group_layout = QHBoxLayout(self.tool_panel_frame)
-        self.archive_group_layout.setContentsMargins(2, 0, 2, 0)
-        self.archive_group_layout.setSpacing(0)
-
-        # Создаем горизонтальный макет группы маршрутизатора
-        self.router_group_layout = QHBoxLayout(self.tool_panel_frame)
-        self.router_group_layout.setContentsMargins(2, 0, 2, 0)
-        self.router_group_layout.setSpacing(0)
-
-        # Создаем горизонтальный макет группы обновления ПО
-        self.firmware_group_layout = QHBoxLayout(self.tool_panel_frame)
-        self.firmware_group_layout.setContentsMargins(2, 0, 2, 0)
-        self.firmware_group_layout.setSpacing(0)
-
-        # Создаем горизонтальный макет группы параметры устройтва
-        self.properties_group_layout = QHBoxLayout(self.tool_panel_frame)
-        self.properties_group_layout.setContentsMargins(2, 0, 2, 0)
-        self.properties_group_layout.setSpacing(0)
-
-        self.connect_group_layout.addWidget(self.panel_btn_add_dev, 0)
-        self.connect_group_layout.addWidget(self.panel_btn_add_dev1, 0)
-        self.connect_group_layout.addWidget(self.panel_btn_add_dev2, 0)
-
-        self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev3, 0)
-        self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev4, 0)
-        self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev5, 0)
-        self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev6, 0)
-
-        self.settings_group_layout.addWidget(self.panel_btn_add_dev7, 0)
-        self.settings_group_layout.addWidget(self.panel_btn_add_dev8, 0)
-        self.settings_group_layout.addWidget(self.panel_btn_add_dev9, 0)
-
-        self.archive_group_layout.addWidget(self.panel_btn_add_dev10, 0)
-        self.archive_group_layout.addWidget(self.panel_btn_add_dev11, 0)
-
-        self.router_group_layout.addWidget(self.panel_btn_add_dev12, 0)
-        self.router_group_layout.addWidget(self.panel_btn_add_dev13, 0)
-
-        self.firmware_group_layout.addWidget(self.panel_btn_add_dev14, 0)
-        self.firmware_group_layout.addWidget(self.panel_btn_add_dev15, 0)
-        self.firmware_group_layout.addWidget(self.panel_btn_add_dev16, 0)
-
-        self.properties_group_layout.addWidget(self.panel_btn_add_dev17, 0)
-        self.properties_group_layout.addWidget(self.panel_btn_add_dev18, 0)
-
-        self.tool_panel_layout.addLayout(self.connect_group_layout, 0)
-        self.tool_panel_layout.addWidget(self.tool_separator1, 0)
-        self.tool_panel_layout.addLayout(self.MB_exchange_group_layout, 0)
-        self.tool_panel_layout.addWidget(self.tool_separator2, 0)
-        self.tool_panel_layout.addLayout(self.settings_group_layout, 0)
-        self.tool_panel_layout.addWidget(self.tool_separator3, 0)
-        self.tool_panel_layout.addLayout(self.archive_group_layout, 0)
-        self.tool_panel_layout.addWidget(self.tool_separator4, 0)
-        self.tool_panel_layout.addLayout(self.router_group_layout, 0)
-        self.tool_panel_layout.addWidget(self.tool_separator5, 0)
-        self.tool_panel_layout.addLayout(self.firmware_group_layout, 0)
-        self.tool_panel_layout.addWidget(self.tool_separator6, 0)
-        self.tool_panel_layout.addLayout(self.properties_group_layout, 0)
-        self.tool_panel_layout.addWidget(self.tool_separator7, 0)
-        self.tool_panel_layout.addStretch(1)
+        self.tool_panel_layout = AQ_toolbar_layout(self.tool_panel_frame)
+        # self.tool_panel_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.tool_panel_layout.setContentsMargins(4, 0, 0, 0)
+        # self.tool_panel_layout.setSpacing(0)
+        #
+        # self.tool_separator1 = VLine_separator(self.tool_panel_frame.height())
+        # self.tool_separator2 = VLine_separator(self.tool_panel_frame.height())
+        # self.tool_separator3 = VLine_separator(self.tool_panel_frame.height())
+        # self.tool_separator4 = VLine_separator(self.tool_panel_frame.height())
+        # self.tool_separator5 = VLine_separator(self.tool_panel_frame.height())
+        # self.tool_separator6 = VLine_separator(self.tool_panel_frame.height())
+        # self.tool_separator7 = VLine_separator(self.tool_panel_frame.height())
+        #
+        # # # Создаем кнопки панели инструментов
+        # self.panel_btn_add_dev = Btn_AddDevices(self.ico_btn_add_devise, self.tool_panel_frame)
+        # self.panel_btn_add_dev.clicked.connect(self.open_AddDevices)
+        # self.panel_btn_add_dev1 = Btn_DeleteDevices(self.ico_btn_delete_device, self.tool_panel_frame)
+        # self.panel_btn_add_dev2 = Btn_IPAdresess(self.ico_btn_ip_adresses, self.tool_panel_frame)
+        # self.panel_btn_add_dev3 = Btn_Read(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev3.clicked.connect(self.read_parameters)
+        # self.panel_btn_add_dev4 = Btn_Write(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev4.clicked.connect(self.write_parameters)
+        # self.panel_btn_add_dev5 = Btn_FactorySettings(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev6 = Btn_WatchList(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev7 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev8 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev9 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev10 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev11 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev12 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev13 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev14 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev15 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev16 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev17 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        # self.panel_btn_add_dev18 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
+        #
+        # # Создаем горизонтальный макет группы коннекта
+        # self.connect_group_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.connect_group_layout.setContentsMargins(2, 0, 2, 0)
+        # self.connect_group_layout.setSpacing(0)
+        #
+        # # Создаем горизонтальный макет группы обмена
+        # self.MB_exchange_group_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.MB_exchange_group_layout.setContentsMargins(2, 0, 2, 0)
+        # self.MB_exchange_group_layout.setSpacing(0)
+        #
+        # # Создаем горизонтальный макет группы настройки
+        # self.settings_group_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.settings_group_layout.setContentsMargins(2, 0, 2, 0)
+        # self.settings_group_layout.setSpacing(0)
+        #
+        # # Создаем горизонтальный макет группы архива
+        # self.archive_group_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.archive_group_layout.setContentsMargins(2, 0, 2, 0)
+        # self.archive_group_layout.setSpacing(0)
+        #
+        # # Создаем горизонтальный макет группы маршрутизатора
+        # self.router_group_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.router_group_layout.setContentsMargins(2, 0, 2, 0)
+        # self.router_group_layout.setSpacing(0)
+        #
+        # # Создаем горизонтальный макет группы обновления ПО
+        # self.firmware_group_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.firmware_group_layout.setContentsMargins(2, 0, 2, 0)
+        # self.firmware_group_layout.setSpacing(0)
+        #
+        # # Создаем горизонтальный макет группы параметры устройтва
+        # self.properties_group_layout = QHBoxLayout(self.tool_panel_frame)
+        # self.properties_group_layout.setContentsMargins(2, 0, 2, 0)
+        # self.properties_group_layout.setSpacing(0)
+        #
+        # self.connect_group_layout.addWidget(self.panel_btn_add_dev, 0)
+        # self.connect_group_layout.addWidget(self.panel_btn_add_dev1, 0)
+        # self.connect_group_layout.addWidget(self.panel_btn_add_dev2, 0)
+        #
+        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev3, 0)
+        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev4, 0)
+        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev5, 0)
+        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev6, 0)
+        #
+        # self.settings_group_layout.addWidget(self.panel_btn_add_dev7, 0)
+        # self.settings_group_layout.addWidget(self.panel_btn_add_dev8, 0)
+        # self.settings_group_layout.addWidget(self.panel_btn_add_dev9, 0)
+        #
+        # self.archive_group_layout.addWidget(self.panel_btn_add_dev10, 0)
+        # self.archive_group_layout.addWidget(self.panel_btn_add_dev11, 0)
+        #
+        # self.router_group_layout.addWidget(self.panel_btn_add_dev12, 0)
+        # self.router_group_layout.addWidget(self.panel_btn_add_dev13, 0)
+        #
+        # self.firmware_group_layout.addWidget(self.panel_btn_add_dev14, 0)
+        # self.firmware_group_layout.addWidget(self.panel_btn_add_dev15, 0)
+        # self.firmware_group_layout.addWidget(self.panel_btn_add_dev16, 0)
+        #
+        # self.properties_group_layout.addWidget(self.panel_btn_add_dev17, 0)
+        # self.properties_group_layout.addWidget(self.panel_btn_add_dev18, 0)
+        #
+        # self.tool_panel_layout.addLayout(self.connect_group_layout, 0)
+        # self.tool_panel_layout.addWidget(self.tool_separator1, 0)
+        # self.tool_panel_layout.addLayout(self.MB_exchange_group_layout, 0)
+        # self.tool_panel_layout.addWidget(self.tool_separator2, 0)
+        # self.tool_panel_layout.addLayout(self.settings_group_layout, 0)
+        # self.tool_panel_layout.addWidget(self.tool_separator3, 0)
+        # self.tool_panel_layout.addLayout(self.archive_group_layout, 0)
+        # self.tool_panel_layout.addWidget(self.tool_separator4, 0)
+        # self.tool_panel_layout.addLayout(self.router_group_layout, 0)
+        # self.tool_panel_layout.addWidget(self.tool_separator5, 0)
+        # self.tool_panel_layout.addLayout(self.firmware_group_layout, 0)
+        # self.tool_panel_layout.addWidget(self.tool_separator6, 0)
+        # self.tool_panel_layout.addLayout(self.properties_group_layout, 0)
+        # self.tool_panel_layout.addWidget(self.tool_separator7, 0)
+        # self.tool_panel_layout.addStretch(1)
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
@@ -1158,7 +1160,7 @@ class MainWindow(QMainWindow):
             self.resizeDiag_TopRigth_widget.move(self.width() - self.resizeLineWidth, 0)
             self.resizeDiag_BotLeft_widget.move(0, self.height() - self.resizeLineWidth)
 
-            replaceToolPanelWidget(self, self.tool_panel_layout)
+            # replaceToolPanelWidget(self, self.tool_panel_layout)
 
             # Получаем размеры родительского виджета
             parent_size = self.main_field_frame.size()

@@ -12,9 +12,6 @@ class TemplateToolButton(QToolButton):
         self.setStyleSheet("QToolButton {color: #D0D0D0;}"
                            "QToolButton:hover {background-color: #9d4d4f;}")
         self.setFont(QFont("Verdana", 9))  # Задаем шрифт и размер
-        # font = self.font()
-        # font.setPointSize(9)  # Установите новый размер шрифта
-        # self.setFont(font)  # Примените измененный шрифт к виджету
 
 
 class AddDeviceButton(TemplateToolButton):
