@@ -24,7 +24,7 @@ from ToolPanelLayouts import replaceToolPanelWidget
 from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, \
                            resizeHeigthTop_Qwidget, resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, \
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
-from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, tool_panel_frame_AQFrame, \
+from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
                                     AQ_left_device_widget, AQ_IP_tree_QLineEdit, AQ_have_error_widget, \
@@ -43,6 +43,7 @@ from AQ_settings_func import save_current_text_value, save_combobox_current_stat
 from AQ_tree_prapare_func import traverse_items
 from AQ_window_AddDevices import AddDevices_AQDialog
 from AQ_toolbar_layaout import AQ_toolbar_layout
+from AQ_toolbar_frame import AQ_tool_panel_frame
 # Defines
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
@@ -961,7 +962,7 @@ class MainWindow(QMainWindow):
         #TitleBarFrame
         self.title_bar_frame = title_bar_frame_AQFrame(self, 60, MainName, self.AQicon, self.main_window_frame)
         # ToolPanelFrame
-        self.tool_panel_frame = tool_panel_frame_AQFrame(self.title_bar_frame.height(), self.main_window_frame)
+        self.tool_panel_frame = AQ_tool_panel_frame(self.title_bar_frame.height(), self.main_window_frame)
         # MainFieldFrame
         self.main_field_frame = main_field_frame_AQFrame(self.title_bar_frame.height() + self.tool_panel_frame.height(), self)
 
@@ -972,119 +973,7 @@ class MainWindow(QMainWindow):
         self.main_background_pic.setGeometry(0, 0, 450, 326)
 
         #Создаем горизонтальный макет панели инструментов
-        self.tool_panel_layout = AQ_toolbar_layout(self.tool_panel_frame)
-        # self.tool_panel_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.tool_panel_layout.setContentsMargins(4, 0, 0, 0)
-        # self.tool_panel_layout.setSpacing(0)
-        #
-        # self.tool_separator1 = VLine_separator(self.tool_panel_frame.height())
-        # self.tool_separator2 = VLine_separator(self.tool_panel_frame.height())
-        # self.tool_separator3 = VLine_separator(self.tool_panel_frame.height())
-        # self.tool_separator4 = VLine_separator(self.tool_panel_frame.height())
-        # self.tool_separator5 = VLine_separator(self.tool_panel_frame.height())
-        # self.tool_separator6 = VLine_separator(self.tool_panel_frame.height())
-        # self.tool_separator7 = VLine_separator(self.tool_panel_frame.height())
-        #
-        # # # Создаем кнопки панели инструментов
-        # self.panel_btn_add_dev = Btn_AddDevices(self.ico_btn_add_devise, self.tool_panel_frame)
-        # self.panel_btn_add_dev.clicked.connect(self.open_AddDevices)
-        # self.panel_btn_add_dev1 = Btn_DeleteDevices(self.ico_btn_delete_device, self.tool_panel_frame)
-        # self.panel_btn_add_dev2 = Btn_IPAdresess(self.ico_btn_ip_adresses, self.tool_panel_frame)
-        # self.panel_btn_add_dev3 = Btn_Read(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev3.clicked.connect(self.read_parameters)
-        # self.panel_btn_add_dev4 = Btn_Write(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev4.clicked.connect(self.write_parameters)
-        # self.panel_btn_add_dev5 = Btn_FactorySettings(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev6 = Btn_WatchList(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev7 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev8 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev9 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev10 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev11 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev12 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev13 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev14 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev15 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev16 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev17 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        # self.panel_btn_add_dev18 = AddDeviceButton(self.ico_AddDev_btn, self.tool_panel_frame)
-        #
-        # # Создаем горизонтальный макет группы коннекта
-        # self.connect_group_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.connect_group_layout.setContentsMargins(2, 0, 2, 0)
-        # self.connect_group_layout.setSpacing(0)
-        #
-        # # Создаем горизонтальный макет группы обмена
-        # self.MB_exchange_group_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.MB_exchange_group_layout.setContentsMargins(2, 0, 2, 0)
-        # self.MB_exchange_group_layout.setSpacing(0)
-        #
-        # # Создаем горизонтальный макет группы настройки
-        # self.settings_group_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.settings_group_layout.setContentsMargins(2, 0, 2, 0)
-        # self.settings_group_layout.setSpacing(0)
-        #
-        # # Создаем горизонтальный макет группы архива
-        # self.archive_group_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.archive_group_layout.setContentsMargins(2, 0, 2, 0)
-        # self.archive_group_layout.setSpacing(0)
-        #
-        # # Создаем горизонтальный макет группы маршрутизатора
-        # self.router_group_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.router_group_layout.setContentsMargins(2, 0, 2, 0)
-        # self.router_group_layout.setSpacing(0)
-        #
-        # # Создаем горизонтальный макет группы обновления ПО
-        # self.firmware_group_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.firmware_group_layout.setContentsMargins(2, 0, 2, 0)
-        # self.firmware_group_layout.setSpacing(0)
-        #
-        # # Создаем горизонтальный макет группы параметры устройтва
-        # self.properties_group_layout = QHBoxLayout(self.tool_panel_frame)
-        # self.properties_group_layout.setContentsMargins(2, 0, 2, 0)
-        # self.properties_group_layout.setSpacing(0)
-        #
-        # self.connect_group_layout.addWidget(self.panel_btn_add_dev, 0)
-        # self.connect_group_layout.addWidget(self.panel_btn_add_dev1, 0)
-        # self.connect_group_layout.addWidget(self.panel_btn_add_dev2, 0)
-        #
-        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev3, 0)
-        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev4, 0)
-        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev5, 0)
-        # self.MB_exchange_group_layout.addWidget(self.panel_btn_add_dev6, 0)
-        #
-        # self.settings_group_layout.addWidget(self.panel_btn_add_dev7, 0)
-        # self.settings_group_layout.addWidget(self.panel_btn_add_dev8, 0)
-        # self.settings_group_layout.addWidget(self.panel_btn_add_dev9, 0)
-        #
-        # self.archive_group_layout.addWidget(self.panel_btn_add_dev10, 0)
-        # self.archive_group_layout.addWidget(self.panel_btn_add_dev11, 0)
-        #
-        # self.router_group_layout.addWidget(self.panel_btn_add_dev12, 0)
-        # self.router_group_layout.addWidget(self.panel_btn_add_dev13, 0)
-        #
-        # self.firmware_group_layout.addWidget(self.panel_btn_add_dev14, 0)
-        # self.firmware_group_layout.addWidget(self.panel_btn_add_dev15, 0)
-        # self.firmware_group_layout.addWidget(self.panel_btn_add_dev16, 0)
-        #
-        # self.properties_group_layout.addWidget(self.panel_btn_add_dev17, 0)
-        # self.properties_group_layout.addWidget(self.panel_btn_add_dev18, 0)
-        #
-        # self.tool_panel_layout.addLayout(self.connect_group_layout, 0)
-        # self.tool_panel_layout.addWidget(self.tool_separator1, 0)
-        # self.tool_panel_layout.addLayout(self.MB_exchange_group_layout, 0)
-        # self.tool_panel_layout.addWidget(self.tool_separator2, 0)
-        # self.tool_panel_layout.addLayout(self.settings_group_layout, 0)
-        # self.tool_panel_layout.addWidget(self.tool_separator3, 0)
-        # self.tool_panel_layout.addLayout(self.archive_group_layout, 0)
-        # self.tool_panel_layout.addWidget(self.tool_separator4, 0)
-        # self.tool_panel_layout.addLayout(self.router_group_layout, 0)
-        # self.tool_panel_layout.addWidget(self.tool_separator5, 0)
-        # self.tool_panel_layout.addLayout(self.firmware_group_layout, 0)
-        # self.tool_panel_layout.addWidget(self.tool_separator6, 0)
-        # self.tool_panel_layout.addLayout(self.properties_group_layout, 0)
-        # self.tool_panel_layout.addWidget(self.tool_separator7, 0)
-        # self.tool_panel_layout.addStretch(1)
+        self.tool_panel_frame.tool_panel_layout = AQ_toolbar_layout(self.tool_panel_frame)
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
@@ -1133,6 +1022,7 @@ class MainWindow(QMainWindow):
 
     def resizeEvent(self, event):
         try:
+            super().resizeEvent(event)
             # Переопределяем метод resizeEvent и вызываем resize для main_window_frame
             self.main_window_frame.resize(self.width(), self.height())
             self.title_bar_frame.resize(self.width(), self.title_bar_frame.height())
@@ -1335,7 +1225,7 @@ if __name__ == '__main__':
     time.sleep(2)  # Например, 2 секунды
 
     window = MainWindow()
-    #window.showMaximized()
+    # window.showMaximized()
     window.show()
     splash.close()
     sys.exit(app.exec_())

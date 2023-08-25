@@ -17,6 +17,7 @@ class AQ_toolbar_group_template(QWidget):
         self.proxy_lay = QHBoxLayout(self)
         self.proxy_lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.proxy_lay)
+        self.cur_oriental = 0 # 0-Горизонтально, 1-Вертикально
 
     def change_oriental(self):
         cur_group_layout = self.proxy_lay.itemAt(0)
@@ -24,12 +25,41 @@ class AQ_toolbar_group_template(QWidget):
             self.proxy_lay.removeItem(cur_group_layout)
             self.group_layout = Group_LayV(self, *self.buttons)
             self.proxy_lay.addLayout(self.group_layout)
+            self.cur_oriental = 1
             cur_group_layout.deleteLater()
         elif isinstance(cur_group_layout, QVBoxLayout):
             self.proxy_lay.removeItem(cur_group_layout)
             self.group_layout = Group_LayH(self, *self.buttons)
             self.proxy_lay.addLayout(self.group_layout)
+            self.cur_oriental = 0
             cur_group_layout.deleteLater()
+
+    def get_cur_oriental(self):
+        return self.cur_oriental
+
+
+class Group_LayH(QHBoxLayout):
+    def __init__(self, parent=None, *buttons):
+        super().__init__(parent)
+        self.setContentsMargins(2, 0, 2, 0)
+        self.setSpacing(0)
+        for button in buttons:
+            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            self.addWidget(button)
+
+
+class Group_LayV(QVBoxLayout):
+    def __init__(self, parent=None, *buttons):
+        super().__init__(parent)
+        self.setContentsMargins(2, 0, 2, 0)
+        self.setSpacing(0)
+        count = len(buttons)
+        for button in buttons:
+            if count > 2:
+                button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+            else:
+                button.setToolButtonStyle(Qt.ToolButtonIconOnly)
+            self.addWidget(button)
 
 
 class AQ_device_action_group(AQ_toolbar_group_template):
@@ -122,9 +152,52 @@ class AQ_archieve_group(AQ_toolbar_group_template):
         self.buttons.append(self.btn_save_log)
     # кнопка 2
         self.ico_btn_log_settings = QIcon(PROJ_DIR + 'Icons/test_Button.png')
-        self.btn__log_settings = AQ_ToolButton('Data logging settings', self.ico_btn_log_settings)
+        self.btn_log_settings = AQ_ToolButton('Data logging settings', self.ico_btn_log_settings)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.buttons.append(self.btn__log_settings)
+        self.buttons.append(self.btn_log_settings)
+
+    # Створюємо початковий горизонтальний лейаут
+        self.group_layout = Group_LayH(self, *self.buttons)
+        self.proxy_lay.addLayout(self.group_layout)
+
+
+class AQ_firmware_group(AQ_toolbar_group_template):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+    # кнопка 1
+        self.ico_btn_fw_upd_loc = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+        self.btn_fw_upd_loc = AQ_ToolButton('Firmware update local', self.ico_btn_fw_upd_loc)
+        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.buttons.append(self.btn_fw_upd_loc)
+    # кнопка 2
+        self.ico_btn_fw_upd_onl = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+        self.btn_fw_upd_onl = AQ_ToolButton('Firmware update online', self.ico_btn_fw_upd_onl)
+        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.buttons.append(self.btn_fw_upd_onl)
+    # кнопка 3
+        self.ico_btn_reboot = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+        self.btn_reboot = AQ_ToolButton('Restart device', self.ico_btn_reboot)
+        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.buttons.append(self.btn_reboot)
+
+    # Створюємо початковий горизонтальний лейаут
+        self.group_layout = Group_LayH(self, *self.buttons)
+        self.proxy_lay.addLayout(self.group_layout)
+
+
+class AQ_other_group(AQ_toolbar_group_template):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+    # кнопка 1
+        self.ico_btn_papam_list = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+        self.btn_papam_list = AQ_ToolButton('Parameter list', self.ico_btn_papam_list)
+        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.buttons.append(self.btn_papam_list)
+    # кнопка 2
+        self.ico_btn_device_info = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+        self.btn_device_info = AQ_ToolButton('Device information', self.ico_btn_device_info)
+        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.buttons.append(self.btn_device_info)
 
     # Створюємо початковий горизонтальний лейаут
         self.group_layout = Group_LayH(self, *self.buttons)
@@ -132,25 +205,5 @@ class AQ_archieve_group(AQ_toolbar_group_template):
 
 
 
-class Group_LayH(QHBoxLayout):
-    def __init__(self, parent=None, *buttons):
-        super().__init__(parent)
-        self.setContentsMargins(2, 0, 2, 0)
-        self.setSpacing(0)
-        for button in buttons:
-            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-            self.addWidget(button)
 
-class Group_LayV(QVBoxLayout):
-    def __init__(self, parent=None, *buttons):
-        super().__init__(parent)
-        self.setContentsMargins(2, 0, 2, 0)
-        self.setSpacing(0)
-        count = len(buttons)
-        for button in buttons:
-            if count > 2:
-                button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-            else:
-                button.setToolButtonStyle(Qt.ToolButtonIconOnly)
-            self.addWidget(button)
 

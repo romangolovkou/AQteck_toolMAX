@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
                             QFrame
-from AQ_toolbar_group import AQ_device_action_group, AQ_param_action_group, AQ_utils_group, AQ_archieve_group
+from AQ_toolbar_group import AQ_device_action_group, AQ_param_action_group, AQ_utils_group, AQ_archieve_group, \
+                             AQ_firmware_group, AQ_other_group
 
 class AQ_toolbar_layout(QHBoxLayout):
     def __init__(self, parent=None):
@@ -25,6 +26,12 @@ class AQ_toolbar_layout(QHBoxLayout):
     # Группа 4
         self.archieve_group = AQ_archieve_group(self.parent)
         self.groups.append(self.archieve_group)
+    # Группа 4
+        self.firmware_group = AQ_firmware_group(self.parent)
+        self.groups.append(self.firmware_group)
+    # Группа 4
+        self.other_group = AQ_other_group(self.parent)
+        self.groups.append(self.other_group)
 
     # Створюємо додані группи
         self.create_toolbar_groups()
