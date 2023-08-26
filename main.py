@@ -41,9 +41,11 @@ from AQ_parse_func import get_conteiners_count, get_containers_offset, get_stora
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 from AQ_tree_prapare_func import traverse_items
-from AQ_window_AddDevices import AddDevices_AQDialog
+# from AQ_window_AddDevices import AddDevices_AQDialog
 from AQ_toolbar_layaout import AQ_toolbar_layout
 from AQ_toolbar_frame import AQ_tool_panel_frame
+from AQ_session import AQ_CurrentSession
+from AQ_EventManager import AQ_EventManager
 # Defines
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
@@ -930,10 +932,10 @@ class MainWindow(QMainWindow):
         self.icoMaximize = QIcon(PROJ_DIR + 'Icons/Maximize.png')
         self.icoNormalize = QIcon(PROJ_DIR + 'Icons/_Normalize.png')
         self.icoMinimize = QIcon(PROJ_DIR + 'Icons/Minimize.png')
-        self.ico_AddDev_btn = QIcon(PROJ_DIR + 'Icons/test_Button.png')
-        self.ico_btn_add_devise = QIcon(PROJ_DIR + 'Icons/Add_device.png')
-        self.ico_btn_delete_device = QIcon(PROJ_DIR + 'Icons/Delete_device.png')
-        self.ico_btn_ip_adresses = QIcon(PROJ_DIR + 'Icons/ip_adresses.png')
+        # self.ico_AddDev_btn = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+        # self.ico_btn_add_devise = QIcon(PROJ_DIR + 'Icons/Add_device.png')
+        # self.ico_btn_delete_device = QIcon(PROJ_DIR + 'Icons/Delete_device.png')
+        # self.ico_btn_ip_adresses = QIcon(PROJ_DIR + 'Icons/ip_adresses.png')
         self.background_pic = QPixmap(PROJ_DIR + 'Icons/industrial_pic.png')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle(MainName)
@@ -950,6 +952,11 @@ class MainWindow(QMainWindow):
         settings_path = os.path.join(project_path, "auto_load_settings.ini")
         # Используем полученный путь в QSettings
         self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
+
+        # Менеджер подій
+        self.event_manager = AQ_EventManager()
+        # Поточна сессія
+        self.current_session = AQ_CurrentSession(self.event_manager, self)
         # Порожній список для дерев девайсів
         self.ready_to_add_devices_trees = []
         self.ready_to_add_devices = []
@@ -962,7 +969,8 @@ class MainWindow(QMainWindow):
         #TitleBarFrame
         self.title_bar_frame = title_bar_frame_AQFrame(self, 60, MainName, self.AQicon, self.main_window_frame)
         # ToolPanelFrame
-        self.tool_panel_frame = AQ_tool_panel_frame(self.title_bar_frame.height(), self.main_window_frame)
+        self.tool_panel_frame = AQ_tool_panel_frame(self.title_bar_frame.height(), self.event_manager,
+                                                    self.main_window_frame)
         # MainFieldFrame
         self.main_field_frame = main_field_frame_AQFrame(self.title_bar_frame.height() + self.tool_panel_frame.height(), self)
 
@@ -971,9 +979,6 @@ class MainWindow(QMainWindow):
         self.main_background_pic.setPixmap(self.background_pic)
         self.main_background_pic.setScaledContents(True)
         self.main_background_pic.setGeometry(0, 0, 450, 326)
-
-        #Создаем горизонтальный макет панели инструментов
-        self.tool_panel_frame.tool_panel_layout = AQ_toolbar_layout(self.tool_panel_frame)
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
@@ -1072,9 +1077,9 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
 
-    def open_AddDevices(self):
-        AddDevices_window = AddDevices_AQDialog('Add Devices', self)
-        AddDevices_window.exec_()
+    # def open_AddDevices(self):
+    #     AddDevices_window = AddDevices_AQDialog('Add Devices', self)
+    #     AddDevices_window.exec_()
 
     def connect_to_device_COM(self, selected_port, slave_id):
         # Если уже установлено соединение, закрываем его

@@ -10,7 +10,7 @@ from AQ_settings_func import save_current_text_value, save_combobox_current_stat
                              load_last_combobox_state
 
 
-class AddDevices_AQDialog(AQDialog):
+class AQ_DialogAddDevices(AQDialog):
     def __init__(self, name, parent):
         super().__init__(name)
 

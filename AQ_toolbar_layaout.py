@@ -4,7 +4,7 @@ from AQ_toolbar_group import AQ_device_action_group, AQ_param_action_group, AQ_u
                              AQ_firmware_group, AQ_other_group
 
 class AQ_toolbar_layout(QHBoxLayout):
-    def __init__(self, parent=None):
+    def __init__(self, parent, event_manager):
         super().__init__(parent)
         self.parent = parent
         self.setContentsMargins(4, 0, 0, 0)
@@ -15,22 +15,22 @@ class AQ_toolbar_layout(QHBoxLayout):
 
     # Додаємо бажані группи кнопок за порядком розміщення
     # Группа 1
-        self.device_action_group = AQ_device_action_group(self.parent)
+        self.device_action_group = AQ_device_action_group(event_manager, self.parent)
         self.groups.append(self.device_action_group)
     # Группа 2
-        self.param_action_group = AQ_param_action_group(self.parent)
+        self.param_action_group = AQ_param_action_group(event_manager, self.parent)
         self.groups.append(self.param_action_group)
     # Группа 3
-        self.utils_group = AQ_utils_group(self.parent)
+        self.utils_group = AQ_utils_group(event_manager, self.parent)
         self.groups.append(self.utils_group)
     # Группа 4
-        self.archieve_group = AQ_archieve_group(self.parent)
+        self.archieve_group = AQ_archieve_group(event_manager, self.parent)
         self.groups.append(self.archieve_group)
     # Группа 4
-        self.firmware_group = AQ_firmware_group(self.parent)
+        self.firmware_group = AQ_firmware_group(event_manager, self.parent)
         self.groups.append(self.firmware_group)
     # Группа 4
-        self.other_group = AQ_other_group(self.parent)
+        self.other_group = AQ_other_group(event_manager, self.parent)
         self.groups.append(self.other_group)
 
     # Створюємо додані группи

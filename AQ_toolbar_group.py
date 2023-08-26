@@ -9,8 +9,9 @@ PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
 
 class AQ_toolbar_group_template(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         self.buttons = []
         self.group_layout = 0
         self.setMinimumSize(60, 60)
@@ -63,13 +64,13 @@ class Group_LayV(QVBoxLayout):
 
 
 class AQ_device_action_group(AQ_toolbar_group_template):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, event_manager, parent=None):
+        super().__init__(event_manager, parent)
     # кнопка 1
         self.ico_btn_add_devise = QIcon(PROJ_DIR + 'Icons/Add_device.png')
         self.btn_add_devices = AQ_ToolButton('Add Devices', self.ico_btn_add_devise)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        # self.btn_add_devices.clicked.connect(self.change_oriental)
+        self.btn_add_devices.clicked.connect(lambda: self.event_manager.emit_event('open_AddDevices'))
         self.buttons.append(self.btn_add_devices)
     # кнопка 2
         self.ico_btn_delete_device = QIcon(PROJ_DIR + 'Icons/Delete_device.png')
@@ -88,8 +89,8 @@ class AQ_device_action_group(AQ_toolbar_group_template):
 
 
 class AQ_param_action_group(AQ_toolbar_group_template):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, event_manager, parent=None):
+        super().__init__(event_manager, parent)
     # кнопка 1
         self.ico_btn_read = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_read = AQ_ToolButton('Read parameters', self.ico_btn_read)
@@ -118,8 +119,8 @@ class AQ_param_action_group(AQ_toolbar_group_template):
 
 
 class AQ_utils_group(AQ_toolbar_group_template):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, event_manager, parent=None):
+        super().__init__(event_manager, parent)
     # кнопка 1
         self.ico_btn_rtc = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_rtc = AQ_ToolButton('Real-time clock', self.ico_btn_rtc)
@@ -143,8 +144,8 @@ class AQ_utils_group(AQ_toolbar_group_template):
 
 
 class AQ_archieve_group(AQ_toolbar_group_template):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, event_manager, parent=None):
+        super().__init__(event_manager, parent)
     # кнопка 1
         self.ico_btn_save_log = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_save_log = AQ_ToolButton('Save log data', self.ico_btn_save_log)
@@ -162,8 +163,8 @@ class AQ_archieve_group(AQ_toolbar_group_template):
 
 
 class AQ_firmware_group(AQ_toolbar_group_template):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, event_manager, parent=None):
+        super().__init__(event_manager, parent)
     # кнопка 1
         self.ico_btn_fw_upd_loc = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_fw_upd_loc = AQ_ToolButton('Firmware update local', self.ico_btn_fw_upd_loc)
@@ -186,8 +187,8 @@ class AQ_firmware_group(AQ_toolbar_group_template):
 
 
 class AQ_other_group(AQ_toolbar_group_template):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, event_manager, parent=None):
+        super().__init__(event_manager, parent)
     # кнопка 1
         self.ico_btn_papam_list = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_papam_list = AQ_ToolButton('Parameter list', self.ico_btn_papam_list)
