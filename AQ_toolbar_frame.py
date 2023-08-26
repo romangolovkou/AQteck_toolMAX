@@ -14,22 +14,30 @@ class AQ_tool_panel_frame(QFrame):
         self.setObjectName("tool_panel_frame")
 
     def resizeEvent(self, event):
-        super().resizeEvent(event)
         if hasattr(self, 'tool_panel_layout'):
             self.rotate_next_widget(self.tool_panel_layout)
 
     def rotate_next_widget(self, layout):
-        recommended_width = self.sizeHint().width()
+        recommended_width = layout.sizeHint().width()
         cur_width = self.width()
-        for i in range(layout.count()):
-            if self.width() < (recommended_width - 50):
-                    widest_widget = self.find_widest_Hwidget(layout)
-                    if widest_widget is not None:
-                        widest_widget.change_oriental()
-            elif self.width() >= (recommended_width + 50):
-                    most_slim_widget = self.find_most_slim_Vwidget(layout)
-                    if most_slim_widget is not None:
-                        most_slim_widget.change_oriental()
+        if self.width() < (recommended_width - 5):
+            for i in range(layout.count()):
+                widest_widget = self.find_widest_Hwidget(layout)
+                if widest_widget is not None:
+                    widest_widget.change_oriental()
+                    self.updateGeometry()
+                    layout.invalidate()
+                if self.width() > self.check_sum_widgets_hint(layout):
+                    break
+        elif self.width() >= (recommended_width + 50):
+            for i in range(layout.count()):
+                most_slim_widget = self.find_most_slim_Vwidget(layout)
+                if most_slim_widget is not None:
+                    most_slim_widget.change_oriental()
+                    self.updateGeometry()
+                    layout.invalidate()
+                if self.check_sum_widgets_hint(layout) > self.width() - 50:
+                    break
 
     def find_widest_Hwidget(self, layout):
         max_width = 0
@@ -60,3 +68,14 @@ class AQ_tool_panel_frame(QFrame):
                         most_slim_widget = item.widget()
 
         return most_slim_widget
+
+    def check_sum_widgets_hint(self, layout):
+        sum_width = 0
+
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            widget = item.widget()
+            if hasattr(widget, 'get_cur_oriental'): # Тут використовується як ознака що це віджет, а не сепаратор VLine
+                sum_width += item.widget().sizeHint().width()
+
+        return sum_width
