@@ -10,6 +10,7 @@ from AQ_communication_func import is_valid_ip
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 
+
 class AQ_network_settings_frame(QFrame):
     def __init__(self, event_manager, parent):
         super().__init__(parent)
@@ -67,7 +68,7 @@ class AQ_network_settings_layout(QVBoxLayout):
     # Создаем поле ввода IP адресса
         self.ip_line_edit_label = AQLabel("IP Address")
         self.ip_line_edit = IP_AQLineEdit()
-        self.ip_line_edit.setObjectName(self.objectName() + "_" + "ip_line_edit")
+        self.ip_line_edit.setObjectName(self.parent.objectName() + "_" + "ip_line_edit")
         # Встановлюємо попередне обране значення, якщо воно існує
         if self.auto_load_settings is not None:
             load_last_text_value(self.auto_load_settings, self.ip_line_edit)
@@ -75,7 +76,7 @@ class AQ_network_settings_layout(QVBoxLayout):
     # Создаем поле ввода Slave ID
         self.slave_id_line_edit_label = AQLabel("Slave ID")
         self.slave_id_line_edit = Slave_ID_AQLineEdit()
-        self.slave_id_line_edit.setObjectName(self.objectName() + "_" + "slave_id_line_edit")
+        self.slave_id_line_edit.setObjectName(self.parent.objectName() + "_" + "slave_id_line_edit")
         # Встановлюємо попередне обране значення, якщо воно існує
         if self.auto_load_settings is not None:
             load_last_text_value(self.auto_load_settings, self.slave_id_line_edit)

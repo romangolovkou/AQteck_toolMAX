@@ -8,7 +8,7 @@ import serial.tools.list_ports
 from AQ_communication_func import is_valid_ip
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
-from AQ_network_frame import AQ_network_settings_frame
+from AQ_AddDevices_network_frame import AQ_network_settings_frame
 
 
 class AQ_DialogAddDevices(AQDialog):
@@ -19,9 +19,13 @@ class AQ_DialogAddDevices(AQDialog):
 
         self.setObjectName("AQ_Dialog_add_device")
         self.parent = parent
+        self.event_manager = event_manager
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
+
+        # Рєєструємо обробники подій
+        self.event_manager.register_handler('Find_device', self.on_find_button_clicked)
 
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
         self.gear_big = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear182.png'), 40, 1)
@@ -54,7 +58,7 @@ class AQ_DialogAddDevices(AQDialog):
         self.gear_small_view.setGeometry(610, 540, 127, 127)
 
         # Створюємо фрейм з налаштуваннями з'єднання
-        self.network_settings_frame = AQ_network_settings_frame(event_manager, self)
+        self.network_settings_frame = AQ_network_settings_frame(event_manager, self.main_window_frame)
         self.network_settings_frame.setGeometry(25, self.title_bar_frame.height() + 2, int(self.width() * 0.4),
                                                 self.height() - self.title_bar_frame.height() - 4)
 
@@ -172,25 +176,7 @@ class AQ_DialogAddDevices(AQDialog):
                         background-color: #429061;
                     }
                 """)
-        # if err_flag != 0:
-        #     self.add_btn.setEnabled(False)
-        #     self.add_btn.setStyleSheet("""
-        #                         QPushButton {
-        #                             border-left: 1px solid #9ef1d3;
-        #                             border-top: 1px solid #9ef1d3;
-        #                             border-bottom: 1px solid #5bb192;
-        #                             border-right: 1px solid #5bb192;
-        #                             color: #3c3e41;
-        #                             background-color: #2b2d30;
-        #                             border-radius: 4px;
-        #                         }
-        #                         QPushButton:hover {
-        #                             background-color: #3c3e41;
-        #                         }
-        #                         QPushButton:pressed {
-        #                             background-color: #429061;
-        #                         }
-        #                     """)
+
 
         self.add_btn.show()
 
