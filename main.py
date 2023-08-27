@@ -1106,7 +1106,7 @@ class MainWindow(QMainWindow):
     def connect_to_device_IP(self, ip):
         try:
             device_data = {}
-            client = client = ModbusTcpClient(ip)
+            client = ModbusTcpClient(ip)
             slave_id = 1
             device_name = read_device_name(client, slave_id)
             version = read_version(client, slave_id)

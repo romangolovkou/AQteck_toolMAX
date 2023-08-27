@@ -27,6 +27,16 @@ class AQ_network_settings_frame(QFrame):
 
         self.network_settings_layout = AQ_network_settings_layout(event_manager, self, self.auto_load_settings)
 
+    def get_network_settings_list(self):
+        network_settings_list = self.network_settings_layout.get_network_settings_list()
+        # Якщо хтось викликав цю функцію, то одразу запам'ятовуємо введені в поля дані до "auto_load_settings.ini"
+        self.save_current_settings()
+
+        return network_settings_list
+
+    def save_current_settings(self):
+        self.network_settings_layout.save_current_fields()
+
 
 class AQ_network_settings_layout(QVBoxLayout):
     def __init__(self, event_manager, parent, auto_load_settings=None):
@@ -129,3 +139,21 @@ class AQ_network_settings_layout(QVBoxLayout):
             self.ip_line_edit.setVisible(False)
             self.slave_id_line_edit_label.setVisible(True)
             self.slave_id_line_edit.setVisible(True)
+
+    def get_network_settings_list(self):
+        network_settings_list = []
+        selected_if = self.interface_combo_box.currentText()
+        if selected_if == "Ethernet":
+            address = self.ip_line_edit.text()
+        else:
+            address = int(self.slave_id_line_edit.text())
+
+        network_setting = (selected_if, address)
+        network_settings_list.append(network_setting)
+
+        return network_settings_list
+
+    def save_current_fields(self):
+        save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
+        save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
+        save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)

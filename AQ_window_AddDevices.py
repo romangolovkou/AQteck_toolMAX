@@ -9,6 +9,7 @@ from AQ_communication_func import is_valid_ip
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 from AQ_AddDevices_network_frame import AQ_network_settings_frame
+from AQ_Device import AQ_Device
 
 
 class AQ_DialogAddDevices(AQDialog):
@@ -252,44 +253,42 @@ class AQ_DialogAddDevices(AQDialog):
 
 
     def connect_to_device (self):
-        selected_item = self.interface_combo_box.currentText()
-        save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
-        device_data = {}
-        if selected_item == "Ethernet":
-            try:
-                ip = self.ip_line_edit.text()
-            except:
-                return 'empty_field_ip'
-            if not is_valid_ip(ip):
-                return 'invalid_ip'
+        # selected_item = self.interface_combo_box.currentText()
+        network_settings_list = self.network_settings_frame.get_network_settings_list()
+        for i in range(len(network_settings_list)):
+            device = AQ_Device(self.event_manager)
+            if selected_item == "Ethernet":
+                try:
+                    ip = self.ip_line_edit.text()
+                except:
+                    return 'empty_field_ip'
+                if not is_valid_ip(ip):
+                    return 'invalid_ip'
 
-            save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
+                try:
+                    device_data = self.parent.connect_to_device_IP(ip)
+                    device_data['address'] = str(ip)
+                except Connect_err:
+                    self.show_connect_err_label()
 
-            try:
-                device_data = self.parent.connect_to_device_IP(ip)
-                device_data['address'] = str(ip)
-            except Connect_err:
-                self.show_connect_err_label()
+                return device_data
+            else:
+                try:
+                    slave_id = int(self.slave_id_line_edit.text())
+                except:
+                    return 'empty_field_slave_id'
+                for port in self.com_ports:
+                    if port.description == selected_item:
+                        selected_port = port.device
+                        try:
+                            device_data = self.parent.connect_to_device_COM(selected_port, slave_id)
+                            device_data['address'] = str(slave_id) + ' (' + str(selected_port) + ')'
+                        except Connect_err:
+                            self.show_connect_err_label()
 
-            return device_data
-        else:
-            try:
-                slave_id = int(self.slave_id_line_edit.text())
-            except:
-                return 'empty_field_slave_id'
-            for port in self.com_ports:
-                if port.description == selected_item:
-                    save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
-                    selected_port = port.device
-                    try:
-                        device_data = self.parent.connect_to_device_COM(selected_port, slave_id)
-                        device_data['address'] = str(slave_id) + ' (' + str(selected_port) + ')'
-                    except Connect_err:
-                        self.show_connect_err_label()
+                        break
 
-                    break
-
-            return device_data
+                return device_data
 
     def show_connect_err_label(self):
         # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
