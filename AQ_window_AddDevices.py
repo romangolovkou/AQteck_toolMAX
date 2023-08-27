@@ -8,11 +8,12 @@ import serial.tools.list_ports
 from AQ_communication_func import is_valid_ip
 from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
+from AQ_network_frame import AQ_network_settings_frame
 
 
 class AQ_DialogAddDevices(AQDialog):
-    def __init__(self, name, parent):
-        super().__init__(name)
+    def __init__(self, event_manager, devices_list, parent):
+        super().__init__('Add Devices')
 
         PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
@@ -52,84 +53,10 @@ class AQ_DialogAddDevices(AQDialog):
         self.gear_small_view.setScene(self.gear_small_scene)
         self.gear_small_view.setGeometry(610, 540, 127, 127)
 
-
-        # Создаем текстовую метку заголовка настроек соединения
-        self.title_text = AQLabel("Network parameters")
-        self.title_text.setStyleSheet("color: #D0D0D0; border-bottom: 1px double #5bb192;\n")
-        self.title_text.setFixedHeight(35)
-        self.title_text.setFont(QFont("Verdana", 12))  # Задаем шрифт и размер
-        self.title_text.setAlignment(Qt.AlignCenter)
-
-        # Создаем текстовую метку выбора интерфейса
-        self.interface_combo_box_label = AQLabel("Interface")
-
-        # Создание комбо-бокса
-        self.interface_combo_box = AQComboBox(self.main_window_frame)
-        self.interface_combo_box.setObjectName(self.objectName() + "_" + "interface_combo_box")
-        self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
-        # Получаем список доступных COM-портов
-        self.com_ports = serial.tools.list_ports.comports()
-        # Заполняем выпадающий список COM-портами
-        for port in self.com_ports:
-            self.interface_combo_box.addItem(port.description)
-
-        self.serial = None
-
-        # Связываем сигнал activated с обработчиком handle_combobox_selection
-        self.interface_combo_box.activated.connect(self.handle_combobox_selection)
-
-        # Встановлюємо попередне обране значення, якщо воно існує
-        load_last_combobox_state(parent.auto_load_settings, self.interface_combo_box)
-
-        # Создаем поле ввода IP адресса
-        self.ip_line_edit_label = AQLabel("IP Address")
-        self.ip_line_edit = IP_AQLineEdit()
-        self.ip_line_edit.setObjectName(self.objectName() + "_" + "ip_line_edit")
-        # Встановлюємо попередне обране значення, якщо воно існує
-        load_last_text_value(parent.auto_load_settings, self.ip_line_edit)
-
-        # Создаем поле ввода Slave ID
-        self.slave_id_line_edit_label = AQLabel("Slave ID")
-        self.slave_id_line_edit = Slave_ID_AQLineEdit()
-        self.slave_id_line_edit.setObjectName(self.objectName() + "_" + "slave_id_line_edit")
-        # Встановлюємо попередне обране значення, якщо воно існує
-        load_last_text_value(parent.auto_load_settings, self.slave_id_line_edit)
-
-        # Создаем кнопку поиска
-        self.find_btn = QPushButton("Find device", self)
-        self.find_btn.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.find_btn.setFixedSize(100, 35)
-        self.find_btn.setStyleSheet("""
-            QPushButton {
-                border-left: 1px solid #9ef1d3;
-                border-top: 1px solid #9ef1d3;
-                border-bottom: 1px solid #5bb192;
-                border-right: 1px solid #5bb192;
-                color: #D0D0D0;
-                background-color: #2b2d30;
-                border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #3c3e41;
-            }
-            QPushButton:pressed {
-                background-color: #429061;
-            }
-        """)
-        self.find_btn.clicked.connect(self.on_find_button_clicked)
-
-        self.layout = QVBoxLayout(self.main_window_frame)
-        self.layout.setContentsMargins(20, self.title_bar_frame.height() + 2, 440, 0)  # Устанавливаем отступы макета
-        self.layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
-        self.layout.addWidget(self.title_text)
-        self.layout.addWidget(self.interface_combo_box_label)
-        self.layout.addWidget(self.interface_combo_box)
-        self.layout.addWidget(self.ip_line_edit_label)
-        self.layout.addWidget(self.ip_line_edit)
-        self.layout.addWidget(self.slave_id_line_edit_label)
-        self.layout.addWidget(self.slave_id_line_edit)
-        self.layout.addWidget(self.find_btn)
-        self.handle_combobox_selection()
+        # Створюємо фрейм з налаштуваннями з'єднання
+        self.network_settings_frame = AQ_network_settings_frame(event_manager, self)
+        self.network_settings_frame.setGeometry(25, self.title_bar_frame.height() + 2, int(self.width() * 0.4),
+                                                self.height() - self.title_bar_frame.height() - 4)
 
         # Создаем QTableWidget с 4 столбцами
         self.table_widget = QTableWidget(self.main_window_frame)

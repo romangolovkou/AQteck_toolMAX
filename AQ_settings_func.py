@@ -5,6 +5,8 @@ def load_last_combobox_state(settings, combobox):
         combobox.setCurrentIndex(index)
     except:
         combobox.setCurrentIndex(0)
+
+
 def save_combobox_current_state(settings, combobox):
     key = combobox.objectName()
     index = combobox.currentIndex()
@@ -16,6 +18,7 @@ def load_last_text_value(settings, edit_line):
     key = edit_line.objectName()
     text = settings.value(key, "", type=str)
     edit_line.setText(text)
+
 
 def save_current_text_value(settings, edit_line):
     key = edit_line.objectName()

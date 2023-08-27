@@ -181,7 +181,7 @@ class AQComboBox(QComboBox):
 class AQLabel(QLabel):
     def __init__(self, text, parent=None):
         super().__init__(parent)
-        self.setStyleSheet("color: #D0D0D0; \n")
+        self.setStyleSheet("color: #D0D0D0;")
         self.setFixedHeight(20)
         self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
         self.setText(text)

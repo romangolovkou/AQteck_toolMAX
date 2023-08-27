@@ -16,7 +16,7 @@ class AQ_toolbar_group_template(QWidget):
         self.group_layout = 0
         self.setMinimumSize(60, 60)
         self.proxy_lay = QHBoxLayout(self)
-        self.proxy_lay.setContentsMargins(0, 0, 0, 0)
+        self.proxy_lay.setContentsMargins(0, 2, 0, 2)
         self.setLayout(self.proxy_lay)
         self.cur_oriental = 0 # 0-Горизонтально, 1-Вертикально
 
