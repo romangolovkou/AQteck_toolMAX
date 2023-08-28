@@ -9,7 +9,7 @@ class AQ_CurrentSession(QObject):
         self.parent = parent
         self.event_manager = event_manager
         self.cur_active_device = None
-        self.event_manager.register_handler("open_AddDevices", self.open_AddDevices)
+        self.event_manager.register_event_handler("open_AddDevices", self.open_AddDevices)
         self.ready_to_add_devices_trees = []
         self.ready_to_add_devices = []
         self.devices_trees = []

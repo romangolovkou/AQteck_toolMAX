@@ -6,7 +6,7 @@ class AQ_EventManager(QObject):
         super().__init__()
         self._event_handlers = {}
 
-    def register_handler(self, event_name, handler):
+    def register_event_handler(self, event_name, handler):
         if event_name not in self._event_handlers:
             self._event_handlers[event_name] = []
         self._event_handlers[event_name].append(handler)

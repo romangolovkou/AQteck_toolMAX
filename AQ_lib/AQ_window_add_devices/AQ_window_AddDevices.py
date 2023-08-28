@@ -26,7 +26,7 @@ class AQ_DialogAddDevices(AQDialog):
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
         # Рєєструємо обробники подій
-        self.event_manager.register_handler('Find_device', self.on_find_button_clicked)
+        self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
 
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
         self.gear_big = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear182.png'), 40, 1)
@@ -256,39 +256,39 @@ class AQ_DialogAddDevices(AQDialog):
         # selected_item = self.interface_combo_box.currentText()
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
-            device = AQ_Device(self.event_manager)
-            if selected_item == "Ethernet":
-                try:
-                    ip = self.ip_line_edit.text()
-                except:
-                    return 'empty_field_ip'
-                if not is_valid_ip(ip):
-                    return 'invalid_ip'
-
-                try:
-                    device_data = self.parent.connect_to_device_IP(ip)
-                    device_data['address'] = str(ip)
-                except Connect_err:
-                    self.show_connect_err_label()
-
-                return device_data
-            else:
-                try:
-                    slave_id = int(self.slave_id_line_edit.text())
-                except:
-                    return 'empty_field_slave_id'
-                for port in self.com_ports:
-                    if port.description == selected_item:
-                        selected_port = port.device
-                        try:
-                            device_data = self.parent.connect_to_device_COM(selected_port, slave_id)
-                            device_data['address'] = str(slave_id) + ' (' + str(selected_port) + ')'
-                        except Connect_err:
-                            self.show_connect_err_label()
-
-                        break
-
-                return device_data
+            device = AQ_Device(self.event_manager, network_settings_list[i])
+            # if selected_item == "Ethernet":
+            #     try:
+            #         ip = self.ip_line_edit.text()
+            #     except:
+            #         return 'empty_field_ip'
+            #     if not is_valid_ip(ip):
+            #         return 'invalid_ip'
+            #
+            #     try:
+            #         device_data = self.parent.connect_to_device_IP(ip)
+            #         device_data['address'] = str(ip)
+            #     except Connect_err:
+            #         self.show_connect_err_label()
+            #
+            #     return device_data
+            # else:
+            #     try:
+            #         slave_id = int(self.slave_id_line_edit.text())
+            #     except:
+            #         return 'empty_field_slave_id'
+            #     for port in self.com_ports:
+            #         if port.description == selected_item:
+            #             selected_port = port.device
+            #             try:
+            #                 device_data = self.parent.connect_to_device_COM(selected_port, slave_id)
+            #                 device_data['address'] = str(slave_id) + ' (' + str(selected_port) + ')'
+            #             except Connect_err:
+            #                 self.show_connect_err_label()
+            #
+            #             break
+            #
+            #     return device_data
 
     def show_connect_err_label(self):
         # Получаем координаты поля ввода относительно диалогового окна #9d4d4f

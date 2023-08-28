@@ -112,7 +112,7 @@ class AQ_network_settings_layout(QVBoxLayout):
                         background-color: #429061;
                     }
                 """)
-        self.find_btn.clicked.connect(lambda: self.event_manager.emit_event('Find_device'))
+        self.find_btn.clicked.connect(self.find_button_clicked)
 
     # Додаємо все створені віджеті в порядку відображення
         self.addWidget(self.title_text)
@@ -157,3 +157,20 @@ class AQ_network_settings_layout(QVBoxLayout):
         save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
         save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
         save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
+
+    def find_button_clicked(self):
+        # Перед викликом події перевіряємо чи не порожні поля, та корректні в них дані
+        selected_item = self.interface_combo_box.currentText()
+        if selected_item == "Ethernet":
+            ip = self.ip_line_edit.text()
+            if not is_valid_ip(ip):
+                self.ip_line_edit.red_blink_timer.start()
+                self.ip_line_edit.show_err_label()
+                return
+        else:
+            if self.slave_id_line_edit.text() == '':
+                self.slave_id_line_edit.red_blink_timer.start()
+                self.slave_id_line_edit.show_err_label()
+                return
+
+        self.event_manager.emit_event('Find_device')
