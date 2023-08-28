@@ -10,6 +10,7 @@ from AQ_settings_func import save_current_text_value, save_combobox_current_stat
                              load_last_combobox_state
 from AQ_AddDevices_network_frame import AQ_network_settings_frame
 from AQ_Device import AQ_Device
+from AQ_connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
 
 
 class AQ_DialogAddDevices(AQDialog):
@@ -100,18 +101,18 @@ class AQ_DialogAddDevices(AQDialog):
             for i in range(4):
                 self.table_widget.item(row, i).setBackground(QColor("#9d4d4f"))
 
-    def handle_combobox_selection(self):
-        selected_item = self.interface_combo_box.currentText()
-        if selected_item == "Ethernet":
-            self.ip_line_edit_label.setVisible(True)
-            self.ip_line_edit.setVisible(True)
-            self.slave_id_line_edit_label.setVisible(False)
-            self.slave_id_line_edit.setVisible(False)
-        else:
-            self.ip_line_edit_label.setVisible(False)
-            self.ip_line_edit.setVisible(False)
-            self.slave_id_line_edit_label.setVisible(True)
-            self.slave_id_line_edit.setVisible(True)
+    # def handle_combobox_selection(self):
+    #     selected_item = self.interface_combo_box.currentText()
+    #     if selected_item == "Ethernet":
+    #         self.ip_line_edit_label.setVisible(True)
+    #         self.ip_line_edit.setVisible(True)
+    #         self.slave_id_line_edit_label.setVisible(False)
+    #         self.slave_id_line_edit.setVisible(False)
+    #     else:
+    #         self.ip_line_edit_label.setVisible(False)
+    #         self.ip_line_edit.setVisible(False)
+    #         self.slave_id_line_edit_label.setVisible(True)
+    #         self.slave_id_line_edit.setVisible(True)
 
     def add_device_to_table_widget(self, index, device_data, err_flag = 0):
         self.table_widget.setRowCount(index + 1)
