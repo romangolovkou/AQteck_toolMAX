@@ -2,6 +2,9 @@ from abc import abstractmethod
 
 from PyQt5.QtCore import QObject
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
+from pymodbus.file_message import ReadFileRecordRequest
+
+from AQ_custom_ReadFileRecordRequest import AQ_ReadFileRecordRequest
 
 
 class AQ_connect(QObject):
@@ -41,6 +44,17 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
         response = self.modbus_rtu_client.read_holding_registers(start_address, register_count, self.slave_id)
         return response
 
+    def read_file_record(self, file_number, record_number, record_length):
+        # Создание экземпляра структуры ReadFileRecordRequest
+        request = ReadFileRecordRequest(self.slave_id)
+        # Установка значений полей структуры
+        request.file_number = file_number
+        request.record_number = record_number
+        request.record_length = record_length
+        result = self.modbus_rtu_client.read_file_record(self.slave_id, [request])
+
+        return result
+
 
 class AQ_modbusTCP_connect(AQ_TCP_connect):
     def __init__(self, ip):
@@ -57,3 +71,14 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
     def read_holding_registers(self, start_address, register_count):
         response = self.modbus_tcp_client.read_holding_registers(start_address, register_count, self.slave_id)
         return response
+
+    def read_file_record(self, file_number, record_number, record_length):
+        # Создание экземпляра структуры ReadFileRecordRequest
+        request = ReadFileRecordRequest(self.slave_id)
+        # Установка значений полей структуры
+        request.file_number = file_number
+        request.record_number = record_number
+        request.record_length = record_length
+        result = self.modbus_tcp_client.read_file_record(self.slave_id, [request])
+
+        return result

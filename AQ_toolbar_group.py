@@ -2,7 +2,8 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushBut
                             QHBoxLayout, QVBoxLayout
 from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpValidator, QColor, QStandardItemModel, \
                         QStandardItem, QTransform, QPainter, QBrush
-from PyQt5.QtCore import Qt, QTimer, QRect, QSize
+from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QUrl
+from PyQt5.QtQuick import QQuickView
 from AQ_toolbar_button import AQ_ToolButton
 
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'

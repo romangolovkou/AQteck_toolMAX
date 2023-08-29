@@ -112,9 +112,9 @@ def parse_tree(storage_container):
     pos_descr_area = pos_node_area + size_node_area + 2
     size_descr_area = int.from_bytes((storage_container[pos_descr_area - 2:pos_descr_area][::-1]), byteorder='big')
     descr_area = storage_container[pos_descr_area:pos_descr_area + size_descr_area]
-    filename = 'descr_area.prg'  # Имя файла с расширением .prg
-    with open(filename, 'wb') as file:
-        file.write(descr_area)
+    # filename = 'descr_area.prg'  # Имя файла с расширением .prg
+    # with open(filename, 'wb') as file:
+    #     file.write(descr_area)
 
     pos_string_area = header_pos + str_offset + 2
     size_string_area = int.from_bytes((storage_container[pos_string_area - 2:pos_string_area][::-1]), byteorder='big')

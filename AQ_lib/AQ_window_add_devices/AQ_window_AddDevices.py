@@ -28,6 +28,7 @@ class AQ_DialogAddDevices(AQDialog):
 
         # Рєєструємо обробники подій
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
+        self.event_manager.register_event_handler('AddDevice_connect_error', self.show_connect_err_label)
 
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
         self.gear_big = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear182.png'), 40, 1)
@@ -100,19 +101,6 @@ class AQ_DialogAddDevices(AQDialog):
             #                                             QTableWidget::item { padding-left: 3px; background-color: #9d4d4f}""")
             for i in range(4):
                 self.table_widget.item(row, i).setBackground(QColor("#9d4d4f"))
-
-    # def handle_combobox_selection(self):
-    #     selected_item = self.interface_combo_box.currentText()
-    #     if selected_item == "Ethernet":
-    #         self.ip_line_edit_label.setVisible(True)
-    #         self.ip_line_edit.setVisible(True)
-    #         self.slave_id_line_edit_label.setVisible(False)
-    #         self.slave_id_line_edit.setVisible(False)
-    #     else:
-    #         self.ip_line_edit_label.setVisible(False)
-    #         self.ip_line_edit.setVisible(False)
-    #         self.slave_id_line_edit_label.setVisible(True)
-    #         self.slave_id_line_edit.setVisible(True)
 
     def add_device_to_table_widget(self, index, device_data, err_flag = 0):
         self.table_widget.setRowCount(index + 1)
@@ -201,33 +189,15 @@ class AQ_DialogAddDevices(AQDialog):
                 else:
                     print("Галочка не установлена")
 
-    def connect_finished(self, device_data):
-        if isinstance(device_data, dict):
-            default_prg = device_data.get('default_prg')
-        else:
-            default_prg = device_data
-        self.gear_small.stop()
-        self.gear_big.stop()
-        if default_prg == 'connect_err':
-            self.show_connect_err_label()
-        elif default_prg == 'empty_field_slave_id':
-            self.slave_id_line_edit.red_blink_timer.start()
-            self.slave_id_line_edit.show_err_label()
-        elif default_prg == 'empty_field_ip' or default_prg == 'invalid_ip':
-            self.ip_line_edit.red_blink_timer.start()
-            self.ip_line_edit.show_err_label()
-        elif default_prg == 'decrypt_err':
-            self.add_device_to_table_widget(self.finded_dev_count, device_data, 1)
-            self.finded_dev_count += 1
-        else:
-            try:
-                self.parent.parse_default_prg(default_prg)
-                self.parent.add_data_to_ready_devices(device_data)
+    def connect_finished(self, finded_devices):
+        for i in range(len(finded_devices)):
+            if finded_devices[i].get_device_status == 'data_error':
+                self.add_device_to_table_widget(self.finded_dev_count, device_data, 1)  # 1 - ознака наявності помилки
+                self.finded_dev_count += 1
+            elif finded_devices[i].get_device_status == 'ok':
                 self.add_device_to_table_widget(self.finded_dev_count, device_data, 0)
                 self.finded_dev_count += 1
-            except:
-                self.add_device_to_table_widget(self.finded_dev_count, device_data, 1)
-                self.finded_dev_count += 1
+
 
     def on_find_button_clicked(self):
         self.gear_small.start()
@@ -254,42 +224,15 @@ class AQ_DialogAddDevices(AQDialog):
 
 
     def connect_to_device (self):
-        # selected_item = self.interface_combo_box.currentText()
+        finded_devices_list = []
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
             device = AQ_Device(self.event_manager, network_settings_list[i])
-            # if selected_item == "Ethernet":
-            #     try:
-            #         ip = self.ip_line_edit.text()
-            #     except:
-            #         return 'empty_field_ip'
-            #     if not is_valid_ip(ip):
-            #         return 'invalid_ip'
-            #
-            #     try:
-            #         device_data = self.parent.connect_to_device_IP(ip)
-            #         device_data['address'] = str(ip)
-            #     except Connect_err:
-            #         self.show_connect_err_label()
-            #
-            #     return device_data
-            # else:
-            #     try:
-            #         slave_id = int(self.slave_id_line_edit.text())
-            #     except:
-            #         return 'empty_field_slave_id'
-            #     for port in self.com_ports:
-            #         if port.description == selected_item:
-            #             selected_port = port.device
-            #             try:
-            #                 device_data = self.parent.connect_to_device_COM(selected_port, slave_id)
-            #                 device_data['address'] = str(slave_id) + ' (' + str(selected_port) + ')'
-            #             except Connect_err:
-            #                 self.show_connect_err_label()
-            #
-            #             break
-            #
-            #     return device_data
+            device_status = device.get_device_status()
+            if device_status == 'ok' or device_status == 'data_error':
+                finded_devices_list.append(device)
+
+        return finded_devices_list
 
     def show_connect_err_label(self):
         # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
@@ -335,9 +278,7 @@ class ConnectDeviceThread(QThread):
 
     def run(self):
         try:
-            # Здесь выполняем ваш код функции connect_to_device
-            # self.parent.connect_to_device()
-            result_data = self.parent.connect_to_device()  # Данные, которые нужно передать в главное окно
+            result_data = self.parent.connect_to_device()
             self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
             # По завершении успешного выполнения
             self.finished.emit()

@@ -34,7 +34,7 @@ import serial.tools.list_ports
 from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient
 from pymodbus.file_message import ReadFileRecordRequest
-from AQ_communication_func import read_device_name, read_version, read_serial_number, read_default_prg, is_valid_ip, \
+from AQ_communication_func import read_default_prg, is_valid_ip, \
                             read_parameter, write_parameter
 from AQ_parse_func import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree, \
                             swap_modbus_registers, swap_modbus_bytes, reverse_modbus_registers
@@ -1076,51 +1076,6 @@ class MainWindow(QMainWindow):
             event.accept()
         except Exception as e:
             print(f"Error occurred: {str(e)}")
-
-    # def open_AddDevices(self):
-    #     AddDevices_window = AddDevices_AQDialog('Add Devices', self)
-    #     AddDevices_window.exec_()
-
-    def connect_to_device_COM(self, selected_port, slave_id):
-        # Если уже установлено соединение, закрываем его
-        # if self.serial and self.serial.is_open:
-        #     self.serial.close()
-
-        try:
-            device_data = {}
-            client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
-            device_name = read_device_name(client, slave_id)
-            version = read_version(client, slave_id)
-            serial_number = read_serial_number(client, slave_id)
-            default_prg = read_default_prg(client, slave_id)
-            device_data['device_name'] = device_name
-            device_data['version'] = version
-            device_data['serial_number'] = serial_number
-            device_data['default_prg'] = default_prg
-            return device_data
-        except:
-        # "Ошибка при подключении к COM
-        #     raise Connect_err('Ошибка при подключении к COM')
-            return 'connect_err'
-
-    def connect_to_device_IP(self, ip):
-        try:
-            device_data = {}
-            client = ModbusTcpClient(ip)
-            slave_id = 1
-            device_name = read_device_name(client, slave_id)
-            version = read_version(client, slave_id)
-            serial_number = read_serial_number(client, slave_id)
-            default_prg = read_default_prg(client, slave_id)
-            device_data['device_name'] = device_name
-            device_data['version'] = version
-            device_data['serial_number'] = serial_number
-            device_data['default_prg'] = default_prg
-            return device_data
-        except:
-            # "Ошибка при подключении к IP
-            # raise Connect_err('Ошибка при подключении к IP')
-            return 'connect_err'
 
     def parse_default_prg (self, default_prg):
         try:
