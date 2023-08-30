@@ -16,9 +16,7 @@ class AQ_Device(QObject):
         self.serial_number = None
         self.version = None
         self.address = None
-        self.client = None
         self.device_tree = None
-        self.device_status = None
         self.address_tuple = address_tuple
         self.client = self.create_client(address_tuple)
         self.client.open()
@@ -37,11 +35,29 @@ class AQ_Device(QObject):
         else:
             self.device_data['status'] = 'connect_error'
 
+        self.add_address_string_to_device_data(address_tuple)
+
     def get_device_status(self):
         return self.device_data.get('status', None)
 
     def get_device_data(self):
         return self.device_data
+
+    def add_address_string_to_device_data(self, address_tuple):
+        interface = address_tuple[0]
+        address = address_tuple[1]
+        if interface == "Ethernet":
+            if is_valid_ip(address):
+                self.device_data['address'] = str(address)
+        else:
+            # Получаем список доступных COM-портов
+            com_ports = serial.tools.list_ports.comports()
+            for port in com_ports:
+                if port.description == interface:
+                    selected_port = port.device
+                    self.device_data['address'] = str(address) + ' (' + str(selected_port) + ')'
+
+        return None
 
     def create_client(self, address_tuple):
         interface = address_tuple[0]
