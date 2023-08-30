@@ -4,8 +4,6 @@ from PyQt5.QtCore import QObject
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
 from pymodbus.file_message import ReadFileRecordRequest
 
-from AQ_custom_ReadFileRecordRequest import AQ_ReadFileRecordRequest
-
 
 class AQ_connect(QObject):
     def __init__(self):

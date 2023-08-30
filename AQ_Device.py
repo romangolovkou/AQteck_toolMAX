@@ -2,11 +2,8 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from pymodbus.client import serial
 import serial.tools.list_ports
-from pymodbus.file_message import ReadFileRecordRequest
-
 from AQ_communication_func import is_valid_ip, decrypt_data
 from AQ_connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
-from AQ_custom_ReadFileRecordRequest import AQ_ReadFileRecordRequest
 from AQ_parse_func import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
                           get_storage_container, parse_tree
 
@@ -32,16 +29,19 @@ class AQ_Device(QObject):
                 self.device_tree = self.parse_default_prg(default_prg)
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
                     and isinstance(self.device_tree, QStandardItemModel):
-                    self.device_status = 'ok'
+                    self.device_data['status'] = 'ok'
                 else:
-                    self.device_status = 'data_error'
+                    self.device_data['status'] = 'data_error'
             else:
-                self.device_status = 'data_error'
+                self.device_data['status'] = 'data_error'
         else:
-            self.device_status = 'connect_error'
+            self.device_data['status'] = 'connect_error'
 
     def get_device_status(self):
-        return self.device_status
+        return self.device_data.get('status', None)
+
+    def get_device_data(self):
+        return self.device_data
 
     def create_client(self, address_tuple):
         interface = address_tuple[0]
@@ -191,7 +191,6 @@ class AQ_Device(QObject):
             storage_container = get_storage_container(default_prg, containers_offset)
             device_tree = parse_tree(storage_container)
             return device_tree
-            # self.ready_to_add_devices_trees.append(device_tree)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'parsing_err'

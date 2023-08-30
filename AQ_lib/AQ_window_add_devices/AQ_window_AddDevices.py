@@ -2,15 +2,11 @@ from PyQt5.QtGui import QPixmap, QFont, QColor
 from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QFrame, QGraphicsView, QGraphicsScene, \
                             QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox
+
+from AQ_addDevice_TableWidget import AQ_addDevice_TableWidget
 from custom_window_templates import AQDialog, AQComboBox, AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
-from custom_exception import Connect_err
-import serial.tools.list_ports
-from AQ_communication_func import is_valid_ip
-from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
-                             load_last_combobox_state
 from AQ_AddDevices_network_frame import AQ_network_settings_frame
 from AQ_Device import AQ_Device
-from AQ_connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
 
 
 class AQ_DialogAddDevices(AQDialog):
@@ -66,77 +62,12 @@ class AQ_DialogAddDevices(AQDialog):
                                                 self.height() - self.title_bar_frame.height() - 4)
 
         # Создаем QTableWidget с 4 столбцами
-        self.table_widget = QTableWidget(self.main_window_frame)
-        self.table_widget.setColumnCount(4)
-        self.table_widget.horizontalHeader().setMinimumSectionSize(8)
+        self.table_widget = AQ_addDevice_TableWidget(self.main_window_frame)
+        self.table_widget.move(self.network_settings_frame.width() + 50, self.title_bar_frame.height() + 5)
 
-        # Добавляем заголовки столбцов
-        self.table_widget.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])
-        self.table_widget.move(self.main_window_frame.width()//2 - 28, self.title_bar_frame.height() + 5)
-        self.table_widget.setFixedWidth(self.main_window_frame.width()//2 + 20)
-        # Устанавливаем ширину столбцов
-        cur_width = self.table_widget.width()
-        self.table_widget.setColumnWidth(0, int(cur_width * 0.05))
-        self.table_widget.setColumnWidth(1, int(cur_width * 0.48))
-        self.table_widget.setColumnWidth(2, int(cur_width * 0.27))
-        self.table_widget.setColumnWidth(3, int(cur_width * 0.20))
-        # Установите высоту строк по умолчанию
-        self.table_widget.verticalHeader().setVisible(False)
-        self.table_widget.horizontalHeader().setStyleSheet(
-            "QHeaderView::section { background-color: #2b2d30; color: #D0D0D0; border: 1px solid #1e1f22; }")
-        # Убираем рамку таблицы
-        self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
-                                           QTableWidget::item { padding-left: 3px; }""")
-
-        self.finded_dev_count = 0
-
-    def set_style_table_widget(self, row, err_flag=0):
-        if err_flag == 0:
-            # self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
-            #                                 QTableWidget::item { padding-left: 3px; background-color: #429061}""")
-            for i in range(4):
-                self.table_widget.item(row, i).setBackground(QColor("#429061"))
-        else:
-            # self.table_widget.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
-            #                                             QTableWidget::item { padding-left: 3px; background-color: #9d4d4f}""")
-            for i in range(4):
-                self.table_widget.item(row, i).setBackground(QColor("#9d4d4f"))
-
-    def add_device_to_table_widget(self, index, device_data, err_flag = 0):
-        self.table_widget.setRowCount(index + 1)
-        # Создаем элементы таблицы для каждой строки
-        self.checkbox_item = QTableWidgetItem()
-        self.name_item = QTableWidgetItem(device_data.get('device_name') + ' S/N' + device_data.get('serial_number'))
-        self.name_item.setFlags(self.name_item.flags() & ~Qt.ItemIsEditable)
-        self.address_item = QTableWidgetItem(device_data.get('address'))
-        self.address_item.setFlags(self.address_item.flags() & ~Qt.ItemIsEditable)
-        self.version_item = QTableWidgetItem(device_data.get('version'))
-        self.version_item.setFlags(self.version_item.flags() & ~Qt.ItemIsEditable)
-
-        # Устанавливаем элементы таблицы
-        self.table_widget.setItem(index, 0, self.checkbox_item)
-        self.table_widget.setItem(index, 1, self.name_item)
-        self.table_widget.setItem(index, 2, self.address_item)
-        self.table_widget.setItem(index, 3, self.version_item)
-        new_height = self.table_widget.height() + self.table_widget.rowHeight(index)
-        if new_height > 420:
-            new_height = 420
-        self.table_widget.setFixedHeight(new_height)
-
-        # Устанавливаем чекбокс в первую колонку
-        checkbox = QCheckBox()
-        if err_flag == 0:
-            checkbox.setChecked(True)
-        else:
-            checkbox.setChecked(False)
-            checkbox.setEnabled(False)
-
-        checkbox.setStyleSheet("QCheckBox { background-color: transparent; border: none;}")
-        self.table_widget.setCellWidget(index, 0, checkbox)
-        item = self.table_widget.item(index, 0)
-        item.setTextAlignment(Qt.AlignCenter)
-
-        self.set_style_table_widget(self.finded_dev_count, err_flag)
+    def add_devices_to_table_widget(self, finded_devices):
+        for i in range(len(finded_devices)):
+            self.table_widget.append_device_row(finded_devices[i].get_device_data())
 
         bottom_right_corner_table_widget = self.table_widget.mapTo(self.main_window_frame, self.table_widget.rect().bottomRight())
 
@@ -190,14 +121,7 @@ class AQ_DialogAddDevices(AQDialog):
                     print("Галочка не установлена")
 
     def connect_finished(self, finded_devices):
-        for i in range(len(finded_devices)):
-            if finded_devices[i].get_device_status == 'data_error':
-                self.add_device_to_table_widget(self.finded_dev_count, device_data, 1)  # 1 - ознака наявності помилки
-                self.finded_dev_count += 1
-            elif finded_devices[i].get_device_status == 'ok':
-                self.add_device_to_table_widget(self.finded_dev_count, device_data, 0)
-                self.finded_dev_count += 1
-
+        self.add_devices_to_table_widget(finded_devices)  # 1 - ознака наявності помилки
 
     def on_find_button_clicked(self):
         self.gear_small.start()
