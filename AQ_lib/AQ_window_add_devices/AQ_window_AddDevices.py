@@ -65,11 +65,15 @@ class AQ_DialogAddDevices(AQDialog):
         self.table_widget = AQ_addDevice_TableWidget(self.main_window_frame)
         self.table_widget.move(self.network_settings_frame.width() + 50, self.title_bar_frame.height() + 5)
 
+        # Створюємо порожній список для всіх знайдених девайсів
+        self.all_finded_devices = []
+
     def add_devices_to_table_widget(self, finded_devices):
         for i in range(len(finded_devices)):
             self.table_widget.append_device_row(finded_devices[i].get_device_data())
 
         bottom_right_corner_table_widget = self.table_widget.mapTo(self.main_window_frame, self.table_widget.rect().bottomRight())
+        summ_rows_height = self.table_widget.get_sum_of_rows_height()
 
         if hasattr(self, 'add_btn'):
             self.add_btn.deleteLater()
@@ -78,7 +82,7 @@ class AQ_DialogAddDevices(AQDialog):
         self.add_btn.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
         self.add_btn.setFixedSize(100, 35)
         self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
-                          bottom_right_corner_table_widget.y() + 5)
+                          summ_rows_height + 70)
         self.add_btn.clicked.connect(self.add_finded_devices)
         self.add_btn.setStyleSheet("""
                     QPushButton {
@@ -101,6 +105,10 @@ class AQ_DialogAddDevices(AQDialog):
 
         self.add_btn.show()
 
+    def add_finded_devices_to_all_list(self, finded_devices):
+        for i in range(len(finded_devices)):
+            self.all_finded_devices.append(finded_devices[i])
+
     def add_finded_devices(self):
         devices_count = self.table_widget.rowCount()
         for i in range(devices_count):
@@ -121,7 +129,8 @@ class AQ_DialogAddDevices(AQDialog):
                     print("Галочка не установлена")
 
     def connect_finished(self, finded_devices):
-        self.add_devices_to_table_widget(finded_devices)  # 1 - ознака наявності помилки
+        self.add_devices_to_table_widget(finded_devices)
+        self.add_finded_devices_to_all_list(finded_devices)
 
     def on_find_button_clicked(self):
         self.gear_small.start()

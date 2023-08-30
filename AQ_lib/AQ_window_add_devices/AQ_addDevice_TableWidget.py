@@ -13,7 +13,6 @@ class AQ_addDevice_TableWidget(QTableWidget):
 
         # Добавляем заголовки столбцов
         self.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])
-        # self.table_widget.move(self.main_window_frame.width() // 2 - 28, self.title_bar_frame.height() + 5)
         self.setFixedWidth(420)
         self.setMaximumHeight(420)
         # Устанавливаем ширину столбцов
@@ -75,3 +74,10 @@ class AQ_addDevice_TableWidget(QTableWidget):
         item.setTextAlignment(Qt.AlignCenter)
 
         self.set_style_table_widget_item(new_row_index, err_flag)
+
+    def get_sum_of_rows_height(self):
+        sum_height = 0
+        for i in range(self.rowCount()):
+            sum_height += self.rowHeight(i)
+
+        return sum_height

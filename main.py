@@ -887,39 +887,39 @@ class AQ_TreeView(QTreeView):
         QTimer.singleShot(4000, self.write_err_widget.deleteLater)
 
 
-class Read_value_by_modbus_Thread(QThread):
-    finished = pyqtSignal()
-    error = pyqtSignal(str)
-    result_signal = pyqtSignal(object)  # Сигнал для передачи данных в главное окно
-    def __init__(self, parent, modus_reg):
-        super().__init__(parent)
-        self.parent = parent
-        self.modbus_reg = modus_reg
-
-    def run(self):
-        try:
-            # Здесь выполняем ваш код функции connect_to_device
-            # self.parent.connect_to_device()
-            # client.connect()
-            # # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
-            # start_address = 0xF000
-            # register_count = 16
-            # # Выполняем запрос
-            # response = client.read_holding_registers(start_address, register_count, slave_id)
-            # # Конвертируем значения регистров в строку
-            # hex_string = ''.join(format(value, '04X') for value in response.registers)
-            # # Конвертируем строку в массив байт
-            # byte_array = bytes.fromhex(hex_string)
-            # byte_array = swap_modbus_bytes(byte_array, register_count)
-            #
-            # client.close()
-            result_data = self.parent.connect_to_device()  # Данные, которые нужно передать в главное окно
-            self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
-            # По завершении успешного выполнения
-            self.finished.emit()
-        except Exception as e:
-            # В случае ошибки передаем текст ошибки обратно в главный поток
-            self.error.emit(str(e))
+# class Read_value_by_modbus_Thread(QThread):
+#     finished = pyqtSignal()
+#     error = pyqtSignal(str)
+#     result_signal = pyqtSignal(object)  # Сигнал для передачи данных в главное окно
+#     def __init__(self, parent, modus_reg):
+#         super().__init__(parent)
+#         self.parent = parent
+#         self.modbus_reg = modus_reg
+#
+#     def run(self):
+#         try:
+#             # Здесь выполняем ваш код функции connect_to_device
+#             # self.parent.connect_to_device()
+#             # client.connect()
+#             # # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
+#             # start_address = 0xF000
+#             # register_count = 16
+#             # # Выполняем запрос
+#             # response = client.read_holding_registers(start_address, register_count, slave_id)
+#             # # Конвертируем значения регистров в строку
+#             # hex_string = ''.join(format(value, '04X') for value in response.registers)
+#             # # Конвертируем строку в массив байт
+#             # byte_array = bytes.fromhex(hex_string)
+#             # byte_array = swap_modbus_bytes(byte_array, register_count)
+#             #
+#             # client.close()
+#             result_data = self.parent.connect_to_device()  # Данные, которые нужно передать в главное окно
+#             self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
+#             # По завершении успешного выполнения
+#             self.finished.emit()
+#         except Exception as e:
+#             # В случае ошибки передаем текст ошибки обратно в главный поток
+#             self.error.emit(str(e))
 
 
 class MainWindow(QMainWindow):
@@ -1077,15 +1077,15 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
 
-    def parse_default_prg (self, default_prg):
-        try:
-            containers_count = get_conteiners_count(default_prg)
-            containers_offset = get_containers_offset(default_prg)
-            storage_container = get_storage_container(default_prg, containers_offset)
-            device_tree = parse_tree(storage_container)
-            self.ready_to_add_devices_trees.append(device_tree)
-        except:
-            return 'parsing_err'
+    # def parse_default_prg (self, default_prg):
+    #     try:
+    #         containers_count = get_conteiners_count(default_prg)
+    #         containers_offset = get_containers_offset(default_prg)
+    #         storage_container = get_storage_container(default_prg, containers_offset)
+    #         device_tree = parse_tree(storage_container)
+    #         self.ready_to_add_devices_trees.append(device_tree)
+    #     except:
+    #         return 'parsing_err'
 
 
     def add_tree_view(self):
@@ -1114,14 +1114,14 @@ class MainWindow(QMainWindow):
             print(f"Error occurred: {str(e)}")
 
 
-    def add_data_to_ready_devices(self, device_data):
-        device_dict = {}
-        device_dict['device_tree'] = self.ready_to_add_devices_trees[-1]
-        device_dict['device_name'] = device_data.get('device_name', 'err_name')
-        device_dict['serial_number'] = device_data.get('serial_number', 'err_S/N')
-        device_dict['address'] = device_data.get('address', 'err_address')
-        device_dict['version'] = device_data.get('version', 'err_version')
-        self.ready_to_add_devices.append(device_dict)
+    # def add_data_to_ready_devices(self, device_data):
+    #     device_dict = {}
+    #     device_dict['device_tree'] = self.ready_to_add_devices_trees[-1]
+    #     device_dict['device_name'] = device_data.get('device_name', 'err_name')
+    #     device_dict['serial_number'] = device_data.get('serial_number', 'err_S/N')
+    #     device_dict['address'] = device_data.get('address', 'err_address')
+    #     device_dict['version'] = device_data.get('version', 'err_version')
+    #     self.ready_to_add_devices.append(device_dict)
 
     def add_dev_widget_to_left_panel(self, index, dev_data):
         if not hasattr(self, 'left_panel_frame'):
