@@ -1,10 +1,12 @@
 from PyQt5.QtGui import QPixmap, QFont, QColor
 from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QFrame, QGraphicsView, QGraphicsScene, \
-                            QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox
+from PyQt5.QtWidgets import QApplication, QCheckBox
 
+from AQ_addDevice_ConnectErrorLabel import AQ_ConnectErrorLabel
+from AQ_addDevices_addButton import AQ_addButton
+from AQ_addDevice_RotatingGears import AQ_RotatingGearsWidget
 from AQ_addDevice_TableWidget import AQ_addDevice_TableWidget
-from custom_window_templates import AQDialog, AQComboBox, AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
+from custom_window_templates import AQDialog, AQComboBox, AQLabel
 from AQ_AddDevices_network_frame import AQ_network_settings_frame
 from AQ_Device import AQ_Device
 
@@ -12,8 +14,6 @@ from AQ_Device import AQ_Device
 class AQ_DialogAddDevices(AQDialog):
     def __init__(self, event_manager, devices_list, parent):
         super().__init__('Add Devices')
-
-        PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
         self.setObjectName("AQ_Dialog_add_device")
         self.parent = parent
@@ -25,36 +25,7 @@ class AQ_DialogAddDevices(AQDialog):
         # Рєєструємо обробники подій
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
         self.event_manager.register_event_handler('AddDevice_connect_error', self.show_connect_err_label)
-
-        # Создаем QGraphicsPixmapItem и добавляем его в сцену
-        self.gear_big = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear182.png'), 40, 1)
-
-        # Создаем виджет QGraphicsView и устанавливаем его для окна
-        self.gear_big_view = QGraphicsView(self)
-        self.gear_big_view.setStyleSheet("background: transparent;")
-        self.gear_big_view.setFrameStyle(QFrame.NoFrame)  # Убираем рамку
-        self.gear_big_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        # Создаем сцену и устанавливаем ее для виджета
-        self.gear_big_scene = QGraphicsScene(self)
-        self.gear_big_scene.addItem(self.gear_big)
-        self.gear_big_view.setScene(self.gear_big_scene)
-        self.gear_big_view.setGeometry(700, 500, 182, 182)
-
-        # Создаем QGraphicsPixmapItem и добавляем его в сцену
-        self.gear_small = RotatingGear(QPixmap(PROJ_DIR + 'Icons/gear127.png'), 40, 4)
-
-        # Создаем виджет QGraphicsView и устанавливаем его для окна
-        self.gear_small_view = QGraphicsView(self)
-        self.gear_small_view.setStyleSheet("background: transparent;")
-        self.gear_small_view.setFrameStyle(QFrame.NoFrame)  # Убираем рамку
-        self.gear_small_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        # Создаем сцену и устанавливаем ее для виджета
-        self.gear_small_scene = QGraphicsScene(self)
-        self.gear_small_scene.addItem(self.gear_small)
-        self.gear_small_view.setScene(self.gear_small_scene)
-        self.gear_small_view.setGeometry(610, 540, 127, 127)
+        self.event_manager.register_event_handler('Add_device', self.add_selected_devices_to_session)
 
         # Створюємо фрейм з налаштуваннями з'єднання
         self.network_settings_frame = AQ_network_settings_frame(event_manager, self.main_window_frame)
@@ -64,6 +35,10 @@ class AQ_DialogAddDevices(AQDialog):
         # Создаем QTableWidget с 4 столбцами
         self.table_widget = AQ_addDevice_TableWidget(self.main_window_frame)
         self.table_widget.move(self.network_settings_frame.width() + 50, self.title_bar_frame.height() + 5)
+
+        # Створюємо віджет з рухомими шестернями
+        self.rotating_gears = AQ_RotatingGearsWidget(self.main_window_frame)
+        self.rotating_gears.move(610, 500)
 
         # Створюємо порожній список для всіх знайдених девайсів
         self.all_finded_devices = []
@@ -76,40 +51,18 @@ class AQ_DialogAddDevices(AQDialog):
         summ_rows_height = self.table_widget.get_sum_of_rows_height()
 
         if hasattr(self, 'add_btn'):
-            self.add_btn.deleteLater()
-        # Создаем кнопку поиска
-        self.add_btn = QPushButton("Add device", self.main_window_frame)
-        self.add_btn.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.add_btn.setFixedSize(100, 35)
-        self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
-                          summ_rows_height + 70)
-        self.add_btn.clicked.connect(self.add_finded_devices)
-        self.add_btn.setStyleSheet("""
-                    QPushButton {
-                        border-left: 1px solid #9ef1d3;
-                        border-top: 1px solid #9ef1d3;
-                        border-bottom: 1px solid #5bb192;
-                        border-right: 1px solid #5bb192;
-                        color: #D0D0D0;
-                        background-color: #2b2d30;
-                        border-radius: 4px;
-                    }
-                    QPushButton:hover {
-                        background-color: #3c3e41;
-                    }
-                    QPushButton:pressed {
-                        background-color: #429061;
-                    }
-                """)
-
-
-        self.add_btn.show()
+            self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
+                              summ_rows_height + 70)
+        else:
+            self.add_btn = AQ_addButton(self.event_manager, 'Add device', self.main_window_frame)
+            self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
+                              summ_rows_height + 70)
 
     def add_finded_devices_to_all_list(self, finded_devices):
         for i in range(len(finded_devices)):
             self.all_finded_devices.append(finded_devices[i])
 
-    def add_finded_devices(self):
+    def add_selected_devices_to_session(self):
         devices_count = self.table_widget.rowCount()
         for i in range(devices_count):
             checkbox_item = self.table_widget.cellWidget(i, 0)
@@ -128,13 +81,9 @@ class AQ_DialogAddDevices(AQDialog):
                 else:
                     print("Галочка не установлена")
 
-    def connect_finished(self, finded_devices):
-        self.add_devices_to_table_widget(finded_devices)
-        self.add_finded_devices_to_all_list(finded_devices)
 
     def on_find_button_clicked(self):
-        self.gear_small.start()
-        self.gear_big.start()
+        self.rotating_gears.start()
         # Запускаем функцию connect_to_device в отдельном потоке
         self.connect_thread = ConnectDeviceThread(self)
         self.connect_thread.finished.connect(self.on_connect_thread_finished)
@@ -143,18 +92,17 @@ class AQ_DialogAddDevices(AQDialog):
         self.connect_thread.start()
 
     def on_connect_thread_finished(self):
-        # Выполняется после успешного завершения connect_to_device
-        # В этом слоте можно выполнить действия, которые должны произойти после завершения функции
-        self.gear_small.stop()
-        self.gear_big.stop()
+        self.rotating_gears.stop()
 
     def on_connect_thread_error(self, error_message):
         # Выполняется в случае ошибки при выполнении connect_to_device
         # В этом слоте можно выполнить действия, которые должны произойти в случае ошибки
         self.show_connect_err_label()
-        self.gear_small.stop()
-        self.gear_big.stop()
+        self.rotating_gears.stop()
 
+    def connect_finished(self, finded_devices):
+        self.add_devices_to_table_widget(finded_devices)
+        self.add_finded_devices_to_all_list(finded_devices)
 
     def connect_to_device (self):
         finded_devices_list = []
@@ -168,38 +116,9 @@ class AQ_DialogAddDevices(AQDialog):
         return finded_devices_list
 
     def show_connect_err_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
-        self.connect_err_label = AQLabel("<html>The connection to device could not be established.<br>Check the connection lines and network parameters and repeat the search.<html>", self)
-        self.connect_err_label.setStyleSheet("background-color: #9d2d30; color: #D0D0D0; \n")
-        self.connect_err_label.setFont(QFont("Verdana", 12))  # Задаем шрифт и размер
-        self.connect_err_label.setAlignment(Qt.AlignCenter)
-        self.connect_err_label.setFixedSize(self.width(), 50)
-        self.connect_err_label.move(0, self.height())
+        self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)
+        self.connect_err_label.move(0, self.height() - 50)
         self.connect_err_label.show()
-        # Создаем анимацию для перемещения плашки вверх и вниз
-        self.animation = QPropertyAnimation(self.connect_err_label, b"geometry")
-        # Показываем плашку с помощью анимации
-        start_rect = self.connect_err_label.geometry()
-        end_rect = QRect(start_rect.x(), start_rect.y() - 50, start_rect.width(), start_rect.height())
-        self.animation.setStartValue(start_rect)
-        self.animation.setEndValue(end_rect)
-        self.animation.setDuration(800)  # Продолжительность анимации в миллисекундах
-        self.animation.start()
-
-        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
-        QTimer.singleShot(4000, self.hide_connect_err_label)
-        # Устанавливаем задержку в 2 секунды и затем удаляем метку
-        # QTimer.singleShot(4000, self.connect_err_label.deleteLater)
-
-    def hide_connect_err_label(self):
-        # Скрываем плашку с помощью анимации
-        start_rect = self.connect_err_label.geometry()
-        end_rect = QRect(start_rect.x(), start_rect.y() + 50, start_rect.width(), start_rect.height())
-        self.animation.setStartValue(start_rect)
-        self.animation.setEndValue(end_rect)
-        self.animation.setDuration(800)  # Продолжительность анимации в миллисекундах
-        self.animation.start()
-
 
 class ConnectDeviceThread(QThread):
     finished = pyqtSignal()
@@ -220,23 +139,4 @@ class ConnectDeviceThread(QThread):
             self.error.emit(str(e))
 
 
-class RotatingGear(QGraphicsPixmapItem):
-    def __init__(self, pixmap, interval, angle_degree):
-        super().__init__()
-        self.setPixmap(pixmap)
-        self.setTransformOriginPoint(self.boundingRect().center())
-        self.angle = 0
-        self.angle_rotate = angle_degree
-        self.interval = interval
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.rotate_gear)
 
-    def rotate_gear(self):
-        self.angle += self.angle_rotate  # Угол поворота в градусах
-        self.setRotation(self.angle)
-
-    def start(self):
-        self.timer.start(self.interval)  # Установите интервал вращения в миллисекундах
-
-    def stop(self):
-        self.timer.stop()
