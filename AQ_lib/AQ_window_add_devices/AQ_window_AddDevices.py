@@ -18,6 +18,7 @@ class AQ_DialogAddDevices(AQDialog):
         self.setObjectName("AQ_Dialog_add_device")
         self.parent = parent
         self.event_manager = event_manager
+        self.devices_list = devices_list
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
@@ -68,19 +69,7 @@ class AQ_DialogAddDevices(AQDialog):
             checkbox_item = self.table_widget.cellWidget(i, 0)
             if checkbox_item is not None and isinstance(checkbox_item, QCheckBox):
                 if checkbox_item.checkState() == Qt.Checked:
-                    item = self.table_widget.item(i, 2)
-                    dev_address = item.text()
-                    for j in range(len(self.parent.ready_to_add_devices)):
-                        ready_device_data = self.parent.ready_to_add_devices[j]
-                        if dev_address == ready_device_data.get('address', ''):
-                            self.parent.devices.append(self.parent.ready_to_add_devices[j])
-                            # Видаляємо зі списку ready доданий девайс
-                            self.parent.ready_to_add_devices.pop(j)
-                            self.parent.add_tree_view()
-                            break
-                else:
-                    print("Галочка не установлена")
-
+                    self.devices_list.append(self.all_finded_devices[i])
 
     def on_find_button_clicked(self):
         self.rotating_gears.start()
@@ -112,6 +101,8 @@ class AQ_DialogAddDevices(AQDialog):
             device_status = device.get_device_status()
             if device_status == 'ok' or device_status == 'data_error':
                 finded_devices_list.append(device)
+            else:
+                self.show_connect_err_label()
 
         return finded_devices_list
 
