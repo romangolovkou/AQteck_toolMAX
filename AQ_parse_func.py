@@ -138,15 +138,15 @@ def parse_tree(storage_container):
         cache_descr_offsets[i] = cache_descr_offsets[i - 1] + descr_area[cache_descr_offsets[i - 1]] + 1
 
     tree_model = QStandardItemModel()
-    tree_model.setColumnCount(6)
-    tree_model.setHorizontalHeaderLabels(["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
+    tree_model.setColumnCount(1)
+    # tree_model.setHorizontalHeaderLabels(["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
 
     # Создание корневого элемента
     root_item = tree_model.invisibleRootItem()
 
     err_check = add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, string_array)
     if err_check == -1:
-        return -1
+        return 'parsing_err'
 
     return tree_model
 
@@ -190,11 +190,11 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 pos = pos + 6
                 invisible_catalog_flag += 1
                 continue
-            # Примусове ігнорування контейнеру індус-клауд
-            if catalog_attributes.get('name', 0) == 'OwenCloud':
-                pos = pos + 6
-                invisible_catalog_flag += 1
-                continue
+            # # Примусове ігнорування контейнеру індус-клауд
+            # if catalog_attributes.get('name', 0) == 'OwenCloud':
+            #     pos = pos + 6
+            #     invisible_catalog_flag += 1
+            #     continue
             # Создание элемента каталога
             current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
             current_catalog.setData(catalog_attributes, Qt.UserRole)
@@ -245,146 +245,51 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     pos = pos + 8
                     continue
                 # Друга перевірка на невидимість (останні версії контейнерної не додають ім'я, якщо каталог невидимий)
-                if catalog_attributes.get('name', 0) == 0:
+                if param_attributes.get('name', 0) == 0:
                     pos = pos + 8
                     continue
                 # Перевірка на наявність регістру модбас у параметрі
                 if param_attributes.get('modbus_reg', 'not_reg') == 'not_reg':
                     pos = pos + 8
                     continue
-                parameter_name = param_attributes.get('name', 'err_name')
-                current_parameter = QStandardItem(parameter_name)
-                current_parameter.setData(param_attributes, Qt.UserRole)
 
-                delegate_attributes = {}
-                cur_par_value = QStandardItem()
-                delegate_attributes['type'] = param_attributes.get('type')
-                delegate_attributes['R_Only'] = param_attributes.get('R_Only')
-                delegate_attributes['W_Only'] = param_attributes.get('W_Only')
-                delegate_attributes['param_size'] = param_attributes.get('param_size')
-
-                if param_attributes.get('visual_type', '') != '':
-                    delegate_attributes['visual_type'] = param_attributes.get('visual_type')
+                # Створюємо список строк для енам
                 if param_attributes.get('type') == 'enum':
-                    enum_srtings = []
+                    enum_strings = []
                     string_num = param_attributes.get('string_num', '')
                     bit_size = param_attributes.get('param_size', 0)
                     max_lim_from_bits = 2**bit_size - 1
                     enum_max_lim = param_attributes.get('max_limit', 0)
 
+                    # Якщо max_limit більший за максимально можливий у розмірі в бітах, то перезаписуємо
                     if enum_max_lim > max_lim_from_bits or enum_max_lim == 0:
                         enum_max_lim = max_lim_from_bits
-                    delegate_attributes['enum_max_lim'] = enum_max_lim
+                        param_attributes['max_limit'] = enum_max_lim
+
                     for i in range(enum_max_lim + 1):
                         enum_str = string_array[string_num + i]
-                        enum_srtings.append(enum_str)
-                    delegate_attributes['enum_strings'] = enum_srtings
-                    cur_par_value.setData(delegate_attributes, Qt.UserRole)
-                elif param_attributes.get('type') == 'unsigned' or param_attributes.get('type') == 'signed' \
-                            or param_attributes.get('type') == 'string' or param_attributes.get('type') == 'float'\
-                            or param_attributes.get('type') == 'date_time':
-                    cur_par_value.setData(delegate_attributes, Qt.UserRole)
+                        enum_strings.append(enum_str)
 
+                    param_attributes['enum_strings'] = enum_strings
 
-                if param_attributes.get('type', '') == 'enum' or param_attributes.get('visual_type', '') == 'ip_format':
-                    cur_par_min = QStandardItem()
-                else:
-                    if param_attributes.get('min_limit', '') == '':
-                        param_type = param_attributes.get('type', '')
-                        size = param_attributes.get('param_size', 0)
-                        if param_type == 'float':
-                            if size == 4:
-                                cur_par_min = QStandardItem('-3.402283E+38')
-                            elif size == 8:
-                                cur_par_min = QStandardItem('-1.7976931348623E+308')
-                        elif param_type == 'signed':
-                            if size == 1:
-                                cur_par_min = QStandardItem('-127')
-                            if size == 2:
-                                cur_par_min = QStandardItem('-32768')
-                            if size == 4:
-                                cur_par_min = QStandardItem('-2147483648')
-                            if size == 8:
-                                cur_par_min = QStandardItem('-9223372036854775808')
-                        elif param_type == 'unsigned':
-                            cur_par_min = QStandardItem('0')
-                        elif param_type == 'date_time':
-                            cur_par_min = QStandardItem('01.01.2000 0:00:00')
-                        else:
-                            cur_par_min = QStandardItem()
-                    else:
-                        cur_par_min = QStandardItem(str(param_attributes.get('min_limit', '')))
+                # Додаємо до словника параметрів строку з одиницею виміру
 
-                if param_attributes.get('type', '') == 'enum'  or param_attributes.get('visual_type', '') == 'ip_format':
-                    cur_par_max = QStandardItem()
-                else:
-                    if param_attributes.get('max_limit', '') == '':
-                        param_type = param_attributes.get('type', '')
-                        size = param_attributes.get('param_size', 0)
-                        if param_type == 'float':
-                            if size == 4:
-                                cur_par_max = QStandardItem('3.402283E+38')
-                            elif size == 8:
-                                cur_par_max = QStandardItem('1.7976931348623E+308')
-                        elif param_type == 'signed':
-                            if size == 1:
-                                cur_par_max = QStandardItem('128')
-                            if size == 2:
-                                cur_par_max = QStandardItem('32767')
-                            if size == 4:
-                                cur_par_max = QStandardItem('2147483647')
-                            if size == 8:
-                                cur_par_max = QStandardItem('9223372036854775807')
-                        elif param_type == 'unsigned':
-                            if size == 1:
-                                cur_par_max = QStandardItem('255')
-                            if size == 2:
-                                cur_par_max = QStandardItem('65535')
-                            if size == 4:
-                                cur_par_max = QStandardItem('4294967295')
-                            if size == 6: # MAC address
-                                cur_par_max = QStandardItem('FF:FF:FF:FF:FF:FF')
-                            if size == 8:
-                                cur_par_max = QStandardItem('18446744073709551615')
-                        elif param_type == 'date_time':
-                            cur_par_max = QStandardItem('07.02.2136 6:28:15')
-                        else:
-                            cur_par_max = QStandardItem()
-                    else:
-                        cur_par_max = QStandardItem(str(param_attributes.get('max_limit', '')))
-
-                string_num = param_attributes.get('string_num', '')
-                if string_num == '' or param_attributes.get('type', '') == 'enum':
-                    cur_par_unit = QStandardItem()
-                else:
-                    unit_str = string_array[string_num]
-                    cur_par_unit = QStandardItem(unit_str)
-
-                if param_attributes.get('type', '') == 'enum':
+                if not param_attributes.get('type', '') == 'enum' and \
+                        not param_attributes.get('visual_type', '') == 'ip_format':
                     string_num = param_attributes.get('string_num', '')
-                    r_only = param_attributes.get('R_Only', 0)
-                    w_only = param_attributes.get('W_Only', 0)
-                    if string_num == '' or (r_only == 1 and w_only == 0):
-                        cur_par_default = QStandardItem()
-                    else:
-                        def_str = string_array[string_num]
-                        cur_par_default = QStandardItem(def_str)
-                elif param_attributes.get('visual_type', '') == 'ip_format':
-                    cur_par_default = QStandardItem()
-                else:
-                    cur_par_default = QStandardItem(str(param_attributes.get('def_value', '')))
+                    if string_num != '':
+                        unit_str = string_array[string_num]
+                        param_attributes['unit'] = unit_str
 
+                parameter_name = param_attributes.get('name', 'err_name')
+                current_parameter = QStandardItem(parameter_name)
+                current_parameter.setData(param_attributes, Qt.UserRole)
                 current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
-                cur_par_min.setFlags(cur_par_min.flags() & ~Qt.ItemIsEditable)
-                cur_par_max.setFlags(cur_par_max.flags() & ~Qt.ItemIsEditable)
-                cur_par_unit.setFlags(cur_par_unit.flags() & ~Qt.ItemIsEditable)
-                cur_par_default.setFlags(cur_par_default.flags() & ~Qt.ItemIsEditable)
 
                 # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
                 name = current_parameter.text()
                 cat_name = current_catalog_levels[level - 1].text()
-                current_catalog_levels[level - 1].appendRow([current_parameter, cur_par_value, cur_par_min, cur_par_max,
-                                                             cur_par_unit, cur_par_default])
+                current_catalog_levels[level - 1].appendRow([current_parameter])
 
                 pos = pos + 8
             else:
@@ -442,7 +347,6 @@ def unpack_descr (param_descr, param_prop):
             return -1 # Помилка - невідомий дескриптор
 
     return param_attributes
-
 
 
 def get_param_by_ID (param_descr, ID, pos, param_attributes):

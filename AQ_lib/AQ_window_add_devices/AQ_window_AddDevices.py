@@ -1,4 +1,3 @@
-from PyQt5.QtGui import QPixmap, QFont, QColor
 from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QCheckBox
 
