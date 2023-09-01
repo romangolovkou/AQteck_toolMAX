@@ -12,12 +12,17 @@ class AQ_CurrentSession(QObject):
         self.event_manager = event_manager
         self.cur_active_device = None
         self.event_manager.register_event_handler("open_AddDevices", self.open_AddDevices)
+        self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
         self.devices = []
         self.current_active_dev_index = 0
 
     def open_AddDevices(self):
-        AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.devices, self.parent)
+        AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
         AddDevices_window.exec_()
+
+    def add_new_devices(self, new_devices_list):
+        for i in range(len(new_devices_list)):
+            self.devices.append(new_devices_list[i])
 
     def create_device_tree_for_view(self, device_tree):
         tree_model_for_view = QStandardItemModel()

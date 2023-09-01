@@ -11,13 +11,13 @@ from AQ_Device import AQ_Device
 
 
 class AQ_DialogAddDevices(AQDialog):
-    def __init__(self, event_manager, devices_list, parent):
+    def __init__(self, event_manager, parent):
         super().__init__('Add Devices')
 
         self.setObjectName("AQ_Dialog_add_device")
         self.parent = parent
         self.event_manager = event_manager
-        self.devices_list = devices_list
+        self.selected_devices_list = []
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
@@ -68,7 +68,9 @@ class AQ_DialogAddDevices(AQDialog):
             checkbox_item = self.table_widget.cellWidget(i, 0)
             if checkbox_item is not None and isinstance(checkbox_item, QCheckBox):
                 if checkbox_item.checkState() == Qt.Checked:
-                    self.devices_list.append(self.all_finded_devices[i])
+                    self.selected_devices_list.append(self.all_finded_devices[i])
+
+        self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
 
     def on_find_button_clicked(self):
         self.rotating_gears.start()
