@@ -273,7 +273,6 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     param_attributes['enum_strings'] = enum_strings
 
                 # Додаємо до словника параметрів строку з одиницею виміру
-
                 if not param_attributes.get('type', '') == 'enum' and \
                         not param_attributes.get('visual_type', '') == 'ip_format':
                     string_num = param_attributes.get('string_num', '')

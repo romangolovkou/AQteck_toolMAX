@@ -887,41 +887,6 @@ class AQ_TreeView(QTreeView):
         QTimer.singleShot(4000, self.write_err_widget.deleteLater)
 
 
-# class Read_value_by_modbus_Thread(QThread):
-#     finished = pyqtSignal()
-#     error = pyqtSignal(str)
-#     result_signal = pyqtSignal(object)  # Сигнал для передачи данных в главное окно
-#     def __init__(self, parent, modus_reg):
-#         super().__init__(parent)
-#         self.parent = parent
-#         self.modbus_reg = modus_reg
-#
-#     def run(self):
-#         try:
-#             # Здесь выполняем ваш код функции connect_to_device
-#             # self.parent.connect_to_device()
-#             # client.connect()
-#             # # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
-#             # start_address = 0xF000
-#             # register_count = 16
-#             # # Выполняем запрос
-#             # response = client.read_holding_registers(start_address, register_count, slave_id)
-#             # # Конвертируем значения регистров в строку
-#             # hex_string = ''.join(format(value, '04X') for value in response.registers)
-#             # # Конвертируем строку в массив байт
-#             # byte_array = bytes.fromhex(hex_string)
-#             # byte_array = swap_modbus_bytes(byte_array, register_count)
-#             #
-#             # client.close()
-#             result_data = self.parent.connect_to_device()  # Данные, которые нужно передать в главное окно
-#             self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
-#             # По завершении успешного выполнения
-#             self.finished.emit()
-#         except Exception as e:
-#             # В случае ошибки передаем текст ошибки обратно в главный поток
-#             self.error.emit(str(e))
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -932,10 +897,6 @@ class MainWindow(QMainWindow):
         self.icoMaximize = QIcon(PROJ_DIR + 'Icons/Maximize.png')
         self.icoNormalize = QIcon(PROJ_DIR + 'Icons/_Normalize.png')
         self.icoMinimize = QIcon(PROJ_DIR + 'Icons/Minimize.png')
-        # self.ico_AddDev_btn = QIcon(PROJ_DIR + 'Icons/test_Button.png')
-        # self.ico_btn_add_devise = QIcon(PROJ_DIR + 'Icons/Add_device.png')
-        # self.ico_btn_delete_device = QIcon(PROJ_DIR + 'Icons/Delete_device.png')
-        # self.ico_btn_ip_adresses = QIcon(PROJ_DIR + 'Icons/ip_adresses.png')
         self.background_pic = QPixmap(PROJ_DIR + 'Icons/industrial_pic.png')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle(MainName)

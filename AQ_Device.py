@@ -10,7 +10,7 @@ from AQ_parse_func import swap_modbus_bytes, remove_empty_bytes, get_conteiners_
 
 class AQ_Device(QObject):
     def __init__(self, event_manager, address_tuple, parent=None):
-        super().__init__()
+        super().__init__(parent)
         self.event_manager = event_manager
         self.device_name = None
         self.serial_number = None
@@ -28,6 +28,7 @@ class AQ_Device(QObject):
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
                     and isinstance(self.device_tree, QStandardItemModel):
                     self.device_data['status'] = 'ok'
+                    self.device_data['device_tree'] = self.device_tree
                 else:
                     self.device_data['status'] = 'data_error'
             else:
