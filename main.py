@@ -18,6 +18,8 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushBut
     QVBoxLayout, QSizeGrip, QFrame, QSizePolicy, QSplashScreen, QDialog, QComboBox, QLineEdit, QTreeView, QHeaderView, \
     QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox, QStyledItemDelegate,\
     QProgressBar
+
+from AQ_left_widget_panel import AQ_left_widget_panel_frame
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -918,11 +920,11 @@ class MainWindow(QMainWindow):
         self.event_manager = AQ_EventManager()
         # Поточна сессія
         self.current_session = AQ_CurrentSession(self.event_manager, self)
-        # Порожній список для дерев девайсів
-        self.ready_to_add_devices_trees = []
-        self.ready_to_add_devices = []
-        self.devices_trees = []
-        self.devices = []
+        # # Порожній список для дерев девайсів
+        # self.ready_to_add_devices_trees = []
+        # self.ready_to_add_devices = []
+        # self.devices_trees = []
+        # self.devices = []
         self.current_active_dev_index = 0
 
         #MainWindowFrame
@@ -940,6 +942,10 @@ class MainWindow(QMainWindow):
         self.main_background_pic.setPixmap(self.background_pic)
         self.main_background_pic.setScaledContents(True)
         self.main_background_pic.setGeometry(0, 0, 450, 326)
+
+        # Створюємо бокову панель зліва з віджетами доданих девайсів
+        self.left_panel = AQ_left_widget_panel_frame(self.event_manager, self.main_field_frame)
+        self.left_panel.setGeometry(0, 0, 248, self.main_field_frame.height())
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
@@ -996,6 +1002,7 @@ class MainWindow(QMainWindow):
             self.tool_panel_frame.resize(self.main_window_frame.width(), self.tool_panel_frame.height())
             self.main_field_frame.resize(self.main_window_frame.width(), self.height() -
                                         (self.title_bar_frame.height() + self.tool_panel_frame.height() + 2))
+            self.left_panel.resize(self.left_panel.width(), self.main_field_frame.height())
             self.btn_maximize.move(self.title_bar_frame.width() - 70, 0)
             self.btn_minimize.move(self.title_bar_frame.width() - 105, 0)
             self.btn_close.move(self.title_bar_frame.width() - 35, 0)
@@ -1084,24 +1091,24 @@ class MainWindow(QMainWindow):
     #     device_dict['version'] = device_data.get('version', 'err_version')
     #     self.ready_to_add_devices.append(device_dict)
 
-    def add_dev_widget_to_left_panel(self, index, dev_data):
-        if not hasattr(self, 'left_panel_frame'):
-            self.left_panel_frame = QFrame(self.main_field_frame)
-            self.left_panel_frame.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
-            self.left_panel_layout = QVBoxLayout(self.left_panel_frame)
-            # self.left_panel_layout.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
-            self.left_panel_layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
-            self.left_panel_layout.setContentsMargins(4, 4, 4, 4)
-
-        name = dev_data.get('device_name', 'err_name')
-        address = dev_data.get('address', 'err_address')
-        serial = dev_data.get('serial_number', 'err_serial')
-        # Створювати ці віджети потрібно обов'язково з прив'язкою до головного вікна (parent - main_window)
-        # тому що віджету потрібен доступ до массиву доданих девайсів через parent.
-        dev_widget = AQ_left_device_widget(index, name, address, serial, self)
-        self.left_panel_layout.addWidget(dev_widget)
-
-        self.left_panel_frame.show()
+    # def add_dev_widget_to_left_panel(self, index, dev_data):
+    #     if not hasattr(self, 'left_panel_frame'):
+    #         self.left_panel_frame = QFrame(self.main_field_frame)
+    #         self.left_panel_frame.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
+    #         self.left_panel_layout = QVBoxLayout(self.left_panel_frame)
+    #         # self.left_panel_layout.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
+    #         self.left_panel_layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
+    #         self.left_panel_layout.setContentsMargins(4, 4, 4, 4)
+    #
+    #     name = dev_data.get('device_name', 'err_name')
+    #     address = dev_data.get('address', 'err_address')
+    #     serial = dev_data.get('serial_number', 'err_serial')
+    #     # Створювати ці віджети потрібно обов'язково з прив'язкою до головного вікна (parent - main_window)
+    #     # тому що віджету потрібен доступ до массиву доданих девайсів через parent.
+    #     dev_widget = AQ_left_device_widget(index, name, address, serial, self)
+    #     self.left_panel_layout.addWidget(dev_widget)
+    #
+    #     self.left_panel_frame.show()
 
     def read_parameters(self):
         device_data = self.devices[self.current_active_dev_index]
