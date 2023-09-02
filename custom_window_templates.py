@@ -17,8 +17,9 @@ class main_frame_AQFrame(QFrame):
 
 #TitleBarFrame
 class title_bar_frame_AQFrame(QFrame):
-    def __init__(self, window_parent, height, name, icon, parent=None):
+    def __init__(self, event_manager, height, name, icon, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         self.setGeometry(QRect(0, 0, parent.width(), height))
         self.setStyleSheet("background-color: #2b2d30;\n"
                                           "border-top-left-radius: 0px;\n"
@@ -27,9 +28,9 @@ class title_bar_frame_AQFrame(QFrame):
                                           "border-bottom-right-radius: 0px;")
         self.setObjectName("title_bar_frame")
         # Добавляем обработку событий мыши для перетаскивания окна
-        self.mousePressEvent = partial(mousePressEvent_Dragging, window_parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_Dragging, window_parent)
-        self.mouseReleaseEvent = partial(mouseReleaseEvent_Dragging, window_parent)
+        self.mousePressEvent = partial(mousePressEvent_Dragging, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self, self.event_manager)
+        self.mouseReleaseEvent = partial(mouseReleaseEvent_Dragging, self)
 
         # Создаем метку с названием приложения
         self.title_name = QLabel(name, self)
@@ -43,70 +44,53 @@ class title_bar_frame_AQFrame(QFrame):
         self.app_icon_label.setPixmap(icon.pixmap(30, 30))  # Устанавливаем иконку и масштабируем ее
         self.app_icon_label.setGeometry(2, 2, 30, 30)  # Устанавливаем координаты и размеры QLabel
 
+        # Создаем кнопку закрытия
+        self.icoClose = QIcon('Icons/Close.png')
+
+        self.btn_close = QPushButton('', self)
+        self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
+        self.btn_close.setGeometry(self.width() - 35, 0, 35,
+                                   35)  # установите координаты и размеры кнопки
+        # добавляем обработчик события нажатия на кнопку закрытия
+        self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close'))
+        self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+
+        # Создаем кнопку свернуть
+        self.icoMinimize = QIcon('Icons/Minimize.png')
+        self.btn_minimize = QPushButton('', self)
+        self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
+        self.btn_minimize.setGeometry(self.width() - 105, 0, 35,
+                                      35)  # установите координаты и размеры кнопки
+        self.btn_minimize.clicked.connect(lambda: self.event_manager.emit_event('minimize'))
+        self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+
+        # Создаем кнопку развернуть/нормализировать
+        self.icoMaximize = QIcon('Icons/Maximize.png')
+        self.icoNormalize = QIcon('Icons/_Normalize.png')
+        self.isMaximized = False  # Флаг, указывающий на текущее состояние окна
+        self.btn_maximize = QPushButton('', self)
+        self.btn_maximize.setIcon(QIcon(self.icoMaximize))  # установите свою иконку для кнопки
+        self.btn_maximize.setGeometry(self.width() - 70, 0, 35,
+                                      35)  # установите координаты и размеры кнопки
+        self.btn_maximize.clicked.connect(self.toggleMaximize)
+        self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+
     def custom_resize(self):
         self.title_name.setGeometry(0, 8, self.width(), 30)  # Устанавливаем геометрию метки
 
-
-
-# ToolPanelFrame
-# class tool_panel_frame_AQFrame(QFrame):
-#     def __init__(self, shift_y, parent=None):
-#         super().__init__(parent)
-#         self.setGeometry(QRect(0, shift_y + 2, parent.width(), 90))
-#         self.setStyleSheet("background-color: #2b2d30;\n"
-#                                            "border-top-left-radius: 0px;\n"
-#                                            "border-top-right-radius: 0px;\n"
-#                                            "border-bottom-left-radius: 0px;\n"
-#                                            "border-bottom-right-radius: 0px;")
-#         self.setObjectName("tool_panel_frame")
-#
-#     def resizeEvent(self, event):
-#         super().resizeEvent(event)
-#         if hasattr(self, 'tool_panel_layout'):
-#             self.rotate_next_widget(self.tool_panel_layout)
-#
-#     def rotate_next_widget(self, layout):
-#         recommended_width = self.sizeHint().width()
-#         cur_width = self.width()
-#         if self.width() < (recommended_width - 60):
-#             widest_widget = self.find_widest_Hwidget(layout)
-#             if widest_widget is not None:
-#                 widest_widget.change_oriental()
-#         elif self.width() >= (recommended_width + 60):
-#             most_slim_widget = self.find_most_slim_Vwidget(layout)
-#             if most_slim_widget is not None:
-#                 most_slim_widget.change_oriental()
-#
-#
-#     def find_widest_Hwidget(self, layout):
-#         max_width = 0
-#         widest_widget = None
-#
-#         for i in range(layout.count()):
-#             item = layout.itemAt(i)
-#             widget = item.widget()
-#             if hasattr(widget, 'get_cur_oriental'):
-#                 if widget.get_cur_oriental() == 0:
-#                     if item.widget() and item.widget().width() > max_width:
-#                         max_width = item.widget().width()
-#                         widest_widget = item.widget()
-#
-#         return widest_widget
-#
-#     def find_most_slim_Vwidget(self, layout):
-#         min_width = float('inf')  # Инициализируем минимальную ширину как бесконечность
-#         most_slim_widget = None
-#
-#         for i in range(layout.count()):
-#             item = layout.itemAt(i)
-#             widget = item.widget()
-#             if hasattr(widget, 'get_cur_oriental'):
-#                 if widget.get_cur_oriental() == 1:
-#                     if item.widget() and item.widget().width() < min_width:
-#                         min_width = item.widget().width()
-#                         most_slim_widget = item.widget()
-#
-#         return most_slim_widget
+    def toggleMaximize(self):
+        # lambda: self.event_manager.emit_event('toggle_maximize'
+        try:
+            if self.isMaximized:
+                self.event_manager.emit_event('normalize')
+                self.btn_maximize.setIcon(QIcon(self.icoMaximize))
+                self.isMaximized = False
+            else:
+                self.event_manager.emit_event('maximize')
+                self.btn_maximize.setIcon(QIcon(self.icoNormalize))
+                self.isMaximized = True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
 
 
 # MainFieldFrame
@@ -862,79 +846,4 @@ class AQ_have_error_widget(QWidget):
         self.show()
 
 
-class AQ_left_device_widget(QWidget):
-    def __init__(self, index, name, address, serial, parent=None):
-        super().__init__(parent)
-        self.parent = parent
-        self.index = index
-        self.is_active_now = 1
-        self.setFixedHeight(70)
-        self.setMinimumWidth(240)
-        # Створюємо фонове поле для відображення підсвітки активного приладу в момент додавання нового девайсу
-        # поле використовується тільки один раз для підсвітки одразу після додавання нового приладу, оскільки
-        # стандартні палітри чомусь не працюють на момент створення віджету.
-        self.background_field = QFrame(self)
-        self.background_field.setGeometry(0, 0, 240, 70)
-        self.background_field.setStyleSheet("background-color: #429061;")
-        self.ico_label = QLabel(self)
-        pixmap = QPixmap('Icons/test_Button.png')
-        self.ico_label.setGeometry(0, 0, 40, 70)
-        new_pixmap = pixmap.scaled(self.ico_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.ico_label.setPixmap(new_pixmap)
-        self.ico_label.setStyleSheet("background-color: transparent;")
-        self.ico_label.show()
-        self.name_label = AQLabel(name, self)
-        font = QFont("Segoe UI", 14)
-        self.name_label.setFont(font)
-        self.name_label.move(50, 5)
-        self.name_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;")
-        self.address_label = AQLabel('address:' + address, self)
-        self.address_label.move(50, 27)
-        self.address_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
-        self.serial_label = AQLabel('S/N' + serial, self)
-        self.serial_label.move(50, 47)
-        self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
 
-        # Создаем палитру с фоновыми цветами
-        self.normal_palette = self.palette()
-        self.hover_palette = QPalette()
-        self.hover_palette.setColor(QPalette.Window, QColor("#429061"))
-        self.setPalette(self.hover_palette)
-        self.setAutoFillBackground(True)
-        self.set_active_cur_widget()
-
-    def enterEvent(self, event):
-        # Применяем палитру при наведении
-        if self.is_active_now == 0:
-            self.setPalette(self.hover_palette)
-            self.setAutoFillBackground(True)
-        super().enterEvent(event)
-
-    def leaveEvent(self, event):
-        # Возвращаем обычную палитру при уходе курсора
-        if self.is_active_now == 0:
-            self.setPalette(self.normal_palette)
-            self.setAutoFillBackground(False)
-        super().leaveEvent(event)
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.set_active_cur_widget()
-
-            # Эта функция будет вызвана при нажатии левой кнопки мыши на виджет
-            print("Левая кнопка мыши нажата на виджет!")
-        super().mousePressEvent(event)
-
-    def set_active_cur_widget(self):
-        child_widgets = self.parent.findChildren(AQ_left_device_widget)
-        for child_widget in child_widgets:
-            if not child_widget == self:
-                child_widget.background_field.setStyleSheet("background-color: transparent;")
-                child_widget.setPalette(self.normal_palette)
-                child_widget.setAutoFillBackground(False)
-                child_widget.is_active_now = 0
-
-        self.setPalette(self.hover_palette)
-        self.setAutoFillBackground(True)
-        self.is_active_now = 1
-        self.parent.set_active_cur_device(self.index)

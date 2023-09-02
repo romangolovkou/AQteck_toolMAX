@@ -4,11 +4,9 @@ from PyQt5.QtCore import Qt
 
 
 def mousePressEvent_Dragging(self, event):
-    if event.button() == Qt.LeftButton and \
-            event.y() <= self.title_bar_frame.height():
-        if (event.x() >= self.btn_minimize.x() and \
-            event.y() <= self.btn_minimize.height()) == False:
-            self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
+    if event.button() == Qt.LeftButton and event.y() <= self.height():
+        if (event.x() >= self.btn_minimize.x() and event.y() <= self.btn_minimize.height()) == False:
+            self.drag_position = event.globalPos() - self.mapToGlobal(self.pos())
             self.not_titlebtn_zone = 1
         else:
             self.not_titlebtn_zone = 0
@@ -16,13 +14,10 @@ def mousePressEvent_Dragging(self, event):
     event.accept()
 
 
-def mouseMoveEvent_Dragging(self, event):
-    if event.buttons() == Qt.LeftButton and \
-            event.y() <= self.title_bar_frame.height() and \
-            self.not_titlebtn_zone:
-        if (event.x() >= self.btn_minimize.x() and \
-            event.y() <= self.btn_minimize.height()) == False:
-            self.move(event.globalPos() - self.drag_position)
+def mouseMoveEvent_Dragging(self, event_manager, event):
+    if event.buttons() == Qt.LeftButton and event.y() <= self.height() and self.not_titlebtn_zone:
+        if (event.x() >= self.btn_minimize.x() and event.y() <= self.btn_minimize.height()) == False:
+            event_manager.emit_event('dragging', event.globalPos() - self.drag_position)
 
     event.accept()
 

@@ -3,6 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_main_window" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_window_add_devices" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>

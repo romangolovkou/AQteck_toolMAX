@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushBut
     QProgressBar
 
 from AQ_left_widget_panel import AQ_left_widget_panel_frame
+from AQ_main_window_frame import AQ_main_window_frame
 from ToolPanelButtons import AddDeviceButton, VLine_separator, Btn_AddDevices, Btn_DeleteDevices, \
                             Btn_IPAdresess, Btn_Read, Btn_Write, Btn_FactorySettings, Btn_WatchList
 from ToolPanelLayouts import replaceToolPanelWidget
@@ -29,7 +30,7 @@ from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHei
 from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, \
                                     main_field_frame_AQFrame, AQDialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
-                                    AQ_left_device_widget, AQ_IP_tree_QLineEdit, AQ_have_error_widget, \
+                                    AQ_IP_tree_QLineEdit, AQ_have_error_widget, \
                                     AQ_int_tree_QLineEdit, AQ_uint_tree_QLineEdit, AQ_float_tree_QLineEdit
 from custom_exception import Connect_err
 import serial.tools.list_ports
@@ -892,60 +893,32 @@ class AQ_TreeView(QTreeView):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        MainName = 'AQteck Tool MAX'
+        main_name = 'AQteck Tool MAX'
         PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
         self.AQicon = QIcon(PROJ_DIR + 'Icons/AQico_silver.png')
-        self.icoClose = QIcon(PROJ_DIR + 'Icons/Close.png')
-        self.icoMaximize = QIcon(PROJ_DIR + 'Icons/Maximize.png')
-        self.icoNormalize = QIcon(PROJ_DIR + 'Icons/_Normalize.png')
-        self.icoMinimize = QIcon(PROJ_DIR + 'Icons/Minimize.png')
-        self.background_pic = QPixmap(PROJ_DIR + 'Icons/industrial_pic.png')
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setWindowTitle(MainName)
+        self.setWindowTitle(main_name)
         self.setWindowIcon(self.AQicon)
         self.setGeometry(100, 100, 600, 500)
         self.setMinimumSize(300, 400)
         self.resizeLineWidth = 4
         self.spacing_between_frame = 2
         self.not_titlebtn_zone = 0
-        self.tool_panel_layout_mask = 0
-        # Получаем текущий рабочий каталог (папку проекта)
-        project_path = os.getcwd()
-        # Объединяем путь к папке проекта с именем файла настроек
-        settings_path = os.path.join(project_path, "auto_load_settings.ini")
-        # Используем полученный путь в QSettings
-        self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
 
         # Менеджер подій
         self.event_manager = AQ_EventManager()
+        self.event_manager.register_event_handler('close', self.close)
+        self.event_manager.register_event_handler('minimize', self.showMinimized)
+        self.event_manager.register_event_handler('maximize', self.showMaximized)
+        self.event_manager.register_event_handler('normalize', self.showNormal)
+        self.event_manager.register_event_handler('dragging', self.move)
         # Поточна сессія
         self.current_session = AQ_CurrentSession(self.event_manager, self)
-        # # Порожній список для дерев девайсів
-        # self.ready_to_add_devices_trees = []
-        # self.ready_to_add_devices = []
-        # self.devices_trees = []
-        # self.devices = []
+
         self.current_active_dev_index = 0
 
         #MainWindowFrame
-        self.main_window_frame = main_frame_AQFrame(self)
-        #TitleBarFrame
-        self.title_bar_frame = title_bar_frame_AQFrame(self, 60, MainName, self.AQicon, self.main_window_frame)
-        # ToolPanelFrame
-        self.tool_panel_frame = AQ_tool_panel_frame(self.title_bar_frame.height(), self.event_manager,
-                                                    self.main_window_frame)
-        # MainFieldFrame
-        self.main_field_frame = main_field_frame_AQFrame(self.title_bar_frame.height() + self.tool_panel_frame.height(), self)
-
-        # Создаем заставочную картинку для главного поля
-        self.main_background_pic = QLabel(self.main_field_frame)
-        self.main_background_pic.setPixmap(self.background_pic)
-        self.main_background_pic.setScaledContents(True)
-        self.main_background_pic.setGeometry(0, 0, 450, 326)
-
-        # Створюємо бокову панель зліва з віджетами доданих девайсів
-        self.left_panel = AQ_left_widget_panel_frame(self.event_manager, self.main_field_frame)
-        self.left_panel.setGeometry(0, 0, 248, self.main_field_frame.height())
+        self.main_window_frame = AQ_main_window_frame(self.event_manager, main_name, self.AQicon, self)
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
@@ -956,41 +929,6 @@ class MainWindow(QMainWindow):
         self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(self)
         self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self)
         self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self)
-
-        # Создаем кнопку закрытия
-        self.btn_close = QPushButton('', self.title_bar_frame)
-        self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
-        self.btn_close.setGeometry(self.title_bar_frame.width() - 35, 0, 35, 35)  # установите координаты и размеры кнопки
-        self.btn_close.clicked.connect(self.close)  # добавляем обработчик события нажатия на кнопку закрытия
-        self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
-
-        #Создаем кнопку свернуть
-        self.btn_minimize = QPushButton('', self.title_bar_frame)
-        self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
-        self.btn_minimize.setGeometry(self.title_bar_frame.width() - 105, 0, 35, 35)  # установите координаты и размеры кнопки
-        self.btn_minimize.clicked.connect(self.showMinimized)
-        self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
-
-        #Создаем кнопку развернуть/нормализировать
-        self.isMaximized = False  # Флаг, указывающий на текущее состояние окна
-        self.btn_maximize = QPushButton('', self.title_bar_frame)
-        self.btn_maximize.setIcon(QIcon(self.icoMaximize))  # установите свою иконку для кнопки
-        self.btn_maximize.setGeometry(self.title_bar_frame.width() - 70, 0, 35, 35)  # установите координаты и размеры кнопки
-        self.btn_maximize.clicked.connect(self.toggleMaximize)  # добавляем обработчик события нажатия на кнопку закрытия
-        self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
-
-    def toggleMaximize(self):
-        try:
-            if self.isMaximized:
-                self.showNormal()
-                self.btn_maximize.setIcon(QIcon(self.icoMaximize))
-                self.isMaximized = False
-            else:
-                self.showMaximized()
-                self.btn_maximize.setIcon(QIcon(self.icoNormalize))
-                self.isMaximized = True
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
 
     def resizeEvent(self, event):
         try:
@@ -1045,17 +983,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
 
-    # def parse_default_prg (self, default_prg):
-    #     try:
-    #         containers_count = get_conteiners_count(default_prg)
-    #         containers_offset = get_containers_offset(default_prg)
-    #         storage_container = get_storage_container(default_prg, containers_offset)
-    #         device_tree = parse_tree(storage_container)
-    #         self.ready_to_add_devices_trees.append(device_tree)
-    #     except:
-    #         return 'parsing_err'
-
-
     def add_tree_view(self):
         try:
             # device_tree = self.devices_trees[0]
@@ -1080,35 +1007,6 @@ class MainWindow(QMainWindow):
             # print(f"Помилка парсінгу")
         except Exception as e:
             print(f"Error occurred: {str(e)}")
-
-
-    # def add_data_to_ready_devices(self, device_data):
-    #     device_dict = {}
-    #     device_dict['device_tree'] = self.ready_to_add_devices_trees[-1]
-    #     device_dict['device_name'] = device_data.get('device_name', 'err_name')
-    #     device_dict['serial_number'] = device_data.get('serial_number', 'err_S/N')
-    #     device_dict['address'] = device_data.get('address', 'err_address')
-    #     device_dict['version'] = device_data.get('version', 'err_version')
-    #     self.ready_to_add_devices.append(device_dict)
-
-    # def add_dev_widget_to_left_panel(self, index, dev_data):
-    #     if not hasattr(self, 'left_panel_frame'):
-    #         self.left_panel_frame = QFrame(self.main_field_frame)
-    #         self.left_panel_frame.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
-    #         self.left_panel_layout = QVBoxLayout(self.left_panel_frame)
-    #         # self.left_panel_layout.setGeometry(QRect(1, 1, 248, self.main_field_frame.height() - 2))
-    #         self.left_panel_layout.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
-    #         self.left_panel_layout.setContentsMargins(4, 4, 4, 4)
-    #
-    #     name = dev_data.get('device_name', 'err_name')
-    #     address = dev_data.get('address', 'err_address')
-    #     serial = dev_data.get('serial_number', 'err_serial')
-    #     # Створювати ці віджети потрібно обов'язково з прив'язкою до головного вікна (parent - main_window)
-    #     # тому що віджету потрібен доступ до массиву доданих девайсів через parent.
-    #     dev_widget = AQ_left_device_widget(index, name, address, serial, self)
-    #     self.left_panel_layout.addWidget(dev_widget)
-    #
-    #     self.left_panel_frame.show()
 
     def read_parameters(self):
         device_data = self.devices[self.current_active_dev_index]
