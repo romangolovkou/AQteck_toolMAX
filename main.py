@@ -907,11 +907,11 @@ class MainWindow(QMainWindow):
 
         # Менеджер подій
         self.event_manager = AQ_EventManager()
-        self.event_manager.register_event_handler('close_main', self.close)
-        self.event_manager.register_event_handler('minimize_main', self.showMinimized)
-        self.event_manager.register_event_handler('maximize_main', self.showMaximized)
-        self.event_manager.register_event_handler('normalize_main', self.showNormal)
-        self.event_manager.register_event_handler('dragging_main', self.move)
+        self.event_manager.register_event_handler('close_' + main_name, self.close)
+        self.event_manager.register_event_handler('minimize_' + main_name, self.showMinimized)
+        self.event_manager.register_event_handler('maximize_' + main_name, self.showMaximized)
+        self.event_manager.register_event_handler('normalize_' + main_name, self.showNormal)
+        self.event_manager.register_event_handler('dragging_' + main_name, self.move)
         self.event_manager.register_event_handler('resize_main_window', self.resize_MainWindow)
         # Поточна сессія
         self.current_session = AQ_CurrentSession(self.event_manager, self)

@@ -10,6 +10,7 @@ from MouseEvent_func import mousePressEvent_Dragging, mouseMoveEvent_Dragging, m
 class AQ_title_bar_frame(QFrame):
     def __init__(self, event_manager, height, name, icon, parent=None):
         super().__init__(parent)
+        self.name = name
         self.event_manager = event_manager
         self.setGeometry(QRect(0, 0, parent.width(), height))
         self.setStyleSheet("background-color: #2b2d30;\n"
@@ -20,7 +21,7 @@ class AQ_title_bar_frame(QFrame):
         self.setObjectName("title_bar_frame")
         # Добавляем обработку событий мыши для перетаскивания окна
         self.mousePressEvent = partial(mousePressEvent_Dragging, self)
-        self.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self, self.event_manager, 'dragging_main')
+        self.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self, self.event_manager, 'dragging_' + self.name)
         self.mouseReleaseEvent = partial(mouseReleaseEvent_Dragging, self)
 
         # Создаем метку с названием приложения
@@ -43,7 +44,7 @@ class AQ_title_bar_frame(QFrame):
         self.btn_close.setGeometry(self.width() - 35, 0, 35,
                                    35)  # установите координаты и размеры кнопки
         # добавляем обработчик события нажатия на кнопку закрытия
-        self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close_main'))
+        self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close_' + self.name))
         self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
         # Создаем кнопку свернуть
@@ -52,7 +53,7 @@ class AQ_title_bar_frame(QFrame):
         self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
         self.btn_minimize.setGeometry(self.width() - 105, 0, 35,
                                       35)  # установите координаты и размеры кнопки
-        self.btn_minimize.clicked.connect(lambda: self.event_manager.emit_event('minimize_main'))
+        self.btn_minimize.clicked.connect(lambda: self.event_manager.emit_event('minimize_' + self.name))
         self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
         # Создаем кнопку развернуть/нормализировать
@@ -69,11 +70,11 @@ class AQ_title_bar_frame(QFrame):
     def toggleMaximize(self):
         try:
             if self.isMaximized:
-                self.event_manager.emit_event('normalize_main')
+                self.event_manager.emit_event('normalize_' + self.name)
                 self.btn_maximize.setIcon(QIcon(self.icoMaximize))
                 self.isMaximized = False
             else:
-                self.event_manager.emit_event('maximize_main')
+                self.event_manager.emit_event('maximize_' + self.name)
                 self.btn_maximize.setIcon(QIcon(self.icoNormalize))
                 self.isMaximized = True
         except Exception as e:
