@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPixmap, QFont, QColor
 from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QFrame, QGraphicsView, QGraphicsScene, \
                             QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox, QLabel
-from custom_window_templates import AQDialog, AQComboBox, AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
+from custom_window_templates import AQ_simplified_Dialog, AQComboBox, AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
 from custom_exception import Connect_err
 import serial.tools.list_ports
 from AQ_communication_func import is_valid_ip

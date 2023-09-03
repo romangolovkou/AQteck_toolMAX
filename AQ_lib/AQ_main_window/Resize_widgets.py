@@ -12,8 +12,9 @@ from MouseEvent_func import mousePressEvent_WidthR, mouseMoveEvent_WidthR, \
                             mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 
 class resizeWidthR_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения ширины окна R
         self.setGeometry(
             QRect(parent.width() - parent.resizeLineWidth, parent.resizeLineWidth,
@@ -21,12 +22,13 @@ class resizeWidthR_Qwidget(QWidget):
         self.setObjectName("resizeWidthR_widget")
         self.setCursor(Qt.SizeHorCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_WidthR, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_WidthR, parent)
+        self.mousePressEvent = partial(mousePressEvent_WidthR, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_WidthR, self)
 
 class resizeWidthL_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения ширины окна L
         self.setGeometry(
             QRect(0, parent.resizeLineWidth, parent.resizeLineWidth,
@@ -34,13 +36,14 @@ class resizeWidthL_Qwidget(QWidget):
         self.setObjectName("resizeWidthL_widget")
         self.setCursor(Qt.SizeHorCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_WidthL, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_WidthL, parent)
+        self.mousePressEvent = partial(mousePressEvent_WidthL, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_WidthL, self)
 
 
 class resizeHeigthLow_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения высоты окна
         self.setGeometry(
             QRect(parent.resizeLineWidth, parent.height() - parent.resizeLineWidth,
@@ -48,13 +51,14 @@ class resizeHeigthLow_Qwidget(QWidget):
         self.setObjectName("resizeHeigthLow_widget")
         self.setCursor(Qt.SizeVerCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_HeigthLow, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_HeigthLow, parent)
+        self.mousePressEvent = partial(mousePressEvent_HeigthLow, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_HeigthLow, self)
 
 
 class resizeHeigthTop_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения высоты окна
         self.setGeometry(
             QRect(parent.resizeLineWidth, 0,
@@ -62,13 +66,14 @@ class resizeHeigthTop_Qwidget(QWidget):
         self.setObjectName("resizeHeigthTop_widget")
         self.setCursor(Qt.SizeVerCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_HeigthTop, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_HeigthTop, parent)
+        self.mousePressEvent = partial(mousePressEvent_HeigthTop, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_HeigthTop, self)
 
 
 class resizeDiag_BotRigth_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (прав. нижний угол)
         self.setGeometry(
             QRect(parent.width() - parent.resizeLineWidth, parent.height() - parent.resizeLineWidth,
@@ -76,13 +81,14 @@ class resizeDiag_BotRigth_Qwidget(QWidget):
         self.setObjectName("resizeDiag_BotRigth_widget")
         self.setCursor(Qt.SizeFDiagCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_Diag_BotRigth, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_BotRigth, parent)
+        self.mousePressEvent = partial(mousePressEvent_Diag_BotRigth, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_BotRigth, self)
 
 
 class resizeDiag_BotLeft_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (лев. нижний угол)
         self.setGeometry(
             QRect(0, parent.height() - parent.resizeLineWidth,
@@ -90,30 +96,32 @@ class resizeDiag_BotLeft_Qwidget(QWidget):
         self.setObjectName("resizeDiag_BotLeft_widget")
         self.setCursor(Qt.SizeBDiagCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_Diag_BotLeft, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_BotLeft, parent)
+        self.mousePressEvent = partial(mousePressEvent_Diag_BotLeft, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_BotLeft, self)
 
 
 class resizeDiag_TopLeft_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (лев. верх. угол)
         self.setGeometry(QRect(0, 0, parent.resizeLineWidth, parent.resizeLineWidth))
         self.setObjectName("resizeDiag_TopLeft_widget")
         self.setCursor(Qt.SizeFDiagCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_Diag_TopLeft, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_TopLeft, parent)
+        self.mousePressEvent = partial(mousePressEvent_Diag_TopLeft, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_TopLeft, self)
 
 
 class resizeDiag_TopRigth_Qwidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, event_manager, parent=None):
         super().__init__(parent)
+        self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (прав. верх. угол)
         self.setGeometry(
             QRect(parent.width() - parent.resizeLineWidth, 0, parent.resizeLineWidth, parent.resizeLineWidth))
         self.setObjectName("resizeDiag_TopRigth_widget")
         self.setCursor(Qt.SizeBDiagCursor)  # Устанавливаем курсор
         self.setStyleSheet("background-color: transparent;\n")
-        self.mousePressEvent = partial(mousePressEvent_Diag_TopRigth, parent)
-        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_TopRigth, parent)
+        self.mousePressEvent = partial(mousePressEvent_Diag_TopRigth, self)
+        self.mouseMoveEvent = partial(mouseMoveEvent_Diag_TopRigth, self)

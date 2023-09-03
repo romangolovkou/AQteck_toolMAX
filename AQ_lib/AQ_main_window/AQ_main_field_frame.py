@@ -3,10 +3,10 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
 from AQ_left_widget_panel import AQ_left_widget_panel_frame
-from custom_window_templates import main_field_frame_AQFrame
+from custom_window_templates import AQ_reduced_main_field_frame
 
 
-class AQ_main_field_frame(main_field_frame_AQFrame):
+class AQ_main_field_frame(AQ_reduced_main_field_frame):
     def __init__(self, event_manager, shift_y, parent=None):
         super().__init__(shift_y, parent)
         self.event_manager = event_manager
@@ -22,3 +22,18 @@ class AQ_main_field_frame(main_field_frame_AQFrame):
         # Створюємо бокову панель зліва з віджетами доданих девайсів
         self.left_panel = AQ_left_widget_panel_frame(self.event_manager, self)
         self.left_panel.setGeometry(0, 0, 248, self.height())
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        # Получаем размеры картинки
+        pic_size = self.main_background_pic.size()
+        # Вычисляем координаты верхнего левого угла картинки
+        x = (self.width() - pic_size.width()) // 2
+        y = (self.height() - pic_size.height()) // 2
+        # Устанавливаем положение картинки
+        self.main_background_pic.move(x, y)
+
+        self.left_panel.resize(self.left_panel.width(), self.height())
+
+        event.accept()

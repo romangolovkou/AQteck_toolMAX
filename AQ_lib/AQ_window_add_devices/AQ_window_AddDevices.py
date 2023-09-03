@@ -5,14 +5,15 @@ from AQ_addDevice_ConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_addDevices_addButton import AQ_addButton
 from AQ_addDevice_RotatingGears import AQ_RotatingGearsWidget
 from AQ_addDevice_TableWidget import AQ_addDevice_TableWidget
-from custom_window_templates import AQDialog, AQComboBox, AQLabel
+from custom_window_templates import AQ_simplified_Dialog, AQComboBox, AQLabel
 from AQ_AddDevices_network_frame import AQ_network_settings_frame
 from AQ_Device import AQ_Device
 
 
-class AQ_DialogAddDevices(AQDialog):
+class AQ_DialogAddDevices(AQ_simplified_Dialog):
     def __init__(self, event_manager, parent):
-        super().__init__('Add Devices')
+        window_name = 'Add Devices'
+        super().__init__(event_manager, window_name)
 
         self.setObjectName("AQ_Dialog_add_device")
         self.parent = parent
@@ -26,6 +27,9 @@ class AQ_DialogAddDevices(AQDialog):
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
         self.event_manager.register_event_handler('AddDevice_connect_error', self.show_connect_err_label)
         self.event_manager.register_event_handler('Add_device', self.add_selected_devices_to_session)
+        self.event_manager.register_event_handler('minimize_' + window_name, self.showMinimized)
+        self.event_manager.register_event_handler('close_' + window_name, self.close)
+        self.event_manager.register_event_handler('dragging_' + window_name, self.move)
 
         # Створюємо фрейм з налаштуваннями з'єднання
         self.network_settings_frame = AQ_network_settings_frame(event_manager, self.main_window_frame)

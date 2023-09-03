@@ -27,8 +27,8 @@ from ToolPanelLayouts import replaceToolPanelWidget
 from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, \
                            resizeHeigthTop_Qwidget, resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, \
                            resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
-from custom_window_templates import main_frame_AQFrame, title_bar_frame_AQFrame, \
-                                    main_field_frame_AQFrame, AQDialog, AQComboBox, \
+from custom_window_templates import AQ_simplified_main_frame, \
+                                    AQ_reduced_main_field_frame, AQ_simplified_Dialog, AQComboBox, \
                                     AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit, AQ_wait_progress_bar_widget, \
                                     AQ_IP_tree_QLineEdit, AQ_have_error_widget, \
                                     AQ_int_tree_QLineEdit, AQ_uint_tree_QLineEdit, AQ_float_tree_QLineEdit
@@ -907,81 +907,36 @@ class MainWindow(QMainWindow):
 
         # Менеджер подій
         self.event_manager = AQ_EventManager()
-        self.event_manager.register_event_handler('close', self.close)
-        self.event_manager.register_event_handler('minimize', self.showMinimized)
-        self.event_manager.register_event_handler('maximize', self.showMaximized)
-        self.event_manager.register_event_handler('normalize', self.showNormal)
-        self.event_manager.register_event_handler('dragging', self.move)
+        self.event_manager.register_event_handler('close_main', self.close)
+        self.event_manager.register_event_handler('minimize_main', self.showMinimized)
+        self.event_manager.register_event_handler('maximize_main', self.showMaximized)
+        self.event_manager.register_event_handler('normalize_main', self.showNormal)
+        self.event_manager.register_event_handler('dragging_main', self.move)
+        self.event_manager.register_event_handler('resize_main_window', self.resize_MainWindow)
         # Поточна сессія
         self.current_session = AQ_CurrentSession(self.event_manager, self)
-
-        self.current_active_dev_index = 0
 
         #MainWindowFrame
         self.main_window_frame = AQ_main_window_frame(self.event_manager, main_name, self.AQicon, self)
 
-        # # Создаем виджеты для изменения размеров окна
-        self.resizeWidthR_widget = resizeWidthR_Qwidget(self)
-        self.resizeWidthL_widget = resizeWidthL_Qwidget(self)
-        self.resizeHeigthLow_widget = resizeHeigthLow_Qwidget(self)
-        self.resizeHeigthTop_widget = resizeHeigthTop_Qwidget(self)
-        self.resizeDiag_BotRigth_widget = resizeDiag_BotRigth_Qwidget(self)
-        self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(self)
-        self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self)
-        self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self)
+    def resize_MainWindow(self, pos_x, pos_y, width, height):
+        if pos_x == '%':
+            pos_x = self.pos().x()
+        if pos_y == '%':
+            pos_y = self.pos().y()
+        if width == '%':
+            width = self.width()
+        if height == '%':
+            height = self.height()
+
+        self.setGeometry(pos_x, pos_y, width, height)
 
     def resizeEvent(self, event):
-        try:
-            super().resizeEvent(event)
-            # Переопределяем метод resizeEvent и вызываем resize для main_window_frame
-            self.main_window_frame.resize(self.width(), self.height())
-            self.title_bar_frame.resize(self.width(), self.title_bar_frame.height())
-            self.title_bar_frame.custom_resize()
-            self.tool_panel_frame.resize(self.main_window_frame.width(), self.tool_panel_frame.height())
-            self.main_field_frame.resize(self.main_window_frame.width(), self.height() -
-                                        (self.title_bar_frame.height() + self.tool_panel_frame.height() + 2))
-            self.left_panel.resize(self.left_panel.width(), self.main_field_frame.height())
-            self.btn_maximize.move(self.title_bar_frame.width() - 70, 0)
-            self.btn_minimize.move(self.title_bar_frame.width() - 105, 0)
-            self.btn_close.move(self.title_bar_frame.width() - 35, 0)
-            self.resizeWidthR_widget.setGeometry(self.width() - self.resizeLineWidth,
-                                                 self.resizeLineWidth, self.resizeLineWidth,
-                                                 self.height() - (self.resizeLineWidth * 2))
-            self.resizeWidthL_widget.setGeometry(0, self.resizeLineWidth, self.resizeLineWidth,
-                                                 self.height() - (self.resizeLineWidth * 2))
-            self.resizeHeigthLow_widget.setGeometry(self.resizeLineWidth, self.height() - self.resizeLineWidth,
-                                                    self.width() - (self.resizeLineWidth * 2),
-                                                    self.resizeLineWidth)
-            self.resizeHeigthTop_widget.setGeometry(self.resizeLineWidth, 0,
-                                                    self.width() - (self.resizeLineWidth * 2),
-                                                    self.resizeLineWidth)
-            self.resizeDiag_BotRigth_widget.move(self.width() - self.resizeLineWidth,
-                                                 self.height() - self.resizeLineWidth)
-            self.resizeDiag_TopLeft_widget.move(0, 0)
-            self.resizeDiag_TopRigth_widget.move(self.width() - self.resizeLineWidth, 0)
-            self.resizeDiag_BotLeft_widget.move(0, self.height() - self.resizeLineWidth)
+        super().resizeEvent(event)
+        # Переопределяем метод resizeEvent и вызываем resize для main_window_frame
+        self.main_window_frame.resize(self.width(), self.height())
+        event.accept()
 
-            # replaceToolPanelWidget(self, self.tool_panel_layout)
-
-            # Получаем размеры родительского виджета
-            parent_size = self.main_field_frame.size()
-            # Получаем размеры картинки
-            pic_size = self.main_background_pic.size()
-            # Вычисляем координаты верхнего левого угла картинки
-            x = (parent_size.width() - pic_size.width()) // 2
-            y = (parent_size.height() - pic_size.height()) // 2
-            # Устанавливаем положение картинки
-            self.main_background_pic.move(x, y)
-
-            device_data = self.devices[self.current_active_dev_index]
-            if device_data is not None:
-                tree_view = device_data.get('tree_view')
-                if tree_view is not None:
-                    tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
-
-            event.accept()
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
 
     def add_tree_view(self):
         try:

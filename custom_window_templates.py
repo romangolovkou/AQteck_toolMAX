@@ -6,7 +6,7 @@ from functools import partial
 
 
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
-class main_frame_AQFrame(QFrame):
+class AQ_simplified_main_frame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setGeometry(QRect(0, 0, parent.width(), parent.height()))
@@ -15,8 +15,7 @@ class main_frame_AQFrame(QFrame):
         self.setObjectName("main_window_frame")
 
 
-#TitleBarFrame
-class title_bar_frame_AQFrame(QFrame):
+class AQ_simplified_title_bar_frame(QFrame):
     def __init__(self, event_manager, height, name, icon, parent=None):
         super().__init__(parent)
         self.event_manager = event_manager
@@ -27,74 +26,39 @@ class title_bar_frame_AQFrame(QFrame):
                                           "border-bottom-left-radius: 0px;\n"
                                           "border-bottom-right-radius: 0px;")
         self.setObjectName("title_bar_frame")
-        # Добавляем обработку событий мыши для перетаскивания окна
         self.mousePressEvent = partial(mousePressEvent_Dragging, self)
-        self.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self, self.event_manager)
+        self.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self, self.event_manager, 'dragging_' + name)
         self.mouseReleaseEvent = partial(mouseReleaseEvent_Dragging, self)
 
-        # Создаем метку с названием приложения
         self.title_name = QLabel(name, self)
-        self.title_name.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.title_name.setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта (серый)
-        self.title_name.setAlignment(Qt.AlignHCenter)  # Выравнивание по горизонтали по центру
-        self.title_name.setGeometry(0, 8, self.width(), 35)  # Устанавливаем геометрию метки
+        self.title_name.setFont(QFont("Verdana", 10))
+        self.title_name.setStyleSheet("color: #D0D0D0;")
+        self.title_name.setAlignment(Qt.AlignHCenter)
+        self.title_name.setGeometry(0, 8, self.width(), 35)
 
-        # Создаем QLabel для отображения иконки приложения
         self.app_icon_label = QLabel(self)
-        self.app_icon_label.setPixmap(icon.pixmap(30, 30))  # Устанавливаем иконку и масштабируем ее
-        self.app_icon_label.setGeometry(2, 2, 30, 30)  # Устанавливаем координаты и размеры QLabel
-
-        # Создаем кнопку закрытия
-        self.icoClose = QIcon('Icons/Close.png')
-
-        self.btn_close = QPushButton('', self)
-        self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
-        self.btn_close.setGeometry(self.width() - 35, 0, 35,
-                                   35)  # установите координаты и размеры кнопки
-        # добавляем обработчик события нажатия на кнопку закрытия
-        self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close'))
-        self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+        self.app_icon_label.setPixmap(icon.pixmap(30, 30))
+        self.app_icon_label.setGeometry(2, 2, 30, 30)
 
         # Создаем кнопку свернуть
-        self.icoMinimize = QIcon('Icons/Minimize.png')
         self.btn_minimize = QPushButton('', self)
+        self.icoMinimize = QIcon('Icons/Minimize.png')
         self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
-        self.btn_minimize.setGeometry(self.width() - 105, 0, 35,
-                                      35)  # установите координаты и размеры кнопки
-        self.btn_minimize.clicked.connect(lambda: self.event_manager.emit_event('minimize'))
+        self.btn_minimize.setGeometry(self.width() - 70, 0, 35, 35)  # установите координаты и размеры кнопки
+        self.btn_minimize.clicked.connect(lambda: self.event_manager.emit_event('minimize_' + name))
         self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
-        # Создаем кнопку развернуть/нормализировать
-        self.icoMaximize = QIcon('Icons/Maximize.png')
-        self.icoNormalize = QIcon('Icons/_Normalize.png')
-        self.isMaximized = False  # Флаг, указывающий на текущее состояние окна
-        self.btn_maximize = QPushButton('', self)
-        self.btn_maximize.setIcon(QIcon(self.icoMaximize))  # установите свою иконку для кнопки
-        self.btn_maximize.setGeometry(self.width() - 70, 0, 35,
-                                      35)  # установите координаты и размеры кнопки
-        self.btn_maximize.clicked.connect(self.toggleMaximize)
-        self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
-
-    def custom_resize(self):
-        self.title_name.setGeometry(0, 8, self.width(), 30)  # Устанавливаем геометрию метки
-
-    def toggleMaximize(self):
-        # lambda: self.event_manager.emit_event('toggle_maximize'
-        try:
-            if self.isMaximized:
-                self.event_manager.emit_event('normalize')
-                self.btn_maximize.setIcon(QIcon(self.icoMaximize))
-                self.isMaximized = False
-            else:
-                self.event_manager.emit_event('maximize')
-                self.btn_maximize.setIcon(QIcon(self.icoNormalize))
-                self.isMaximized = True
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
+        # Создаем кнопку закрытия
+        self.btn_close = QPushButton('', self)
+        self.icoClose = QIcon('Icons/Close.png')
+        self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
+        self.btn_close.setGeometry(self.width() - 35, 0, 35, 35)  # установите координаты и размеры кнопки
+        self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close_' + name))  # добавляем обработчик события нажатия на кнопку закрытия
+        self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
 
 # MainFieldFrame
-class main_field_frame_AQFrame(QFrame):
+class AQ_reduced_main_field_frame(QFrame):
     def __init__(self, shift_y, parent=None):
         super().__init__(parent)
         self.parent = parent
@@ -104,47 +68,25 @@ class main_field_frame_AQFrame(QFrame):
         self.setObjectName("main_field_frame")
 
 
-class AQDialog(QDialog):
-    def __init__(self, name='default'):
+class AQ_simplified_Dialog(QDialog):
+    def __init__(self, event_manager, name='default'):
         super().__init__()
-
+        self.event_manager = event_manager
         self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.screen_geometry = QApplication.desktop().screenGeometry()
         self.setGeometry(0, 0, 800, 600)
-        # self.move(self.screen_geometry.width() // 2 - self.width() // 2,
-        #           self.screen_geometry.height() // 2 - self.height() // 2,)
 
-        PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
-        self.AQicon = QIcon(PROJ_DIR + 'Icons/AQico_silver.png')
-        self.icoMinimize = QIcon(PROJ_DIR + 'Icons/Minimize.png')
-        self.icoClose = QIcon(PROJ_DIR + 'Icons/Close.png')
+        self.AQicon = QIcon('Icons/AQico_silver.png')
+
         self.setWindowTitle(name)
         self.setWindowIcon(self.AQicon)
-        self.not_titlebtn_zone = 0
-        self.setObjectName("template_window")
+        self.setObjectName("AQ_simplified_Dialog")
         self.setStyleSheet("#template_window { border: 1px solid #9ef1d3;\n }")
 
         # MainWindowFrame
-        self.main_window_frame = main_frame_AQFrame(self)
+        self.main_window_frame = AQ_simplified_main_frame(self)
         self.main_window_frame.setGeometry(1, 0, self.main_window_frame.width() - 2, self.main_window_frame.height() - 1)
         # TitleBarFrame
-        self.title_bar_frame = title_bar_frame_AQFrame(self, 35, name, self.AQicon, self.main_window_frame)
-
-        # Создаем кнопку свернуть
-        self.btn_minimize = QPushButton('', self.title_bar_frame)
-        self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
-        self.btn_minimize.setGeometry(self.title_bar_frame.width() - 70, 0, 35,
-                                      35)  # установите координаты и размеры кнопки
-        self.btn_minimize.clicked.connect(self.showMinimized)
-        self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
-
-        # Создаем кнопку закрытия
-        self.btn_close = QPushButton('', self.title_bar_frame)
-        self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
-        self.btn_close.setGeometry(self.title_bar_frame.width() - 35, 0, 35,
-                                   35)  # установите координаты и размеры кнопки
-        self.btn_close.clicked.connect(self.close)  # добавляем обработчик события нажатия на кнопку закрытия
-        self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+        self.title_bar_frame = AQ_simplified_title_bar_frame(self.event_manager, 35, name, self.AQicon, self.main_window_frame)
 
 
 # Создание комбо-бокса
