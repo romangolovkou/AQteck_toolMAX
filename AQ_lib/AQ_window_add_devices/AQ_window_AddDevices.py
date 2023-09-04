@@ -77,6 +77,7 @@ class AQ_DialogAddDevices(AQ_simplified_Dialog):
         self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
         self.all_finded_devices.clear()
         self.selected_devices_list.clear()
+        self.close()
 
     def on_find_button_clicked(self):
         self.rotating_gears.start()
