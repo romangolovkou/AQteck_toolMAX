@@ -17,15 +17,16 @@ class AQ_left_widget_panel_frame(QFrame):
 
     def add_dev_widgets_to_left_panel(self, new_devices):
         for i in range(len(new_devices)):
-            dev_widget = AQ_left_device_widget(new_devices[i], self)
+            dev_widget = AQ_left_device_widget(new_devices[i], self.event_manager, self)
             self.left_panel_layout.addWidget(dev_widget)
 
 
 class AQ_left_device_widget(QWidget):
-    def __init__(self, device, parent=None):
+    def __init__(self, device, event_manager, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.device = device
+        self.event_manager = event_manager
         self.is_active_now = 1
         self.setFixedHeight(70)
         self.setMinimumWidth(240)
@@ -101,4 +102,6 @@ class AQ_left_device_widget(QWidget):
         self.setPalette(self.hover_palette)
         self.setAutoFillBackground(True)
         self.is_active_now = 1
-        # self.parent.set_active_cur_device(self.index)
+
+        self.event_manager.emit_event('set_active_device', self.device)
+

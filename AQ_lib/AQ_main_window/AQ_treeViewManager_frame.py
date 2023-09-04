@@ -47,6 +47,7 @@ class AQ_treeView_manager(QObject):
         super().__init__()
         self.event_manager = event_manager
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices_trees)
+        self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
         self.tree_view = tree_view
         self.devices_view_trees = {}
 
@@ -59,6 +60,9 @@ class AQ_treeView_manager(QObject):
                 self.devices_view_trees[new_devices_list[i]] = device_view_tree_model
 
         self.tree_view.setModel(self.devices_view_trees[new_devices_list[-1]])
+
+    def set_active_device_tree(self, device):
+        self.tree_view.setModel(self.devices_view_trees[device])
 
     def create_device_tree_for_view(self, device_tree):
         tree_model_for_view = QStandardItemModel()
