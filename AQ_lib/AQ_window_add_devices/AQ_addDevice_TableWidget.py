@@ -10,6 +10,7 @@ class AQ_addDevice_TableWidget(QTableWidget):
         # Создаем QTableWidget с 4 столбцами
         self.setColumnCount(4)
         self.horizontalHeader().setMinimumSectionSize(8)
+        self.setRowCount(0)
 
         # Добавляем заголовки столбцов
         self.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])

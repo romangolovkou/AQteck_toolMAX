@@ -67,7 +67,7 @@ class AQ_DialogAddDevices(AQ_simplified_Dialog):
             self.all_finded_devices.append(finded_devices[i])
 
     def add_selected_devices_to_session(self):
-        devices_count = self.table_widget.rowCount()
+        devices_count = len(self.all_finded_devices)
         for i in range(devices_count):
             checkbox_item = self.table_widget.cellWidget(i, 0)
             if checkbox_item is not None and isinstance(checkbox_item, QCheckBox):
@@ -75,6 +75,8 @@ class AQ_DialogAddDevices(AQ_simplified_Dialog):
                     self.selected_devices_list.append(self.all_finded_devices[i])
 
         self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
+        self.all_finded_devices.clear()
+        self.selected_devices_list.clear()
 
     def on_find_button_clicked(self):
         self.rotating_gears.start()
