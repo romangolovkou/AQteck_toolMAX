@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QObject, Qt
+from PyQt5.QtCore import QObject, Qt, QTimer
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QFrame, QTreeView
 
@@ -62,7 +62,12 @@ class AQ_treeView_manager(QObject):
         self.tree_view.setModel(self.devices_view_trees[new_devices_list[-1]])
 
     def set_active_device_tree(self, device):
-        self.tree_view.setModel(self.devices_view_trees[device])
+        try:
+            self.tree_view.setModel(self.devices_view_trees[device])
+        except:
+            # Устанавливаем задержку в 50 м.сек и затем повторяем
+            QTimer.singleShot(3000, lambda: self.set_active_device_tree(device))
+
 
     def create_device_tree_for_view(self, device_tree):
         tree_model_for_view = QStandardItemModel()
