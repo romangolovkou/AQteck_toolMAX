@@ -2,6 +2,10 @@ import array
 import struct
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
+
+from AQ_custom_tree_items import AQ_param_item, AQ_catalog_item
+
+
 def swap_modbus_bytes(data, num_pairs):
     str_flag = 0
     bytes_flag = 0
@@ -196,7 +200,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
             #     invisible_catalog_flag += 1
             #     continue
             # Создание элемента каталога
-            current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
+            # current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
+            current_catalog = AQ_catalog_item(catalog_attributes.get('name', 'err_name'))
             current_catalog.setData(catalog_attributes, Qt.UserRole)
             current_catalog_levels.append(current_catalog)
             level += 1
@@ -281,7 +286,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                         param_attributes['unit'] = unit_str
 
                 parameter_name = param_attributes.get('name', 'err_name')
-                current_parameter = QStandardItem(parameter_name)
+                # current_parameter = QStandardItem(parameter_name)
+                current_parameter = AQ_param_item(parameter_name)
                 current_parameter.setData(param_attributes, Qt.UserRole)
                 current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
 

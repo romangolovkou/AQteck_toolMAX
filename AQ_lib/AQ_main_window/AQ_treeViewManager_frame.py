@@ -12,29 +12,29 @@ class AQ_treeView_frame(QFrame):
         self.tree_view.setGeometry(0, 0, self.width(), self.height())
         self.tree_view_manager = AQ_treeView_manager(self.event_manager, self.tree_view, self)
 
-    def add_tree_view(self):
-        try:
-            device_data = self.devices[-1]
-            device_tree = device_data.get('device_tree')
-            # Створення порожнього массиву параметрів
-            self.parameter_list = []
-            root = device_tree.invisibleRootItem()
-            traverse_items(root, self.parameter_list)
-
-            if isinstance(device_tree, QStandardItemModel):
-                # Устанавливаем модель для QTreeView и отображаем его
-                address = device_data.get('address')
-                device_data['tree_view'] = AQ_TreeView(len(self.devices) - 1, device_tree, address, self.main_field_frame)
-                device_data.get('tree_view').show()
-                root = device_tree.invisibleRootItem()
-                device_data.get('tree_view').traverse_items_show_delegate(root)
-                device_data.get('tree_view').read_all_tree_by_modbus(root)
-                self.add_dev_widget_to_left_panel(len(self.devices) - 1, device_data)
-
-        # except:
-            # print(f"Помилка парсінгу")
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
+    # def add_tree_view(self):
+    #     try:
+    #         device_data = self.devices[-1]
+    #         device_tree = device_data.get('device_tree')
+    #         # Створення порожнього массиву параметрів
+    #         self.parameter_list = []
+    #         root = device_tree.invisibleRootItem()
+    #         traverse_items(root, self.parameter_list)
+    #
+    #         if isinstance(device_tree, QStandardItemModel):
+    #             # Устанавливаем модель для QTreeView и отображаем его
+    #             address = device_data.get('address')
+    #             device_data['tree_view'] = AQ_TreeView(len(self.devices) - 1, device_tree, address, self.main_field_frame)
+    #             device_data.get('tree_view').show()
+    #             root = device_tree.invisibleRootItem()
+    #             device_data.get('tree_view').traverse_items_show_delegate(root)
+    #             device_data.get('tree_view').read_all_tree_by_modbus(root)
+    #             self.add_dev_widget_to_left_panel(len(self.devices) - 1, device_data)
+    #
+    #     # except:
+    #         # print(f"Помилка парсінгу")
+    #     except Exception as e:
+    #         print(f"Error occurred: {str(e)}")
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
