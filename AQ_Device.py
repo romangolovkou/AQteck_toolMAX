@@ -2,6 +2,8 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from pymodbus.client import serial
 import serial.tools.list_ports
+
+from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_communication_func import is_valid_ip, decrypt_data
 from AQ_connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
 from AQ_parse_func import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
@@ -26,7 +28,9 @@ class AQ_Device(QObject):
             if default_prg != 'decrypt_err':
                 self.device_tree = self.parse_default_prg(default_prg)
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
-                    and isinstance(self.device_tree, QStandardItemModel):
+                    and isinstance(self.device_tree, AQ_TreeItemModel):
+                    # and isinstance(self.device_tree, QStandardItemModel):
+                    self.device_tree.set_device(self)
                     self.device_data['status'] = 'ok'
                     self.device_data['device_tree'] = self.device_tree
                 else:

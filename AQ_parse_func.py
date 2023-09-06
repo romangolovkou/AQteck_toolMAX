@@ -3,7 +3,8 @@ import struct
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
-from AQ_custom_tree_items import AQ_param_item, AQ_catalog_item
+from AQ_TreeViewItemModel import AQ_TreeItemModel
+from AQ_custom_tree_items import AQ_param_item, AQ_catalog_item, AQ_enum_param_item
 
 
 def swap_modbus_bytes(data, num_pairs):
@@ -141,7 +142,8 @@ def parse_tree(storage_container):
     for i in range(1, count_descr):
         cache_descr_offsets[i] = cache_descr_offsets[i - 1] + descr_area[cache_descr_offsets[i - 1]] + 1
 
-    tree_model = QStandardItemModel()
+    # tree_model = QStandardItemModel()
+    tree_model = AQ_TreeItemModel()
     tree_model.setColumnCount(1)
     # tree_model.setHorizontalHeaderLabels(["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
 
@@ -287,7 +289,10 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                 parameter_name = param_attributes.get('name', 'err_name')
                 # current_parameter = QStandardItem(parameter_name)
-                current_parameter = AQ_param_item(parameter_name)
+                if param_attributes.get('type', '') == 'enum':
+                    current_parameter = get_item_by_type(param_attributes.get('type', ''), parameter_name)
+                else:
+                    current_parameter = AQ_param_item(parameter_name)
                 current_parameter.setData(param_attributes, Qt.UserRole)
                 current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
 
@@ -555,3 +560,9 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
         value = int.from_bytes((param_descr[pos:pos + size][::-1]), byteorder='big')
 
     return value
+
+def get_item_by_type(type, name):
+    if type == 'enum':
+        item = AQ_enum_param_item(name)
+
+    return item

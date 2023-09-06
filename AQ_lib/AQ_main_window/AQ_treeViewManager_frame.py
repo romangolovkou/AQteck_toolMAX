@@ -2,13 +2,17 @@ from PyQt5.QtCore import QObject, Qt, QTimer
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QFrame, QTreeView
 
+from AQ_TreeViewItemModel import AQ_TreeViewItemModel
+from AQ_custom_tree_items import AQ_param_manager_item
+from AQ_tree_view import AQ_TreeView
+
 
 class AQ_treeView_frame(QFrame):
     def __init__(self, event_manager, parent=None):
         super().__init__(parent)
         self.event_manager = event_manager
         self.setStyleSheet("background-color: transparent;")
-        self.tree_view = QTreeView(self)
+        self.tree_view = AQ_TreeView(self)
         self.tree_view.setGeometry(0, 0, self.width(), self.height())
         self.tree_view_manager = AQ_treeView_manager(self.event_manager, self.tree_view, self)
 
@@ -53,11 +57,11 @@ class AQ_treeView_manager(QObject):
 
     def add_new_devices_trees(self, new_devices_list):
         for i in range(len(new_devices_list)):
-            device_data = new_devices_list[i].get_device_data()
-            device_tree = device_data.get('device_tree', None)
-            if device_tree is not None:
-                device_view_tree_model = self.create_device_tree_for_view(device_tree)
-                self.devices_view_trees[new_devices_list[i]] = device_view_tree_model
+            # device_data = new_devices_list[i].get_device_data()
+            # device_tree = device_data.get('device_tree', None)
+            # if device_tree is not None:
+            device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
+            self.devices_view_trees[new_devices_list[i]] = device_view_tree_model
 
         self.tree_view.setModel(self.devices_view_trees[new_devices_list[-1]])
 
@@ -68,16 +72,19 @@ class AQ_treeView_manager(QObject):
             # Устанавливаем задержку в 50 м.сек и затем повторяем
             QTimer.singleShot(3000, lambda: self.set_active_device_tree(device))
 
-
-    def create_device_tree_for_view(self, device_tree):
-        tree_model_for_view = QStandardItemModel()
-        tree_model_for_view.setColumnCount(6)
-        tree_model_for_view.setHorizontalHeaderLabels(
+    def create_device_tree_for_view(self, device):
+        device_data = device.get_device_data()
+        device_tree = device_data.get('device_tree', None)
+        if device_tree is not None:
+            # tree_model_for_view = QStandardItemModel()
+            tree_model_for_view = AQ_TreeViewItemModel(device)
+            tree_model_for_view.setColumnCount(6)
+            tree_model_for_view.setHorizontalHeaderLabels(
                                             ["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
-        donor_root_item = device_tree.invisibleRootItem()
-        new_root_item = tree_model_for_view.invisibleRootItem()
-        self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item)
-        return tree_model_for_view
+            donor_root_item = device_tree.invisibleRootItem()
+            new_root_item = tree_model_for_view.invisibleRootItem()
+            self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item)
+            return tree_model_for_view
 
     def traverse_items_create_new_tree_for_view(self, item, new_item):
         for row in range(item.rowCount()):
@@ -98,9 +105,11 @@ class AQ_treeView_manager(QObject):
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
-        parameter_item = QStandardItem(name)
-        parameter_item.setData(parameter_attributes, Qt.UserRole)
+        # parameter_item = QStandardItem(name)
         value_item = QStandardItem()
+        parameter_item = AQ_param_manager_item(item, self.event_manager)
+        parameter_item.setData(parameter_attributes, Qt.UserRole)
+
         min_limit_item = self.get_min_limit_item(parameter_attributes)
         max_limit_item = self.get_max_limit_item(parameter_attributes)
         unit_item = self.get_unit_item(parameter_attributes)

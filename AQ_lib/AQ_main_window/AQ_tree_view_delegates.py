@@ -68,6 +68,14 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
         return True
 
     def createEditor(self, parent, option, index):
+        param_mamager_item_index = index.sibling(index.row(), 0)
+        manager_item = self.parent().model().itemFromIndex(param_mamager_item_index)
+        try:
+            editor = manager_item.get_editor()
+            param_attributes = manager_item.get_param_attributes()
+            return editor(param_attributes)
+        except:
+            print('no editor')
         # Получаем данные из модели для текущего индекса
         delegate_attributes = index.data(Qt.UserRole)
         if delegate_attributes is not None:
