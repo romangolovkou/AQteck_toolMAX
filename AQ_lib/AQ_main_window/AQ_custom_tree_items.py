@@ -33,6 +33,12 @@ class AQ_param_item(QStandardItem):
         return param_attributes
 
 
+class AQ_catalog_item(AQ_param_item):
+    def __init__(self, name):
+        super().__init__(name)
+        self._value = None
+
+
 class AQ_enum_param_item(AQ_param_item):
     def __init__(self, name):
         super().__init__(name)
@@ -44,27 +50,10 @@ class AQ_enum_param_item(AQ_param_item):
         return self.editor
 
 
-class AQ_catalog_item(QStandardItem):
-    def __init__(self, name):
-        super().__init__(name)
-        self._value = None
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, new_value):
-        if (new_value < 18):
-            raise ValueError("Sorry you age is below eligibility criteria")
-        print("setter method called")
-        self._value = new_value
-
 class AQ_param_manager_item(QStandardItem):
-    def __init__(self, sourse_item, event_manager):
+    def __init__(self, sourse_item):
         param_attributes = sourse_item.data(Qt.UserRole)
         super().__init__(param_attributes.get('name', 'err_name'))
-        self.event_manager = event_manager
         self.sourse_item = sourse_item
 
     def get_editor(self):
@@ -73,6 +62,8 @@ class AQ_param_manager_item(QStandardItem):
     def get_param_attributes(self):
         return self.sourse_item.get_param_attributes()
 
-    def read_param(self):
-        device = self.model().get_device()
-        return
+    def get_sourse_item(self):
+        return self.sourse_item
+
+    def get_value(self):
+        return self.sourse_item.value

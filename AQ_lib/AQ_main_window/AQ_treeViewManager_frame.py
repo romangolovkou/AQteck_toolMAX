@@ -7,7 +7,7 @@ from AQ_custom_tree_items import AQ_param_manager_item
 from AQ_tree_view import AQ_TreeView
 
 
-class AQ_treeView_frame(QFrame):
+class AQ_TreeViewFrame(QFrame):
     def __init__(self, event_manager, parent=None):
         super().__init__(parent)
         self.event_manager = event_manager
@@ -15,30 +15,6 @@ class AQ_treeView_frame(QFrame):
         self.tree_view = AQ_TreeView(self)
         self.tree_view.setGeometry(0, 0, self.width(), self.height())
         self.tree_view_manager = AQ_treeView_manager(self.event_manager, self.tree_view, self)
-
-    # def add_tree_view(self):
-    #     try:
-    #         device_data = self.devices[-1]
-    #         device_tree = device_data.get('device_tree')
-    #         # Створення порожнього массиву параметрів
-    #         self.parameter_list = []
-    #         root = device_tree.invisibleRootItem()
-    #         traverse_items(root, self.parameter_list)
-    #
-    #         if isinstance(device_tree, QStandardItemModel):
-    #             # Устанавливаем модель для QTreeView и отображаем его
-    #             address = device_data.get('address')
-    #             device_data['tree_view'] = AQ_TreeView(len(self.devices) - 1, device_tree, address, self.main_field_frame)
-    #             device_data.get('tree_view').show()
-    #             root = device_tree.invisibleRootItem()
-    #             device_data.get('tree_view').traverse_items_show_delegate(root)
-    #             device_data.get('tree_view').read_all_tree_by_modbus(root)
-    #             self.add_dev_widget_to_left_panel(len(self.devices) - 1, device_data)
-    #
-    #     # except:
-    #         # print(f"Помилка парсінгу")
-    #     except Exception as e:
-    #         print(f"Error occurred: {str(e)}")
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -52,6 +28,7 @@ class AQ_treeView_manager(QObject):
         self.event_manager = event_manager
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices_trees)
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
+        self.event_manager.register_event_handler("all_device_data_updated", self.update_device_data)
         self.tree_view = tree_view
         self.devices_view_trees = {}
 
@@ -71,6 +48,11 @@ class AQ_treeView_manager(QObject):
         except:
             # Устанавливаем задержку в 50 м.сек и затем повторяем
             QTimer.singleShot(3000, lambda: self.set_active_device_tree(device))
+
+    def update_device_data(self, device):
+        tree_view_model = self.devices_view_trees.get(device, None)
+        if tree_view_model is not None:
+            tree_view_model.update_all_params()
 
     def create_device_tree_for_view(self, device):
         device_data = device.get_device_data()
@@ -94,7 +76,8 @@ class AQ_treeView_manager(QObject):
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
                         name = parameter_attributes.get('name', 'err_name')
-                        catalog = QStandardItem(name)
+                        # catalog = QStandardItem(name)
+                        catalog = AQ_param_manager_item(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         self.traverse_items_create_new_tree_for_view(child_item, catalog)
                         new_item.appendRow(catalog)
@@ -107,7 +90,7 @@ class AQ_treeView_manager(QObject):
         name = parameter_attributes.get('name', 'err_name')
         # parameter_item = QStandardItem(name)
         value_item = QStandardItem()
-        parameter_item = AQ_param_manager_item(item, self.event_manager)
+        parameter_item = AQ_param_manager_item(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
 
         min_limit_item = self.get_min_limit_item(parameter_attributes)

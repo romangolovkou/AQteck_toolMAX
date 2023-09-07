@@ -80,9 +80,9 @@ class AQ_device_action_group(AQ_toolbar_group_template):
         self.buttons.append(self.btn_delete_devices)
     # кнопка 3
         self.ico_btn_ip_adresses = QIcon(PROJ_DIR + 'Icons/ip_adresses.png')
-        self.btn_delete_devices = AQ_ToolButton('IP Addresses', self.ico_btn_ip_adresses)
+        self.btn_ip_adresses = AQ_ToolButton('IP Addresses', self.ico_btn_ip_adresses)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.buttons.append(self.btn_delete_devices)
+        self.buttons.append(self.btn_ip_adresses)
 
     # Створюємо початковий горизонтальний лейаут
         self.group_layout = Group_LayH(self, *self.buttons)
@@ -96,7 +96,7 @@ class AQ_param_action_group(AQ_toolbar_group_template):
         self.ico_btn_read = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_read = AQ_ToolButton('Read parameters', self.ico_btn_read)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        # self.btn_read.clicked.connect(self.change_oriental)
+        self.btn_read.clicked.connect(lambda: self.event_manager.emit_event('read_params_cur_active_device'))
         self.buttons.append(self.btn_read)
     # кнопка 2
         self.ico_btn_write = QIcon(PROJ_DIR + 'Icons/test_Button.png')

@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
 from AQ_left_widget_panel import AQ_left_widget_panel_frame
-from AQ_treeViewManager_frame import AQ_treeView_frame
+from AQ_treeViewManager_frame import AQ_TreeViewFrame
 from custom_window_templates import AQ_reduced_main_field_frame
 
 
@@ -24,7 +24,7 @@ class AQ_main_field_frame(AQ_reduced_main_field_frame):
         self.left_panel = AQ_left_widget_panel_frame(self.event_manager, self)
         self.left_panel.setGeometry(0, 0, 248, self.height())
         # Створюємо фрейм з менеджером відображення дерева
-        self.tree_view_frame = AQ_treeView_frame(self.event_manager, self)
+        self.tree_view_frame = AQ_TreeViewFrame(self.event_manager, self)
         self.tree_view_frame.setGeometry(self.left_panel.width() + 1, 0, self.width() - self.left_panel.width() - 1,
                                          self.height())
 
