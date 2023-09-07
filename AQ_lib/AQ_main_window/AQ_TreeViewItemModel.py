@@ -38,3 +38,9 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         for row in range(root.rowCount()):
             child_item = root.child(row)
             self.update_parameter(child_item)
+
+    def read_parameter(self, index):
+        item = self.itemFromIndex(index)
+        sourse_item = item.get_sourse_item()
+        self.device.read_parameter(sourse_item)
+        self.update_parameter(item)
