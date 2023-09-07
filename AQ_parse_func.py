@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_custom_tree_items import AQ_param_item, AQ_catalog_item, AQ_enum_param_item
+from AQ_custom_tree_items import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem
 
 
 def swap_modbus_bytes(data, num_pairs):
@@ -203,7 +203,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
             #     continue
             # Создание элемента каталога
             # current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
-            current_catalog = AQ_catalog_item(catalog_attributes.get('name', 'err_name'))
+            current_catalog = AQ_CatalogItem(catalog_attributes.get('name', 'err_name'))
             current_catalog.setData(catalog_attributes, Qt.UserRole)
             current_catalog_levels.append(current_catalog)
             level += 1
@@ -289,10 +289,10 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                 parameter_name = param_attributes.get('name', 'err_name')
                 # current_parameter = QStandardItem(parameter_name)
-                if param_attributes.get('type', '') == 'enum':
+                if param_attributes.get('type', '') == 'enum' or param_attributes.get('type', '') == 'unsigned':
                     current_parameter = get_item_by_type(param_attributes.get('type', ''), parameter_name)
                 else:
-                    current_parameter = AQ_param_item(parameter_name)
+                    current_parameter = AQ_ParamItem(parameter_name)
                 current_parameter.setData(param_attributes, Qt.UserRole)
                 current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
 
@@ -563,6 +563,8 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
 
 def get_item_by_type(type, name):
     if type == 'enum':
-        item = AQ_enum_param_item(name)
+        item = AQ_EnumParamItem(name)
+    elif type == 'unsigned':
+        item = AQ_UnsignedParamItem(name)
 
     return item

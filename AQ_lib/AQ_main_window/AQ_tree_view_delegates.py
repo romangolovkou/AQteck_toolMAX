@@ -73,9 +73,24 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
         try:
             editor = manager_item.get_editor()
             param_attributes = manager_item.get_param_attributes()
-            return editor(param_attributes)
-        except:
+            editor = editor(param_attributes, parent)
+            return editor
+            # sourse_item = manager_item.get_sourse_item()
+            # param_attributes = sourse_item.get_param_attributes()
+            # if param_attributes.get('type', '') == 'enum':
+            #     combo_box = QComboBox(parent)
+            #     combo_box.view().setStyleSheet("color: #D0D0D0;")
+            #     combo_box.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
+            #     enum_strings = param_attributes.get('enum_strings', '')
+            #     for i in range(len(enum_strings)):
+            #         enum_str = enum_strings[i]
+            #         combo_box.addItem(enum_str)
+            #     combo_box.currentIndexChanged.connect(self.commit_editor_data)
+            #     return combo_box
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
             print('no editor')
+
         # Получаем данные из модели для текущего индекса
         delegate_attributes = index.data(Qt.UserRole)
         if delegate_attributes is not None:

@@ -1,10 +1,11 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem
 
-from AQ_params_delegate_editors import AQ_TreeViewComboBox
+from AQ_params_delegate_editors import AQ_TreeViewComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
+    AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit
 
 
-class AQ_param_item(QStandardItem):
+class AQ_ParamItem(QStandardItem):
     def __init__(self, name):
         super().__init__(name)
         self._value = None
@@ -33,18 +34,67 @@ class AQ_param_item(QStandardItem):
         return param_attributes
 
 
-class AQ_catalog_item(AQ_param_item):
+class AQ_CatalogItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
         self._value = None
 
 
-class AQ_enum_param_item(AQ_param_item):
+class AQ_EnumParamItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
         self._value = None
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_TreeViewComboBox
+
+    def get_editor(self):
+        return self.editor
+
+class AQ_UnsignedParamItem(AQ_ParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        self._value = None
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor_uint = AQ_UintTreeLineEdit
+        self.editor_ip = AQ_IpTreeLineEdit
+
+    def get_editor(self):
+        param_attributes = self.data(Qt.UserRole)
+        if param_attributes is not None:
+            if param_attributes.get('visual_type', '') == 'ip_format':
+                return self.editor_ip
+
+        return self.editor_uint
+
+
+class AQ_SignedParamItem(AQ_ParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        self._value = None
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AQ_IntTreeLineEdit
+
+    def get_editor(self):
+        return self.editor
+
+
+class AQ_FloatParamItem(AQ_ParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        self._value = None
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AQ_FloatTreeLineEdit
+
+    def get_editor(self):
+        return self.editor
+
+
+class AQ_DateTimeParamItem(AQ_ParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        self._value = None
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AQ_UintTreeLineEdit
 
     def get_editor(self):
         return self.editor

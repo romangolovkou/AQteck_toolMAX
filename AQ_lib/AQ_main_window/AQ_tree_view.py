@@ -22,7 +22,7 @@ class AQ_TreeView(QTreeView):
         name_delegate = AQ_NameTreeDelegate(self)
         # self.setItemDelegateForColumn(0, name_delegate)
         value_delegate = AQ_ValueTreeDelegate(self)
-        # self.setItemDelegateForColumn(1, value_delegate)
+        self.setItemDelegateForColumn(1, value_delegate)
         # self.setGeometry(250, 2, parent.width() - 252,
         #                  parent.height() - 4)
         # # Получение количества колонок в модели
