@@ -4,7 +4,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_custom_tree_items import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem
+from AQ_custom_tree_items import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
+    AQ_SignedParamItem, AQ_FloatParamItem
 
 
 def swap_modbus_bytes(data, num_pairs):
@@ -289,7 +290,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                 parameter_name = param_attributes.get('name', 'err_name')
                 # current_parameter = QStandardItem(parameter_name)
-                if param_attributes.get('type', '') == 'enum' or param_attributes.get('type', '') == 'unsigned':
+                if param_attributes.get('type', '') == 'enum' or param_attributes.get('type', '') == 'unsigned' or \
+                        param_attributes.get('type', '') == 'signed' or param_attributes.get('type', '') == 'float':
                     current_parameter = get_item_by_type(param_attributes.get('type', ''), parameter_name)
                 else:
                     current_parameter = AQ_ParamItem(parameter_name)
@@ -566,5 +568,9 @@ def get_item_by_type(type, name):
         item = AQ_EnumParamItem(name)
     elif type == 'unsigned':
         item = AQ_UnsignedParamItem(name)
+    elif type == 'signed':
+        item = AQ_SignedParamItem(name)
+    elif type == 'float':
+        item = AQ_FloatParamItem(name)
 
     return item

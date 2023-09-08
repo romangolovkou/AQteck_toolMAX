@@ -9,6 +9,7 @@ class AQ_ParamItem(QStandardItem):
     def __init__(self, name):
         super().__init__(name)
         self._value = None
+        self.editor = None
 
     @property
     def value(self):
@@ -33,6 +34,9 @@ class AQ_ParamItem(QStandardItem):
         param_attributes = self.data(Qt.UserRole)
         return param_attributes
 
+    def get_editor(self):
+        return self.editor
+
 
 class AQ_CatalogItem(AQ_ParamItem):
     def __init__(self, name):
@@ -47,8 +51,6 @@ class AQ_EnumParamItem(AQ_ParamItem):
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_TreeViewComboBox
 
-    def get_editor(self):
-        return self.editor
 
 class AQ_UnsignedParamItem(AQ_ParamItem):
     def __init__(self, name):
@@ -74,9 +76,6 @@ class AQ_SignedParamItem(AQ_ParamItem):
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_IntTreeLineEdit
 
-    def get_editor(self):
-        return self.editor
-
 
 class AQ_FloatParamItem(AQ_ParamItem):
     def __init__(self, name):
@@ -85,9 +84,6 @@ class AQ_FloatParamItem(AQ_ParamItem):
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_FloatTreeLineEdit
 
-    def get_editor(self):
-        return self.editor
-
 
 class AQ_DateTimeParamItem(AQ_ParamItem):
     def __init__(self, name):
@@ -95,9 +91,6 @@ class AQ_DateTimeParamItem(AQ_ParamItem):
         self._value = None
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_UintTreeLineEdit
-
-    def get_editor(self):
-        return self.editor
 
 
 class AQ_param_manager_item(QStandardItem):

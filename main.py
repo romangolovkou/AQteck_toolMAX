@@ -83,11 +83,11 @@ class MainWindow(QMainWindow):
     #     except Exception as e:
     #         print(f"Error occurred: {str(e)}")
 
-    def read_parameters(self):
-        device_data = self.devices[self.current_active_dev_index]
-        device_tree = device_data.get('device_tree')
-        root = device_tree.invisibleRootItem()
-        device_data.get('tree_view').read_all_tree_by_modbus(root)
+    # def read_parameters(self):
+    #     device_data = self.devices[self.current_active_dev_index]
+    #     device_tree = device_data.get('device_tree')
+    #     root = device_tree.invisibleRootItem()
+    #     device_data.get('tree_view').read_all_tree_by_modbus(root)
 
     def write_parameters(self):
         device_data = self.devices[self.current_active_dev_index]
@@ -100,21 +100,21 @@ class MainWindow(QMainWindow):
         else:
             device_data.get('tree_view').write_all_tree_by_modbus(root)
 
-    def set_active_cur_device(self, index):
-        # Ховаємо всі дерева девайсів
-        for i in range(len(self.devices)):
-            device_data = self.devices[i]
-            tree_view = device_data.get('tree_view', '')
-            if not tree_view == '':
-                tree_view.hide()
-
-        # Відображаємо поточний активний прилад
-        device_data = self.devices[index]
-        tree_view = device_data.get('tree_view', '')
-        if not tree_view == '':
-            tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
-            tree_view.show()
-            self.current_active_dev_index = index
+    # def set_active_cur_device(self, index):
+    #     # Ховаємо всі дерева девайсів
+    #     for i in range(len(self.devices)):
+    #         device_data = self.devices[i]
+    #         tree_view = device_data.get('tree_view', '')
+    #         if not tree_view == '':
+    #             tree_view.hide()
+    #
+    #     # Відображаємо поточний активний прилад
+    #     device_data = self.devices[index]
+    #     tree_view = device_data.get('tree_view', '')
+    #     if not tree_view == '':
+    #         tree_view.setGeometry(250, 2, self.main_field_frame.width() - 252, self.main_field_frame.height() - 4)
+    #         tree_view.show()
+    #         self.current_active_dev_index = index
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@ class AQ_TreeViewComboBox(QComboBox):
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.view().setStyleSheet("color: #D0D0D0;")
+        self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
         enum_strings = param_attributes.get('enum_strings', '')
         for i in range(len(enum_strings)):
@@ -22,12 +22,12 @@ class AQ_TreeViewComboBox(QComboBox):
     def set_value(self, value):
         self.setCurrentIndex(value)
 
-class AQ_UintTreeLineEdit(QLineEdit):
-    def __init__(self, min_limit, max_limit, parent=None):
+
+class AQ_TreeLineEdit(QLineEdit):
+    def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
-        self.min_limit = min_limit
-        self.max_limit = max_limit
-        # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.min_limit = param_attributes.get('min_limit', None)
+        self.max_limit = param_attributes.get('max_limit', None)
         self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
@@ -53,6 +53,19 @@ class AQ_UintTreeLineEdit(QLineEdit):
             self.color_code = 0x2b
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
             self.red_blink_timer.stop()
+
+
+class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+        self.min_limit = param_attributes.get('min_limit', None)
+        self.max_limit = param_attributes.get('max_limit', None)
+        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
+        self.red_blink_timer = QTimer()
+        self.red_blink_timer.setInterval(40)
+        self.red_blink_timer.timeout.connect(self.err_blink)
+        self.anim_cnt = 0
+        self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -84,32 +97,22 @@ class AQ_UintTreeLineEdit(QLineEdit):
             if self.min_limit is not None:
                 if user_data < self.min_limit:
                     self.red_blink_timer.start()
-                    self.show_err_label()
+                    show_err_label(self)
             if self.max_limit is not None:
                 if user_data > self.max_limit:
                     self.red_blink_timer.start()
-                    self.show_err_label()
+                    show_err_label(self)
 
 
         super().keyPressEvent(event)
 
-    def show_err_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна
-        rect = self.geometry()
-        pos = self.mapTo(self, rect.topRight())
-        self.err_label = AQLabel('Invalid value, valid ({}...{})'.format(self.min_limit, self.max_limit), self.parent())
-        self.err_label.setStyleSheet("color: #fe2d2d; \n")
-        self.err_label.move(pos.x() - 190, pos.y() - 15)
-        self.err_label.show()
-        # Устанавливаем задержку в 2 секунды и затем удаляем метку
-        QTimer.singleShot(3000, self.err_label.deleteLater)
 
-
-class AQ_IpTreeLineEdit(QLineEdit):
+class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
-        super().__init__(parent)
+        super().__init__(param_attributes, parent)
+        self.min_limit = 0
+        self.max_limit = 255
         self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
-        # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
         self.setStyleSheet("color: #D0D0D0; background-color: transparent; border-radius: 3px; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
@@ -121,21 +124,6 @@ class AQ_IpTreeLineEdit(QLineEdit):
         value = socket.inet_ntoa(struct.pack('!L', value))
         self.setText(value)
 
-    def err_blink(self):
-        if self.anim_cnt < 34:
-            self.anim_cnt += 1
-            if self.anim_cnt < 18:
-                self.color_code = self.color_code + 0xA
-            else:
-                self.color_code = self.color_code - 0xA
-
-            hex_string = format(self.color_code, 'x')
-            self.setStyleSheet("color: #D0D0D0; background-color: #{}2d30; border-radius: 3px; \n".format(hex_string))
-        else:
-            self.anim_cnt = 0
-            self.color_code = 0x2b
-            self.setStyleSheet("color: #D0D0D0; background-color: transparent; border-radius: 3px; \n")
-            self.red_blink_timer.stop()
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Left:
@@ -215,27 +203,15 @@ class AQ_IpTreeLineEdit(QLineEdit):
                     return
             else:
                 self.red_blink_timer.start()
-                self.show_err_label()
+                show_err_label(self)
                 return
 
         super().keyPressEvent(event)
 
-    def show_err_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна
-        rect = self.geometry()
-        pos = self.mapTo(self, rect.topRight())
-        self.err_label = AQLabel('Invalid value, valid (0...255)')
-        self.err_label.setStyleSheet("color: #fe2d2d; \n")
-        # self.err_label.setFixedSize(190, 12)
-        self.err_label.move(pos.x() - 190, pos.y() - 15)
-        self.err_label.show()
-        # Устанавливаем задержку в 2 секунды и затем удаляем метку
-        QTimer.singleShot(3000, self.err_label.deleteLater)
 
-
-class AQ_IntTreeLineEdit(QLineEdit):
+class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
-        super().__init__(parent)
+        super().__init__(param_attributes, parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
         # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
@@ -245,22 +221,6 @@ class AQ_IntTreeLineEdit(QLineEdit):
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
-
-    def err_blink(self):
-        if self.anim_cnt < 34:
-            self.anim_cnt += 1
-            if self.anim_cnt < 18:
-                self.color_code = self.color_code + 0xA
-            else:
-                self.color_code = self.color_code - 0xA
-
-            hex_string = format(self.color_code, 'x')
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #{}2d30;\n".format(hex_string))
-        else:
-            self.anim_cnt = 0
-            self.color_code = 0x2b
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
-            self.red_blink_timer.stop()
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -301,11 +261,11 @@ class AQ_IntTreeLineEdit(QLineEdit):
                         if self.min_limit is not None:
                             if user_data < self.min_limit:
                                 self.red_blink_timer.start()
-                                self.show_err_label()
+                                show_err_label(self)
                         if self.max_limit is not None:
                             if user_data > self.max_limit:
                                 self.red_blink_timer.start()
-                                self.show_err_label()
+                                show_err_label(self)
                         return
                 else:
                     self.setCursorPosition(0)
@@ -318,56 +278,28 @@ class AQ_IntTreeLineEdit(QLineEdit):
             if self.min_limit is not None:
                 if user_data < self.min_limit:
                     self.red_blink_timer.start()
-                    self.show_err_label()
+                    show_err_label(self)
             if self.max_limit is not None:
                 if user_data > self.max_limit:
                     self.red_blink_timer.start()
-                    self.show_err_label()
+                    show_err_label(self)
 
 
         super().keyPressEvent(event)
 
-    def show_err_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна
-        rect = self.geometry()
-        pos = self.mapTo(self, rect.topRight())
-        self.err_label = AQLabel('Invalid value, valid ({}...{})'.format(self.min_limit, self.max_limit), self.parent())
-        self.err_label.setStyleSheet("color: #fe2d2d; \n")
-        # self.err_label.setFixedSize(190, 12)
-        self.err_label.move(pos.x() - 190, pos.y() - 15)
-        self.err_label.show()
-        # Устанавливаем задержку в 2 секунды и затем удаляем метку
-        QTimer.singleShot(3000, self.err_label.deleteLater)
 
-
-class AQ_FloatTreeLineEdit(QLineEdit):
+class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
-        super().__init__(parent)
+        super().__init__(param_attributes, parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
         # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: trnsparent; \n")  # Задаем цветную границу и цвет шрифта
+        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
-
-    def err_blink(self):
-        if self.anim_cnt < 34:
-            self.anim_cnt += 1
-            if self.anim_cnt < 18:
-                self.color_code = self.color_code + 0xA
-            else:
-                self.color_code = self.color_code - 0xA
-
-            hex_string = format(self.color_code, 'x')
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #{}2d30;\n".format(hex_string))
-        else:
-            self.anim_cnt = 0
-            self.color_code = 0x2b
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
-            self.red_blink_timer.stop()
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -408,11 +340,11 @@ class AQ_FloatTreeLineEdit(QLineEdit):
                         if self.min_limit is not None:
                             if user_data < self.min_limit:
                                 self.red_blink_timer.start()
-                                self.show_err_label()
+                                show_err_label(self)
                         if self.max_limit is not None:
                             if user_data > self.max_limit:
                                 self.red_blink_timer.start()
-                                self.show_err_label()
+                                show_err_label(self)
                         return
                 else:
                     self.setCursorPosition(0)
@@ -425,23 +357,33 @@ class AQ_FloatTreeLineEdit(QLineEdit):
             if self.min_limit is not None:
                 if user_data < self.min_limit:
                     self.red_blink_timer.start()
-                    self.show_err_label()
+                    show_err_label(self)
             if self.max_limit is not None:
                 if user_data > self.max_limit:
                     self.red_blink_timer.start()
-                    self.show_err_label()
+                    show_err_label(self)
 
 
         super().keyPressEvent(event)
 
-    def show_err_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна
-        rect = self.geometry()
-        pos = self.mapTo(self, rect.topRight())
-        self.err_label = AQLabel('Invalid value, valid ({}...{})'.format(self.min_limit, self.max_limit), self.parent())
-        self.err_label.setStyleSheet("color: #fe2d2d; \n")
-        # self.err_label.setFixedSize(190, 12)
-        self.err_label.move(pos.x() - 190, pos.y() - 15)
-        self.err_label.show()
+
+class AQ_EditorErrorLabel(AQLabel):
+    def __init__(self, pos, min_limit, max_limit, parent=None):
+        super().__init__('Invalid value', parent)
+        if min_limit is None:
+            min_limit = ''
+        if max_limit is None:
+            max_limit = ''
+        self.setText('Invalid value, valid ({}...{})'.format(min_limit, max_limit))
+        self.setStyleSheet("color: #fe2d2d; background-color: #1e1f22; border-radius: 3px;\n")
+        self.move(pos.x() - 195, pos.y() - 20)
+        self.show()
         # Устанавливаем задержку в 2 секунды и затем удаляем метку
-        QTimer.singleShot(3000, self.err_label.deleteLater)
+        QTimer.singleShot(3000, self.deleteLater)
+
+
+def show_err_label(self):
+    # Получаем координаты поля ввода относительно окна
+    rect = self.geometry()
+    pos = self.mapTo(self, rect.topRight())
+    self.err_label = AQ_EditorErrorLabel(pos, self.min_limit, self.max_limit, self.parent())
