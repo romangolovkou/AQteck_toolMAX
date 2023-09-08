@@ -34,6 +34,11 @@ class AQ_TreeLineEdit(QLineEdit):
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
+        if param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0:
+            self.setReadOnly(True)
+            self.setStyleSheet("border: none; color: #909090; background-color: transparent; \n")
+        else:
+            self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")
 
     def set_value(self, value):
         self.setText(str(value))
@@ -60,12 +65,12 @@ class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
         super().__init__(param_attributes, parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
+
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -113,7 +118,6 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
         self.min_limit = 0
         self.max_limit = 255
         self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
-        self.setStyleSheet("color: #D0D0D0; background-color: transparent; border-radius: 3px; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
@@ -214,8 +218,6 @@ class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
         super().__init__(param_attributes, parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
-        # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
@@ -293,13 +295,15 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
         super().__init__(param_attributes, parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
-        # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
+
+    def set_value(self, value):
+        value = round(value, 7)
+        self.setText(str(value))
 
     def keyPressEvent(self, event):
         key = event.key()

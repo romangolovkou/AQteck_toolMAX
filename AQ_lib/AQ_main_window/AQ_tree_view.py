@@ -94,6 +94,7 @@ class AQ_TreeView(QTreeView):
                                 item_cur_value = self.model().itemFromIndex(index)
                                 item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
                                 item_cur_value.setForeground(QColor("#909090"))
+                                self.openPersistentEditor(index)
             # if child_item is not None:
             #     self.traverse_items_show_delegate(child_item)
 

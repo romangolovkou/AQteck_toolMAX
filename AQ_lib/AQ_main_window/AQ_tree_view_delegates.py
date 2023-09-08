@@ -68,8 +68,8 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
     #     return True
 
     def createEditor(self, parent, option, index):
-        param_mamager_item_index = index.sibling(index.row(), 0)
-        manager_item = self.parent().model().itemFromIndex(param_mamager_item_index)
+        param_manager_item_index = index.sibling(index.row(), 0)
+        manager_item = self.parent().model().itemFromIndex(param_manager_item_index)
         try:
             editor = manager_item.get_editor()
             param_attributes = manager_item.get_param_attributes()

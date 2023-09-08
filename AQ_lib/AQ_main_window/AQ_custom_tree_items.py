@@ -47,7 +47,6 @@ class AQ_CatalogItem(AQ_ParamItem):
 class AQ_EnumParamItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
-        self._value = None
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_TreeViewComboBox
 
@@ -55,7 +54,6 @@ class AQ_EnumParamItem(AQ_ParamItem):
 class AQ_UnsignedParamItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
-        self._value = None
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_uint = AQ_UintTreeLineEdit
         self.editor_ip = AQ_IpTreeLineEdit
@@ -72,7 +70,6 @@ class AQ_UnsignedParamItem(AQ_ParamItem):
 class AQ_SignedParamItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
-        self._value = None
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_IntTreeLineEdit
 
@@ -80,7 +77,6 @@ class AQ_SignedParamItem(AQ_ParamItem):
 class AQ_FloatParamItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
-        self._value = None
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_FloatTreeLineEdit
 
@@ -88,7 +84,6 @@ class AQ_FloatParamItem(AQ_ParamItem):
 class AQ_DateTimeParamItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
-        self._value = None
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_UintTreeLineEdit
 
