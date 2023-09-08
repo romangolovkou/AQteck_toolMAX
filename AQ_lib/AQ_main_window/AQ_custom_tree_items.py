@@ -105,6 +105,7 @@ class AQ_param_manager_item(QStandardItem):
         param_attributes = sourse_item.data(Qt.UserRole)
         super().__init__(param_attributes.get('name', 'err_name'))
         self.sourse_item = sourse_item
+        self.editor_object = None
 
     def get_editor(self):
         return self.sourse_item.get_editor()
@@ -117,3 +118,10 @@ class AQ_param_manager_item(QStandardItem):
 
     def get_value(self):
         return self.sourse_item.value
+
+    def save_editor_object(self, editor):
+        self.editor_object = editor
+
+    def show_new_value(self, value):
+        if self.editor_object is not None:
+            self.editor_object.set_value(value)

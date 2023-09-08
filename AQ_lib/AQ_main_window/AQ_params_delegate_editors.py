@@ -1,3 +1,6 @@
+import socket
+import struct
+
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QComboBox, QLineEdit
 
@@ -16,6 +19,8 @@ class AQ_TreeViewComboBox(QComboBox):
             self.addItem(enum_str)
         # self.currentIndexChanged.connect(self.parent.commit_editor_data)
 
+    def set_value(self, value):
+        self.setCurrentIndex(value)
 
 class AQ_UintTreeLineEdit(QLineEdit):
     def __init__(self, min_limit, max_limit, parent=None):
@@ -29,6 +34,9 @@ class AQ_UintTreeLineEdit(QLineEdit):
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
+
+    def set_value(self, value):
+        self.setText(str(value))
 
     def err_blink(self):
         if self.anim_cnt < 34:
@@ -109,6 +117,9 @@ class AQ_IpTreeLineEdit(QLineEdit):
         self.anim_cnt = 0
         self.color_code = 0x2b #Берется из цвета background-color, первые два символа после # соответствуют RED
 
+    def set_value(self, value):
+        value = socket.inet_ntoa(struct.pack('!L', value))
+        self.setText(value)
 
     def err_blink(self):
         if self.anim_cnt < 34:
@@ -209,12 +220,24 @@ class AQ_IpTreeLineEdit(QLineEdit):
 
         super().keyPressEvent(event)
 
+    def show_err_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна
+        rect = self.geometry()
+        pos = self.mapTo(self, rect.topRight())
+        self.err_label = AQLabel('Invalid value, valid (0...255)')
+        self.err_label.setStyleSheet("color: #fe2d2d; \n")
+        # self.err_label.setFixedSize(190, 12)
+        self.err_label.move(pos.x() - 190, pos.y() - 15)
+        self.err_label.show()
+        # Устанавливаем задержку в 2 секунды и затем удаляем метку
+        QTimer.singleShot(3000, self.err_label.deleteLater)
+
 
 class AQ_IntTreeLineEdit(QLineEdit):
-    def __init__(self, min_limit, max_limit, parent=None):
+    def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
-        self.min_limit = min_limit
-        self.max_limit = max_limit
+        self.min_limit = param_attributes.get('min_limit', None)
+        self.max_limit = param_attributes.get('max_limit', None)
         # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
         self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
@@ -318,10 +341,10 @@ class AQ_IntTreeLineEdit(QLineEdit):
 
 
 class AQ_FloatTreeLineEdit(QLineEdit):
-    def __init__(self, min_limit, max_limit, parent=None):
+    def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
-        self.min_limit = min_limit
-        self.max_limit = max_limit
+        self.min_limit = param_attributes.get('min_limit', None)
+        self.max_limit = param_attributes.get('max_limit', None)
         # self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
         self.setStyleSheet("border: none; color: #D0D0D0; background-color: trnsparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()

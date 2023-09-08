@@ -11,6 +11,8 @@ class AQ_main_field_frame(AQ_reduced_main_field_frame):
     def __init__(self, event_manager, shift_y, parent=None):
         super().__init__(shift_y, parent)
         self.event_manager = event_manager
+        self.event_manager.register_event_handler('set_active_device', self.show_hide_main_pic)
+
         self.setGeometry(QRect(0, (shift_y + 2), parent.width(), parent.height() - (shift_y + 2)))
 
         # Создаем заставочную картинку для главного поля
@@ -27,6 +29,12 @@ class AQ_main_field_frame(AQ_reduced_main_field_frame):
         self.tree_view_frame = AQ_TreeViewFrame(self.event_manager, self)
         self.tree_view_frame.setGeometry(self.left_panel.width() + 1, 0, self.width() - self.left_panel.width() - 1,
                                          self.height())
+
+    def show_hide_main_pic(self, device):
+        if device is None:
+            self.main_background_pic.show()
+        else:
+            self.main_background_pic.hide()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

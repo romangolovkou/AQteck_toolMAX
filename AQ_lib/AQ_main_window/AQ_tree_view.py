@@ -61,39 +61,75 @@ class AQ_TreeView(QTreeView):
         root = model.invisibleRootItem()
         self.traverse_items_show_delegate(root)
 
-
     def traverse_items_show_delegate(self, item):
         for row in range(item.rowCount()):
             child_item = item.child(row)
             parameter_attributes = child_item.data(Qt.UserRole)
             if parameter_attributes is not None:
-                if parameter_attributes.get('type', '') == 'enum':
-                    if parameter_attributes.get('W_Only', 0) == 1:
-                        # Получаем индекс элемента и открываем для него постоянный редактор
+                if parameter_attributes.get('is_catalog', 0) == 1:
+                    self.traverse_items_show_delegate(child_item)
+                else:
+                    if parameter_attributes.get('type', '') == 'enum':
+                        if parameter_attributes.get('W_Only', 0) == 1:
+                            # Получаем индекс элемента и открываем для него постоянный редактор
+                            index = self.model().index(row, 1, item.index())
+                            if index.isValid():
+                                self.openPersistentEditor(index)
+                        else:
+                            index = self.model().index(row, 1, item.index())
+                            if index.isValid():
+                                item_cur_value = self.model().itemFromIndex(index)
+                                item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
+                                # self.setValue(1, index)
+                    elif parameter_attributes.get('type', '') == 'unsigned' or \
+                            parameter_attributes.get('type', '') == 'signed' or \
+                            parameter_attributes.get('type', '') == 'string' or \
+                            parameter_attributes.get('type', '') == 'float':
                         index = self.model().index(row, 1, item.index())
-                        if index.isValid():
-                            self.openPersistentEditor(index)
-                    else:
-                        index = self.model().index(row, 1, item.index())
-                        if index.isValid():
-                            item_cur_value = self.model().itemFromIndex(index)
-                            item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
-                            # self.setValue(1, index)
-                elif parameter_attributes.get('type', '') == 'unsigned' or \
-                        parameter_attributes.get('type', '') == 'signed' or \
-                        parameter_attributes.get('type', '') == 'string' or \
-                        parameter_attributes.get('type', '') == 'float':
-                    index = self.model().index(row, 1, item.index())
-                    if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
-                        if index.isValid():
-                            self.openPersistentEditor(index)
-                    else:
-                        if index.isValid():
-                            item_cur_value = self.model().itemFromIndex(index)
-                            item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
-                            item_cur_value.setForeground(QColor("#909090"))
-            if child_item is not None:
-                self.traverse_items_show_delegate(child_item)
+                        if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
+                            if index.isValid():
+                                self.openPersistentEditor(index)
+                        else:
+                            if index.isValid():
+                                item_cur_value = self.model().itemFromIndex(index)
+                                item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
+                                item_cur_value.setForeground(QColor("#909090"))
+            # if child_item is not None:
+            #     self.traverse_items_show_delegate(child_item)
+
+
+    # def traverse_items_show_delegate(self, item):
+    #     for row in range(item.rowCount()):
+    #         child_item = item.child(row)
+    #         parameter_attributes = child_item.data(Qt.UserRole)
+    #         if parameter_attributes is not None:
+    #             if parameter_attributes.get('type', '') == 'enum':
+    #                 if parameter_attributes.get('W_Only', 0) == 1:
+    #                     # Получаем индекс элемента и открываем для него постоянный редактор
+    #                     index = self.model().index(row, 1, item.index())
+    #                     if index.isValid():
+    #                         self.openPersistentEditor(index)
+    #                 else:
+    #                     index = self.model().index(row, 1, item.index())
+    #                     if index.isValid():
+    #                         item_cur_value = self.model().itemFromIndex(index)
+    #                         item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
+    #                         # self.setValue(1, index)
+    #             elif parameter_attributes.get('type', '') == 'unsigned' or \
+    #                     parameter_attributes.get('type', '') == 'signed' or \
+    #                     parameter_attributes.get('type', '') == 'string' or \
+    #                     parameter_attributes.get('type', '') == 'float':
+    #                 index = self.model().index(row, 1, item.index())
+    #                 if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
+    #                     if index.isValid():
+    #                         self.openPersistentEditor(index)
+    #                 else:
+    #                     if index.isValid():
+    #                         item_cur_value = self.model().itemFromIndex(index)
+    #                         item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
+    #                         item_cur_value.setForeground(QColor("#909090"))
+    #         if child_item is not None:
+    #             self.traverse_items_show_delegate(child_item)
 
     def traverse_items_R_Only_catalog_check(self, item):
         write_flag = 0
