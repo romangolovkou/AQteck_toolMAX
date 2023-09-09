@@ -81,6 +81,7 @@ class AQ_TreeView(QTreeView):
                                 item_cur_value = self.model().itemFromIndex(index)
                                 item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
                                 # self.setValue(1, index)
+                                self.openPersistentEditor(index)
                     else:
                         index = self.model().index(row, 1, item.index())
                         self.openPersistentEditor(index)

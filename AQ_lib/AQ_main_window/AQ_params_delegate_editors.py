@@ -8,28 +8,13 @@ from PyQt5.QtWidgets import QComboBox, QLineEdit
 from custom_window_templates import AQLabel
 
 
-class AQ_TreeViewComboBox(QComboBox):
-    def __init__(self, param_attributes, parent=None):
-        super().__init__(parent)
-        self.parent = parent
-        self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
-        self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
-        enum_strings = param_attributes.get('enum_strings', '')
-        for i in range(len(enum_strings)):
-            enum_str = enum_strings[i]
-            self.addItem(enum_str)
-        # self.currentIndexChanged.connect(self.parent.commit_editor_data)
-
-    def set_value(self, value):
-        self.setCurrentIndex(value)
-
-
 class AQ_TreeLineEdit(QLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
-        self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
+        self.setStyleSheet(
+            "border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
         self.red_blink_timer.setInterval(40)
         self.red_blink_timer.timeout.connect(self.err_blink)
@@ -59,6 +44,33 @@ class AQ_TreeLineEdit(QLineEdit):
             self.color_code = 0x2b
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
             self.red_blink_timer.stop()
+
+
+class AQ_EnumTreeComboBox(QComboBox):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
+        self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
+        enum_strings = param_attributes.get('enum_strings', '')
+        for i in range(len(enum_strings)):
+            enum_str = enum_strings[i]
+            self.addItem(enum_str)
+
+    def set_value(self, value):
+        self.setCurrentIndex(value)
+
+
+class AQ_EnumROnlyTreeLineEdit(AQ_TreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+        self.enum_strings = param_attributes.get('enum_strings', '')
+
+    def set_value(self, value):
+        self.setText(self.enum_strings[value])
+
+
+
 
 
 class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
