@@ -1,3 +1,4 @@
+import datetime
 import socket
 import struct
 
@@ -63,14 +64,6 @@ class AQ_TreeLineEdit(QLineEdit):
 class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
-        self.min_limit = param_attributes.get('min_limit', None)
-        self.max_limit = param_attributes.get('max_limit', None)
-        self.red_blink_timer = QTimer()
-        self.red_blink_timer.setInterval(40)
-        self.red_blink_timer.timeout.connect(self.err_blink)
-        self.anim_cnt = 0
-        self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
-
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -118,11 +111,6 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
         self.min_limit = 0
         self.max_limit = 255
         self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
-        self.red_blink_timer = QTimer()
-        self.red_blink_timer.setInterval(40)
-        self.red_blink_timer.timeout.connect(self.err_blink)
-        self.anim_cnt = 0
-        self.color_code = 0x2b #Берется из цвета background-color, первые два символа после # соответствуют RED
 
     def set_value(self, value):
         value = socket.inet_ntoa(struct.pack('!L', value))
@@ -216,13 +204,6 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
 class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
-        self.min_limit = param_attributes.get('min_limit', None)
-        self.max_limit = param_attributes.get('max_limit', None)
-        self.red_blink_timer = QTimer()
-        self.red_blink_timer.setInterval(40)
-        self.red_blink_timer.timeout.connect(self.err_blink)
-        self.anim_cnt = 0
-        self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -293,13 +274,6 @@ class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
 class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
-        self.min_limit = param_attributes.get('min_limit', None)
-        self.max_limit = param_attributes.get('max_limit', None)
-        self.red_blink_timer = QTimer()
-        self.red_blink_timer.setInterval(40)
-        self.red_blink_timer.timeout.connect(self.err_blink)
-        self.anim_cnt = 0
-        self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
 
     def set_value(self, value):
         value = round(value, 7)
@@ -369,6 +343,22 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
 
 
         super().keyPressEvent(event)
+
+
+class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+
+
+class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+
+    def set_value(self, value):
+        value += datetime.datetime(2000, 1, 1).timestamp()
+        datetime_obj = datetime.datetime.fromtimestamp(value)
+        value = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
+        self.setText(str(value))
 
 
 class AQ_EditorErrorLabel(AQLabel):

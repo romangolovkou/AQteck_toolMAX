@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem
 
 from AQ_params_delegate_editors import AQ_TreeViewComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
-    AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit
+    AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit
 
 
 class AQ_ParamItem(QStandardItem):
@@ -81,11 +81,18 @@ class AQ_FloatParamItem(AQ_ParamItem):
         self.editor = AQ_FloatTreeLineEdit
 
 
+class AQ_StringParamItem(AQ_ParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AQ_StringTreeLineEdit
+
+
 class AQ_DateTimeParamItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor = AQ_UintTreeLineEdit
+        self.editor = AQ_DateTimeLineEdit
 
 
 class AQ_param_manager_item(QStandardItem):

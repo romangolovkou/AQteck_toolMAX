@@ -5,7 +5,7 @@ from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_custom_tree_items import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
-    AQ_SignedParamItem, AQ_FloatParamItem
+    AQ_SignedParamItem, AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem
 
 
 def swap_modbus_bytes(data, num_pairs):
@@ -290,11 +290,12 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
 
                 parameter_name = param_attributes.get('name', 'err_name')
                 # current_parameter = QStandardItem(parameter_name)
-                if param_attributes.get('type', '') == 'enum' or param_attributes.get('type', '') == 'unsigned' or \
-                        param_attributes.get('type', '') == 'signed' or param_attributes.get('type', '') == 'float':
-                    current_parameter = get_item_by_type(param_attributes.get('type', ''), parameter_name)
-                else:
-                    current_parameter = AQ_ParamItem(parameter_name)
+                param_type = param_attributes.get('type', '')
+                # if param_type == 'enum' or param_type == 'unsigned' or param_type == 'signed' or param_type == 'float' \
+                #         or param_type == 'string':
+                current_parameter = get_item_by_type(param_attributes.get('type', ''), parameter_name)
+                # else:
+                #     current_parameter = AQ_ParamItem(parameter_name)
                 current_parameter.setData(param_attributes, Qt.UserRole)
                 current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
 
@@ -572,5 +573,11 @@ def get_item_by_type(type, name):
         item = AQ_SignedParamItem(name)
     elif type == 'float':
         item = AQ_FloatParamItem(name)
+    elif type == 'string':
+        item = AQ_StringParamItem(name)
+    elif type == 'date_time':
+        item = AQ_DateTimeParamItem(name)
+    else:
+        item = AQ_ParamItem(name)
 
     return item
