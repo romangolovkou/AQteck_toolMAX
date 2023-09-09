@@ -79,6 +79,7 @@ class AQ_treeView_manager(QObject):
                         # catalog = QStandardItem(name)
                         catalog = AQ_param_manager_item(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
+                        catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
                         self.traverse_items_create_new_tree_for_view(child_item, catalog)
                         new_item.appendRow(catalog)
                     else:

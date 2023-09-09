@@ -69,38 +69,8 @@ class AQ_TreeView(QTreeView):
                 if parameter_attributes.get('is_catalog', 0) == 1:
                     self.traverse_items_show_delegate(child_item)
                 else:
-                    if parameter_attributes.get('type', '') == 'enum':
-                        if parameter_attributes.get('W_Only', 0) == 1:
-                            # Получаем индекс элемента и открываем для него постоянный редактор
-                            index = self.model().index(row, 1, item.index())
-                            if index.isValid():
-                                self.openPersistentEditor(index)
-                        else:
-                            index = self.model().index(row, 1, item.index())
-                            if index.isValid():
-                                item_cur_value = self.model().itemFromIndex(index)
-                                item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
-                                # self.setValue(1, index)
-                                self.openPersistentEditor(index)
-                    else:
-                        index = self.model().index(row, 1, item.index())
-                        self.openPersistentEditor(index)
-                    # elif parameter_attributes.get('type', '') == 'unsigned' or \
-                    #         parameter_attributes.get('type', '') == 'signed' or \
-                    #         parameter_attributes.get('type', '') == 'string' or \
-                    #         parameter_attributes.get('type', '') == 'float':
-                    #     index = self.model().index(row, 1, item.index())
-                    #     if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
-                    #         if index.isValid():
-                    #             self.openPersistentEditor(index)
-                    #     else:
-                    #         if index.isValid():
-                    #             item_cur_value = self.model().itemFromIndex(index)
-                    #             item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
-                    #             item_cur_value.setForeground(QColor("#909090"))
-                    #             self.openPersistentEditor(index)
-            # if child_item is not None:
-            #     self.traverse_items_show_delegate(child_item)
+                    index = self.model().index(row, 1, item.index())
+                    self.openPersistentEditor(index)
 
 
     # def traverse_items_show_delegate(self, item):

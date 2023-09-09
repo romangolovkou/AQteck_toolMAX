@@ -1,3 +1,4 @@
+import binascii
 import datetime
 import socket
 import struct
@@ -70,12 +71,25 @@ class AQ_EnumROnlyTreeLineEdit(AQ_TreeLineEdit):
         self.setText(self.enum_strings[value])
 
 
-
-
-
 class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
+        self.visual_type = param_attributes.get('visual_type', '')
+        self.param_size = param_attributes.get('param_size', 0)
+
+    def set_value(self, value):
+        if self.visual_type == 'hex':
+            mac_address = binascii.hexlify(value).decode('utf-8').upper()
+            mac_address_with_colons = ':'.join(mac_address[i:i + 2] for i in range(0, len(mac_address), 2))
+            value = mac_address_with_colons
+        elif self.visual_type == 'bin':
+            binary_string = format(value, f'0{self.param_size * 8}b')
+            grouped_binary_string = ' '.join(
+                [binary_string[i:i + 4] for i in range(0, len(binary_string), 4)])
+            # Создаем объект BitArray из байтового массива
+            value = grouped_binary_string
+
+        self.setText(str(value))
 
     def keyPressEvent(self, event):
         key = event.key()
