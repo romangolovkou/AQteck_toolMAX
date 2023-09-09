@@ -138,10 +138,17 @@ class AQ_treeView_manager(QObject):
                 cur_par_min = ''
             # Якщо min_limit у параметра немає, додаємо розрахунковий і у сам параметр
             param_attributes['min_limit'] = cur_par_min
+            min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
+            return min_limit_item
+        else:
+            param_type = param_attributes.get('type', '')
+            visual_type = param_attributes.get('visual_type', '')
+            if param_type == 'enum' or visual_type == 'ip_format':
+                min_limit_item = QStandardItem('')
+            else:
+                min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
 
-        min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
-
-        return min_limit_item
+            return min_limit_item
 
     def get_max_limit_item(self, param_attributes):
         if param_attributes.get('max_limit', '') == '':
@@ -183,13 +190,26 @@ class AQ_treeView_manager(QObject):
                 cur_par_max = ''
             # Якщо max_limit у параметра немає, додаємо розрахунковий і у сам параметр
             param_attributes['max_limit'] = cur_par_max
+            max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
+            return max_limit_item
+        else:
+            param_type = param_attributes.get('type', '')
+            visual_type = param_attributes.get('visual_type', '')
+            if param_type == 'enum' or visual_type == 'ip_format':
+                max_limit_item = QStandardItem('')
+            else:
+                max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
 
-        max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
-
-        return max_limit_item
+            return max_limit_item
 
     def get_unit_item(self, param_attributes):
-        unit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
+        param_type = param_attributes.get('type', '')
+        visual_type = param_attributes.get('visual_type', '')
+        if param_type == 'enum' or visual_type == 'ip_format':
+            unit_item = QStandardItem('')
+        else:
+            unit_item = QStandardItem(str(param_attributes.get('unit', '')))
+
         return unit_item
 
     def get_default_value_item(self, param_attributes):
