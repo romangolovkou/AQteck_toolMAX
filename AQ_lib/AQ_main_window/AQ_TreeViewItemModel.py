@@ -29,13 +29,6 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         else:
             value = manager_item.get_value()
             manager_item.show_new_value(value)
-            # item_index = self.indexFromItem(item)
-            # view_value_item_index = item_index.sibling(item_index.row(), 1)
-            # view_value_item = self.itemFromIndex(view_value_item_index)
-            # if not (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
-            #     view_value_item.setData(value, Qt.EditRole)
-            # else:
-            #     view_value_item.setData(value, Qt.DisplayRole)
 
     def update_all_params(self):
         root = self.invisibleRootItem()

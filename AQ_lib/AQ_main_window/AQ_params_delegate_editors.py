@@ -27,6 +27,12 @@ class AQ_TreeLineEdit(QLineEdit):
         else:
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")
 
+        self.textChanged.connect(self.updateLineEdit)
+
+    def updateLineEdit(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        self.setText(text)
+
     def set_value(self, value):
         self.setText(str(value))
 

@@ -171,39 +171,39 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
     #             if editor.text() != '':
     #                 self.commitData.emit(editor)  # Вызываем commitData для делегата
 
-    def setEditorData(self, editor, index):
-        delegate_attributes = index.data(Qt.UserRole)
-        if delegate_attributes is not None:
-            if delegate_attributes.get('type', '') == 'enum':
-                user_data = index.data(Qt.EditRole)
-                if user_data is not None:
-                    editor.setCurrentIndex(user_data)
-            if delegate_attributes.get('type', '') == 'unsigned' or \
-                    delegate_attributes.get('type', '') == 'signed' or delegate_attributes.get('type', '') == 'float':
-                user_data = index.data(Qt.EditRole)
-                if user_data is not None:
-                    if self.value_is_valid(index, delegate_attributes.get('type', '')):
-                        editor.setText(str(user_data))
-                        self.set_error_flag(index, False)
-                    else:
-                        self.set_error_flag(index, True)
-            elif delegate_attributes.get('type', '') == 'string':
-                user_data = index.data(Qt.EditRole)
-                if user_data is not None:
-                    editor.setText(str(user_data))
-
-            set_by_program_flag = self.set_by_prog_flag_dict.get(index, True)
-            if set_by_program_flag is not True:
-                self.set_item_chandeg_flag(index, True)
-                new_index = index.sibling(index.row(), 0)
-                self.parent().setLineColor(new_index, '#429061')
-            else:
-                self.set_by_prog_flag_dict[index] = False
-
-            have_error = self.error_dict.get(index, False)
-            if have_error is True:
-                new_index = index.sibling(index.row(), 0)
-                self.parent().setLineColor(new_index, '#9d4d4f')
+    # def setEditorData(self, editor, index):
+    #     delegate_attributes = index.data(Qt.UserRole)
+    #     if delegate_attributes is not None:
+    #         if delegate_attributes.get('type', '') == 'enum':
+    #             user_data = index.data(Qt.EditRole)
+    #             if user_data is not None:
+    #                 editor.setCurrentIndex(user_data)
+    #         if delegate_attributes.get('type', '') == 'unsigned' or \
+    #                 delegate_attributes.get('type', '') == 'signed' or delegate_attributes.get('type', '') == 'float':
+    #             user_data = index.data(Qt.EditRole)
+    #             if user_data is not None:
+    #                 if self.value_is_valid(index, delegate_attributes.get('type', '')):
+    #                     editor.setText(str(user_data))
+    #                     self.set_error_flag(index, False)
+    #                 else:
+    #                     self.set_error_flag(index, True)
+    #         elif delegate_attributes.get('type', '') == 'string':
+    #             user_data = index.data(Qt.EditRole)
+    #             if user_data is not None:
+    #                 editor.setText(str(user_data))
+    #
+    #         set_by_program_flag = self.set_by_prog_flag_dict.get(index, True)
+    #         if set_by_program_flag is not True:
+    #             self.set_item_chandeg_flag(index, True)
+    #             new_index = index.sibling(index.row(), 0)
+    #             self.parent().setLineColor(new_index, '#429061')
+    #         else:
+    #             self.set_by_prog_flag_dict[index] = False
+    #
+    #         have_error = self.error_dict.get(index, False)
+    #         if have_error is True:
+    #             new_index = index.sibling(index.row(), 0)
+    #             self.parent().setLineColor(new_index, '#9d4d4f')
 
     def setModelData(self, editor, model, index):
         delegate_attributes = index.data(Qt.UserRole)

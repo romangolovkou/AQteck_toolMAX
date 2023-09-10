@@ -30,24 +30,28 @@ class AQ_treeView_manager(QObject):
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
         self.event_manager.register_event_handler("all_device_data_updated", self.update_device_data)
         self.tree_view = tree_view
+        self.tree_view.hide()
         self.devices_view_trees = {}
 
     def add_new_devices_trees(self, new_devices_list):
         for i in range(len(new_devices_list)):
-            # device_data = new_devices_list[i].get_device_data()
-            # device_tree = device_data.get('device_tree', None)
-            # if device_tree is not None:
             device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
             self.devices_view_trees[new_devices_list[i]] = device_view_tree_model
+            self.update_device_data(new_devices_list[i])
 
         self.tree_view.setModel(self.devices_view_trees[new_devices_list[-1]])
 
     def set_active_device_tree(self, device):
-        try:
-            self.tree_view.setModel(self.devices_view_trees[device])
-        except:
-            # Устанавливаем задержку в 50 м.сек и затем повторяем
-            QTimer.singleShot(3000, lambda: self.set_active_device_tree(device))
+        if device is not None:
+            self.tree_view.show()
+            try:
+                self.tree_view.setModel(self.devices_view_trees[device])
+                self.update_device_data(device)
+            except:
+                # Устанавливаем задержку в 50 м.сек и затем повторяем
+                QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
+        else:
+            self.tree_view.hide()
 
     def update_device_data(self, device):
         tree_view_model = self.devices_view_trees.get(device, None)
@@ -58,7 +62,6 @@ class AQ_treeView_manager(QObject):
         device_data = device.get_device_data()
         device_tree = device_data.get('device_tree', None)
         if device_tree is not None:
-            # tree_model_for_view = QStandardItemModel()
             tree_model_for_view = AQ_TreeViewItemModel(device)
             tree_model_for_view.setColumnCount(6)
             tree_model_for_view.setHorizontalHeaderLabels(
@@ -76,7 +79,6 @@ class AQ_treeView_manager(QObject):
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
                         name = parameter_attributes.get('name', 'err_name')
-                        # catalog = QStandardItem(name)
                         catalog = AQ_param_manager_item(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
@@ -89,7 +91,6 @@ class AQ_treeView_manager(QObject):
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
-        # parameter_item = QStandardItem(name)
         value_item = QStandardItem()
         parameter_item = AQ_param_manager_item(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)

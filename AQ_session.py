@@ -24,6 +24,7 @@ class AQ_CurrentSession(QObject):
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
             self.devices.append(new_devices_list[i])
+            self.devices[-1].read_all_parameters()
 
     def set_cur_active_device(self, device):
         self.cur_active_device = device
