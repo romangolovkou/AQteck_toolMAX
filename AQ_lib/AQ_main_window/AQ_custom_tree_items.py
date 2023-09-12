@@ -41,7 +41,6 @@ class AQ_ParamItem(QStandardItem):
 class AQ_CatalogItem(AQ_ParamItem):
     def __init__(self, name):
         super().__init__(name)
-        self._value = None
 
 
 class AQ_EnumParamItem(AQ_ParamItem):
@@ -110,6 +109,7 @@ class AQ_param_manager_item(QStandardItem):
         super().__init__(param_attributes.get('name', 'err_name'))
         self.sourse_item = sourse_item
         self.editor_object = None
+        self.param_status = 'ok'
 
     def get_editor(self):
         return self.sourse_item.get_editor()
@@ -129,3 +129,10 @@ class AQ_param_manager_item(QStandardItem):
     def show_new_value(self, value):
         if self.editor_object is not None:
             self.editor_object.set_value(value)
+
+    def save_new_value(self, value):
+        try:
+            self.sourse_item.value = value
+            self.param_status = 'changed'
+        except:
+            self.param_status = 'error'

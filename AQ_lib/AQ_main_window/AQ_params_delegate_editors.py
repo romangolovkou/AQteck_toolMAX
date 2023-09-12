@@ -14,6 +14,7 @@ class AQ_TreeLineEdit(QLineEdit):
         super().__init__(parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
+        self.save_new_value = None
         self.setStyleSheet(
             "border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
@@ -26,12 +27,15 @@ class AQ_TreeLineEdit(QLineEdit):
             self.setStyleSheet("border: none; color: #909090; background-color: transparent; \n")
         else:
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")
-
-        self.textChanged.connect(self.updateLineEdit)
+            self.textChanged.connect(self.updateLineEdit)
 
     def updateLineEdit(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        self.setText(text)
+        value = int(text)
+        self.save_new_value(value)
+
+    def set_new_value_handler(self, handler):
+        self.save_new_value = handler
 
     def set_value(self, value):
         self.setText(str(value))
@@ -59,10 +63,20 @@ class AQ_EnumTreeComboBox(QComboBox):
         self.parent = parent
         self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
+        self.save_new_value = None
         enum_strings = param_attributes.get('enum_strings', '')
         for i in range(len(enum_strings)):
             enum_str = enum_strings[i]
             self.addItem(enum_str)
+
+        self.currentIndexChanged.connect(self.updateIndex)
+
+    def updateIndex(self, index):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        self.save_new_value(index)
+
+    def set_new_value_handler(self, handler):
+        self.save_new_value = handler
 
     def set_value(self, value):
         self.setCurrentIndex(value)
@@ -143,6 +157,16 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
         self.min_limit = 0
         self.max_limit = 255
         self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
+
+    def updateLineEdit(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        # Разделяем IP-адрес на октеты
+        octets = text.split('.')
+        # Преобразуем каждый октет в числовое значение
+        int_octets = [int(octet) for octet in octets]
+        # Получаем 32-битное целое число из октетов
+        ip_as_integer = (int_octets[0] << 24) | (int_octets[1] << 16) | (int_octets[2] << 8) | int_octets[3]
+        self.save_new_value(ip_as_integer)
 
     def set_value(self, value):
         value = socket.inet_ntoa(struct.pack('!L', value))
@@ -307,6 +331,11 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
+    def updateLineEdit(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        value = float(text)
+        self.save_new_value(value)
+
     def set_value(self, value):
         value = round(value, 7)
         self.setText(str(value))
@@ -381,10 +410,19 @@ class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
+    def updateLineEdit(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        self.save_new_value(text)
+
 
 class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
+
+    def updateLineEdit(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        # self.save_new_value(text)
+        pass
 
     def set_value(self, value):
         value += datetime.datetime(2000, 1, 1).timestamp()

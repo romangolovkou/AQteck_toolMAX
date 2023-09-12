@@ -19,16 +19,10 @@ class AQ_TreeView(QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        name_delegate = AQ_NameTreeDelegate(self)
+        # name_delegate = AQ_NameTreeDelegate(self)
         # self.setItemDelegateForColumn(0, name_delegate)
         value_delegate = AQ_ValueTreeDelegate(self)
         self.setItemDelegateForColumn(1, value_delegate)
-        # self.setGeometry(250, 2, parent.width() - 252,
-        #                  parent.height() - 4)
-        # # Получение количества колонок в модели
-        # column_count = device_tree.columnCount()
-        # for column in range(column_count):
-        #     self.setColumnWidth(column, 200)
 
         self.setStyleSheet("""
                             QTreeView {
@@ -71,40 +65,6 @@ class AQ_TreeView(QTreeView):
                 else:
                     index = self.model().index(row, 1, item.index())
                     self.openPersistentEditor(index)
-
-
-    # def traverse_items_show_delegate(self, item):
-    #     for row in range(item.rowCount()):
-    #         child_item = item.child(row)
-    #         parameter_attributes = child_item.data(Qt.UserRole)
-    #         if parameter_attributes is not None:
-    #             if parameter_attributes.get('type', '') == 'enum':
-    #                 if parameter_attributes.get('W_Only', 0) == 1:
-    #                     # Получаем индекс элемента и открываем для него постоянный редактор
-    #                     index = self.model().index(row, 1, item.index())
-    #                     if index.isValid():
-    #                         self.openPersistentEditor(index)
-    #                 else:
-    #                     index = self.model().index(row, 1, item.index())
-    #                     if index.isValid():
-    #                         item_cur_value = self.model().itemFromIndex(index)
-    #                         item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
-    #                         # self.setValue(1, index)
-    #             elif parameter_attributes.get('type', '') == 'unsigned' or \
-    #                     parameter_attributes.get('type', '') == 'signed' or \
-    #                     parameter_attributes.get('type', '') == 'string' or \
-    #                     parameter_attributes.get('type', '') == 'float':
-    #                 index = self.model().index(row, 1, item.index())
-    #                 if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
-    #                     if index.isValid():
-    #                         self.openPersistentEditor(index)
-    #                 else:
-    #                     if index.isValid():
-    #                         item_cur_value = self.model().itemFromIndex(index)
-    #                         item_cur_value.setFlags(item_cur_value.flags() & ~Qt.ItemIsEditable)
-    #                         item_cur_value.setForeground(QColor("#909090"))
-    #         if child_item is not None:
-    #             self.traverse_items_show_delegate(child_item)
 
     def traverse_items_R_Only_catalog_check(self, item):
         write_flag = 0
@@ -232,152 +192,6 @@ class AQ_TreeView(QTreeView):
                     self.model().setData(index, value, Qt.EditRole)
 
             delegate_for_column.set_item_chandeg_flag(index, False)
-
-
-    # def read_value_by_modbus(self, index):
-    #     try:
-    #         cat_or_param_attributes = index.data(Qt.UserRole)
-    #         if cat_or_param_attributes.get('is_catalog', 0) == 1:
-    #             return
-    #         else:
-    #             modbus_reg = cat_or_param_attributes.get('modbus_reg', '')
-    #             if cat_or_param_attributes.get('type', '') == 'enum':
-    #                 if cat_or_param_attributes.get('param_size', 0) > 16:
-    #                     reg_count = 2
-    #                     byte_size = 4
-    #                 else:
-    #                     reg_count = 1
-    #                     byte_size = 1
-    #             else:
-    #                 byte_size = cat_or_param_attributes.get('param_size', 0)
-    #                 if byte_size < 2:
-    #                     reg_count = 1
-    #                 else:
-    #                     reg_count = byte_size // 2
-    #
-    #         if is_valid_ip(self.dev_address):
-    #             ip = self.dev_address
-    #             client = ModbusTcpClient(ip)
-    #             slave_id = 1
-    #         else:
-    #             # Регулярний вираз для розбору адреси ком-порту
-    #             pattern = r'(\d+)\s*\((\w+)\)'
-    #             match = re.match(pattern, self.dev_address)
-    #
-    #             if match:
-    #                 slave_id = int(match.group(1))
-    #                 selected_port = match.group(2)
-    #             else:
-    #                 print("Pattern not found in the string")
-    #             client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
-    #         param_type = cat_or_param_attributes.get('type', '')
-    #         param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
-    #
-    #         next_column_index = index.sibling(index.row(), index.column() + 1)
-    #         self.setValue(param_value, next_column_index)
-    #         self.setLineColor(index, '#1e1f22')
-    #     except Exception as e:
-    #         print(f"Error occurred: {str(e)}")
-    #         self.show_read_error_label()
-    #
-    #
-    # def read_catalog_by_modbus(self, index, show_prorgess_flag):
-    #     try:
-    #         cat_or_param_attributes = index.data(Qt.UserRole)
-    #         if show_prorgess_flag == 1:
-    #             self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-    #             self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
-    #
-    #         if cat_or_param_attributes.get('is_catalog', 0) == 0:
-    #             return
-    #         else:
-    #             item_cur_cat = self.model().itemFromIndex(index)
-    #             if show_prorgess_flag == 1:
-    #                 max_value = 100  # Максимальное значение для прогресс-бара
-    #                 row_count = item_cur_cat.rowCount()
-    #                 step_value = max_value // row_count
-    #
-    #             for row in range(item_cur_cat.rowCount()):
-    #                 child_item = item_cur_cat.child(row)
-    #                 child_index = self.model().index(row, 0, index)
-    #                 child_attributes = child_item.data(Qt.UserRole)
-    #                 if child_attributes is not None:
-    #                     if child_attributes.get('is_catalog', 0) == 1:
-    #                         self.read_catalog_by_modbus(child_index, 0)
-    #                     else:
-    #                         if is_valid_ip(self.dev_address):
-    #                             ip = self.dev_address
-    #                             client = ModbusTcpClient(ip)
-    #                             slave_id = 1
-    #                         else:
-    #                             # Регулярний вираз для розбору адреси ком-порту
-    #                             pattern = r'(\d+)\s*\((\w+)\)'
-    #                             match = re.match(pattern, self.dev_address)
-    #
-    #                             if match:
-    #                                 slave_id = int(match.group(1))
-    #                                 selected_port = match.group(2)
-    #                             else:
-    #                                 print("Pattern not found in the string")
-    #                             client = ModbusSerialClient(method='rtu', port=selected_port, baudrate=9600)
-    #                         param_type = child_attributes.get('type', '')
-    #                         modbus_reg = child_attributes.get('modbus_reg', '')
-    #                         if child_attributes.get('type', '') == 'enum':
-    #                             if child_attributes.get('param_size', 0) > 16:
-    #                                 reg_count = 2
-    #                                 byte_size = 4
-    #                             else:
-    #                                 reg_count = 1
-    #                                 byte_size = 1
-    #                         else:
-    #                             byte_size = child_attributes.get('param_size', 0)
-    #                             if byte_size < 2:
-    #                                 reg_count = 1
-    #                             else:
-    #                                 reg_count = byte_size // 2
-    #
-    #                         param_value = read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size)
-    #
-    #                         next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1)
-    #                         self.setValue(param_value, next_column_index)
-    #                         self.setLineColor(child_index, '#1e1f22')
-    #
-    #                 if show_prorgess_flag == 1:
-    #                     self.wait_widget.progress_bar.setValue((row + 1) * step_value)
-    #
-    #             if show_prorgess_flag == 1:
-    #                 self.wait_widget.progress_bar.setValue(max_value)
-    #                 self.wait_widget.hide()
-    #                 self.wait_widget.deleteLater()
-    #             return 'ok'
-    #     except Exception as e:
-    #         print(f"Error occurred: {str(e)}")
-    #         if hasattr(self, 'wait_widget'):
-    #             self.wait_widget.hide()
-    #             self.wait_widget.deleteLater()
-    #         self.show_read_error_label()
-    #         return 'read_error'
-    #
-    #
-    # def read_all_tree_by_modbus(self, item):
-    #     self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-    #     self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
-    #
-    #     max_value = 100  # Максимальное значение для прогресс-бара
-    #     row_count = item.rowCount()
-    #     step_value = max_value // row_count
-    #     for row in range(item.rowCount()):
-    #         index = self.model().index(row, 0, item.index())
-    #         result = self.read_catalog_by_modbus(index, 0)
-    #         if result == 'read_error':
-    #             self.wait_widget.hide()
-    #             self.wait_widget.deleteLater()
-    #             return
-    #         self.wait_widget.progress_bar.setValue((row + 1) * step_value)
-    #
-    #     self.wait_widget.progress_bar.setValue(max_value)
-    #     self.wait_widget.hide()
-    #     self.wait_widget.deleteLater()
 
     def write_value_by_modbus(self, index):
         try:
