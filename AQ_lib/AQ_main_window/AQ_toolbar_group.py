@@ -102,6 +102,7 @@ class AQ_param_action_group(AQ_toolbar_group_template):
         self.ico_btn_write = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_write = AQ_ToolButton('Write parameters', self.ico_btn_write)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.btn_write.clicked.connect(lambda: self.event_manager.emit_event('write_params_cur_active_device'))
         self.buttons.append(self.btn_write)
     # кнопка 3
         self.ico_btn_factory_settings = QIcon(PROJ_DIR + 'Icons/test_Button.png')

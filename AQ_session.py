@@ -15,6 +15,7 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
         self.event_manager.register_event_handler("set_active_device", self.set_cur_active_device)
         self.event_manager.register_event_handler("read_params_cur_active_device", self.read_params_cur_active_device)
+        self.event_manager.register_event_handler("write_params_cur_active_device", self.write_params_cur_active_device)
         self.devices = []
 
     def open_AddDevices(self):
@@ -31,4 +32,7 @@ class AQ_CurrentSession(QObject):
 
     def read_params_cur_active_device(self):
         self.cur_active_device.read_all_parameters()
+
+    def write_params_cur_active_device(self):
+        self.cur_active_device.write_all_parameters()
 

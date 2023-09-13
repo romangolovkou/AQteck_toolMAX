@@ -80,3 +80,10 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
         result = self.modbus_tcp_client.read_file_record(self.slave_id, [request])
 
         return result
+
+    def write_registers(self, modbus_reg, registers):
+        try:
+            self.modbus_tcp_client.write_registers(modbus_reg, registers, self.slave_id)
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            raise

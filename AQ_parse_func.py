@@ -291,11 +291,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 parameter_name = param_attributes.get('name', 'err_name')
                 # current_parameter = QStandardItem(parameter_name)
                 param_type = param_attributes.get('type', '')
-                # if param_type == 'enum' or param_type == 'unsigned' or param_type == 'signed' or param_type == 'float' \
-                #         or param_type == 'string':
                 current_parameter = get_item_by_type(param_attributes.get('type', ''), parameter_name)
-                # else:
-                #     current_parameter = AQ_ParamItem(parameter_name)
                 current_parameter.setData(param_attributes, Qt.UserRole)
                 current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
 
@@ -309,7 +305,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 pos = pos + 8
 
 
-def unpack_descr (param_descr, param_prop):
+def unpack_descr(param_descr, param_prop):
     param_attributes = {}  # Создание пустого словаря
     base_types = int.from_bytes((param_prop[0:2][::-1]), byteorder='big')
     hex_sequence = param_prop[0:4][::-1].hex()
@@ -362,7 +358,7 @@ def unpack_descr (param_descr, param_prop):
     return param_attributes
 
 
-def get_param_by_ID (param_descr, ID, pos, param_attributes):
+def get_param_by_ID(param_descr, ID, pos, param_attributes):
     if ID == 0:
         # Атрибути відображення та доступу по мережі
         attr = param_descr[pos]

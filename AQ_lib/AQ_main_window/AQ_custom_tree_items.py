@@ -9,7 +9,7 @@ class AQ_ParamItem(QStandardItem):
     def __init__(self, name):
         super().__init__(name)
         self._value = None
-        self.previous_value = None
+        self.last_value_from_device = None
         self.editor = None
         self.param_status = None
 
@@ -32,23 +32,26 @@ class AQ_ParamItem(QStandardItem):
                 self.param_status = 'error'
                 raise ValueError("value > max_limit, {} > {}".format(new_value, max_limit))
 
-        if self.previous_value is None:
-            self.previous_value = new_value
+        if self.last_value_from_device is None:
+            self.last_value_from_device = new_value
         else:
-            if self.previous_value == new_value:
+            if self.last_value_from_device == new_value:
                 self.param_status = 'ok'
             else:
                 self.param_status = 'changed'
         self._value = new_value
 
-    def set_readed_value(self, new_value):
-        self.previous_value = new_value
+    def set_last_value_from_device(self, new_value):
+        self.last_value_from_device = new_value
         try:
             self.value = new_value
             self.param_status = 'ok'
         except:
             self._value = new_value
             self.param_status = 'error'
+
+    def update_last_value_after_writing(self):
+        self.last_value_from_device = self._value
 
     def get_param_attributes(self):
         param_attributes = self.data(Qt.UserRole)
