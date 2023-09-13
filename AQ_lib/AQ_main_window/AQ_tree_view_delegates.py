@@ -110,18 +110,23 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
 class AQ_NameTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.color_dict = {}  # Словарь для хранения цветов фона
 
     def set_item_color(self, index, color):
         self.color_dict[index] = color
 
     def paint(self, painter, option, index):
-        data = index.data(Qt.DisplayRole)  # Получаем данные
-        if data is not None:
+        param_status = index.data(Qt.UserRole  + 1)  # Получаем данные
+        if param_status is not None:
             painter.save()
 
-            # Определяем цвет фона из словаря или белый цвет по умолчанию
-            background_color = self.color_dict.get(index, QColor('#1e1f22'))
+            # # Определяем цвет фона из словаря или белый цвет по умолчанию
+            if param_status == 'changed':
+                background_color = QColor('#429061')
+            elif param_status == 'error':
+                background_color = QColor('#9d4d4f')
+            else:
+                background_color = QColor('transparent')
+
             painter.fillRect(option.rect, background_color)
             painter.restore()
             super().paint(painter, option, index)

@@ -62,16 +62,17 @@ class AQ_treeView_manager(QObject):
         device_data = device.get_device_data()
         device_tree = device_data.get('device_tree', None)
         if device_tree is not None:
-            tree_model_for_view = AQ_TreeViewItemModel(device)
+            tree_model_for_view = AQ_TreeViewItemModel(device, self.event_manager)
             tree_model_for_view.setColumnCount(6)
             tree_model_for_view.setHorizontalHeaderLabels(
                                             ["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
+            item_changed_handler = tree_model_for_view.get_item_changed_handler()
             donor_root_item = device_tree.invisibleRootItem()
             new_root_item = tree_model_for_view.invisibleRootItem()
-            self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item)
+            self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item, item_changed_handler)
             return tree_model_for_view
 
-    def traverse_items_create_new_tree_for_view(self, item, new_item):
+    def traverse_items_create_new_tree_for_view(self, item, new_item, item_changed_handler):
         for row in range(item.rowCount()):
             child_item = item.child(row)
             if child_item is not None:
@@ -82,18 +83,19 @@ class AQ_treeView_manager(QObject):
                         catalog = AQ_param_manager_item(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
-                        self.traverse_items_create_new_tree_for_view(child_item, catalog)
+                        self.traverse_items_create_new_tree_for_view(child_item, catalog, item_changed_handler)
                         new_item.appendRow(catalog)
                     else:
-                        new_item.appendRow(self.create_new_row_for_tree_view(child_item))
+                        new_item.appendRow(self.create_new_row_for_tree_view(child_item, item_changed_handler))
 
 
-    def create_new_row_for_tree_view(self, item):
+    def create_new_row_for_tree_view(self, item, item_changed_handler):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
         value_item = QStandardItem()
         parameter_item = AQ_param_manager_item(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
+        # parameter_item.changed_signal.connect(item_changed_handler)
 
         min_limit_item = self.get_min_limit_item(parameter_attributes)
         max_limit_item = self.get_max_limit_item(parameter_attributes)

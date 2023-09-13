@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, QModelIndex, QObject
 from PyQt5.QtGui import QStandardItem
 
 from AQ_params_delegate_editors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
@@ -9,7 +9,9 @@ class AQ_ParamItem(QStandardItem):
     def __init__(self, name):
         super().__init__(name)
         self._value = None
+        self.previous_value = None
         self.editor = None
+        self.param_status = None
 
     @property
     def value(self):
@@ -21,14 +23,32 @@ class AQ_ParamItem(QStandardItem):
         min_limit = param_attibutes.get('min_limit', None)
         if min_limit is not None:
             if new_value < min_limit:
+                self.param_status = 'error'
                 raise ValueError("value < min_limit, {} < {}".format(new_value, min_limit))
 
         max_limit = param_attibutes.get('max_limit', None)
         if max_limit is not None:
             if new_value > max_limit:
+                self.param_status = 'error'
                 raise ValueError("value > max_limit, {} > {}".format(new_value, max_limit))
 
+        if self.previous_value is None:
+            self.previous_value = new_value
+        else:
+            if self.previous_value == new_value:
+                self.param_status = 'ok'
+            else:
+                self.param_status = 'changed'
         self._value = new_value
+
+    def set_readed_value(self, new_value):
+        self.previous_value = new_value
+        try:
+            self.value = new_value
+            self.param_status = 'ok'
+        except:
+            self._value = new_value
+            self.param_status = 'error'
 
     def get_param_attributes(self):
         param_attributes = self.data(Qt.UserRole)
@@ -36,6 +56,9 @@ class AQ_ParamItem(QStandardItem):
 
     def get_editor(self):
         return self.editor
+
+    def get_status(self):
+        return self.param_status
 
 
 class AQ_CatalogItem(AQ_ParamItem):
@@ -110,6 +133,8 @@ class AQ_param_manager_item(QStandardItem):
         self.sourse_item = sourse_item
         self.editor_object = None
         self.param_status = 'ok'
+        self.setData(self.param_status, Qt.UserRole + 1)
+        self.changed_signal = pyqtSignal(QObject)
 
     def get_editor(self):
         return self.sourse_item.get_editor()
@@ -126,13 +151,20 @@ class AQ_param_manager_item(QStandardItem):
     def save_editor_object(self, editor):
         self.editor_object = editor
 
-    def show_new_value(self, value):
+    def show_new_value(self):
         if self.editor_object is not None:
+            value = self.get_value()
             self.editor_object.set_value(value)
 
     def save_new_value(self, value):
         try:
+            # if self.sourse_item.value == value:
+            #     # Якщо у цей метод потрапив value з вже встановленним значенням, це ознака що була операція вичтення
+            #     self.param_status = 'ok'
+            # else:
             self.sourse_item.value = value
-            self.param_status = 'changed'
+            # self.param_status = 'changed'
         except:
             self.param_status = 'error'
+
+        self.setData(self.sourse_item.get_status(), Qt.UserRole + 1)

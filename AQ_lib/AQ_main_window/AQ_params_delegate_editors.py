@@ -31,7 +31,10 @@ class AQ_TreeLineEdit(QLineEdit):
 
     def updateLineEdit(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        value = int(text)
+        if text != '':
+            value = int(text)
+        else:
+            value = None
         self.save_new_value(value)
 
     def set_new_value_handler(self, handler):
@@ -64,6 +67,7 @@ class AQ_EnumTreeComboBox(QComboBox):
         self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
         self.save_new_value = None
+        # self.set_by_prog_flag = False
         enum_strings = param_attributes.get('enum_strings', '')
         for i in range(len(enum_strings)):
             enum_str = enum_strings[i]

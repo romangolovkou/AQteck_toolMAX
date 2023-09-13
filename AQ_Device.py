@@ -293,7 +293,7 @@ class AQ_Device(QObject):
                         byte_array = reverse_modbus_registers(byte_array)
                         param_value = struct.unpack('>I', byte_array)[0]
 
-                item.value = param_value
+                item.set_readed_value(param_value)
 
     def read_all_parameters(self):
         root = self.device_tree.invisibleRootItem()

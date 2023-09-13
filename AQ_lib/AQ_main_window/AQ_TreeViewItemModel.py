@@ -15,9 +15,16 @@ class AQ_TreeItemModel(QStandardItemModel):
 
 
 class AQ_TreeViewItemModel(QStandardItemModel):
-    def __init__(self, device, parent=None):
+    def __init__(self, device, event_manager, parent=None):
         super().__init__(parent)
         self.device = device
+        self.event_manager = event_manager
+
+    def item_changed(self, item):
+        pass
+
+    def get_item_changed_handler(self):
+        return self.item_changed
 
     def update_parameter(self, manager_item):
         param_attributes = manager_item.get_param_attributes()
@@ -27,8 +34,7 @@ class AQ_TreeViewItemModel(QStandardItemModel):
                 child_item = manager_item.child(row)
                 self.update_parameter(child_item)
         else:
-            value = manager_item.get_value()
-            manager_item.show_new_value(value)
+            manager_item.show_new_value()
 
     def update_all_params(self):
         root = self.invisibleRootItem()

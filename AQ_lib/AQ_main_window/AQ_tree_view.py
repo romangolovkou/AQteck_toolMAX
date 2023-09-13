@@ -19,8 +19,8 @@ class AQ_TreeView(QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        # name_delegate = AQ_NameTreeDelegate(self)
-        # self.setItemDelegateForColumn(0, name_delegate)
+        name_delegate = AQ_NameTreeDelegate(self)
+        self.setItemDelegateForColumn(0, name_delegate)
         value_delegate = AQ_ValueTreeDelegate(self)
         self.setItemDelegateForColumn(1, value_delegate)
 
