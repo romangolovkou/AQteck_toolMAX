@@ -5,61 +5,61 @@ from pymodbus.file_message import ReadFileRecordRequest
 from Crypto.Cipher import DES
 
 
-def read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size):
-    # Установка параметров подключения
-    client.connect()
-
-    # Выполняем запрос
-    response = client.read_holding_registers(modbus_reg, reg_count, slave_id)
-    # Конвертируем значения регистров в строку
-    hex_string = ''.join(format(value, '04X') for value in response.registers)
-    # Конвертируем строку в массив байт
-    byte_array = bytes.fromhex(hex_string)
-    if param_type == 'unsigned':
-        if byte_size == 1:
-            param_value = struct.unpack('>H', byte_array)[0]
-        elif byte_size == 2:
-            param_value = struct.unpack('>H', byte_array)[0]
-        elif byte_size == 4:
-            byte_array = reverse_modbus_registers(byte_array)
-            param_value = struct.unpack('>I', byte_array)[0]
-        elif byte_size == 6: # MAC address
-            byte_array = reverse_modbus_registers(byte_array)
-            param_value = byte_array # struct.unpack('>I', byte_array)[0]
-        elif byte_size == 8:
-            byte_array = reverse_modbus_registers(byte_array)
-            param_value = struct.unpack('>Q', byte_array)[0]
-    elif param_type == 'signed':
-        if byte_size == 1:
-            param_value = struct.unpack('b', byte_array[1])[0]
-        elif byte_size == 2:
-            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-        elif byte_size == 4 or byte_size == 8:
-            byte_array = reverse_modbus_registers(byte_array)
-            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-    elif param_type == 'string':
-        byte_array = swap_modbus_bytes(byte_array, reg_count)
-        # Расшифровуем в строку
-        text = byte_array.decode('ANSI')
-        param_value = remove_empty_bytes(text)
-    elif param_type == 'enum':
-        # костиль для enum з розміром два регістра
-        if byte_size == 4:
-            param_value = struct.unpack('>I', byte_array)[0]
-        else:
-            param_value = struct.unpack('>H', byte_array)[0]
-
-    elif param_type == 'float':
-        byte_array = swap_modbus_bytes(byte_array, reg_count)
-        param_value = struct.unpack('f', byte_array)[0]
-    elif param_type == 'date_time':
-        if byte_size == 4:
-            byte_array = reverse_modbus_registers(byte_array)
-            param_value = struct.unpack('>I', byte_array)[0]
-
-    client.close()
-
-    return param_value
+# def read_parameter(client, slave_id, modbus_reg, reg_count, param_type, byte_size):
+#     # Установка параметров подключения
+#     client.connect()
+#
+#     # Выполняем запрос
+#     response = client.read_holding_registers(modbus_reg, reg_count, slave_id)
+#     # Конвертируем значения регистров в строку
+#     hex_string = ''.join(format(value, '04X') for value in response.registers)
+#     # Конвертируем строку в массив байт
+#     byte_array = bytes.fromhex(hex_string)
+#     if param_type == 'unsigned':
+#         if byte_size == 1:
+#             param_value = struct.unpack('>H', byte_array)[0]
+#         elif byte_size == 2:
+#             param_value = struct.unpack('>H', byte_array)[0]
+#         elif byte_size == 4:
+#             byte_array = reverse_modbus_registers(byte_array)
+#             param_value = struct.unpack('>I', byte_array)[0]
+#         elif byte_size == 6: # MAC address
+#             byte_array = reverse_modbus_registers(byte_array)
+#             param_value = byte_array # struct.unpack('>I', byte_array)[0]
+#         elif byte_size == 8:
+#             byte_array = reverse_modbus_registers(byte_array)
+#             param_value = struct.unpack('>Q', byte_array)[0]
+#     elif param_type == 'signed':
+#         if byte_size == 1:
+#             param_value = struct.unpack('b', byte_array[1])[0]
+#         elif byte_size == 2:
+#             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+#         elif byte_size == 4 or byte_size == 8:
+#             byte_array = reverse_modbus_registers(byte_array)
+#             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+#     elif param_type == 'string':
+#         byte_array = swap_modbus_bytes(byte_array, reg_count)
+#         # Расшифровуем в строку
+#         text = byte_array.decode('ANSI')
+#         param_value = remove_empty_bytes(text)
+#     elif param_type == 'enum':
+#         # костиль для enum з розміром два регістра
+#         if byte_size == 4:
+#             param_value = struct.unpack('>I', byte_array)[0]
+#         else:
+#             param_value = struct.unpack('>H', byte_array)[0]
+#
+#     elif param_type == 'float':
+#         byte_array = swap_modbus_bytes(byte_array, reg_count)
+#         param_value = struct.unpack('f', byte_array)[0]
+#     elif param_type == 'date_time':
+#         if byte_size == 4:
+#             byte_array = reverse_modbus_registers(byte_array)
+#             param_value = struct.unpack('>I', byte_array)[0]
+#
+#     client.close()
+#
+#     return param_value
 
 
 def write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_size, value):
@@ -131,58 +131,58 @@ def write_parameter(client, slave_id, modbus_reg, param_type, visual_type, byte_
     client.close()
 
 
-def read_default_prg(client, slave_id):
-    # Создание экземпляра структуры ReadFileRecordRequest
-    request = ReadFileRecordRequest(slave_id)
-    # Установка значений полей структуры
-    request.file_number = 0xFFE0
-    request.record_number = 0
-    request.record_length = 124
-
-    result = client.read_file_record(slave_id, [request])
-
-    # Закрытие соединения с Modbus-устройством
-    # client.close()
-
-    encrypt_res = result.records[0].record_data
-
-    try:
-        decrypt_res = decrypt_data(b'superkey', encrypt_res)
-    except:
-        return 'decrypt_err' # Помилка дешифрування
-    # Получаем длину default_prg зашитую во вторые 4 байта заголовка
-    file_size = int.from_bytes((decrypt_res[4:8][::-1]), byteorder='big')
-    # Получаем колличество необходимых запросов по 124 записи
-    req_count = ((file_size // 2) // 124)
-    if (file_size // 2) % 124 or file_size % 2:
-        req_count = req_count + 1
-
-    encrypt_file = bytearray()
-
-    for i in range(req_count):
-        request.record_number = i * 124  # Установка значения record_number
-
-        result = client.read_file_record(1, [request])
-        encrypt_file += result.records[0].record_data
-        # Обрезаем длину файла до вычитанной из заголовка, в конце последнего пакета мусор
-        encrypt_file = encrypt_file[:file_size]
-
-    try:
-        # Перевірка на кратність 8 байтам, потрібно для DES
-        if (len(encrypt_file) % 8) > 0:
-            padding = 8 - (len(encrypt_file) % 8)
-            encrypt_file = encrypt_file + bytes([padding] * padding)
-        decrypt_file = decrypt_data(b'superkey', encrypt_file)
-    except Exception as e:
-        print(f"Error occurred: {str(e)}")
-    # except:
-    #     return 'decrypt_err' # Помилка дешифрування
-
-    filename = 'default.prg'  # Имя файла с расширением .prg
-    with open(filename, 'wb') as file:
-        file.write(decrypt_file)
-
-    return decrypt_file
+# def read_default_prg(client, slave_id):
+#     # Создание экземпляра структуры ReadFileRecordRequest
+#     request = ReadFileRecordRequest(slave_id)
+#     # Установка значений полей структуры
+#     request.file_number = 0xFFE0
+#     request.record_number = 0
+#     request.record_length = 124
+#
+#     result = client.read_file_record(slave_id, [request])
+#
+#     # Закрытие соединения с Modbus-устройством
+#     # client.close()
+#
+#     encrypt_res = result.records[0].record_data
+#
+#     try:
+#         decrypt_res = decrypt_data(b'superkey', encrypt_res)
+#     except:
+#         return 'decrypt_err' # Помилка дешифрування
+#     # Получаем длину default_prg зашитую во вторые 4 байта заголовка
+#     file_size = int.from_bytes((decrypt_res[4:8][::-1]), byteorder='big')
+#     # Получаем колличество необходимых запросов по 124 записи
+#     req_count = ((file_size // 2) // 124)
+#     if (file_size // 2) % 124 or file_size % 2:
+#         req_count = req_count + 1
+#
+#     encrypt_file = bytearray()
+#
+#     for i in range(req_count):
+#         request.record_number = i * 124  # Установка значения record_number
+#
+#         result = client.read_file_record(1, [request])
+#         encrypt_file += result.records[0].record_data
+#         # Обрезаем длину файла до вычитанной из заголовка, в конце последнего пакета мусор
+#         encrypt_file = encrypt_file[:file_size]
+#
+#     try:
+#         # Перевірка на кратність 8 байтам, потрібно для DES
+#         if (len(encrypt_file) % 8) > 0:
+#             padding = 8 - (len(encrypt_file) % 8)
+#             encrypt_file = encrypt_file + bytes([padding] * padding)
+#         decrypt_file = decrypt_data(b'superkey', encrypt_file)
+#     except Exception as e:
+#         print(f"Error occurred: {str(e)}")
+#     # except:
+#     #     return 'decrypt_err' # Помилка дешифрування
+#
+#     filename = 'default.prg'  # Имя файла с расширением .prg
+#     with open(filename, 'wb') as file:
+#         file.write(decrypt_file)
+#
+#     return decrypt_file
 
 
 def is_valid_ip(address):

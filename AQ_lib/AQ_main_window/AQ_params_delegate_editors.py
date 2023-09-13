@@ -1,11 +1,11 @@
 import binascii
 import datetime
+import ipaddress
 import socket
 import struct
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QComboBox, QLineEdit
-
 from custom_window_templates import AQLabel
 
 
@@ -164,13 +164,21 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
 
     def updateLineEdit(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        # Разделяем IP-адрес на октеты
-        octets = text.split('.')
-        # Преобразуем каждый октет в числовое значение
-        int_octets = [int(octet) for octet in octets]
-        # Получаем 32-битное целое число из октетов
-        ip_as_integer = (int_octets[0] << 24) | (int_octets[1] << 16) | (int_octets[2] << 8) | int_octets[3]
-        self.save_new_value(ip_as_integer)
+        if self.is_valid_ip(text):
+            # Разделяем IP-адрес на октеты
+            octets = text.split('.')
+            # Преобразуем каждый октет в числовое значение
+            int_octets = [int(octet) for octet in octets]
+            # Получаем 32-битное целое число из октетов
+            ip_as_integer = (int_octets[0] << 24) | (int_octets[1] << 16) | (int_octets[2] << 8) | int_octets[3]
+            self.save_new_value(ip_as_integer)
+
+    def is_valid_ip(self, address):
+        try:
+            ipaddress.ip_address(address)
+            return True
+        except ValueError:
+            return False
 
     def set_value(self, value):
         value = socket.inet_ntoa(struct.pack('!L', value))

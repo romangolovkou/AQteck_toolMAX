@@ -11,7 +11,7 @@ from AQ_tree_view_delegates import AQ_NameTreeDelegate, AQ_ValueTreeDelegate
 from custom_window_templates import AQ_wait_progress_bar_widget, AQ_have_error_widget
 from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient
-from AQ_communication_func import is_valid_ip, read_parameter, write_parameter
+from AQ_communication_func import is_valid_ip, write_parameter
 
 
 
