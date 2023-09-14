@@ -20,12 +20,6 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         self.device = device
         self.event_manager = event_manager
 
-    def item_changed(self, item):
-        pass
-
-    def get_item_changed_handler(self):
-        return self.item_changed
-
     def update_parameter(self, manager_item):
         param_attributes = manager_item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:

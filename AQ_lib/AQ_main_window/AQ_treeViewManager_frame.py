@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QObject, Qt, QTimer
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QFrame, QTreeView
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QStandardItem
+from PyQt5.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
 from AQ_custom_tree_items import AQ_param_manager_item
@@ -12,51 +12,50 @@ class AQ_TreeViewFrame(QFrame):
         super().__init__(parent)
         self.event_manager = event_manager
         self.setStyleSheet("background-color: transparent;")
-        self.tree_view = AQ_TreeView(self)
-        self.tree_view.setGeometry(0, 0, self.width(), self.height())
-        self.tree_view_manager = AQ_treeView_manager(self.event_manager, self.tree_view, self)
+        self.tree_view_manager = AQ_treeView_manager(self.event_manager, self)
+        self.tree_view_manager.setGeometry(0, 0, self.width(), self.height())
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self.tree_view.setGeometry(0, 0, self.width(), self.height())
+        self.tree_view_manager.setGeometry(0, 0, self.width(), self.height())
 
         event.accept()
 
-class AQ_treeView_manager(QObject):
-    def __init__(self, event_manager, tree_view, parent):
-        super().__init__()
+class AQ_treeView_manager(QStackedWidget):
+    def __init__(self, event_manager, parent):
+        super().__init__(parent)
         self.event_manager = event_manager
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices_trees)
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
-        self.event_manager.register_event_handler("all_device_data_updated", self.update_device_data)
-        self.tree_view = tree_view
-        self.tree_view.hide()
-        self.devices_view_trees = {}
+        self.event_manager.register_event_handler("current_device_data_updated", self.update_device_data)
+        self.devices_views = {}
 
     def add_new_devices_trees(self, new_devices_list):
         for i in range(len(new_devices_list)):
+            tree_view = AQ_TreeView()
+            tree_view.setGeometry(0, 0, self.width(), self.height())
             device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
-            self.devices_view_trees[new_devices_list[i]] = device_view_tree_model
+            tree_view.setModel(device_view_tree_model)
+            self.devices_views[new_devices_list[i]] = tree_view
             self.update_device_data(new_devices_list[i])
-
-        self.tree_view.setModel(self.devices_view_trees[new_devices_list[-1]])
+            self.addWidget(tree_view)
+            self.show()
 
     def set_active_device_tree(self, device):
         if device is not None:
-            self.tree_view.show()
             try:
-                self.tree_view.setModel(self.devices_view_trees[device])
-                self.update_device_data(device)
+                widget = self.devices_views.get(device, None)
+                if widget is not None:
+                    self.setCurrentWidget(widget)
+                    self.update_device_data(device)
             except:
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
                 QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
-        else:
-            self.tree_view.hide()
 
     def update_device_data(self, device):
-        tree_view_model = self.devices_view_trees.get(device, None)
-        if tree_view_model is not None:
-            tree_view_model.update_all_params()
+        tree_view = self.devices_views.get(device, None)
+        if tree_view is not None:
+            tree_view.model().update_all_params()
 
     def create_device_tree_for_view(self, device):
         device_data = device.get_device_data()
@@ -66,13 +65,12 @@ class AQ_treeView_manager(QObject):
             tree_model_for_view.setColumnCount(6)
             tree_model_for_view.setHorizontalHeaderLabels(
                                             ["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
-            item_changed_handler = tree_model_for_view.get_item_changed_handler()
             donor_root_item = device_tree.invisibleRootItem()
             new_root_item = tree_model_for_view.invisibleRootItem()
-            self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item, item_changed_handler)
+            self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item)
             return tree_model_for_view
 
-    def traverse_items_create_new_tree_for_view(self, item, new_item, item_changed_handler):
+    def traverse_items_create_new_tree_for_view(self, item, new_item):
         for row in range(item.rowCount()):
             child_item = item.child(row)
             if child_item is not None:
@@ -83,19 +81,17 @@ class AQ_treeView_manager(QObject):
                         catalog = AQ_param_manager_item(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
-                        self.traverse_items_create_new_tree_for_view(child_item, catalog, item_changed_handler)
+                        self.traverse_items_create_new_tree_for_view(child_item, catalog)
                         new_item.appendRow(catalog)
                     else:
-                        new_item.appendRow(self.create_new_row_for_tree_view(child_item, item_changed_handler))
+                        new_item.appendRow(self.create_new_row_for_tree_view(child_item))
 
-
-    def create_new_row_for_tree_view(self, item, item_changed_handler):
+    def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
         value_item = QStandardItem()
         parameter_item = AQ_param_manager_item(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
-        # parameter_item.changed_signal.connect(item_changed_handler)
 
         min_limit_item = self.get_min_limit_item(parameter_attributes)
         max_limit_item = self.get_max_limit_item(parameter_attributes)

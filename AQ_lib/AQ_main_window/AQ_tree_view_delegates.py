@@ -115,7 +115,7 @@ class AQ_NameTreeDelegate(QStyledItemDelegate):
         self.color_dict[index] = color
 
     def paint(self, painter, option, index):
-        param_status = index.data(Qt.UserRole  + 1)  # Получаем данные
+        param_status = index.data(Qt.UserRole + 1)  # Получаем данные
         if param_status is not None:
             painter.save()
 

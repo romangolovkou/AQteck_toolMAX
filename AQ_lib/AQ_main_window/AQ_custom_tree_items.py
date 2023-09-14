@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, pyqtSignal, QModelIndex, QObject
+from PyQt5.QtCore import Qt, QModelIndex, QObject, pyqtSignal
 from PyQt5.QtGui import QStandardItem
 
 from AQ_params_delegate_editors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
@@ -137,7 +137,6 @@ class AQ_param_manager_item(QStandardItem):
         self.editor_object = None
         self.param_status = 'ok'
         self.setData(self.param_status, Qt.UserRole + 1)
-        self.changed_signal = pyqtSignal(QObject)
 
     def get_editor(self):
         return self.sourse_item.get_editor()
