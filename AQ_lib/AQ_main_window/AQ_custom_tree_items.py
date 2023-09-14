@@ -160,12 +160,7 @@ class AQ_param_manager_item(QStandardItem):
 
     def save_new_value(self, value):
         try:
-            # if self.sourse_item.value == value:
-            #     # Якщо у цей метод потрапив value з вже встановленним значенням, це ознака що була операція вичтення
-            #     self.param_status = 'ok'
-            # else:
             self.sourse_item.value = value
-            # self.param_status = 'changed'
         except:
             self.param_status = 'error'
 
