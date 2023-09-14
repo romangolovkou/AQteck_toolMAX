@@ -25,9 +25,10 @@ class AQ_treeView_manager(QStackedWidget):
     def __init__(self, event_manager, parent):
         super().__init__(parent)
         self.event_manager = event_manager
-        self.event_manager.register_event_handler("add_new_devices", self.add_new_devices_trees)
+        self.event_manager.register_event_handler("new_devices_added", self.add_new_devices_trees)
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
         self.event_manager.register_event_handler("current_device_data_updated", self.update_device_data)
+        self.event_manager.register_event_handler("delete_device", self.delete_device_view)
         self.devices_views = {}
 
     def add_new_devices_trees(self, new_devices_list):
@@ -51,6 +52,12 @@ class AQ_treeView_manager(QStackedWidget):
             except:
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
                 QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
+
+    def delete_device_view(self, device):
+        tree_view = self.devices_views.get(device, None)
+        if tree_view is not None:
+            self.removeWidget(tree_view)
+            tree_view.deleteLater()
 
     def update_device_data(self, device):
         tree_view = self.devices_views.get(device, None)

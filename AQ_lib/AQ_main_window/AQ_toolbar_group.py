@@ -77,6 +77,7 @@ class AQ_device_action_group(AQ_toolbar_group_template):
         self.ico_btn_delete_device = QIcon(PROJ_DIR + 'Icons/Delete_device.png')
         self.btn_delete_devices = AQ_ToolButton('Delete Devices', self.ico_btn_delete_device)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.btn_delete_devices.clicked.connect(lambda: self.event_manager.emit_event('delete_cur_active_device'))
         self.buttons.append(self.btn_delete_devices)
     # кнопка 3
         self.ico_btn_ip_adresses = QIcon(PROJ_DIR + 'Icons/ip_adresses.png')
