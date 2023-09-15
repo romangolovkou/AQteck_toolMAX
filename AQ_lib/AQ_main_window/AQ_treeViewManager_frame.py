@@ -96,16 +96,17 @@ class AQ_treeView_manager(QStackedWidget):
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
-        value_item = QStandardItem()
+
         parameter_item = AQ_param_manager_item(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
-
+        value_item = QStandardItem()
         min_limit_item = self.get_min_limit_item(parameter_attributes)
         max_limit_item = self.get_max_limit_item(parameter_attributes)
         unit_item = self.get_unit_item(parameter_attributes)
         default_item = self.get_default_value_item(parameter_attributes)
         # Встановлюємо флаг не редагуємого ітему, всім ітемам у строці окрім ітема value
         parameter_item.setFlags(parameter_item.flags() & ~Qt.ItemIsEditable)
+        value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
         min_limit_item.setFlags(min_limit_item.flags() & ~Qt.ItemIsEditable)
         max_limit_item.setFlags(max_limit_item.flags() & ~Qt.ItemIsEditable)
         unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)

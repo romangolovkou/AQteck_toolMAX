@@ -29,6 +29,16 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
             print(f"Error occurred: {str(e)}")
             print('no editor')
 
+    def setModelData(self, editor, model, index):
+        # Заглушуємо стандартний механізм додавання введених через delegate-editor значень у ітем
+        # розташований в колонці Value.
+        # У нашому випадку вся робота з delegate-editor відбувається через AQ_ParamManagerItem
+        # що розташований у першій колонці та містить назву параметру, а стандартний механізм
+        # розміщює введене значення "позаду" delegate-editor у Value-ітем у Qt.EditRole або Qt.DisplayRole
+        # через що на єкрані видно подвійне відображення значення, якщо у delegate-editor
+        # встановлений прозорий фон
+        pass
+
 
 class AQ_NameTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):

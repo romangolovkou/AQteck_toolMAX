@@ -66,132 +66,132 @@ class AQ_TreeView(QTreeView):
                     index = self.model().index(row, 1, item.index())
                     self.openPersistentEditor(index)
 
-    def traverse_items_R_Only_catalog_check(self, item):
-        write_flag = 0
-        for row in range(item.rowCount()):
-            child_item = item.child(row)
-            parameter_attributes = child_item.data(Qt.UserRole)
-            if parameter_attributes is not None:
-                if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
-                    write_flag += 1
-            if child_item is not None:
-                write_flag += self.traverse_items_R_Only_catalog_check(child_item)
+    # def traverse_items_R_Only_catalog_check(self, item):
+    #     write_flag = 0
+    #     for row in range(item.rowCount()):
+    #         child_item = item.child(row)
+    #         parameter_attributes = child_item.data(Qt.UserRole)
+    #         if parameter_attributes is not None:
+    #             if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
+    #                 write_flag += 1
+    #         if child_item is not None:
+    #             write_flag += self.traverse_items_R_Only_catalog_check(child_item)
+    #
+    #     return write_flag
 
-        return write_flag
+    # def setLineColor(self, index, color):
+    #     delegate_for_column = self.itemDelegateForColumn(0)
+    #     delegate_for_column.set_item_color(index, QColor(color))
+    #     # Також встановлюємо підсвітку відповідних каталогів
+    #     catalog_index = index.parent()
+    #     self.travers_up_set_cat_line_color(catalog_index, color)
 
-    def setLineColor(self, index, color):
-        delegate_for_column = self.itemDelegateForColumn(0)
-        delegate_for_column.set_item_color(index, QColor(color))
-        # Також встановлюємо підсвітку відповідних каталогів
-        catalog_index = index.parent()
-        self.travers_up_set_cat_line_color(catalog_index, color)
+    # def travers_up_set_cat_line_color(self, cat_index, color):
+    #     if cat_index.isValid():
+    #         delegate_for_column = self.itemDelegateForColumn(0)
+    #         parent_index = cat_index.parent()
+    #         have_changed = self.travers_have_changed_check(cat_index)
+    #         have_error = self.travers_have_error_check(cat_index)
+    #         if have_changed > 0 or have_error > 0:
+    #             if have_error > 0:
+    #                 delegate_for_column.set_item_color(cat_index, QColor('#9d4d4f'))
+    #                 self.travers_up_set_cat_line_color(parent_index, '#9d4d4f')
+    #             else:
+    #                 delegate_for_column.set_item_color(cat_index, QColor('#429061'))
+    #                 self.travers_up_set_cat_line_color(parent_index, '#429061')
+    #         else:
+    #             delegate_for_column.set_item_color(cat_index, QColor(color))
+    #             self.travers_up_set_cat_line_color(parent_index, color)
 
-    def travers_up_set_cat_line_color(self, cat_index, color):
-        if cat_index.isValid():
-            delegate_for_column = self.itemDelegateForColumn(0)
-            parent_index = cat_index.parent()
-            have_changed = self.travers_have_changed_check(cat_index)
-            have_error = self.travers_have_error_check(cat_index)
-            if have_changed > 0 or have_error > 0:
-                if have_error > 0:
-                    delegate_for_column.set_item_color(cat_index, QColor('#9d4d4f'))
-                    self.travers_up_set_cat_line_color(parent_index, '#9d4d4f')
-                else:
-                    delegate_for_column.set_item_color(cat_index, QColor('#429061'))
-                    self.travers_up_set_cat_line_color(parent_index, '#429061')
-            else:
-                delegate_for_column.set_item_color(cat_index, QColor(color))
-                self.travers_up_set_cat_line_color(parent_index, color)
+    # def travers_have_changed_check(self, cat_index):
+    #     delegate_for_column = self.itemDelegateForColumn(1)  # Делегат другої колонки зі значеннями
+    #     have_changed = 0
+    #     row_count = self.model().rowCount(cat_index)
+    #     for row in range(row_count):
+    #         child_index = self.model().index(row, 0, cat_index)  # Первый столбец
+    #         next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1) # Второй столбец
+    #         if delegate_for_column.changed_dict.get(next_column_index, False) == True:
+    #             have_changed += 1
+    #         # Если у текущего дочернего индекса есть дочерние элементы, рекурсивно обойдем их
+    #         if self.model().hasChildren(child_index):
+    #             have_changed += self.travers_have_changed_check(child_index)
+    #
+    #     return have_changed
 
-    def travers_have_changed_check(self, cat_index):
-        delegate_for_column = self.itemDelegateForColumn(1)  # Делегат другої колонки зі значеннями
-        have_changed = 0
-        row_count = self.model().rowCount(cat_index)
-        for row in range(row_count):
-            child_index = self.model().index(row, 0, cat_index)  # Первый столбец
-            next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1) # Второй столбец
-            if delegate_for_column.changed_dict.get(next_column_index, False) == True:
-                have_changed += 1
-            # Если у текущего дочернего индекса есть дочерние элементы, рекурсивно обойдем их
-            if self.model().hasChildren(child_index):
-                have_changed += self.travers_have_changed_check(child_index)
+    # def travers_have_error_check(self, cat_index):
+    #     delegate_for_column = self.itemDelegateForColumn(1)  # Делегат другої колонки зі значеннями
+    #     have_error = 0
+    #     row_count = self.model().rowCount(cat_index)
+    #     for row in range(row_count):
+    #         child_index = self.model().index(row, 0, cat_index)  # Первый столбец
+    #         next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1) # Второй столбец
+    #         if delegate_for_column.error_dict.get(next_column_index, False) == True:
+    #             have_error += 1
+    #         # Если у текущего дочернего индекса есть дочерние элементы, рекурсивно обойдем их
+    #         if self.model().hasChildren(child_index):
+    #             have_error += self.travers_have_error_check(child_index)
+    #
+    #     return have_error
 
-        return have_changed
+    # def travers_all_tree_have_error_check(self, root_item):
+    #     have_error = 0
+    #     for row in range(root_item.rowCount()):
+    #         child_item = root_item.child(row)
+    #         child_index = self.model().indexFromItem(child_item)
+    #         have_error += self.travers_have_error_check(child_index)
+    #
+    #     return have_error
 
-    def travers_have_error_check(self, cat_index):
-        delegate_for_column = self.itemDelegateForColumn(1)  # Делегат другої колонки зі значеннями
-        have_error = 0
-        row_count = self.model().rowCount(cat_index)
-        for row in range(row_count):
-            child_index = self.model().index(row, 0, cat_index)  # Первый столбец
-            next_column_index = child_index.sibling(child_index.row(), child_index.column() + 1) # Второй столбец
-            if delegate_for_column.error_dict.get(next_column_index, False) == True:
-                have_error += 1
-            # Если у текущего дочернего индекса есть дочерние элементы, рекурсивно обойдем их
-            if self.model().hasChildren(child_index):
-                have_error += self.travers_have_error_check(child_index)
-
-        return have_error
-
-    def travers_all_tree_have_error_check(self, root_item):
-        have_error = 0
-        for row in range(root_item.rowCount()):
-            child_item = root_item.child(row)
-            child_index = self.model().indexFromItem(child_item)
-            have_error += self.travers_have_error_check(child_index)
-
-        return have_error
-
-    def setValue(self, value, index):
-        delegate_attributes = index.data(Qt.UserRole)
-        # Ставимо мітку що значення змінюється зсередини коду, а не користувачем (для не відображення підсвітки рядка)
-        delegate_for_column = self.itemDelegateForColumn(1)
-        delegate_for_column.set_by_prog_flag(index, True)
-        if delegate_attributes is not None:
-            if delegate_attributes.get('type', '') == 'enum':
-                enum_strings = delegate_attributes.get('enum_strings', '')
-                enum_str = enum_strings[value]
-                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
-                    self.model().setData(index, enum_str, Qt.DisplayRole)
-                else:
-                    self.model().setData(index, value, Qt.EditRole)
-            elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed' \
-                    or delegate_attributes.get('type', '') == 'string':
-                if delegate_attributes.get('visual_type', '') == 'ip_format':
-                    value = socket.inet_ntoa(struct.pack('!L', value))
-                elif delegate_attributes.get('visual_type', '') == 'hex':
-                    mac_address = binascii.hexlify(value).decode('utf-8').upper()
-                    mac_address_with_colons = ':'.join(mac_address[i:i + 2] for i in range(0, len(mac_address), 2))
-                    value = mac_address_with_colons
-                elif delegate_attributes.get('visual_type', '') == 'bin' and delegate_attributes.get('type', '') == 'unsigned':
-                    par_size = delegate_attributes.get('param_size', 0)
-                    binary_string = format(value, f'0{par_size * 8}b')
-                    grouped_binary_string = ' '.join(
-                        [binary_string[i:i + 4] for i in range(0, len(binary_string), 4)])
-                    # Создаем объект BitArray из байтового массива
-                    value = grouped_binary_string
-                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
-                    self.model().setData(index, value, Qt.DisplayRole)
-                else:
-                    self.model().setData(index, value, Qt.EditRole)
-            elif delegate_attributes.get('type', '') == 'float':
-                # Округлюємо до 7 знака після коми
-                value = round(value, 7)
-                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
-                    self.model().setData(index, value, Qt.DisplayRole)
-                else:
-                    self.model().setData(index, value, Qt.EditRole)
-
-            elif delegate_attributes.get('type', '') == 'date_time':
-                value += datetime.datetime(2000, 1, 1).timestamp()
-                datetime_obj = datetime.datetime.fromtimestamp(value)
-                value = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
-                if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
-                    self.model().setData(index, value, Qt.DisplayRole)
-                else:
-                    self.model().setData(index, value, Qt.EditRole)
-
-            delegate_for_column.set_item_chandeg_flag(index, False)
+    # def setValue(self, value, index):
+    #     delegate_attributes = index.data(Qt.UserRole)
+    #     # Ставимо мітку що значення змінюється зсередини коду, а не користувачем (для не відображення підсвітки рядка)
+    #     delegate_for_column = self.itemDelegateForColumn(1)
+    #     delegate_for_column.set_by_prog_flag(index, True)
+    #     if delegate_attributes is not None:
+    #         if delegate_attributes.get('type', '') == 'enum':
+    #             enum_strings = delegate_attributes.get('enum_strings', '')
+    #             enum_str = enum_strings[value]
+    #             if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+    #                 self.model().setData(index, enum_str, Qt.DisplayRole)
+    #             else:
+    #                 self.model().setData(index, value, Qt.EditRole)
+    #         elif delegate_attributes.get('type', '') == 'unsigned' or delegate_attributes.get('type', '') == 'signed' \
+    #                 or delegate_attributes.get('type', '') == 'string':
+    #             if delegate_attributes.get('visual_type', '') == 'ip_format':
+    #                 value = socket.inet_ntoa(struct.pack('!L', value))
+    #             elif delegate_attributes.get('visual_type', '') == 'hex':
+    #                 mac_address = binascii.hexlify(value).decode('utf-8').upper()
+    #                 mac_address_with_colons = ':'.join(mac_address[i:i + 2] for i in range(0, len(mac_address), 2))
+    #                 value = mac_address_with_colons
+    #             elif delegate_attributes.get('visual_type', '') == 'bin' and delegate_attributes.get('type', '') == 'unsigned':
+    #                 par_size = delegate_attributes.get('param_size', 0)
+    #                 binary_string = format(value, f'0{par_size * 8}b')
+    #                 grouped_binary_string = ' '.join(
+    #                     [binary_string[i:i + 4] for i in range(0, len(binary_string), 4)])
+    #                 # Создаем объект BitArray из байтового массива
+    #                 value = grouped_binary_string
+    #             if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+    #                 self.model().setData(index, value, Qt.DisplayRole)
+    #             else:
+    #                 self.model().setData(index, value, Qt.EditRole)
+    #         elif delegate_attributes.get('type', '') == 'float':
+    #             # Округлюємо до 7 знака після коми
+    #             value = round(value, 7)
+    #             if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+    #                 self.model().setData(index, value, Qt.DisplayRole)
+    #             else:
+    #                 self.model().setData(index, value, Qt.EditRole)
+    #
+    #         elif delegate_attributes.get('type', '') == 'date_time':
+    #             value += datetime.datetime(2000, 1, 1).timestamp()
+    #             datetime_obj = datetime.datetime.fromtimestamp(value)
+    #             value = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
+    #             if delegate_attributes.get('R_Only', 0) == 1 and delegate_attributes.get('W_Only', 0) == 0:
+    #                 self.model().setData(index, value, Qt.DisplayRole)
+    #             else:
+    #                 self.model().setData(index, value, Qt.EditRole)
+    #
+    #         delegate_for_column.set_item_chandeg_flag(index, False)
 
     def write_value_by_modbus(self, index):
         try:

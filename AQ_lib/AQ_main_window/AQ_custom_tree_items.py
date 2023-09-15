@@ -19,27 +19,28 @@ class AQ_ParamItem(QStandardItem):
 
     @value.setter
     def value(self, new_value):
-        param_attibutes = self.data(Qt.UserRole)
-        min_limit = param_attibutes.get('min_limit', None)
-        if min_limit is not None:
-            if new_value < min_limit:
-                self.param_status = 'error'
-                raise ValueError("value < min_limit, {} < {}".format(new_value, min_limit))
+        if new_value is not None:
+            param_attibutes = self.data(Qt.UserRole)
+            min_limit = param_attibutes.get('min_limit', None)
+            if min_limit is not None:
+                if new_value < min_limit:
+                    self.param_status = 'error'
+                    raise ValueError("value < min_limit, {} < {}".format(new_value, min_limit))
 
-        max_limit = param_attibutes.get('max_limit', None)
-        if max_limit is not None:
-            if new_value > max_limit:
-                self.param_status = 'error'
-                raise ValueError("value > max_limit, {} > {}".format(new_value, max_limit))
+            max_limit = param_attibutes.get('max_limit', None)
+            if max_limit is not None:
+                if new_value > max_limit:
+                    self.param_status = 'error'
+                    raise ValueError("value > max_limit, {} > {}".format(new_value, max_limit))
 
-        if self.last_value_from_device is None:
-            self.last_value_from_device = new_value
-        else:
-            if self.last_value_from_device == new_value:
-                self.param_status = 'ok'
+            if self.last_value_from_device is None:
+                self.last_value_from_device = new_value
             else:
-                self.param_status = 'changed'
-        self._value = new_value
+                if self.last_value_from_device == new_value:
+                    self.param_status = 'ok'
+                else:
+                    self.param_status = 'changed'
+            self._value = new_value
 
     def set_last_value_from_device(self, new_value):
         self.last_value_from_device = new_value

@@ -67,7 +67,6 @@ class AQ_EnumTreeComboBox(QComboBox):
         self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
         self.save_new_value = None
-        # self.set_by_prog_flag = False
         enum_strings = param_attributes.get('enum_strings', '')
         for i in range(len(enum_strings)):
             enum_str = enum_strings[i]
@@ -116,43 +115,44 @@ class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
         self.setText(str(value))
 
     def keyPressEvent(self, event):
-        key = event.key()
-        if key == Qt.Key_Left:
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position + 1)
+                return
+            elif key == Qt.Key_Backspace:
+                self.backspace()
+                # str_copy = self.text()
+                # if not str_copy.strip():
+                #     self.insert('0')
+                return
+
             cursor_position = self.cursorPosition()
-            self.setCursorPosition(cursor_position - 1)
-            return
-        elif key == Qt.Key_Right:
-            cursor_position = self.cursorPosition()
-            self.setCursorPosition(cursor_position + 1)
-            return
-        elif key == Qt.Key_Backspace:
-            self.backspace()
-            str_copy = self.text()
-            if not str_copy.strip():
-                self.insert('0')
-            return
-
-        cursor_position = self.cursorPosition()
-        text = event.text()
-        if not text.isdigit():
-            # Якщо не цифра
-            return
-        # Если цифра
-        else:
-            str_copy = self.text()
-            str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
-            user_data = int(str_copy)  # Преобразуем подстроку в целое число
-            if self.min_limit is not None:
-                if user_data < self.min_limit:
-                    self.red_blink_timer.start()
-                    show_err_label(self)
-            if self.max_limit is not None:
-                if user_data > self.max_limit:
-                    self.red_blink_timer.start()
-                    show_err_label(self)
+            text = event.text()
+            if not text.isdigit():
+                # Якщо не цифра
+                return
+            # Если цифра
+            else:
+                str_copy = self.text()
+                str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                if self.min_limit is not None:
+                    if user_data < self.min_limit:
+                        self.red_blink_timer.start()
+                        show_err_label(self)
+                if self.max_limit is not None:
+                    if user_data > self.max_limit:
+                        self.red_blink_timer.start()
+                        show_err_label(self)
 
 
-        super().keyPressEvent(event)
+            super().keyPressEvent(event)
 
 
 class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
@@ -185,158 +185,168 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
         self.setText(value)
 
     def keyPressEvent(self, event):
-        key = event.key()
-        if key == Qt.Key_Left:
-            cursor_position = self.cursorPosition()
-            self.setCursorPosition(cursor_position - 1)
-            return
-        elif key == Qt.Key_Right:
-            cursor_position = self.cursorPosition()
-            if cursor_position == len(self.text()) - 1:
-                left_character = self.text()[cursor_position - 1]
-                if left_character.isdigit() and  self.text().count(".") < 3:
-                    self.insert('.')
-            self.setCursorPosition(cursor_position + 1)
-            return
-        elif key == Qt.Key_Backspace:
-            cursor_position = self.cursorPosition()
-            if cursor_position > 0:
-                if cursor_position == len(self.text()) - 1 and self.text()[cursor_position - 1] == '.' and \
-                        self.text()[cursor_position] == '.':
-                    self.backspace()
-                    self.backspace()
-                    return
-                if cursor_position > 1 and \
-                        self.text()[cursor_position - 2].isdigit() and \
-                        self.text()[cursor_position - 1] == '.':
-                    self.setCursorPosition(cursor_position - 1)
-                    self.backspace()
-                    return
-                self.backspace()
-            return
-
-        cursor_position = self.cursorPosition()
-        text = event.text()
-        if not text.isdigit():
-        #Если не цифра
-            if text == '.' and self.text().count(".") < 3:
-                if cursor_position == len(self.text()) - 1 and self.text()[cursor_position] == '.':
-                    self.insert('.')
-                elif cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
-                    self.setCursorPosition(cursor_position + 1)
-                else:
-                    self.insert('.')
-            elif text == '.' and cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                if cursor_position == len(self.text()) - 1:
+                    left_character = self.text()[cursor_position - 1]
+                    if left_character.isdigit() and  self.text().count(".") < 3:
+                        self.insert('.')
                 self.setCursorPosition(cursor_position + 1)
-            return
-        #Если цифра
-        elif cursor_position == 0 and self.text().count(".") < 3:
-            self.insert(text + '.')
-            self.setCursorPosition(1)
-            return
-
-        #Лимит на ввод цифры в последнюю тетраду не больше трех
-        elif self.text().count(".") > 2 and self.text()[cursor_position - 3:cursor_position].isdigit():
-            return
-        else: #cursor_position >= 2:
-            str_copy = self.text()
-            str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
-            start_pos = 0
-            end_pos = len(str_copy)
-            for i in range(cursor_position, -1, -1):
-                if str_copy[i] == '.':
-                    start_pos = i + 1
-                    break
-            for i in range(cursor_position, len(self.text()) + 1, +1):
-                if str_copy[i] == '.':
-                    end_pos = i
-                    break
-            str_tetrada = str_copy[start_pos:end_pos]  # Получаем подстроку
-            tetrada = int(str_tetrada)  # Преобразуем подстроку в целое число
-            if tetrada < 256 and len(str_tetrada) < 4:
-                if  self.text()[cursor_position - 2:cursor_position].isdigit():
-                    if self.text().count(".") < 3:
-                        self.insert(text + '.')
-                    else:
-                        self.insert(text)
-                        self.setCursorPosition(cursor_position + 2)
-                    return
-            else:
-                self.red_blink_timer.start()
-                show_err_label(self)
+                return
+            elif key == Qt.Key_Backspace:
+                cursor_position = self.cursorPosition()
+                if cursor_position > 0:
+                    if cursor_position == len(self.text()) - 1 and self.text()[cursor_position - 1] == '.' and \
+                            self.text()[cursor_position] == '.':
+                        self.backspace()
+                        self.backspace()
+                        return
+                    if cursor_position > 1 and \
+                            self.text()[cursor_position - 2].isdigit() and \
+                            self.text()[cursor_position - 1] == '.':
+                        self.setCursorPosition(cursor_position - 1)
+                        self.backspace()
+                        return
+                    self.backspace()
                 return
 
-        super().keyPressEvent(event)
+            cursor_position = self.cursorPosition()
+            text = event.text()
+            if not text.isdigit():
+            #Если не цифра
+                if text == '.' and self.text().count(".") < 3:
+                    if cursor_position == len(self.text()) - 1 and self.text()[cursor_position] == '.':
+                        self.insert('.')
+                    elif cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
+                        self.setCursorPosition(cursor_position + 1)
+                    else:
+                        self.insert('.')
+                elif text == '.' and cursor_position < len(self.text()) and self.text()[cursor_position] == '.':
+                    self.setCursorPosition(cursor_position + 1)
+                return
+            #Если цифра
+            elif cursor_position == 0 and self.text().count(".") < 3:
+                self.insert(text + '.')
+                self.setCursorPosition(1)
+                return
+
+            #Лимит на ввод цифры в последнюю тетраду не больше трех
+            elif self.text().count(".") > 2 and self.text()[cursor_position - 3:cursor_position].isdigit():
+                return
+            else: #cursor_position >= 2:
+                str_copy = self.text()
+                str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                start_pos = 0
+                end_pos = len(str_copy)
+                for i in range(cursor_position, -1, -1):
+                    if str_copy[i] == '.':
+                        start_pos = i + 1
+                        break
+                for i in range(cursor_position, len(self.text()) + 1, +1):
+                    if str_copy[i] == '.':
+                        end_pos = i
+                        break
+                str_tetrada = str_copy[start_pos:end_pos]  # Получаем подстроку
+                tetrada = int(str_tetrada)  # Преобразуем подстроку в целое число
+                if tetrada < 256 and len(str_tetrada) < 4:
+                    if  self.text()[cursor_position - 2:cursor_position].isdigit():
+                        if self.text().count(".") < 3:
+                            self.insert(text + '.')
+                        else:
+                            self.insert(text)
+                            self.setCursorPosition(cursor_position + 2)
+                        return
+                else:
+                    self.red_blink_timer.start()
+                    show_err_label(self)
+                    return
+
+            super().keyPressEvent(event)
 
 
 class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
-    def keyPressEvent(self, event):
-        key = event.key()
-        if key == Qt.Key_Left:
-            cursor_position = self.cursorPosition()
-            self.setCursorPosition(cursor_position - 1)
-            return
-        elif key == Qt.Key_Right:
-            cursor_position = self.cursorPosition()
-            self.setCursorPosition(cursor_position + 1)
-            return
-        elif key == Qt.Key_Backspace:
-            self.backspace()
-            str_copy = self.text()
-            if not str_copy.strip():
-                self.insert('0')
-            return
-
-        cursor_position = self.cursorPosition()
-        text = event.text()
-        if not text.isdigit() and text != '-':
-            # Якщо не цифра та не мінус
-            return
-        # Если цифра
+    def updateLineEdit(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        if text != '' and text != '-':
+            value = int(text)
         else:
-            str_copy = self.text()
-            if text == '-':
-                # Перевірка чи не порожня строка
-                if str_copy.strip():
-                    if str_copy[0] == '-':
-                        return
+            value = None
+        self.save_new_value(value)
+
+    def keyPressEvent(self, event):
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position + 1)
+                return
+            elif key == Qt.Key_Backspace:
+                self.backspace()
+                # str_copy = self.text()
+                # if not str_copy.strip():
+                #     self.insert('0')
+                return
+
+            cursor_position = self.cursorPosition()
+            text = event.text()
+            if not text.isdigit() and text != '-':
+                # Якщо не цифра та не мінус
+                return
+            # Если цифра
+            else:
+                str_copy = self.text()
+                if text == '-':
+                    # Перевірка чи не порожня строка
+                    if str_copy.strip():
+                        if str_copy[0] == '-':
+                            return
+                        else:
+                            self.setCursorPosition(0)
+                            self.insert(text)
+                            self.setCursorPosition(cursor_position + 1)
+                            str_copy = self.text()
+                            user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                            if self.min_limit is not None:
+                                if user_data < self.min_limit:
+                                    self.red_blink_timer.start()
+                                    show_err_label(self)
+                            if self.max_limit is not None:
+                                if user_data > self.max_limit:
+                                    self.red_blink_timer.start()
+                                    show_err_label(self)
+                            return
                     else:
                         self.setCursorPosition(0)
                         self.insert(text)
-                        self.setCursorPosition(cursor_position + 1)
-                        str_copy = self.text()
-                        user_data = int(str_copy)  # Преобразуем подстроку в целое число
-                        if self.min_limit is not None:
-                            if user_data < self.min_limit:
-                                self.red_blink_timer.start()
-                                show_err_label(self)
-                        if self.max_limit is not None:
-                            if user_data > self.max_limit:
-                                self.red_blink_timer.start()
-                                show_err_label(self)
+                        self.setCursorPosition(1)
                         return
-                else:
-                    self.setCursorPosition(0)
-                    self.insert(text)
-                    self.setCursorPosition(1)
-                    return
 
-            str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
-            user_data = int(str_copy)  # Преобразуем подстроку в целое число
-            if self.min_limit is not None:
-                if user_data < self.min_limit:
-                    self.red_blink_timer.start()
-                    show_err_label(self)
-            if self.max_limit is not None:
-                if user_data > self.max_limit:
-                    self.red_blink_timer.start()
-                    show_err_label(self)
+                str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                if self.min_limit is not None:
+                    if user_data < self.min_limit:
+                        self.red_blink_timer.start()
+                        show_err_label(self)
+                if self.max_limit is not None:
+                    if user_data > self.max_limit:
+                        self.red_blink_timer.start()
+                        show_err_label(self)
 
 
-        super().keyPressEvent(event)
+            super().keyPressEvent(event)
 
 
 class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
@@ -345,77 +355,79 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
 
     def updateLineEdit(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        value = float(text)
-        self.save_new_value(value)
+        if text != '' and text != '-':
+            value = float(text)
+            self.save_new_value(value)
 
     def set_value(self, value):
         value = round(value, 7)
         self.setText(str(value))
 
     def keyPressEvent(self, event):
-        key = event.key()
-        if key == Qt.Key_Left:
-            cursor_position = self.cursorPosition()
-            self.setCursorPosition(cursor_position - 1)
-            return
-        elif key == Qt.Key_Right:
-            cursor_position = self.cursorPosition()
-            self.setCursorPosition(cursor_position + 1)
-            return
-        elif key == Qt.Key_Backspace:
-            self.backspace()
-            str_copy = self.text()
-            if not str_copy.strip():
-                self.insert('0')
-            return
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position + 1)
+                return
+            elif key == Qt.Key_Backspace:
+                self.backspace()
+                # str_copy = self.text()
+                # if not str_copy.strip():
+                #     self.insert('0')
+                return
 
-        cursor_position = self.cursorPosition()
-        text = event.text()
-        if not text.isdigit() and text != '-':
-            # Якщо не цифра та не мінус
-            return
-        # Если цифра
-        else:
-            str_copy = self.text()
-            if text == '-':
-                # Перевірка чи не порожня строка
-                if str_copy.strip():
-                    if str_copy[0] == '-':
-                        return
+            cursor_position = self.cursorPosition()
+            text = event.text()
+            if not text.isdigit() and text != '-':
+                # Якщо не цифра та не мінус
+                return
+            # Если цифра
+            else:
+                str_copy = self.text()
+                if text == '-':
+                    # Перевірка чи не порожня строка
+                    if str_copy.strip():
+                        if str_copy[0] == '-':
+                            return
+                        else:
+                            self.setCursorPosition(0)
+                            self.insert(text)
+                            self.setCursorPosition(cursor_position + 1)
+                            str_copy = self.text()
+                            user_data = float(str_copy)  # Преобразуем подстроку в целое число
+                            if self.min_limit is not None:
+                                if user_data < self.min_limit:
+                                    self.red_blink_timer.start()
+                                    show_err_label(self)
+                            if self.max_limit is not None:
+                                if user_data > self.max_limit:
+                                    self.red_blink_timer.start()
+                                    show_err_label(self)
+                            return
                     else:
                         self.setCursorPosition(0)
                         self.insert(text)
-                        self.setCursorPosition(cursor_position + 1)
-                        str_copy = self.text()
-                        user_data = float(str_copy)  # Преобразуем подстроку в целое число
-                        if self.min_limit is not None:
-                            if user_data < self.min_limit:
-                                self.red_blink_timer.start()
-                                show_err_label(self)
-                        if self.max_limit is not None:
-                            if user_data > self.max_limit:
-                                self.red_blink_timer.start()
-                                show_err_label(self)
+                        self.setCursorPosition(1)
                         return
-                else:
-                    self.setCursorPosition(0)
-                    self.insert(text)
-                    self.setCursorPosition(1)
-                    return
 
-            str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
-            user_data = float(str_copy)  # Преобразуем подстроку в целое число
-            if self.min_limit is not None:
-                if user_data < self.min_limit:
-                    self.red_blink_timer.start()
-                    show_err_label(self)
-            if self.max_limit is not None:
-                if user_data > self.max_limit:
-                    self.red_blink_timer.start()
-                    show_err_label(self)
+                str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                user_data = float(str_copy)  # Преобразуем подстроку в целое число
+                if self.min_limit is not None:
+                    if user_data < self.min_limit:
+                        self.red_blink_timer.start()
+                        show_err_label(self)
+                if self.max_limit is not None:
+                    if user_data > self.max_limit:
+                        self.red_blink_timer.start()
+                        show_err_label(self)
 
 
-        super().keyPressEvent(event)
+            super().keyPressEvent(event)
 
 
 class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
