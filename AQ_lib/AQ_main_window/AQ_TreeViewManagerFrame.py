@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
 from AQ_CustomTreeItems import AQ_param_manager_item
-from AQ_tree_view import AQ_TreeView
+from AQ_TreeView import AQ_TreeView
 
 
 class AQ_TreeViewFrame(QFrame):
@@ -28,6 +28,7 @@ class AQ_treeView_manager(QStackedWidget):
         self.event_manager.register_event_handler("new_devices_added", self.add_new_devices_trees)
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
         self.event_manager.register_event_handler("current_device_data_updated", self.update_device_data)
+        self.event_manager.register_event_handler("current_device_data_written", self.update_device_param_statuses)
         self.event_manager.register_event_handler("delete_device", self.delete_device_view)
         self.devices_views = {}
 
@@ -62,7 +63,12 @@ class AQ_treeView_manager(QStackedWidget):
     def update_device_data(self, device):
         tree_view = self.devices_views.get(device, None)
         if tree_view is not None:
-            tree_view.model().update_all_params()
+            tree_view.model().update_all_params_values()
+
+    def update_device_param_statuses(self, device):
+        tree_view = self.devices_views.get(device, None)
+        if tree_view is not None:
+            tree_view.model().update_all_params_statuses()
 
     def create_device_tree_for_view(self, device):
         device_data = device.get_device_data()

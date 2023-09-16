@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIcon, QPalette, QPixmap, QFont, QIntValidator, QRegExpV
                         QStandardItem, QTransform, QPainter, QBrush
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QUrl
 from PyQt5.QtQuick import QQuickView
-from AQ_toolbar_button import AQ_ToolButton
+from AQ_ToolbarButton import AQ_ToolButton
 
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 

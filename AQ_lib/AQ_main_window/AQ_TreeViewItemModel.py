@@ -20,24 +20,48 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         self.device = device
         self.event_manager = event_manager
 
-    def update_parameter(self, manager_item):
+    def update_parameter_value(self, manager_item):
         param_attributes = manager_item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             row_count = manager_item.rowCount()
             for row in range(row_count):
                 child_item = manager_item.child(row)
-                self.update_parameter(child_item)
+                self.update_parameter_value(child_item)
         else:
             manager_item.show_new_value()
+            # manager_item.update_status()
 
-    def update_all_params(self):
+    def update_all_params_values(self):
         root = self.invisibleRootItem()
         for row in range(root.rowCount()):
             child_item = root.child(row)
-            self.update_parameter(child_item)
+            self.update_parameter_value(child_item)
+
+    def update_parameter_status(self, manager_item):
+        param_attributes = manager_item.get_param_attributes()
+        if param_attributes.get('is_catalog', 0) == 1:
+            row_count = manager_item.rowCount()
+            for row in range(row_count):
+                child_item = manager_item.child(row)
+                self.update_parameter_status(child_item)
+        else:
+            manager_item.update_status()
+            # manager_item.update_status()
+
+    def update_all_params_statuses(self):
+        root = self.invisibleRootItem()
+        for row in range(root.rowCount()):
+            child_item = root.child(row)
+            self.update_parameter_status(child_item)
 
     def read_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
         self.device.read_parameter(sourse_item)
-        self.update_parameter(item)
+        self.update_parameter_value(item)
+
+    def write_parameter(self, index):
+        item = self.itemFromIndex(index)
+        sourse_item = item.get_sourse_item()
+        self.device.write_parameter(sourse_item)
+        self.update_parameter_value(item)

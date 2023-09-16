@@ -7,7 +7,7 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QMenu, QTreeView
 
-from AQ_tree_view_delegates import AQ_NameTreeDelegate, AQ_ValueTreeDelegate
+from AQ_TreeViewDelegates import AQ_NameTreeDelegate, AQ_ValueTreeDelegate
 from custom_window_templates import AQ_wait_progress_bar_widget, AQ_have_error_widget
 from pymodbus.client.tcp import ModbusTcpClient
 from pymodbus.client.serial import ModbusSerialClient

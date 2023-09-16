@@ -55,6 +55,7 @@ class AQ_ParamItem(QStandardItem):
 
     def update_last_value_after_writing(self):
         self.last_value_from_device = self._value
+        self.param_status = 'ok'
 
     def get_param_attributes(self):
         param_attributes = self.data(Qt.UserRole)
@@ -167,4 +168,7 @@ class AQ_param_manager_item(QStandardItem):
         except:
             self.param_status = 'error'
 
+        self.update_status()
+
+    def update_status(self):
         self.setData(self.sourse_item.get_status(), Qt.UserRole + 1)

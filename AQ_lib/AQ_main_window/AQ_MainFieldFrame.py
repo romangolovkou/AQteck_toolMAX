@@ -2,8 +2,8 @@ from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
-from AQ_left_widget_panel import AQ_left_widget_panel_frame
-from AQ_treeViewManager_frame import AQ_TreeViewFrame
+from AQ_LeftWidgetPanel import AQ_left_widget_panel_frame
+from AQ_TreeViewManagerFrame import AQ_TreeViewFrame
 from custom_window_templates import AQ_reduced_main_field_frame
 
 

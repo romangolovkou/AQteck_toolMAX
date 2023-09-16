@@ -1,10 +1,10 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLabel
 
-from AQ_left_widget_panel import AQ_left_widget_panel_frame
-from AQ_main_field_frame import AQ_main_field_frame
-from AQ_titlebar_frame import AQ_title_bar_frame
-from AQ_toolbar_frame import AQ_tool_panel_frame
+from AQ_LeftWidgetPanel import AQ_left_widget_panel_frame
+from AQ_MainFieldFrame import AQ_main_field_frame
+from AQ_TitlebarFrame import AQ_title_bar_frame
+from AQ_ToolbarFrame import AQ_tool_panel_frame
 from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
     resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
 from custom_window_templates import AQ_simplified_main_frame

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
                             QFrame
-from AQ_toolbar_group import AQ_device_action_group, AQ_param_action_group, AQ_utils_group, AQ_archieve_group, \
+from AQ_ToolbarGroup import AQ_device_action_group, AQ_param_action_group, AQ_utils_group, AQ_archieve_group, \
                              AQ_firmware_group, AQ_other_group
 
 class AQ_toolbar_layout(QHBoxLayout):

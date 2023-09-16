@@ -409,7 +409,7 @@ class AQ_Device(QObject):
             #     return
             # self.wait_widget.progress_bar.setValue((row + 1) * step_value)
 
-        # self.event_manager.emit_event('all_device_data_updated', self)
+        self.event_manager.emit_event('current_device_data_written', self)
 
         # self.wait_widget.progress_bar.setValue(max_value)
         # self.wait_widget.hide()

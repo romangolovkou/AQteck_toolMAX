@@ -3,7 +3,7 @@ import time
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QSplashScreen
-from AQ_main_window_frame import AQ_main_window_frame
+from AQ_MainWindowFrame import AQ_main_window_frame
 from AQ_session import AQ_CurrentSession
 from AQ_EventManager import AQ_EventManager
 # Defines
