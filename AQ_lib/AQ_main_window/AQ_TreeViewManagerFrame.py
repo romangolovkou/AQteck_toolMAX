@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import QFrame, QStackedWidget
@@ -45,14 +47,17 @@ class AQ_treeView_manager(QStackedWidget):
 
     def set_active_device_tree(self, device):
         if device is not None:
-            try:
-                widget = self.devices_views.get(device, None)
-                if widget is not None:
-                    self.setCurrentWidget(widget)
-                    self.update_device_data(device)
-            except:
+            # try:
+            widget = self.devices_views.get(device, None)
+            if widget is not None:
+                self.setCurrentWidget(widget)
+                self.update_device_data(device)
+            else:
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
                 QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
+            # except:
+            #     # Устанавливаем задержку в 50 м.сек и затем повторяем
+            #     QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
 
     def delete_device_view(self, device):
         tree_view = self.devices_views.get(device, None)
@@ -121,100 +126,24 @@ class AQ_treeView_manager(QStackedWidget):
         return [parameter_item, value_item, min_limit_item, max_limit_item, unit_item, default_item]
 
     def get_min_limit_item(self, param_attributes):
-        if param_attributes.get('min_limit', '') == '':
-            param_type = param_attributes.get('type', '')
-            size = param_attributes.get('param_size', 0)
-            cur_par_min = ''
-            if param_type == 'float':
-                if size == 4:
-                    cur_par_min = '-3.402283E+38'
-                elif size == 8:
-                    cur_par_min = '-1.7976931348623E+308'
-            elif param_type == 'signed':
-                if size == 1:
-                    cur_par_min = '-127'
-                elif size == 2:
-                    cur_par_min = '-32768'
-                elif size == 4:
-                    cur_par_min = '-2147483648'
-                elif size == 8:
-                    cur_par_min = '-9223372036854775808'
-            elif param_type == 'unsigned':
-                if param_attributes.get('visual_type', '') == 'ip_format':
-                    cur_par_min = ''
-                else:
-                    cur_par_min = '0'
-            elif param_type == 'enum':
-                cur_par_min = ''
-            elif param_type == 'date_time':
-                cur_par_min = '01.01.2000 0:00:00'
-            else:
-                cur_par_min = ''
-            # Якщо min_limit у параметра немає, додаємо розрахунковий і у сам параметр
-            param_attributes['min_limit'] = cur_par_min
-            min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
-            return min_limit_item
+        param_type = param_attributes.get('type', '')
+        visual_type = param_attributes.get('visual_type', '')
+        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
+            min_limit_item = QStandardItem('')
         else:
-            param_type = param_attributes.get('type', '')
-            visual_type = param_attributes.get('visual_type', '')
-            if param_type == 'enum' or visual_type == 'ip_format':
-                min_limit_item = QStandardItem('')
-            else:
-                min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
+            min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
 
-            return min_limit_item
+        return min_limit_item
 
     def get_max_limit_item(self, param_attributes):
-        if param_attributes.get('max_limit', '') == '':
-            param_type = param_attributes.get('type', '')
-            size = param_attributes.get('param_size', 0)
-            cur_par_max = ''
-            if param_type == 'float':
-                if size == 4:
-                    cur_par_max = '3.402283E+38'
-                elif size == 8:
-                    cur_par_max = '1.7976931348623E+308'
-            elif param_type == 'signed':
-                if size == 1:
-                    cur_par_max = '128'
-                elif size == 2:
-                    cur_par_max = '32767'
-                elif size == 4:
-                    cur_par_max = '2147483647'
-                elif size == 8:
-                    cur_par_max = '9223372036854775807'
-            elif param_type == 'unsigned':
-                if param_attributes.get('visual_type', '') == 'ip_format':
-                    cur_par_max = ''
-                elif size == 1:
-                    cur_par_max = '255'
-                elif size == 2:
-                    cur_par_max = '65535'
-                elif size == 4:
-                    cur_par_max = '4294967295'
-                elif size == 6:  # MAC address
-                    cur_par_max = 'FF:FF:FF:FF:FF:FF'
-                elif size == 8:
-                    cur_par_max = '18446744073709551615'
-            elif param_type == 'enum':
-                cur_par_max = ''
-            elif param_type == 'date_time':
-                cur_par_max = '07.02.2136 6:28:15'
-            else:
-                cur_par_max = ''
-            # Якщо max_limit у параметра немає, додаємо розрахунковий і у сам параметр
-            param_attributes['max_limit'] = cur_par_max
-            max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
-            return max_limit_item
+        param_type = param_attributes.get('type', '')
+        visual_type = param_attributes.get('visual_type', '')
+        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
+            max_limit_item = QStandardItem('')
         else:
-            param_type = param_attributes.get('type', '')
-            visual_type = param_attributes.get('visual_type', '')
-            if param_type == 'enum' or visual_type == 'ip_format':
-                max_limit_item = QStandardItem('')
-            else:
-                max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
+            max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
 
-            return max_limit_item
+        return max_limit_item
 
     def get_unit_item(self, param_attributes):
         param_type = param_attributes.get('type', '')

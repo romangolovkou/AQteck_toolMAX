@@ -428,7 +428,7 @@ class AQ_TreeView(QTreeView):
             super().contextMenuEvent(event)
 
     def show_have_error_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        # Получаем координаты поля ввода относительно диалогового окна
         self.have_err_widget = AQ_have_error_widget("<html>Writing is not possible.<br>One or more parameters<br>\
                                                         have incorrect values<html>", self.parent)
         self.have_err_widget.move(self.parent.width() // 2 - self.have_err_widget.width() // 2,
