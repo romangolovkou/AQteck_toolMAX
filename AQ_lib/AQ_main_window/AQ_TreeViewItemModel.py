@@ -46,7 +46,6 @@ class AQ_TreeViewItemModel(QStandardItemModel):
                 self.update_parameter_status(child_item)
         else:
             manager_item.update_status()
-            # manager_item.update_status()
 
     def update_all_params_statuses(self):
         root = self.invisibleRootItem()
@@ -64,4 +63,4 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
         self.device.write_parameter(sourse_item)
-        self.update_parameter_value(item)
+        self.update_parameter_status(item)

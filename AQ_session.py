@@ -46,7 +46,8 @@ class AQ_CurrentSession(QObject):
         self.event_manager.emit_event('delete_device', self.cur_active_device)
 
     def delete_device(self, device):
-        index_to_remove = self.devices.index(device)
-        removed_element = self.devices.pop(index_to_remove)
-        if len(self.devices) == 0:
-            self.event_manager.emit_event('no_devices')
+        if device is not None:
+            index_to_remove = self.devices.index(device)
+            removed_element = self.devices.pop(index_to_remove)
+            if len(self.devices) == 0:
+                self.event_manager.emit_event('no_devices')

@@ -348,6 +348,19 @@ class AQ_TreeView(QTreeView):
         self.wait_widget.hide()
         self.wait_widget.deleteLater()
 
+    def traverse_items_R_Only_catalog_check(self, item):
+        write_flag = 0
+        for row in range(item.rowCount()):
+            child_item = item.child(row)
+            parameter_attributes = child_item.data(Qt.UserRole)
+            if parameter_attributes is not None:
+                if not (parameter_attributes.get('R_Only', 0) == 1 and parameter_attributes.get('W_Only', 0) == 0):
+                    write_flag += 1
+            if child_item is not None:
+                write_flag += self.traverse_items_R_Only_catalog_check(child_item)
+
+        return write_flag
+
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
         if index.isValid() and index.column() == 0:
@@ -376,13 +389,10 @@ class AQ_TreeView(QTreeView):
                     action_read = context_menu.addAction("Read parameters")
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.model().read_parameter(index))
-                    # if self.traverse_items_R_Only_catalog_check(item) > 0:
-                    #     action_write = context_menu.addAction("Write parameters")
-                    #     have_error = self.travers_have_error_check(index)
-                    #     if have_error > 0:
-                    #         action_write.setDisabled(True)
-                    #     # Подключаем обработчик события выбора действия
-                    #     action_write.triggered.connect(lambda: self.write_catalog_by_modbus(index, 1))
+                    if self.traverse_items_R_Only_catalog_check(item) > 0:
+                        action_write = context_menu.addAction("Write parameters")
+                        # Подключаем обработчик события выбора действия
+                        action_write.triggered.connect(lambda: self.model().write_parameter(index))
                     # # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
                 else:
@@ -406,15 +416,10 @@ class AQ_TreeView(QTreeView):
                     action_read = context_menu.addAction("Read parameter")
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.model().read_parameter(index))
-                    # if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
-                    #     action_write = context_menu.addAction("Write parameter")
-                    #     delegate_for_column = self.itemDelegateForColumn(1)
-                    #     next_column_index = index.sibling(index.row(), index.column() + 1)
-                    #     have_error = delegate_for_column.error_dict.get(next_column_index, False)
-                    #     if have_error is True:
-                    #         action_write.setDisabled(True)
-                    #     # Подключаем обработчик события выбора действия
-                    #     action_write.triggered.connect(lambda: self.write_value_by_modbus(index))
+                    if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
+                        action_write = context_menu.addAction("Write parameter")
+                        # Подключаем обработчик события выбора действия
+                        action_write.triggered.connect(lambda: self.model().write_parameter(index))
 
                     # Показываем контекстное меню
                     context_menu.exec_(event.globalPos())
