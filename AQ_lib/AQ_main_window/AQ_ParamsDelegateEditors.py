@@ -27,9 +27,9 @@ class AQ_TreeLineEdit(QLineEdit):
             self.setStyleSheet("border: none; color: #909090; background-color: transparent; \n")
         else:
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")
-            self.textChanged.connect(self.updateLineEdit)
+            self.textChanged.connect(self.line_edit_changed_update_value)
 
-    def updateLineEdit(self, text):
+    def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         if text != '':
             value = int(text)
@@ -162,7 +162,7 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
         self.max_limit = 255
         self.setMaxLength(15)  # Устанавливаем максимальную длину IP-адреса (15 символов)
 
-    def updateLineEdit(self, text):
+    def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         if self.is_valid_ip(text):
             # Разделяем IP-адрес на октеты
@@ -171,7 +171,10 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
             int_octets = [int(octet) for octet in octets]
             # Получаем 32-битное целое число из октетов
             ip_as_integer = (int_octets[0] << 24) | (int_octets[1] << 16) | (int_octets[2] << 8) | int_octets[3]
-            self.save_new_value(ip_as_integer)
+        else:
+            ip_as_integer = None
+
+        self.save_new_value(ip_as_integer)
 
     def is_valid_ip(self, address):
         try:
@@ -274,7 +277,7 @@ class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
-    def updateLineEdit(self, text):
+    def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         if text != '' and text != '-':
             value = int(text)
@@ -353,15 +356,13 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
-    def updateLineEdit(self, text):
+    def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         if text != '' and text != '-':
             value = float(text)
-            self.save_new_value(value)
-
-    def set_value(self, value):
-        value = round(value, 7)
-        self.setText(str(value))
+        else:
+            value = None
+        self.save_new_value(value)
 
     def keyPressEvent(self, event):
         if self.isReadOnly() is False:
@@ -376,14 +377,11 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
                 return
             elif key == Qt.Key_Backspace:
                 self.backspace()
-                # str_copy = self.text()
-                # if not str_copy.strip():
-                #     self.insert('0')
                 return
 
             cursor_position = self.cursorPosition()
             text = event.text()
-            if not text.isdigit() and text != '-':
+            if not text.isdigit() and text != '-' and text != '.':
                 # Якщо не цифра та не мінус
                 return
             # Если цифра
@@ -414,6 +412,9 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
                         self.insert(text)
                         self.setCursorPosition(1)
                         return
+                elif text == '.':
+                    if '.' in str_copy:
+                        return
 
                 str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
                 user_data = float(str_copy)  # Преобразуем подстроку в целое число
@@ -434,7 +435,7 @@ class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
-    def updateLineEdit(self, text):
+    def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         self.save_new_value(text)
 
@@ -443,7 +444,7 @@ class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
-    def updateLineEdit(self, text):
+    def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         # self.save_new_value(text)
         pass

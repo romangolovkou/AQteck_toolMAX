@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt, QModelIndex, QObject, pyqtSignal
 from PyQt5.QtGui import QStandardItem
 
-from AQ_params_delegate_editors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
+from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
     AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit
 
 
@@ -41,12 +41,14 @@ class AQ_ParamItem(QStandardItem):
                 else:
                     self.param_status = 'changed'
             self._value = new_value
+        else:
+            self.param_status = 'error'
 
     def set_last_value_from_device(self, new_value):
         self.last_value_from_device = new_value
         try:
             self.value = new_value
-            self.param_status = 'ok'
+            # self.param_status = 'ok'
         except:
             self._value = new_value
             self.param_status = 'error'

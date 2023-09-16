@@ -3,7 +3,7 @@ from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
-from AQ_custom_tree_items import AQ_param_manager_item
+from AQ_CustomTreeItems import AQ_param_manager_item
 from AQ_tree_view import AQ_TreeView
 
 

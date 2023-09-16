@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_custom_tree_items import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
+from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
     AQ_SignedParamItem, AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem
 
 

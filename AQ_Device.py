@@ -288,6 +288,7 @@ class AQ_Device(QObject):
                 elif param_type == 'float':
                     byte_array = swap_modbus_bytes(byte_array, reg_count)
                     param_value = struct.unpack('f', byte_array)[0]
+                    param_value = round(param_value, 7)
                 elif param_type == 'date_time':
                     if byte_size == 4:
                         byte_array = reverse_modbus_registers(byte_array)
