@@ -6,7 +6,7 @@ import struct
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QComboBox, QLineEdit
-from custom_window_templates import AQLabel
+from AQ_CustomWindowTemplates import AQ_Label
 
 
 class AQ_TreeLineEdit(QLineEdit):
@@ -456,7 +456,7 @@ class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
         self.setText(str(value))
 
 
-class AQ_EditorErrorLabel(AQLabel):
+class AQ_EditorErrorLabel(AQ_Label):
     def __init__(self, pos, min_limit, max_limit, parent=None):
         super().__init__('Invalid value', parent)
         if min_limit is None:

@@ -1,17 +1,8 @@
-import datetime
-import struct
-import socket
-import re
-import binascii
-from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QMenu, QTreeView
 
 from AQ_TreeViewDelegates import AQ_NameTreeDelegate, AQ_ValueTreeDelegate
-from custom_window_templates import AQ_wait_progress_bar_widget, AQ_have_error_widget
-from pymodbus.client.tcp import ModbusTcpClient
-from pymodbus.client.serial import ModbusSerialClient
-from AQ_communication_func import is_valid_ip, write_parameter
+from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget, AQ_have_error_widget
 
 
 

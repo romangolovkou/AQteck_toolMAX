@@ -1,16 +1,15 @@
 import struct
-
+from Crypto.Cipher import DES
 from PyQt5.QtCore import QObject
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from pymodbus.client import serial
 import serial.tools.list_ports
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_communication_func import is_valid_ip, decrypt_data
-from AQ_connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
-from AQ_parse_func import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
+from AQ_IsValidIpFunc import is_valid_ip
+from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
+from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
     get_storage_container, parse_tree, reverse_modbus_registers
-from custom_window_templates import AQ_wait_progress_bar_widget
+from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
 
 
 class AQ_Device(QObject):
@@ -169,7 +168,7 @@ class AQ_Device(QObject):
         encrypt_res = result.records[0].record_data
 
         try:
-            decrypt_res = decrypt_data(b'superkey', encrypt_res)
+            decrypt_res = self.decrypt_data(b'superkey', encrypt_res)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -196,7 +195,7 @@ class AQ_Device(QObject):
             if (len(encrypt_file) % 8) > 0:
                 padding = 8 - (len(encrypt_file) % 8)
                 encrypt_file = encrypt_file + bytes([padding] * padding)
-            decrypt_file = decrypt_data(b'superkey', encrypt_file)
+            decrypt_file = self.decrypt_data(b'superkey', encrypt_file)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -207,6 +206,16 @@ class AQ_Device(QObject):
             file.write(decrypt_file)
 
         return decrypt_file
+
+    def decrypt_data(self, iv, encrypted_data):
+        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+        key = b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524
+
+        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+        cipher = DES.new(key, DES.MODE_CBC, iv)
+        decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
+
+        return decrypted_data
 
     def parse_default_prg(self, default_prg):
         try:

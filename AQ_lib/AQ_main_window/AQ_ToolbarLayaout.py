@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushBut
 from AQ_ToolbarGroup import AQ_device_action_group, AQ_param_action_group, AQ_utils_group, AQ_archieve_group, \
                              AQ_firmware_group, AQ_other_group
 
-class AQ_toolbar_layout(QHBoxLayout):
+class AQ_ToolbarLayout(QHBoxLayout):
     def __init__(self, parent, event_manager):
         super().__init__(parent)
         self.parent = parent

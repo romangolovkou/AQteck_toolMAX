@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize
-from AQ_ToolbarLayaout import AQ_toolbar_layout
+from AQ_ToolbarLayaout import AQ_ToolbarLayout
 
 
-class AQ_tool_panel_frame(QFrame):
+class AQ_ToolPanelFrame(QFrame):
     def __init__(self, shift_y, event_manager, parent=None):
         super().__init__(parent)
         self.setGeometry(QRect(0, shift_y + 2, parent.width(), 90))
@@ -13,7 +13,7 @@ class AQ_tool_panel_frame(QFrame):
                            "border-bottom-left-radius: 0px;\n"
                            "border-bottom-right-radius: 0px;")
         self.setObjectName("tool_panel_frame")
-        self.tool_panel_layout = AQ_toolbar_layout(self, event_manager)
+        self.tool_panel_layout = AQ_ToolbarLayout(self, event_manager)
 
     def resizeEvent(self, event):
         if hasattr(self, 'tool_panel_layout'):

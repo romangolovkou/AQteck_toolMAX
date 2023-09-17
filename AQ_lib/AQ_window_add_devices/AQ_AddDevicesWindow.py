@@ -1,16 +1,16 @@
 from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QCheckBox
 
-from AQ_addDevice_ConnectErrorLabel import AQ_ConnectErrorLabel
-from AQ_addDevices_addButton import AQ_addButton
-from AQ_addDevice_RotatingGears import AQ_RotatingGearsWidget
-from AQ_addDevice_TableWidget import AQ_addDevice_TableWidget
-from custom_window_templates import AQ_simplified_Dialog, AQComboBox, AQLabel
-from AQ_AddDevices_network_frame import AQ_network_settings_frame
+from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
+from AQ_AddDevicesAddButton import AQ_addButton
+from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
+from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
+from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label
+from AQ_AddDevicesNetworkFrame import AQ_network_settings_frame
 from AQ_Device import AQ_Device
 
 
-class AQ_DialogAddDevices(AQ_simplified_Dialog):
+class AQ_DialogAddDevices(AQ_SimplifiedDialog):
     def __init__(self, event_manager, parent):
         window_name = 'Add Devices'
         super().__init__(event_manager, window_name)

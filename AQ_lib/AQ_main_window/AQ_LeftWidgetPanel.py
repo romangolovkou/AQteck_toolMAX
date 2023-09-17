@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont, QPalette, QColor
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QScrollArea, QMenu
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
 
-from custom_window_templates import AQLabel
+from AQ_CustomWindowTemplates import AQ_Label
 
 
 class AQ_left_widget_panel_frame(QFrame):
@@ -71,17 +71,17 @@ class AQ_left_device_widget(QWidget):
         # Наповпнюємо віджет текстовими мітками
         device_data = self.device.get_device_data()
         name = device_data.get('device_name', 'err_name')
-        self.name_label = AQLabel(name, self)
+        self.name_label = AQ_Label(name, self)
         font = QFont("Segoe UI", 14)
         self.name_label.setFont(font)
         self.name_label.move(50, 5)
         self.name_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;")
         address = device_data.get('address', 'err_address')
-        self.address_label = AQLabel('address:' + address, self)
+        self.address_label = AQ_Label('address:' + address, self)
         self.address_label.move(50, 27)
         self.address_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
         serial = device_data.get('serial_number', 'err_serial_number')
-        self.serial_label = AQLabel('S/N' + serial, self)
+        self.serial_label = AQ_Label('S/N' + serial, self)
         self.serial_label.move(50, 47)
         self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
 

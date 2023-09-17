@@ -1,13 +1,11 @@
 import os
-from PyQt5.QtGui import QPixmap, QFont, QColor
-from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal, QSettings
-from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QFrame, QGraphicsView, QGraphicsScene, \
-                            QGraphicsPixmapItem, QTableWidget, QTableWidgetItem, QCheckBox, QLabel
-from custom_window_templates import AQ_simplified_Dialog, AQComboBox, AQLabel, IP_AQLineEdit, Slave_ID_AQLineEdit
-from custom_exception import Connect_err
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
+from AQ_CustomWindowTemplates import AQ_ComboBox, AQ_Label, AQ_IpLineEdit, AQ_SlaveIdLineEdit
 import serial.tools.list_ports
-from AQ_communication_func import is_valid_ip
-from AQ_settings_func import save_current_text_value, save_combobox_current_state, load_last_text_value, \
+from AQ_IsValidIpFunc import is_valid_ip
+from AQ_SettingsFunc import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 
 
@@ -57,10 +55,10 @@ class AQ_network_settings_layout(QVBoxLayout):
         self.title_text.setAlignment(Qt.AlignCenter)
 
     # Создаем текстовую метку выбора интерфейса
-        self.interface_combo_box_label = AQLabel("Interface")
+        self.interface_combo_box_label = AQ_Label("Interface")
 
     # Создание комбо-бокса
-        self.interface_combo_box = AQComboBox()
+        self.interface_combo_box = AQ_ComboBox()
         self.interface_combo_box.setObjectName(self.parent.objectName() + "_" + "interface_combo_box")
         self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
         # Получаем список доступных COM-портов
@@ -76,16 +74,16 @@ class AQ_network_settings_layout(QVBoxLayout):
             load_last_combobox_state(self.auto_load_settings, self.interface_combo_box)
 
     # Создаем поле ввода IP адресса
-        self.ip_line_edit_label = AQLabel("IP Address")
-        self.ip_line_edit = IP_AQLineEdit()
+        self.ip_line_edit_label = AQ_Label("IP Address")
+        self.ip_line_edit = AQ_IpLineEdit()
         self.ip_line_edit.setObjectName(self.parent.objectName() + "_" + "ip_line_edit")
         # Встановлюємо попередне обране значення, якщо воно існує
         if self.auto_load_settings is not None:
             load_last_text_value(self.auto_load_settings, self.ip_line_edit)
 
     # Создаем поле ввода Slave ID
-        self.slave_id_line_edit_label = AQLabel("Slave ID")
-        self.slave_id_line_edit = Slave_ID_AQLineEdit()
+        self.slave_id_line_edit_label = AQ_Label("Slave ID")
+        self.slave_id_line_edit = AQ_SlaveIdLineEdit()
         self.slave_id_line_edit.setObjectName(self.parent.objectName() + "_" + "slave_id_line_edit")
         # Встановлюємо попередне обране значення, якщо воно існує
         if self.auto_load_settings is not None:

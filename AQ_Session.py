@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QObject, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
-from AQ_window_AddDevices import AQ_DialogAddDevices
+from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AQ_Device import AQ_Device
 
 

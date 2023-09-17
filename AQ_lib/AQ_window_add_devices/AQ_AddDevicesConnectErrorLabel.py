@@ -2,14 +2,14 @@ from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QTimer
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget
 
-from custom_window_templates import AQLabel
+from AQ_CustomWindowTemplates import AQ_Label
 
 
 class AQ_ConnectErrorLabel(QWidget):
     def __init__(self, width, height, parent=None):
         super().__init__(parent)
         self.setGeometry(0, 0, width, height)
-        self.connect_err_label = AQLabel("<html>The connection to device could not be established.<br>"
+        self.connect_err_label = AQ_Label("<html>The connection to device could not be established.<br>"
                                          "Check the connection lines and network parameters and repeat "
                                          "the search.<html>", self)
         self.connect_err_label.setStyleSheet("background-color: #9d2d30; color: #D0D0D0; \n")

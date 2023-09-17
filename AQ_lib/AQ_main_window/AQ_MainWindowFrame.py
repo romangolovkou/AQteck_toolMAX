@@ -1,27 +1,23 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QLabel
-
-from AQ_LeftWidgetPanel import AQ_left_widget_panel_frame
-from AQ_MainFieldFrame import AQ_main_field_frame
-from AQ_TitlebarFrame import AQ_title_bar_frame
-from AQ_ToolbarFrame import AQ_tool_panel_frame
-from Resize_widgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
+from AQ_MainFieldFrame import AQ_MainFieldFrame
+from AQ_TitlebarFrame import AQ_TitleBarFrame
+from AQ_ToolbarFrame import AQ_ToolPanelFrame
+from AQ_ResizeWidgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
     resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
-from custom_window_templates import AQ_simplified_main_frame
+from AQ_CustomWindowTemplates import AQ_SimplifiedMainFrame
 
 
-class AQ_main_window_frame(AQ_simplified_main_frame):
+class AQ_MainWindowFrame(AQ_SimplifiedMainFrame):
     def __init__(self, event_manager, main_name, icon, parent=None):
         super().__init__(parent)
 
         self.event_manager = event_manager
         # TitleBarFrame
-        self.title_bar_frame = AQ_title_bar_frame(self.event_manager, 60, main_name, icon, self)
+        self.title_bar_frame = AQ_TitleBarFrame(self.event_manager, 60, main_name, icon, self)
         # ToolPanelFrame
-        self.tool_panel_frame = AQ_tool_panel_frame(self.title_bar_frame.height(), self.event_manager, self)
+        self.tool_panel_frame = AQ_ToolPanelFrame(self.title_bar_frame.height(), self.event_manager, self)
         # MainFieldFrame
-        self.main_field_frame = AQ_main_field_frame(self.event_manager, self.title_bar_frame.height() \
-                                                    + self.tool_panel_frame.height(), self)
+        self.main_field_frame = AQ_MainFieldFrame(self.event_manager, self.title_bar_frame.height() \
+                                                  + self.tool_panel_frame.height(), self)
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeLineWidth = 4

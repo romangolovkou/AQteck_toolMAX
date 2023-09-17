@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
 from functools import partial
-from MouseEvent_func import mousePressEvent_WidthR, mouseMoveEvent_WidthR, \
+from AQ_MouseEventFunc import mousePressEvent_WidthR, mouseMoveEvent_WidthR, \
                             mousePressEvent_WidthL, mouseMoveEvent_WidthL, \
                             mousePressEvent_HeigthLow, mouseMoveEvent_HeigthLow, \
                             mousePressEvent_HeigthTop, mouseMoveEvent_HeigthTop, \

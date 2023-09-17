@@ -1,10 +1,6 @@
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QComboBox, QLineEdit, QStyledItemDelegate
-from custom_window_templates import AQ_IP_tree_QLineEdit, \
-                                    AQ_int_tree_QLineEdit, AQ_uint_tree_QLineEdit, AQ_float_tree_QLineEdit
-from AQ_communication_func import is_valid_ip
-
 
 
 class AQ_ValueTreeDelegate(QStyledItemDelegate):

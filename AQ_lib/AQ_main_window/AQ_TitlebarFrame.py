@@ -4,10 +4,10 @@ from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import QFrame, QLabel, QPushButton
 
-from MouseEvent_func import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
+from AQ_MouseEventFunc import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 
 
-class AQ_title_bar_frame(QFrame):
+class AQ_TitleBarFrame(QFrame):
     def __init__(self, event_manager, height, name, icon, parent=None):
         super().__init__(parent)
         self.name = name

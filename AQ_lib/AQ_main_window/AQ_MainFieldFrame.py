@@ -4,10 +4,10 @@ from PyQt5.QtWidgets import QLabel
 
 from AQ_LeftWidgetPanel import AQ_left_widget_panel_frame
 from AQ_TreeViewManagerFrame import AQ_TreeViewFrame
-from custom_window_templates import AQ_reduced_main_field_frame
+from AQ_CustomWindowTemplates import AQ_ReducedMainFieldFrame
 
 
-class AQ_main_field_frame(AQ_reduced_main_field_frame):
+class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
     def __init__(self, event_manager, shift_y, parent=None):
         super().__init__(shift_y, parent)
         self.event_manager = event_manager
