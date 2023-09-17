@@ -611,7 +611,7 @@ def set_standard_min_limit(param_attributes):
         else:
             cur_par_min = int('0')
     elif param_type == 'date_time':
-        cur_par_min = '01.01.2000 0:00:00'  # дата від якої у нас йде відлік часу у секундах
+        cur_par_min = 0  #'01.01.2000 0:00:00' дата від якої у нас йде відлік часу у секундах
     else:
         cur_par_min = None
     # Якщо min_limit у параметра немає, додаємо розрахунковий і у сам параметр
@@ -649,11 +649,11 @@ def set_standard_max_limit(param_attributes):
         elif size == 8:
             cur_par_max = int('18446744073709551615')
     elif param_type == 'date_time':
-        # max_limit_date = datetime.strptime('07.02.2136 6:28:15', '%d.%m.%Y %H:%M:%S')
-        # # Начальный момент времени (2000-01-01 00:00:00)
-        # min_limit_date = datetime(2000, 1, 1)
-        # max_limit_seconds = (max_limit_date - min_limit_date).total_seconds()
-        cur_par_max = '07.02.2136 6:28:15'
+        max_limit_date = datetime.strptime('07.02.2136 6:28:15', '%d.%m.%Y %H:%M:%S')
+        # Начальный момент времени (2000-01-01 00:00:00)
+        min_limit_date = datetime(2000, 1, 1)
+        max_limit_seconds = (max_limit_date - min_limit_date).total_seconds()
+        cur_par_max = max_limit_seconds
     else:
         cur_par_max = None
     # Якщо max_limit у параметра немає, додаємо розрахунковий і у сам параметр

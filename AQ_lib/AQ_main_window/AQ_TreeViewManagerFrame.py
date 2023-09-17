@@ -29,7 +29,7 @@ class AQ_treeView_manager(QStackedWidget):
         self.event_manager = event_manager
         self.event_manager.register_event_handler("new_devices_added", self.add_new_devices_trees)
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
-        self.event_manager.register_event_handler("current_device_data_updated", self.update_device_data)
+        self.event_manager.register_event_handler("current_device_data_updated", self.update_device_values)
         self.event_manager.register_event_handler("current_device_data_written", self.update_device_param_statuses)
         self.event_manager.register_event_handler("delete_device", self.delete_device_view)
         self.devices_views = {}
@@ -41,7 +41,7 @@ class AQ_treeView_manager(QStackedWidget):
             device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
             tree_view.setModel(device_view_tree_model)
             self.devices_views[new_devices_list[i]] = tree_view
-            self.update_device_data(new_devices_list[i])
+            self.update_device_values(new_devices_list[i])
             self.addWidget(tree_view)
             self.show()
 
@@ -51,7 +51,7 @@ class AQ_treeView_manager(QStackedWidget):
             widget = self.devices_views.get(device, None)
             if widget is not None:
                 self.setCurrentWidget(widget)
-                self.update_device_data(device)
+                self.update_device_values(device)
             else:
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
                 QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
@@ -65,7 +65,7 @@ class AQ_treeView_manager(QStackedWidget):
             self.removeWidget(tree_view)
             tree_view.deleteLater()
 
-    def update_device_data(self, device):
+    def update_device_values(self, device):
         tree_view = self.devices_views.get(device, None)
         if tree_view is not None:
             tree_view.model().update_all_params_values()
@@ -130,6 +130,16 @@ class AQ_treeView_manager(QStackedWidget):
         visual_type = param_attributes.get('visual_type', '')
         if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
             min_limit_item = QStandardItem('')
+        elif param_type == 'date_time':
+            start_time = datetime(2000, 1, 1).timestamp()
+            min_lim_value = param_attributes.get('min_limit', None)
+            if min_lim_value is not None:
+                min_time_limit_obj = datetime.fromtimestamp(start_time + min_lim_value)
+                min_time_limit_str = min_time_limit_obj.strftime('%d.%m.%Y %H:%M:%S')
+            else:
+                min_time_limit_str = ''
+
+            min_limit_item = QStandardItem(str(min_time_limit_str))
         else:
             min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
 
@@ -140,6 +150,16 @@ class AQ_treeView_manager(QStackedWidget):
         visual_type = param_attributes.get('visual_type', '')
         if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
             max_limit_item = QStandardItem('')
+        elif param_type == 'date_time':
+            start_time = datetime(2000, 1, 1).timestamp()
+            max_lim_value = param_attributes.get('max_limit', None)
+            if max_lim_value is not None:
+                max_time_limit_obj = datetime.fromtimestamp(start_time + max_lim_value)
+                max_time_limit_str = max_time_limit_obj.strftime('%d.%m.%Y %H:%M:%S')
+            else:
+                max_time_limit_str = ''
+
+            max_limit_item = QStandardItem(str(max_time_limit_str))
         else:
             max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
 

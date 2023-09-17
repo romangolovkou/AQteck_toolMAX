@@ -53,7 +53,7 @@ class AQ_ParamItem(QStandardItem):
             self._value = new_value
             self.param_status = 'error'
 
-    def update_last_value_after_writing(self):
+    def synchro_last_value_and_value(self):
         self.last_value_from_device = self._value
         self.param_status = 'ok'
 

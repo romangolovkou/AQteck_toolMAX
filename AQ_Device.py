@@ -386,7 +386,7 @@ class AQ_Device(QObject):
 
                     try:
                         self.client.write_registers(modbus_reg, registers)
-                        item.update_last_value_after_writing()
+                        item.synchro_last_value_and_value()
                     except Exception as e:
                         print(f"Error occurred: {str(e)}")
 
