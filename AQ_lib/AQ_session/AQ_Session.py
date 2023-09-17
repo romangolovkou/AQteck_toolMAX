@@ -3,6 +3,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AQ_Device import AQ_Device
+from AQ_ParamListWindow import AQ_DialogParamList
 
 
 class AQ_CurrentSession(QObject):
@@ -13,6 +14,7 @@ class AQ_CurrentSession(QObject):
         self.cur_active_device = None
         self.devices = []
         self.event_manager.register_event_handler("open_AddDevices", self.open_AddDevices)
+        self.event_manager.register_event_handler("open_ParameterList", self.open_ParameterList)
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
         self.event_manager.register_event_handler("set_active_device", self.set_cur_active_device)
         self.event_manager.register_event_handler("read_params_cur_active_device", self.read_params_cur_active_device)
@@ -24,6 +26,10 @@ class AQ_CurrentSession(QObject):
     def open_AddDevices(self):
         AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
         AddDevices_window.exec_()
+
+    def open_ParameterList(self):
+        ParameterList_window = AQ_DialogParamList(self.event_manager, self.parent)
+        ParameterList_window.exec_()
 
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
