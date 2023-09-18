@@ -1,11 +1,10 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QFont
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QTableView, QLabel
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel
 
-from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView
-from AQ_TableViewItemModel import AQ_TableViewItemModel
+from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
 
 
 class AQ_ParamListManagerFrame(QFrame):
@@ -42,12 +41,7 @@ class AQ_ParamListManagerFrame(QFrame):
                 parameter_attributes = child_item.data(Qt.UserRole)
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
-                        # name = parameter_attributes.get('name', 'err_name')
-                        # catalog = AQ_param_manager_item(child_item)
-                        # catalog.setData(parameter_attributes, Qt.UserRole)
-                        # catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
                         self.traverse_items_create_new_table_model_for_view(child_item, new_item)
-                        # new_item.appendRow(catalog)
                     else:
                         new_item.appendRow(self.create_new_row_for_table_view(child_item))
 
@@ -70,7 +64,7 @@ class AQ_ParamListManagerFrame(QFrame):
 
     # Address (hex)
         if reg_num_dec != 'reg_error':
-            reg_num_hex = hex(reg_num_dec)
+            reg_num_hex = '0x{:04X}'.format(reg_num_dec)
         else:
             reg_num_hex = 'reg_error'
         adr_hex_item = QStandardItem(reg_num_hex)
