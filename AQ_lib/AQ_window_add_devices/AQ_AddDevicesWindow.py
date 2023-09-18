@@ -6,7 +6,7 @@ from AQ_AddDevicesAddButton import AQ_addButton
 from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
 from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label
-from AQ_AddDevicesNetworkFrame import AQ_network_settings_frame
+from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
 from AQ_Device import AQ_Device
 
 
@@ -32,7 +32,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.event_manager.register_event_handler('dragging_' + window_name, self.move)
 
         # Створюємо фрейм з налаштуваннями з'єднання
-        self.network_settings_frame = AQ_network_settings_frame(event_manager, self.main_window_frame)
+        self.network_settings_frame = AQ_NetworkSettingsFrame(event_manager, self.main_window_frame)
         self.network_settings_frame.setGeometry(25, self.title_bar_frame.height() + 2, int(self.width() * 0.4),
                                                 self.height() - self.title_bar_frame.height() - 4)
 

@@ -21,6 +21,7 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("write_params_cur_active_device", self.write_params_cur_active_device)
         self.event_manager.register_event_handler("delete_cur_active_device", self.delete_cur_active_device)
         self.event_manager.register_event_handler("delete_device", self.delete_device)
+        self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
 
 
     def open_AddDevices(self):
@@ -28,8 +29,9 @@ class AQ_CurrentSession(QObject):
         AddDevices_window.exec_()
 
     def open_ParameterList(self):
-        ParameterList_window = AQ_DialogParamList(self.event_manager, self.parent)
-        ParameterList_window.exec_()
+        if self.cur_active_device is not None:
+            ParameterList_window = AQ_DialogParamList(self.cur_active_device, self.event_manager, self.parent)
+            ParameterList_window.exec_()
 
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
@@ -41,6 +43,9 @@ class AQ_CurrentSession(QObject):
     def set_cur_active_device(self, device):
         if device is not None:
             self.cur_active_device = device
+
+    def clear_cur_active_device(self):
+        self.cur_active_device = None
 
     def read_params_cur_active_device(self):
         self.cur_active_device.read_all_parameters()

@@ -9,7 +9,7 @@ from AQ_SettingsFunc import save_current_text_value, save_combobox_current_state
                              load_last_combobox_state
 
 
-class AQ_network_settings_frame(QFrame):
+class AQ_NetworkSettingsFrame(QFrame):
     def __init__(self, event_manager, parent):
         super().__init__(parent)
         self.setObjectName("AQ_Dialog_network_frame")
@@ -23,7 +23,7 @@ class AQ_network_settings_frame(QFrame):
         except:
             print('File "auto_load_settings.ini" not found')
 
-        self.network_settings_layout = AQ_network_settings_layout(event_manager, self, self.auto_load_settings)
+        self.network_settings_layout = AQ_NetworkSettingsLayout(event_manager, self, self.auto_load_settings)
 
     def get_network_settings_list(self):
         network_settings_list = self.network_settings_layout.get_network_settings_list()
@@ -36,7 +36,7 @@ class AQ_network_settings_frame(QFrame):
         self.network_settings_layout.save_current_fields()
 
 
-class AQ_network_settings_layout(QVBoxLayout):
+class AQ_NetworkSettingsLayout(QVBoxLayout):
     def __init__(self, event_manager, parent, auto_load_settings=None):
         super().__init__(parent)
 

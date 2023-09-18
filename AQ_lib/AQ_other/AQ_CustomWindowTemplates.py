@@ -56,6 +56,13 @@ class AQ_SimplifiedTitleBarFrame(QFrame):
         self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close_' + name))  # добавляем обработчик события нажатия на кнопку закрытия
         self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.title_name.setGeometry(0, 8, self.width(), 35)
+        self.btn_minimize.move(self.width() - 70, 0)
+        self.btn_close.move(self.width() - 35, 0)
+
+        event.accept()
 
 # MainFieldFrame
 class AQ_ReducedMainFieldFrame(QFrame):
