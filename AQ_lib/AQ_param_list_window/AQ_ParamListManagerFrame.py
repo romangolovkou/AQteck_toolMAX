@@ -1,12 +1,14 @@
 import csv
+import os
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QStandardItem, QFont
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog
 
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView
 from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
+from AQ_SettingsFunc import get_last_path, save_last_path
 
 
 class AQ_ParamListManagerFrame(QFrame):
@@ -14,7 +16,19 @@ class AQ_ParamListManagerFrame(QFrame):
         super().__init__(parent)
         self.event_manager = event_manager
         self.device = device
+        self.parent = parent
         self.setStyleSheet("background-color: transparent;")
+
+        try:
+            # Получаем текущий рабочий каталог (папку проекта)
+            project_path = os.getcwd()
+            # Объединяем путь к папке проекта с именем файла настроек
+            settings_path = os.path.join(project_path, "auto_load_settings.ini")
+            # Используем полученный путь в QSettings
+            self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
+        except:
+            self.auto_load_settings = None
+            print('File "auto_load_settings.ini" not found')
 
         # Створюємо нову модель для відображення
         self.param_list_table_model = self.create_param_list_for_view(self.device)
@@ -143,20 +157,36 @@ class AQ_ParamListManagerFrame(QFrame):
         dev_name = device_name + ' SN' + serial_number
 
         # Сохраняем данные в файл CSV
-        filename = 'Parameters available over network ' + dev_name + '.csv'
-        with open(filename, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=';')
+        def_name = 'Parameters available over network ' + dev_name + '.csv'
+        # Начальный путь для диалога
+        initial_path = get_last_path(self.auto_load_settings, 'param_list_csv_path')
+        if initial_path == '':
+            initial_path = "C:/"
+        self.file_dialog = QFileDialog(self)
+        options = self.file_dialog.Options()
+        options |= self.file_dialog.DontUseNativeDialog
 
-            # Записываем заголовки (названия колонок)
-            headers = [self.param_list_table_model.horizontalHeaderItem(col).text()
-                       for col in range(self.param_list_table_model.columnCount())]
-            writer.writerow(headers)
+        # Открываем диалог для выбора файла и места сохранения
+        filename, _ = self.file_dialog.getSaveFileName(self.parent, "Save parameters as CSV", initial_path + '/' +
+                                                       def_name, "CSV Files (*.csv);;All Files (*)", options=options)
+        if filename != '':
+            with open(filename, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile, delimiter=';')
 
-            # Записываем данные из модели
-            for row in range(self.param_list_table_model.rowCount()):
-                row_data = [self.param_list_table_model.item(row, col).text()
-                            for col in range(self.param_list_table_model.columnCount())]
-                writer.writerow(row_data)
+                # Записываем заголовки (названия колонок)
+                headers = [self.param_list_table_model.horizontalHeaderItem(col).text()
+                           for col in range(self.param_list_table_model.columnCount())]
+                writer.writerow(headers)
+
+                # Записываем данные из модели
+                for row in range(self.param_list_table_model.rowCount()):
+                    row_data = [self.param_list_table_model.item(row, col).text()
+                                for col in range(self.param_list_table_model.columnCount())]
+                    writer.writerow(row_data)
+            # Извлекаем путь к каталогу
+            directory_path = os.path.dirname(filename)
+            save_last_path(self.auto_load_settings, 'param_list_csv_path', directory_path)
+
 
 class AQ_ParamListLayout(QVBoxLayout):
     def __init__(self, device, table_model, event_manager, parent):
