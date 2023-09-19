@@ -1,3 +1,5 @@
+import csv
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QFont
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
@@ -16,6 +18,9 @@ class AQ_ParamListManagerFrame(QFrame):
 
         # Створюємо нову модель для відображення
         self.param_list_table_model = self.create_param_list_for_view(self.device)
+
+        # Створюємо обробник події створення csv файлу з параметрами
+        self.event_manager.register_event_handler('make_user_param_list_file', self.create_csv_file)
 
         # Створюємо головний лейаут
         self.param_list_layout = AQ_ParamListLayout(self.device, self.param_list_table_model, self.event_manager, self)
@@ -131,6 +136,28 @@ class AQ_ParamListManagerFrame(QFrame):
         return [param_item, group_item, adr_dec_item, adr_hex_item,
                 reg_count_item, read_func_item, write_func_item, data_type_item]
 
+    def create_csv_file(self):
+        device_data = self.device.get_device_data()
+        device_name = device_data.get('device_name', 'err_name')
+        serial_number = device_data.get('serial_number', 'err_serial_number')
+        dev_name = device_name + ' SN' + serial_number
+
+        # Сохраняем данные в файл CSV
+        filename = 'Parameters available over network ' + dev_name + '.csv'
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';')
+
+            # Записываем заголовки (названия колонок)
+            headers = [self.param_list_table_model.horizontalHeaderItem(col).text()
+                       for col in range(self.param_list_table_model.columnCount())]
+            writer.writerow(headers)
+
+            # Записываем данные из модели
+            for row in range(self.param_list_table_model.rowCount()):
+                row_data = [self.param_list_table_model.item(row, col).text()
+                            for col in range(self.param_list_table_model.columnCount())]
+                writer.writerow(row_data)
+
 class AQ_ParamListLayout(QVBoxLayout):
     def __init__(self, device, table_model, event_manager, parent):
         super().__init__(parent)
@@ -147,7 +174,7 @@ class AQ_ParamListLayout(QVBoxLayout):
         device_data = self.device.get_device_data()
         device_name = device_data.get('device_name', 'err_name')
         serial_number = device_data.get('serial_number', 'err_serial_number')
-        self.name_label = QLabel(device_name + ' ' + serial_number)
+        self.name_label = QLabel(device_name + ' S/N' + serial_number)
         self.name_label.setStyleSheet("color: #D0D0D0; border-top:transparent; border-bottom: 1px solid #5bb192;")
         # self.name_label.setFixedHeight(35)
         self.name_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
