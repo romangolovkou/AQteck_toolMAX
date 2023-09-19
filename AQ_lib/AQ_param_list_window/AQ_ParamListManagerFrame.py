@@ -3,7 +3,7 @@ import os
 
 from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QStandardItem, QFont
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView
 
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView
@@ -195,7 +195,7 @@ class AQ_ParamListLayout(QVBoxLayout):
         self.parent = parent
         self.event_manager = event_manager
         self.device = device
-        self.table_model = table_model
+        self.param_table_model = table_model
         self.setContentsMargins(20, 5, 20, 20)  # Устанавливаем отступы макета
         self.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
 
@@ -213,16 +213,24 @@ class AQ_ParamListLayout(QVBoxLayout):
     #Створюємо лайаут з інфобаром
         self.info_bar_layout = AQ_InfoBarLayout()
 
-    # Створюємо таблицю
-        self.table_view = AQ_ParamListTableView(self.table_model, parent)
+    # Створюємо інфо-бар таблицю
+        self.info_table_view = QTableView(parent)
+
+    # Створюємо таблицю з параметрами
+        self.param_table_view = AQ_ParamListTableView(self.param_table_model, parent)
 
     # Створюємо кнопку збереження параметрів у файл
         self.btn_save_as_file = AQ_ParamListSaveButton(self.event_manager, parent)
 
     # Додаємо всі створені віджети в порядку відображення
+    #     self.addWidget(self.name_label)
+    #     self.addLayout(self.info_bar_layout)
+    #     self.addWidget(self.param_table_view)
+    #     self.addWidget(self.btn_save_as_file)
+
         self.addWidget(self.name_label)
-        self.addLayout(self.info_bar_layout)
-        self.addWidget(self.table_view)
+        self.addWidget(self.info_table_view)
+        self.addWidget(self.param_table_view)
         self.addWidget(self.btn_save_as_file)
 
 

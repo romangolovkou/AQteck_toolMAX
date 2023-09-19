@@ -1,4 +1,6 @@
+import socket
 import struct
+
 from Crypto.Cipher import DES
 from PyQt5.QtCore import QObject
 from pymodbus.client import serial
@@ -43,6 +45,7 @@ class AQ_Device(QObject):
             self.device_data['status'] = 'connect_error'
 
         self.add_address_string_to_device_data(address_tuple)
+        self.device_data['network_info'] = self.make_network_info_list()
 
     def get_device_status(self):
         return self.device_data.get('status', None)
@@ -65,6 +68,26 @@ class AQ_Device(QObject):
                     self.device_data['address'] = str(address) + ' (' + str(selected_port) + ')'
 
         return None
+
+    def make_network_info_list(self):
+        # Выполняем запрос
+        modbus_reg = 26  #у всіх приборах на кс2 для поточного IP повинен буди однаковий
+        reg_count = 2
+        response = self.client.read_holding_registers(modbus_reg, reg_count)
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in response.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+        byte_array = reverse_modbus_registers(byte_array)
+        value = struct.unpack('>I', byte_array)[0]
+        ip = socket.inet_ntoa(struct.pack('!L', value))
+        if not is_valid_ip(ip):
+            ip = ''
+
+        info_list = ['Current IP: ' + ip, 'Protocol: ModbusTCP',
+                     'Byte order: Most significant byte first',
+                     'Registers order: Least significant register first']
+        return info_list
 
     def create_client(self, address_tuple):
         interface = address_tuple[0]
