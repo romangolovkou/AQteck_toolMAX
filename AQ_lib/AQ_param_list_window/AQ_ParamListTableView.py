@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableView, QHeaderView
+from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
 
 class AQ_ParamListTableView(QTableView):
@@ -12,4 +12,6 @@ class AQ_ParamListTableView(QTableView):
         self.horizontalHeader().setSectionResizeMode(7, QHeaderView.Stretch)
         self.setStyleSheet("""QTableView {color: #D0D0D0;}
                            QTableView::item { padding-left: 3px; }""")
+        self.setSortingEnabled(True)
+        self.setEditTriggers(QAbstractItemView.SelectedClicked | QAbstractItemView.EditKeyPressed)
 
