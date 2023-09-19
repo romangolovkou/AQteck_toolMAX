@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QFont
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
 
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView
@@ -139,7 +139,7 @@ class AQ_ParamListLayout(QVBoxLayout):
         self.event_manager = event_manager
         self.device = device
         self.table_model = table_model
-        self.setContentsMargins(20, 20, 20, 20)  # Устанавливаем отступы макета
+        self.setContentsMargins(20, 5, 20, 20)  # Устанавливаем отступы макета
         self.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
 
 
@@ -149,23 +149,24 @@ class AQ_ParamListLayout(QVBoxLayout):
         serial_number = device_data.get('serial_number', 'err_serial_number')
         self.name_label = QLabel(device_name + ' ' + serial_number)
         self.name_label.setStyleSheet("color: #D0D0D0; border-top:transparent; border-bottom: 1px solid #5bb192;")
-        self.name_label.setFixedHeight(35)
+        # self.name_label.setFixedHeight(35)
         self.name_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
         self.name_label.setAlignment(Qt.AlignLeft)
 
     #Створюємо лайаут з інфобаром
         self.info_bar_layout = AQ_InfoBarLayout()
 
-    # Создаем QTableWidget с 4 столбцами
-    #     self.table_widget = AQ_addDevice_TableWidget(parent)
-        # self.table_widget.move(self.network_settings_frame.width() + 50, self.title_bar_frame.height() + 5)
-        self.table_view = AQ_ParamListTableView(parent)
-        self.table_view.setModel(self.table_model)
+    # Створюємо таблицю
+        self.table_view = AQ_ParamListTableView(self.table_model, parent)
 
-    # Додаємо все створені віджеті в порядку відображення
+    # Створюємо кнопку збереження параметрів у файл
+        self.btn_save_as_file = AQ_ParamListSaveButton(self.event_manager, parent)
+
+    # Додаємо всі створені віджети в порядку відображення
         self.addWidget(self.name_label)
         self.addLayout(self.info_bar_layout)
         self.addWidget(self.table_view)
+        self.addWidget(self.btn_save_as_file)
 
 
 class AQ_CurrentIpParamsLayout(QVBoxLayout):
@@ -195,3 +196,32 @@ class AQ_InfoBarLayout(QHBoxLayout):
         self.protocol_param_layout = AQ_ProtocolParamsLayout()
         self.addLayout(self.ip_param_layout)
         self.addLayout(self.protocol_param_layout)
+
+
+class AQ_ParamListSaveButton(QPushButton):
+    def __init__(self, event_manager, parent=None):
+        text = 'Save as file (csv)'
+        super().__init__(text, parent)
+        self.event_manager = event_manager
+        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        self.setFixedSize(150, 35)
+        self.clicked.connect(lambda: self.event_manager.emit_event('make_user_param_list_file'))
+        self.setStyleSheet("""
+                            QPushButton {
+                                border-left: 1px solid #9ef1d3;
+                                border-top: 1px solid #9ef1d3;
+                                border-bottom: 1px solid #5bb192;
+                                border-right: 1px solid #5bb192;
+                                color: #D0D0D0;
+                                background-color: #2b2d30;
+                                border-radius: 4px;
+                            }
+                            QPushButton:hover {
+                                background-color: #3c3e41;
+                            }
+                            QPushButton:pressed {
+                                background-color: #429061;
+                            }
+                        """)
+
+        self.show()
