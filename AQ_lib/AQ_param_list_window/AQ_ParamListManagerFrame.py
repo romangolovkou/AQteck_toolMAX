@@ -2,7 +2,7 @@ import csv
 import os
 
 from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtGui import QStandardItem, QFont
+from PyQt5.QtGui import QStandardItem, QFont, QStandardItemModel
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView
 
 from AQ_CustomWindowTemplates import AQ_Label
@@ -30,14 +30,18 @@ class AQ_ParamListManagerFrame(QFrame):
             self.auto_load_settings = None
             print('File "auto_load_settings.ini" not found')
 
-        # Створюємо нову модель для відображення
+        # Створюємо нову модель для відображення параметрів
         self.param_list_table_model = self.create_param_list_for_view(self.device)
+
+        # Створюємо нову модель для відображення інфо-бару
+        self.info_bar_table_model = self.create_info_list_for_view(self.device)
 
         # Створюємо обробник події створення csv файлу з параметрами
         self.event_manager.register_event_handler('make_user_param_list_file', self.create_csv_file)
 
         # Створюємо головний лейаут
-        self.param_list_layout = AQ_ParamListLayout(self.device, self.param_list_table_model, self.event_manager, self)
+        self.param_list_layout = AQ_ParamListLayout(self.device, self.param_list_table_model,
+                                                    self.info_bar_table_model, self.event_manager, self)
 
     def create_param_list_for_view(self, device):
         device_data = device.get_device_data()
@@ -52,6 +56,20 @@ class AQ_ParamListManagerFrame(QFrame):
             new_root_item = table_model_for_view.invisibleRootItem()
             self.traverse_items_create_new_table_model_for_view(donor_root_item, new_root_item)
             return table_model_for_view
+
+    def create_info_list_for_view(self, device):
+        device_data = device.get_device_data()
+        network_info_list = device_data.get('network_info', None)
+        if network_info_list is not None:
+            info_table_model_for_view = QStandardItemModel()
+            info_table_model_for_view.setColumnCount(1)
+            new_root_item = info_table_model_for_view.invisibleRootItem()
+            for i in range(len(network_info_list)):
+                item_row = QStandardItem(network_info_list[i])
+                item_row.setFlags(item_row.flags() & ~Qt.ItemIsEditable)
+                new_root_item.appendRow(item_row)
+
+            return info_table_model_for_view
 
     def traverse_items_create_new_table_model_for_view(self, item, new_item):
         for row in range(item.rowCount()):
@@ -173,12 +191,18 @@ class AQ_ParamListManagerFrame(QFrame):
             with open(filename, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=';')
 
+                # Записуємо дані з моделі з мережевою інформацією
+                for row in range(self.info_bar_table_model.rowCount()):
+                    row_data = [self.info_bar_table_model.item(row, col).text()
+                                for col in range(self.info_bar_table_model.columnCount())]
+                    writer.writerow(row_data)
+
                 # Записываем заголовки (названия колонок)
                 headers = [self.param_list_table_model.horizontalHeaderItem(col).text()
                            for col in range(self.param_list_table_model.columnCount())]
                 writer.writerow(headers)
 
-                # Записываем данные из модели
+                # Записуємо дані з моделі з параметрами
                 for row in range(self.param_list_table_model.rowCount()):
                     row_data = [self.param_list_table_model.item(row, col).text()
                                 for col in range(self.param_list_table_model.columnCount())]
@@ -189,13 +213,14 @@ class AQ_ParamListManagerFrame(QFrame):
 
 
 class AQ_ParamListLayout(QVBoxLayout):
-    def __init__(self, device, table_model, event_manager, parent):
+    def __init__(self, device, param_table_model, info_bar_table_model, event_manager, parent):
         super().__init__(parent)
 
         self.parent = parent
         self.event_manager = event_manager
         self.device = device
-        self.param_table_model = table_model
+        self.info_bar_table_model = info_bar_table_model
+        self.param_table_model = param_table_model
         self.setContentsMargins(20, 5, 20, 20)  # Устанавливаем отступы макета
         self.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
 
@@ -210,11 +235,8 @@ class AQ_ParamListLayout(QVBoxLayout):
         self.name_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
         self.name_label.setAlignment(Qt.AlignLeft)
 
-    #Створюємо лайаут з інфобаром
-        self.info_bar_layout = AQ_InfoBarLayout()
-
     # Створюємо інфо-бар таблицю
-        self.info_table_view = AQ_ParamListInfoTableView(self.device, parent)
+        self.info_table_view = AQ_ParamListInfoTableView(self.info_bar_table_model, parent)
 
     # Створюємо таблицю з параметрами
         self.param_table_view = AQ_ParamListTableView(self.param_table_model, parent)
@@ -223,11 +245,6 @@ class AQ_ParamListLayout(QVBoxLayout):
         self.btn_save_as_file = AQ_ParamListSaveButton(self.event_manager, parent)
 
     # Додаємо всі створені віджети в порядку відображення
-    #     self.addWidget(self.name_label)
-    #     self.addLayout(self.info_bar_layout)
-    #     self.addWidget(self.param_table_view)
-    #     self.addWidget(self.btn_save_as_file)
-
         self.addWidget(self.name_label)
         self.addWidget(self.info_table_view)
         self.addWidget(self.param_table_view)
