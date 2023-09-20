@@ -445,3 +445,9 @@ class AQ_Device(QObject):
         # self.wait_widget.progress_bar.setValue(max_value)
         # self.wait_widget.hide()
         # self.wait_widget.deleteLater()
+
+    def restart_device(self):
+        # "I will restart the device now!"
+        # Задаем запись для файла
+        records = [
+            (pdu_file_msg.RecordType.holding_register, 0, 0xDEAD, 1)]  # Пример для записи в регистр с адресом 0xDEAD
