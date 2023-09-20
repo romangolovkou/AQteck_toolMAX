@@ -2,8 +2,8 @@ import csv
 import os
 
 from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtGui import QStandardItem, QFont, QStandardItemModel
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView
+from PyQt5.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
 
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView, AQ_ParamListInfoTableView
@@ -238,6 +238,10 @@ class AQ_ParamListLayout(QVBoxLayout):
     # Створюємо інфо-бар таблицю
         self.info_table_view = AQ_ParamListInfoTableView(self.info_bar_table_model, parent)
 
+    # Створюємо поле для пошуку
+    #     self.search_box = AQ_ParamListSearchLine(parent)
+    #     self.search_box.textChanged.connect(self.search)
+
     # Створюємо таблицю з параметрами
         self.param_table_view = AQ_ParamListTableView(self.param_table_model, parent)
 
@@ -247,8 +251,34 @@ class AQ_ParamListLayout(QVBoxLayout):
     # Додаємо всі створені віджети в порядку відображення
         self.addWidget(self.name_label)
         self.addWidget(self.info_table_view)
+        # self.addWidget(self.search_box)
         self.addWidget(self.param_table_view)
         self.addWidget(self.btn_save_as_file)
+
+    def search(self):
+        search_text = self.search_box.text()
+        if not search_text:
+            self.reset_highlight()
+            return
+
+        for row in range(self.param_table_model.rowCount()):
+            for col in range(self.param_table_model.columnCount()):
+                item = self.param_table_model.item(row, col)
+                if item is not None:
+                    item.setBackground(QColor('white'))  # Reset previous highlighting
+
+                index = self.param_table_model.index(row, col)
+                text = index.data(Qt.DisplayRole)
+
+                if text and search_text.lower() in text.lower():
+                    item.setBackground(QColor('yellow'))  # Highlight matches
+
+    def reset_highlight(self):
+        for row in range(self.param_table_model.rowCount()):
+            for col in range(self.param_table_model.columnCount()):
+                item = self.param_table_model.item(row, col)
+                if item is not None:
+                    item.setBackground(QColor('white'))  # Reset highlighting
 
 
 class AQ_CurrentIpParamsLayout(QVBoxLayout):
@@ -307,3 +337,9 @@ class AQ_ParamListSaveButton(QPushButton):
                         """)
 
         self.show()
+
+class AQ_ParamListSearchLine(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setPlaceholderText('Search...')
+        self.setStyleSheet('color: #D0D0D0; border: none;')
