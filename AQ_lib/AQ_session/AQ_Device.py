@@ -33,7 +33,6 @@ class AQ_Device(QObject):
                 self.device_tree = self.parse_default_prg(default_prg)
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
                     and isinstance(self.device_tree, AQ_TreeItemModel):
-                    # and isinstance(self.device_tree, QStandardItemModel):
                     self.device_tree.set_device(self)
                     self.device_data['status'] = 'ok'
                     self.device_data['device_tree'] = self.device_tree

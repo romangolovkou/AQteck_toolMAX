@@ -6,7 +6,7 @@ from PyQt5.QtGui import QStandardItem, QFont
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView
 
 from AQ_CustomWindowTemplates import AQ_Label
-from AQ_ParamListTableView import AQ_ParamListTableView
+from AQ_ParamListTableView import AQ_ParamListTableView, AQ_ParamListInfoTableView
 from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
 from AQ_SettingsFunc import get_last_path, save_last_path
 
@@ -164,7 +164,7 @@ class AQ_ParamListManagerFrame(QFrame):
             initial_path = "C:/"
         self.file_dialog = QFileDialog(self)
         options = self.file_dialog.Options()
-        options |= self.file_dialog.DontUseNativeDialog
+        # options |= self.file_dialog.DontUseNativeDialog
 
         # Открываем диалог для выбора файла и места сохранения
         filename, _ = self.file_dialog.getSaveFileName(self.parent, "Save parameters as CSV", initial_path + '/' +
@@ -214,7 +214,7 @@ class AQ_ParamListLayout(QVBoxLayout):
         self.info_bar_layout = AQ_InfoBarLayout()
 
     # Створюємо інфо-бар таблицю
-        self.info_table_view = QTableView(parent)
+        self.info_table_view = AQ_ParamListInfoTableView(self.device, parent)
 
     # Створюємо таблицю з параметрами
         self.param_table_view = AQ_ParamListTableView(self.param_table_model, parent)
