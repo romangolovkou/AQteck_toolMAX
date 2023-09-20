@@ -22,6 +22,7 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("delete_cur_active_device", self.delete_cur_active_device)
         self.event_manager.register_event_handler("delete_device", self.delete_device)
         self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
+        self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
 
 
     def open_AddDevices(self):
@@ -65,3 +66,10 @@ class AQ_CurrentSession(QObject):
             removed_element = self.devices.pop(index_to_remove)
             if len(self.devices) == 0:
                 self.event_manager.emit_event('no_devices')
+
+    def restart_device(self, device):
+        device.restart_device()
+
+    def restart_current_active_device(self):
+        if self.cur_active_device is not None:
+            self.restart_device(self.cur_active_device)

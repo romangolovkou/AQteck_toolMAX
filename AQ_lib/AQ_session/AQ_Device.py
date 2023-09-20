@@ -46,6 +46,10 @@ class AQ_Device(QObject):
         self.add_address_string_to_device_data(address_tuple)
         self.device_data['network_info'] = self.make_network_info_list()
 
+        # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
+        # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694'
+        # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
+
     def get_device_status(self):
         return self.device_data.get('status', None)
 
@@ -238,6 +242,24 @@ class AQ_Device(QObject):
         decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
 
         return decrypted_data
+
+    def encrypt_data(self, iv, data):
+        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+        key = b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524
+
+        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+        cipher = DES.new(key, DES.MODE_CBC, iv)
+
+        # Выравнивание длины исходных данных
+        pad_length = 8 - (len(data) % 8)
+        padded_data = data + bytes([0x00] * pad_length)
+
+        # Шифрование данных
+        encrypted_data = cipher.encrypt(padded_data)
+        # відновлення довжини массиву данних якщо вирівнювання до кратності 8 байт змінило початкову довжину
+        encrypted_data = encrypted_data[0:len(data)]
+
+        return encrypted_data
 
     def parse_default_prg(self, default_prg):
         try:
@@ -448,6 +470,10 @@ class AQ_Device(QObject):
 
     def restart_device(self):
         # "I will restart the device now!"
-        # Задаем запись для файла
-        records = [
-            (pdu_file_msg.RecordType.holding_register, 0, 0xDEAD, 1)]  # Пример для записи в регистр с адресом 0xDEAD
+        file_number = 0xDEAD
+        record_number = 0
+        record_length = 20
+        text = "I will restart the device now!"
+        record_data = text.encode('UTF-8')
+        encrypted_record_data = self.encrypt_data(b'superkey', record_data)
+        self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
