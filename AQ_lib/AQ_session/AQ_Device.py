@@ -47,8 +47,11 @@ class AQ_Device(QObject):
         self.device_data['network_info'] = self.make_network_info_list()
 
         # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
-        hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
-        self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
+        # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694ACFDF674DB57A4B9 - b'I will restart the device now!\x00\x00\x1e\x00\x00\x00Y\xdbZ^'
+        # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2 - b'I will restart the device now!\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
+        # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2'
+        # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
 
     def get_device_status(self):
         return self.device_data.get('status', None)
@@ -250,15 +253,8 @@ class AQ_Device(QObject):
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
         cipher = DES.new(key, DES.MODE_CBC, iv)
 
-        # Выравнивание длины исходных данных
-        pad_length = 8 - (len(data) % 8)
-        pad_length += 8
-        padded_data = data + bytes([0x00] * pad_length)
-
         # Шифрование данных
-        encrypted_data = cipher.encrypt(padded_data)
-        # відновлення довжини массиву данних якщо вирівнювання до кратності 8 байт змінило початкову довжину
-        encrypted_data = encrypted_data[0:len(padded_data)]
+        encrypted_data = cipher.encrypt(data)
 
         return encrypted_data
 
@@ -476,6 +472,13 @@ class AQ_Device(QObject):
         record_length = 20
         text = "I will restart the device now!"
         record_data = text.encode('UTF-8')
+        # Выравнивание длины исходных данных
+        pad_length = 8 - (len(record_data) % 8)
+        padded_data = record_data + bytes([0x00] * pad_length)
+        strange_tail = b'\x1e\x00\x00\x00Y\xdbZ^'
+        record_data = padded_data + strange_tail
         encrypted_record_data = self.encrypt_data(b'superkey', record_data)
-
         self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
+        # record_number = 20
+        # record_length = 0
+        # self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
