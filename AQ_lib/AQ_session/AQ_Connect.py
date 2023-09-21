@@ -61,7 +61,7 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
             raise
 
     def write_file_record(self, file_number, record_number, record_length, record_data):
-        # Создание экземпляра структуры ReadFileRecordRequest
+        # Создание экземпляра структуры WriteFileRecordRequest
         request = WriteFileRecordRequest(self.slave_id)
         # Установка значений полей структуры
         request.file_number = file_number
@@ -108,7 +108,7 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
             raise
 
     def write_file_record(self, file_number, record_number, record_length, record_data):
-        # Создание экземпляра структуры ReadFileRecordRequest
+        # Создание экземпляра структуры WriteFileRecordRequest
         request = WriteFileRecordRequest(self.slave_id)
         # Установка значений полей структуры
         request.file_number = file_number

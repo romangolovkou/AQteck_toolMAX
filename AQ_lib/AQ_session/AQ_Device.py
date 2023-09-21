@@ -479,6 +479,6 @@ class AQ_Device(QObject):
         record_data = padded_data + strange_tail
         encrypted_record_data = self.encrypt_data(b'superkey', record_data)
         self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
-        # record_number = 20
-        # record_length = 0
-        # self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
+        record_number = 20
+        record_length = 0
+        self.client.write_file_record(file_number, record_number, record_length, b'\x00')
