@@ -47,8 +47,8 @@ class AQ_Device(QObject):
         self.device_data['network_info'] = self.make_network_info_list()
 
         # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
-        # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694'
-        # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
+        hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
+        self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
 
     def get_device_status(self):
         return self.device_data.get('status', None)
@@ -252,12 +252,13 @@ class AQ_Device(QObject):
 
         # Выравнивание длины исходных данных
         pad_length = 8 - (len(data) % 8)
+        pad_length += 8
         padded_data = data + bytes([0x00] * pad_length)
 
         # Шифрование данных
         encrypted_data = cipher.encrypt(padded_data)
         # відновлення довжини массиву данних якщо вирівнювання до кратності 8 байт змінило початкову довжину
-        encrypted_data = encrypted_data[0:len(data)]
+        encrypted_data = encrypted_data[0:len(padded_data)]
 
         return encrypted_data
 
@@ -476,4 +477,5 @@ class AQ_Device(QObject):
         text = "I will restart the device now!"
         record_data = text.encode('UTF-8')
         encrypted_record_data = self.encrypt_data(b'superkey', record_data)
+
         self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
