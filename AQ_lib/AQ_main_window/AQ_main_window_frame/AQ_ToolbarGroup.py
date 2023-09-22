@@ -182,6 +182,7 @@ class AQ_firmware_group(AQ_toolbar_group_template):
         self.ico_btn_reboot = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_reboot = AQ_ToolButton('Restart device', self.ico_btn_reboot)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.btn_reboot.clicked.connect(lambda: self.event_manager.emit_event('restart_cur_active_device'))
         self.buttons.append(self.btn_reboot)
 
     # Створюємо початковий горизонтальний лейаут

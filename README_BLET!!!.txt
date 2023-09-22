@@ -23,6 +23,8 @@
         		"""
         		ModbusRequest.__init__(self, slave_id, **kwargs)
         		self.records = records or []
+	Те саме потрібно повторити і для функції write_file_record та классу WriteFileRecordRequest 
+	(знаходяться у тих же файлах)
 
 2. (пункт нужно дополнить) В качестве IV для DES расшифровки используется 'superkey', а для ключа 
    используется хеш пароля прибора
