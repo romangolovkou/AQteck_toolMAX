@@ -228,6 +228,24 @@ class AQ_Device(QObject):
             print(f"Error occurred: {str(e)}")
             return 'parsing_err'
 
+    def read_status_file(self):
+        # Установка значений полей структуры
+        file_number = 0x0001
+        record_number = 0
+        record_length = 124
+
+        result = self.client.read_file_record(file_number, record_number, record_length)
+
+        encrypt_res = result.records[0].record_data
+
+        try:
+            decrypt_res = self.decrypt_data(b'superkey', encrypt_res)
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return 'decrypt_err'  # Помилка дешифрування
+
+        return decrypt_res
+
     def read_parameter(self, item):
         param_attibutes = item.get_param_attributes()
         if param_attibutes.get('is_catalog', 0) == 1:

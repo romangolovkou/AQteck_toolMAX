@@ -3,6 +3,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AQ_Device import AQ_Device
+from AQ_DeviceInfoWindow import AQ_DialogDeviceInfo
 
 
 class AQ_CurrentSession(QObject):
@@ -14,6 +15,7 @@ class AQ_CurrentSession(QObject):
         self.devices = []
         self.event_manager.register_event_handler("open_AddDevices", self.open_AddDevices)
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
+        self.event_manager.register_event_handler("open_DeviceInfo", self.open_DeviceInfo)
         self.event_manager.register_event_handler("set_active_device", self.set_cur_active_device)
         self.event_manager.register_event_handler("read_params_cur_active_device", self.read_params_cur_active_device)
         self.event_manager.register_event_handler("write_params_cur_active_device", self.write_params_cur_active_device)
@@ -24,6 +26,11 @@ class AQ_CurrentSession(QObject):
     def open_AddDevices(self):
         AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
         AddDevices_window.exec_()
+
+    def open_DeviceInfo(self):
+        if self.cur_active_device is not None:
+            device_info_window = AQ_DialogDeviceInfo(self.cur_active_device, self.event_manager, self.parent)
+            device_info_window.exec_()
 
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):

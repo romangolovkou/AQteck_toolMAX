@@ -201,6 +201,7 @@ class AQ_other_group(AQ_toolbar_group_template):
         self.ico_btn_device_info = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_device_info = AQ_ToolButton('Device information', self.ico_btn_device_info)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.btn_device_info.clicked.connect(lambda: self.event_manager.emit_event('open_DeviceInfo'))
         self.buttons.append(self.btn_device_info)
 
     # Створюємо початковий горизонтальний лейаут
