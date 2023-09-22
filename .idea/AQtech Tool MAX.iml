@@ -9,6 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_main_window/AQ_main_window_frame" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_other" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_session" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_param_list_window" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_device_info_window" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>

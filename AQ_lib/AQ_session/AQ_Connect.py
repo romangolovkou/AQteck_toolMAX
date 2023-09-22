@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from PyQt5.QtCore import QObject
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
-from pymodbus.file_message import ReadFileRecordRequest
+from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 
 
 class AQ_connect(QObject):
@@ -53,6 +53,25 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
 
         return result
 
+    def write_registers(self, modbus_reg, registers):
+        try:
+            self.modbus_rtu_client.write_registers(modbus_reg, registers, self.slave_id)
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            raise
+
+    def write_file_record(self, file_number, record_number, record_length, record_data):
+        # Создание экземпляра структуры WriteFileRecordRequest
+        request = WriteFileRecordRequest(self.slave_id)
+        # Установка значений полей структуры
+        request.file_number = file_number
+        request.record_number = record_number
+        request.record_length = record_length
+        request.record_data = record_data
+        result = self.modbus_rtu_client.write_file_record(self.slave_id, [request])
+
+        return result
+
 
 class AQ_modbusTCP_connect(AQ_TCP_connect):
     def __init__(self, ip):
@@ -87,3 +106,15 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise
+
+    def write_file_record(self, file_number, record_number, record_length, record_data):
+        # Создание экземпляра структуры WriteFileRecordRequest
+        request = WriteFileRecordRequest(self.slave_id)
+        # Установка значений полей структуры
+        request.file_number = file_number
+        request.record_number = record_number
+        request.record_length = record_length
+        request.record_data = record_data
+        result = self.modbus_tcp_client.write_file_record(self.slave_id, [request])
+
+        return result

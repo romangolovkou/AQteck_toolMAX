@@ -25,3 +25,13 @@ def save_current_text_value(settings, edit_line):
     text = edit_line.text()
     settings.setValue(key, text)
     settings.sync()
+
+
+def get_last_path(settings, key):
+    path = settings.value(key, "", type=str)
+    return path
+
+
+def save_last_path(settings, key, path):
+    settings.setValue(key, path)
+    settings.sync()

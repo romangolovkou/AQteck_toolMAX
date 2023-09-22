@@ -6,6 +6,9 @@ from PyQt5.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
 
 from AQ_CustomWindowTemplates import AQ_Label
+from AQ_DeviceInfoTableView import AQ_DeviceInfoTableView
+
+
 # from AQ_ParamListTableView import AQ_ParamListTableView, AQ_ParamListInfoTableView
 # from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
 # from AQ_SettingsFunc import get_last_path, save_last_path
@@ -23,6 +26,20 @@ class AQ_DeviceInfoManagerFrame(QFrame):
         # Читаэмо статус файл з поточного активного приладу
         self.read_status_file()
 
+        data_string = self.status_file.decode('ANSI')
+        # Разделение строк по переводу строки
+        data_rows = data_string.split('\n')
+        data = []
+        for row in data_rows:
+            # Разделение записи на поля по символу ';'
+            fields = row.split(';')
+            data.append(fields)
+
+        # Загрузка данных в модель
+        self.info_bar_table_model = self.load_data_to_model(data)
+
+
+
         # # Створюємо нову модель для відображення параметрів
         # self.param_list_table_model = self.create_param_list_for_view(self.device)
         #
@@ -32,9 +49,16 @@ class AQ_DeviceInfoManagerFrame(QFrame):
         # # Створюємо обробник події створення csv файлу з параметрами
         # self.event_manager.register_event_handler('make_user_param_list_file', self.create_csv_file)
         #
-        # # Створюємо головний лейаут
-        # self.param_list_layout = AQ_DeviceInfoLayout(self.device, self.param_list_table_model,
-        #                                             self.info_bar_table_model, self.event_manager, self)
+        # Створюємо головний лейаут
+        self.param_list_layout = AQ_DeviceInfoLayout(self.device, self.info_bar_table_model,
+                                                    self.info_bar_table_model, self.event_manager, self)
+
+    def load_data_to_model(self, data):
+        model = QStandardItemModel(len(data), len(data[0]))
+        for i, row in enumerate(data):
+            for j, item in enumerate(row):
+                model.setItem(i, j, QStandardItem(item))
+        return model
 
     def create_param_list_for_view(self, device):
         device_data = device.get_device_data()
@@ -164,49 +188,6 @@ class AQ_DeviceInfoManagerFrame(QFrame):
         return [param_item, group_item, adr_dec_item, adr_hex_item,
                 reg_count_item, read_func_item, write_func_item, data_type_item]
 
-    def create_csv_file(self):
-        device_data = self.device.get_device_data()
-        device_name = device_data.get('device_name', 'err_name')
-        serial_number = device_data.get('serial_number', 'err_serial_number')
-        dev_name = device_name + ' SN' + serial_number
-
-        # Сохраняем данные в файл CSV
-        def_name = 'Parameters available over network ' + dev_name + '.csv'
-        # Начальный путь для диалога
-        initial_path = get_last_path(self.auto_load_settings, 'param_list_csv_path')
-        if initial_path == '':
-            initial_path = "C:/"
-        self.file_dialog = QFileDialog(self)
-        options = self.file_dialog.Options()
-        # options |= self.file_dialog.DontUseNativeDialog
-
-        # Открываем диалог для выбора файла и места сохранения
-        filename, _ = self.file_dialog.getSaveFileName(self.parent, "Save parameters as CSV", initial_path + '/' +
-                                                       def_name, "CSV Files (*.csv);;All Files (*)", options=options)
-        if filename != '':
-            with open(filename, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile, delimiter=';')
-
-                # Записуємо дані з моделі з мережевою інформацією
-                for row in range(self.info_bar_table_model.rowCount()):
-                    row_data = [self.info_bar_table_model.item(row, col).text()
-                                for col in range(self.info_bar_table_model.columnCount())]
-                    writer.writerow(row_data)
-
-                # Записываем заголовки (названия колонок)
-                headers = [self.param_list_table_model.horizontalHeaderItem(col).text()
-                           for col in range(self.param_list_table_model.columnCount())]
-                writer.writerow(headers)
-
-                # Записуємо дані з моделі з параметрами
-                for row in range(self.param_list_table_model.rowCount()):
-                    row_data = [self.param_list_table_model.item(row, col).text()
-                                for col in range(self.param_list_table_model.columnCount())]
-                    writer.writerow(row_data)
-            # Извлекаем путь к каталогу
-            directory_path = os.path.dirname(filename)
-            save_last_path(self.auto_load_settings, 'param_list_csv_path', directory_path)
-
 
 class AQ_DeviceInfoLayout(QVBoxLayout):
     def __init__(self, device, param_table_model, info_bar_table_model, event_manager, parent):
@@ -221,121 +202,31 @@ class AQ_DeviceInfoLayout(QVBoxLayout):
         self.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
 
 
-    # Создаем текстовую метку заголовка настроек соединения
-        device_data = self.device.get_device_data()
-        device_name = device_data.get('device_name', 'err_name')
-        serial_number = device_data.get('serial_number', 'err_serial_number')
-        self.name_label = QLabel(device_name + ' S/N' + serial_number)
-        self.name_label.setStyleSheet("color: #D0D0D0; border-top:transparent; border-bottom: 1px solid #5bb192;")
+    # Создаем текстовую метку заголовка
+    #     device_data = self.device.get_device_data()
+    #     device_name = device_data.get('device_name', 'err_name')
+    #     serial_number = device_data.get('serial_number', 'err_serial_number')
+        self.first_label = QLabel('General information')
+        self.first_label.setStyleSheet("color: #D0D0D0; border-top:transparent; border-bottom: 1px solid #5bb192;")
         # self.name_label.setFixedHeight(35)
-        self.name_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
-        self.name_label.setAlignment(Qt.AlignLeft)
+        self.first_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
+        self.first_label.setAlignment(Qt.AlignLeft)
 
     # Створюємо інфо-бар таблицю
-        self.info_table_view = AQ_ParamListInfoTableView(self.info_bar_table_model, parent)
+        self.info_table_view = AQ_DeviceInfoTableView(self.info_bar_table_model, parent)
 
-    # Створюємо поле для пошуку
-    #     self.search_box = AQ_ParamListSearchLine(parent)
-    #     self.search_box.textChanged.connect(self.search)
+    # Создаем текстовую метку заголовка
+        self.second_label = QLabel('Parameters')
+        self.second_label.setStyleSheet("color: #D0D0D0; border-top:transparent; border-bottom: 1px solid #5bb192;")
+        # self.name_label.setFixedHeight(35)
+        self.second_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
+        self.second_label.setAlignment(Qt.AlignLeft)
 
     # Створюємо таблицю з параметрами
-        self.param_table_view = AQ_ParamListTableView(self.param_table_model, parent)
-
-    # Створюємо кнопку збереження параметрів у файл
-        self.btn_save_as_file = AQ_ParamListSaveButton(self.event_manager, parent)
+        self.param_table_view = AQ_DeviceInfoTableView(self.param_table_model, parent)
 
     # Додаємо всі створені віджети в порядку відображення
-        self.addWidget(self.name_label)
+        self.addWidget(self.first_label)
         self.addWidget(self.info_table_view)
-        # self.addWidget(self.search_box)
+        self.addWidget(self.second_label)
         self.addWidget(self.param_table_view)
-        self.addWidget(self.btn_save_as_file)
-
-    def search(self):
-        search_text = self.search_box.text()
-        if not search_text:
-            self.reset_highlight()
-            return
-
-        for row in range(self.param_table_model.rowCount()):
-            for col in range(self.param_table_model.columnCount()):
-                item = self.param_table_model.item(row, col)
-                if item is not None:
-                    item.setBackground(QColor('white'))  # Reset previous highlighting
-
-                index = self.param_table_model.index(row, col)
-                text = index.data(Qt.DisplayRole)
-
-                if text and search_text.lower() in text.lower():
-                    item.setBackground(QColor('yellow'))  # Highlight matches
-
-    def reset_highlight(self):
-        for row in range(self.param_table_model.rowCount()):
-            for col in range(self.param_table_model.columnCount()):
-                item = self.param_table_model.item(row, col)
-                if item is not None:
-                    item.setBackground(QColor('white'))  # Reset highlighting
-
-
-class AQ_CurrentIpParamsLayout(QVBoxLayout):
-    def __init__(self):
-        super().__init__()
-        self.cur_ip_label = AQ_Label("Current IP:")
-        self.cur_mask_label = AQ_Label("Current mask:")
-        self.cur_gate_label = AQ_Label("Current gate:")
-        self.addWidget(self.cur_ip_label)
-        self.addWidget(self.cur_mask_label)
-        self.addWidget(self.cur_gate_label)
-
-class AQ_ProtocolParamsLayout(QVBoxLayout):
-    def __init__(self):
-        super().__init__()
-        self.protocol_label = AQ_Label("Protocol: Modbus TCP")
-        self.byte_order_label = AQ_Label("Byte order: Most significant byte first")
-        self.reg_order_label = AQ_Label("Register order: Least significant register first")
-        self.addWidget(self.protocol_label)
-        self.addWidget(self.byte_order_label)
-        self.addWidget(self.reg_order_label)
-
-class AQ_InfoBarLayout(QHBoxLayout):
-    def __init__(self):
-        super().__init__()
-        self.ip_param_layout = AQ_CurrentIpParamsLayout()
-        self.protocol_param_layout = AQ_ProtocolParamsLayout()
-        self.addLayout(self.ip_param_layout)
-        self.addLayout(self.protocol_param_layout)
-
-
-class AQ_ParamListSaveButton(QPushButton):
-    def __init__(self, event_manager, parent=None):
-        text = 'Save as file (csv)'
-        super().__init__(text, parent)
-        self.event_manager = event_manager
-        self.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
-        self.setFixedSize(150, 35)
-        self.clicked.connect(lambda: self.event_manager.emit_event('make_user_param_list_file'))
-        self.setStyleSheet("""
-                            QPushButton {
-                                border-left: 1px solid #9ef1d3;
-                                border-top: 1px solid #9ef1d3;
-                                border-bottom: 1px solid #5bb192;
-                                border-right: 1px solid #5bb192;
-                                color: #D0D0D0;
-                                background-color: #2b2d30;
-                                border-radius: 4px;
-                            }
-                            QPushButton:hover {
-                                background-color: #3c3e41;
-                            }
-                            QPushButton:pressed {
-                                background-color: #429061;
-                            }
-                        """)
-
-        self.show()
-
-class AQ_ParamListSearchLine(QLineEdit):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setPlaceholderText('Search...')
-        self.setStyleSheet('color: #D0D0D0; border: none;')

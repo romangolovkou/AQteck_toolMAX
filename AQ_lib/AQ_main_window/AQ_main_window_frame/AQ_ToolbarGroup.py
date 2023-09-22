@@ -182,6 +182,7 @@ class AQ_firmware_group(AQ_toolbar_group_template):
         self.ico_btn_reboot = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_reboot = AQ_ToolButton('Restart device', self.ico_btn_reboot)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.btn_reboot.clicked.connect(lambda: self.event_manager.emit_event('restart_cur_active_device'))
         self.buttons.append(self.btn_reboot)
 
     # Створюємо початковий горизонтальний лейаут
@@ -193,10 +194,11 @@ class AQ_other_group(AQ_toolbar_group_template):
     def __init__(self, event_manager, parent=None):
         super().__init__(event_manager, parent)
     # кнопка 1
-        self.ico_btn_papam_list = QIcon(PROJ_DIR + 'Icons/test_Button.png')
-        self.btn_papam_list = AQ_ToolButton('Parameter list', self.ico_btn_papam_list)
+        self.ico_btn_param_list = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+        self.btn_param_list = AQ_ToolButton('Parameter list', self.ico_btn_param_list)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.buttons.append(self.btn_papam_list)
+        self.btn_param_list.clicked.connect(lambda: self.event_manager.emit_event('open_ParameterList'))
+        self.buttons.append(self.btn_param_list)
     # кнопка 2
         self.ico_btn_device_info = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_device_info = AQ_ToolButton('Device information', self.ico_btn_device_info)
