@@ -21,6 +21,12 @@ class AQ_DeviceInfoTableView(QTableView):
         # self.setSortingEnabled(True)
         self.setEditTriggers(QAbstractItemView.SelectedClicked | QAbstractItemView.EditKeyPressed)
 
+        row_height = 25
+        row_count = self.model().rowCount()
+        for i in range(row_count):
+            self.setRowHeight(i, row_height)
+        self.setFixedHeight(row_height * row_count + 2)
+
 
 # class AQ_ParamListInfoTableView(QTableView):
 #     def __init__(self, model, parent=None):

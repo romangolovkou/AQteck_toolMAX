@@ -25,18 +25,11 @@ class AQ_DeviceInfoManagerFrame(QFrame):
 
         # Читаэмо статус файл з поточного активного приладу
         self.read_status_file()
-
-        data_string = self.status_file.decode('ANSI')
-        # Разделение строк по переводу строки
-        data_rows = data_string.split('\n')
-        data = []
-        for row in data_rows:
-            # Разделение записи на поля по символу ';'
-            fields = row.split(';')
-            data.append(fields)
+        data = self.parse_status_file(self.status_file)
 
         # Загрузка данных в модель
-        self.info_bar_table_model = self.load_data_to_model(data)
+        self.general_info_model = self.load_data_to_general_info_model(data)
+        self.param_model = self.load_data_to_param_model(data)
 
 
 
@@ -50,57 +43,79 @@ class AQ_DeviceInfoManagerFrame(QFrame):
         # self.event_manager.register_event_handler('make_user_param_list_file', self.create_csv_file)
         #
         # Створюємо головний лейаут
-        self.param_list_layout = AQ_DeviceInfoLayout(self.device, self.info_bar_table_model,
-                                                    self.info_bar_table_model, self.event_manager, self)
+        self.param_list_layout = AQ_DeviceInfoLayout(self.device, self.general_info_model,
+                                                     self.param_model, self.event_manager, self)
 
-    def load_data_to_model(self, data):
-        model = QStandardItemModel(len(data), len(data[0]))
+    def parse_status_file(self, status_file):
+        data_string = status_file.decode('ANSI')
+        # Разделение строк по переводу строки
+        data_rows = data_string.split('\n')
+        data = []
+        for row in data_rows:
+            # Разделение записи на поля по символу ';'
+            fields = row.split(';')
+            data.append(fields)
+
+        return data
+
+    def load_data_to_general_info_model(self, data):
+        model = QStandardItemModel(4, 2)
         for i, row in enumerate(data):
-            for j, item in enumerate(row):
-                model.setItem(i, j, QStandardItem(item))
+            # Додаємо тільки строки з другої по п'яту
+            if i > 0 and i < 5:
+                for j, item in enumerate(row):
+                    if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
+                        model.setItem(i - 1, j, QStandardItem(item))
+            # Додаємо тільки строки з другої по п'яту
+            if i > 4:
+                break
         return model
 
-    def create_param_list_for_view(self, device):
-        device_data = device.get_device_data()
-        device_tree = device_data.get('device_tree', None)
-        if device_tree is not None:
-            table_model_for_view = AQ_TableViewItemModel(device, self.event_manager)
-            table_model_for_view.setColumnCount(8)
-            table_model_for_view.setHorizontalHeaderLabels(
-                ["Parameter", "Group", "Address (dec)", "Address (hex)", "Number of registers", "Read function",
-                 "Write function", "Data type"])
-            donor_root_item = device_tree.invisibleRootItem()
-            new_root_item = table_model_for_view.invisibleRootItem()
-            self.traverse_items_create_new_table_model_for_view(donor_root_item, new_root_item)
-            return table_model_for_view
+    def load_data_to_param_model(self, data):
+        model = QStandardItemModel(len(data) - 7, 2)  # Изменили второй аргумент
+        for i, row in enumerate(data):
+            # Додаємо тільки строки з п'ятої по передостанню
+            if i > 4 and i < len(data) - 1:
+                for j, item in enumerate(row):
+                    if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
+                        if j == 0:
+                            # Замінюємо UID на ім'я параметру
+                            name = self.get_param_name_by_UID(int(item, 16))
+                            if name is not None:
+                                item = name
+                        model.setItem(i - 5, j, QStandardItem(item))
+
+        return model
 
     def read_status_file(self):
         self.status_file = self.device.read_status_file()
 
-    def create_info_list_for_view(self, device):
-        device_data = device.get_device_data()
-        network_info_list = device_data.get('network_info', None)
-        if network_info_list is not None:
-            info_table_model_for_view = QStandardItemModel()
-            info_table_model_for_view.setColumnCount(1)
-            new_root_item = info_table_model_for_view.invisibleRootItem()
-            for i in range(len(network_info_list)):
-                item_row = QStandardItem(network_info_list[i])
-                item_row.setFlags(item_row.flags() & ~Qt.ItemIsEditable)
-                new_root_item.appendRow(item_row)
+    def get_param_name_by_UID(self, uid):
+        device_data = self.device.get_device_data()
+        device_tree = device_data.get('device_tree', None)
+        name = None
+        if device_tree is not None:
+            root = device_tree.invisibleRootItem()
+            name = self.traverse_items_find_param_name_by_uid(root, uid)
 
-            return info_table_model_for_view
+        return name
 
-    def traverse_items_create_new_table_model_for_view(self, item, new_item):
+    def traverse_items_find_param_name_by_uid(self, item, uid):
         for row in range(item.rowCount()):
             child_item = item.child(row)
             if child_item is not None:
                 parameter_attributes = child_item.data(Qt.UserRole)
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
-                        self.traverse_items_create_new_table_model_for_view(child_item, new_item)
+                        param_name = self.traverse_items_find_param_name_by_uid(child_item, uid)
+                        if param_name is not None:
+                            return param_name
                     else:
-                        new_item.appendRow(self.create_new_row_for_table_view(child_item))
+                        if parameter_attributes.get('UID', 0) == uid:
+                            param_name = parameter_attributes.get('name', None)
+                            return param_name
+        # Якщо дійшли сюди, то співдпадінь немає
+        return None
 
     def create_new_row_for_table_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
@@ -190,27 +205,24 @@ class AQ_DeviceInfoManagerFrame(QFrame):
 
 
 class AQ_DeviceInfoLayout(QVBoxLayout):
-    def __init__(self, device, param_table_model, info_bar_table_model, event_manager, parent):
+    def __init__(self, device, gen_info_table_model, param_table_model, event_manager, parent):
         super().__init__(parent)
 
         self.parent = parent
         self.event_manager = event_manager
         self.device = device
-        self.info_bar_table_model = info_bar_table_model
+        self.info_bar_table_model = gen_info_table_model
         self.param_table_model = param_table_model
         self.setContentsMargins(20, 5, 20, 20)  # Устанавливаем отступы макета
         self.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
 
 
     # Создаем текстовую метку заголовка
-    #     device_data = self.device.get_device_data()
-    #     device_name = device_data.get('device_name', 'err_name')
-    #     serial_number = device_data.get('serial_number', 'err_serial_number')
         self.first_label = QLabel('General information')
         self.first_label.setStyleSheet("color: #D0D0D0; border-top:transparent; border-bottom: 1px solid #5bb192;")
-        # self.name_label.setFixedHeight(35)
         self.first_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
         self.first_label.setAlignment(Qt.AlignLeft)
+        self.first_label.setFixedHeight(35)
 
     # Створюємо інфо-бар таблицю
         self.info_table_view = AQ_DeviceInfoTableView(self.info_bar_table_model, parent)
@@ -218,9 +230,9 @@ class AQ_DeviceInfoLayout(QVBoxLayout):
     # Создаем текстовую метку заголовка
         self.second_label = QLabel('Parameters')
         self.second_label.setStyleSheet("color: #D0D0D0; border-top:transparent; border-bottom: 1px solid #5bb192;")
-        # self.name_label.setFixedHeight(35)
         self.second_label.setFont(QFont("Segoe UI", 14))  # Задаем шрифт и размер
         self.second_label.setAlignment(Qt.AlignLeft)
+        self.second_label.setFixedHeight(35)
 
     # Створюємо таблицю з параметрами
         self.param_table_view = AQ_DeviceInfoTableView(self.param_table_model, parent)
