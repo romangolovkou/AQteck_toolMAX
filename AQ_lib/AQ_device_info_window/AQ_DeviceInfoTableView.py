@@ -1,8 +1,13 @@
+import struct
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
+# from AQ_DeviceInfoTableViewDelegates import AQ_DeviceInfoTableViewDelegate
 from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
+from AQ_ParamsDelegateEditors import AQ_UintTreeLineEdit, AQ_EnumROnlyTreeLineEdit, AQ_IpTreeLineEdit, \
+    AQ_IntTreeLineEdit, AQ_FloatTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_TreeLineEdit
 
 
 class AQ_DeviceInfoTableView(QTableView):
@@ -26,6 +31,52 @@ class AQ_DeviceInfoTableView(QTableView):
         for i in range(row_count):
             self.setRowHeight(i, row_height)
         self.setFixedHeight(row_height * row_count + 2)
+
+    def setModel(self, model):
+        super().setModel(model)
+        root = model.invisibleRootItem()
+        self.traverse_items_show_delegate(root)
+
+    def traverse_items_show_delegate(self, item):
+        for row in range(item.rowCount()):
+            child_item = item.child(row)
+            parameter_attributes = child_item.data(Qt.UserRole)
+            if parameter_attributes is not None:
+                if parameter_attributes.get('is_catalog', 0) == 1:
+                    self.traverse_items_show_delegate(child_item)
+                else:
+                    index = self.model().index(row, 1, item.index())
+                    _editor = self.get_editor_by_type(parameter_attributes)
+                    editor = _editor(parameter_attributes, self)
+                    self.setIndexWidget(index, editor)
+                    value = index.data(Qt.UserRole)
+                    if parameter_attributes.get('type', '') == 'float':    # HADRCODE
+                        float_value = struct.unpack('!f', bytes.fromhex(value))[0]
+                        editor.set_value(round(float_value, 7))
+                    else:
+                        editor.set_value(int(value, 16))
+
+    def get_editor_by_type(self, param_attributes):
+        param_type = param_attributes.get('type', '')
+        if param_type == 'enum':
+            editor = AQ_EnumROnlyTreeLineEdit
+        elif param_type == 'unsigned':
+            if param_attributes.get('visual_type', '') == 'ip_format':
+                editor = AQ_IpTreeLineEdit
+            else:
+                editor = AQ_UintTreeLineEdit
+        elif param_type == 'signed':
+            editor = AQ_IntTreeLineEdit
+        elif param_type == 'float':
+            editor = AQ_FloatTreeLineEdit
+        elif param_type == 'string':
+            editor = AQ_StringTreeLineEdit
+        elif param_type == 'date_time':
+            editor = AQ_DateTimeLineEdit
+        else:
+            editor = AQ_TreeLineEdit
+
+        return editor
 
 
 # class AQ_ParamListInfoTableView(QTableView):

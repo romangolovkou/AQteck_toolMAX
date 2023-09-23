@@ -127,9 +127,6 @@ class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
                 return
             elif key == Qt.Key_Backspace:
                 self.backspace()
-                # str_copy = self.text()
-                # if not str_copy.strip():
-                #     self.insert('0')
                 return
 
             cursor_position = self.cursorPosition()
@@ -298,9 +295,6 @@ class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
                 return
             elif key == Qt.Key_Backspace:
                 self.backspace()
-                # str_copy = self.text()
-                # if not str_copy.strip():
-                #     self.insert('0')
                 return
 
             cursor_position = self.cursorPosition()

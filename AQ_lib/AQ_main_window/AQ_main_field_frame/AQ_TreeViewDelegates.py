@@ -6,9 +6,6 @@ from PyQt5.QtWidgets import QComboBox, QLineEdit, QStyledItemDelegate
 class AQ_ValueTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.changed_dict = {}  # Словник для флагів змін значення
-        self.error_dict = {}  # Словник для флагів наявності помилок у значеннях
-        self.set_by_prog_flag_dict = {}  # Словник для флагів змін значення зсередини коду (не користувачем)
 
     def createEditor(self, parent, option, index):
         param_manager_item_index = index.sibling(index.row(), 0)
