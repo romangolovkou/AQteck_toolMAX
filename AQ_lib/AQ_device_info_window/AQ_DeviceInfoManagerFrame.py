@@ -1,4 +1,5 @@
 import csv
+import datetime
 import os
 
 from PyQt5.QtCore import Qt, QSettings
@@ -59,9 +60,16 @@ class AQ_DeviceInfoManagerFrame(QFrame):
         for i, row in enumerate(data):
             # Додаємо тільки строки з другої по п'яту
             if i > 0 and i < 5:
-                for j, item in enumerate(row):
+                for j, cell_str in enumerate(row):
                     if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
-                        model.setItem(i - 1, j, QStandardItem(item))
+                        if i == 4 and j == 1:
+                            value = int(cell_str, 16)
+                            value += datetime.datetime(2000, 1, 1).timestamp()
+                            datetime_obj = datetime.datetime.fromtimestamp(value)
+                            date_time_str = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
+                            model.setItem(i - 1, j, QStandardItem(date_time_str))
+                        else:
+                            model.setItem(i - 1, j, QStandardItem(cell_str))
             # Додаємо тільки строки з другої по п'яту
             if i > 4:
                 break
