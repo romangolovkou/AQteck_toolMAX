@@ -20,11 +20,6 @@ class AQ_DialogParamList(AQ_SimplifiedDialog):
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
-        # Рєєструємо обробники подій
-        self.event_manager.register_event_handler('minimize_' + window_name, self.showMinimized)
-        self.event_manager.register_event_handler('close_' + window_name, self.close)
-        self.event_manager.register_event_handler('dragging_' + window_name, self.move)
-
         #Створюємо головний фрейм
         self.param_list_manager_frame = AQ_ParamListManagerFrame(self.device, self.event_manager, self)
 

@@ -29,7 +29,7 @@ class AQ_MainWindow(QMainWindow):
         self.event_manager.register_event_handler('maximize_' + main_name, self.showMaximized)
         self.event_manager.register_event_handler('normalize_' + main_name, self.showNormal)
         self.event_manager.register_event_handler('dragging_' + main_name, self.move)
-        self.event_manager.register_event_handler('resize_main_window', self.resize_MainWindow)
+        self.event_manager.register_event_handler('resize_' + main_name, self.resize_MainWindow)
         # Поточна сессія
         self.current_session = AQ_CurrentSession(self.event_manager, self)
 

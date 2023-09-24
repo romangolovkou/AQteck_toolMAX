@@ -114,6 +114,7 @@ class AQ_param_action_group(AQ_toolbar_group_template):
         self.ico_btn_watch_list = QIcon(PROJ_DIR + 'Icons/test_Button.png')
         self.btn_watch_list = AQ_ToolButton('Watch list', self.ico_btn_watch_list)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+        self.btn_watch_list.clicked.connect(lambda: self.event_manager.emit_event('open_WatchList'))
         self.buttons.append(self.btn_watch_list)
 
     # Створюємо початковий горизонтальний лейаут

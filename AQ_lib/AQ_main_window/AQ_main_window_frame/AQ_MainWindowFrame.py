@@ -21,14 +21,14 @@ class AQ_MainWindowFrame(AQ_SimplifiedMainFrame):
 
         # # Создаем виджеты для изменения размеров окна
         self.resizeLineWidth = 4
-        self.resizeWidthR_widget = resizeWidthR_Qwidget(self.event_manager, self)
-        self.resizeWidthL_widget = resizeWidthL_Qwidget(self.event_manager, self)
-        self.resizeHeigthLow_widget = resizeHeigthLow_Qwidget(self.event_manager, self)
-        self.resizeHeigthTop_widget = resizeHeigthTop_Qwidget(self.event_manager, self)
-        self.resizeDiag_BotRigth_widget = resizeDiag_BotRigth_Qwidget(self.event_manager, self)
-        self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(self.event_manager, self)
-        self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self.event_manager, self)
-        self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self.event_manager, self)
+        self.resizeWidthR_widget = resizeWidthR_Qwidget(self.event_manager, main_name, self)
+        self.resizeWidthL_widget = resizeWidthL_Qwidget(self.event_manager, main_name, self)
+        self.resizeHeigthLow_widget = resizeHeigthLow_Qwidget(self.event_manager, main_name, self)
+        self.resizeHeigthTop_widget = resizeHeigthTop_Qwidget(self.event_manager, main_name, self)
+        self.resizeDiag_BotRigth_widget = resizeDiag_BotRigth_Qwidget(self.event_manager, main_name, self)
+        self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(self.event_manager, main_name, self)
+        self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self.event_manager, main_name, self)
+        self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self.event_manager, main_name, self)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

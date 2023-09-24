@@ -1,9 +1,16 @@
 from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize
 from PyQt5.QtGui import QIcon, QFont
+
+# from AQ_MainFieldFrame import AQ_MainFieldFrame
+# from AQ_MainWindowFrame import AQ_MainWindowFrame
 from AQ_MouseEventFunc import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 from functools import partial
 
+from AQ_ResizeWidgets import resizeWidthR_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
+    resizeDiag_BotRigth_Qwidget, resizeWidthL_Qwidget, resizeDiag_BotLeft_Qwidget, resizeDiag_TopLeft_Qwidget, \
+    resizeDiag_TopRigth_Qwidget
+from AQ_TitlebarFrame import AQ_TitleBarFrame
 
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 class AQ_SimplifiedMainFrame(QFrame):
@@ -13,6 +20,48 @@ class AQ_SimplifiedMainFrame(QFrame):
         self.setMaximumSize(QSize(16777215, 16777215))
         self.setStyleSheet("background-color: #1e1f22;\n")
         self.setObjectName("main_window_frame")
+
+
+class AQ_FullMainFrame(AQ_SimplifiedMainFrame):
+    def __init__(self, event_manager, window_name, icon, parent=None):
+        super().__init__(parent)
+
+        self.event_manager = event_manager
+        # TitleBarFrame
+        self.title_bar_frame = AQ_FullTitleBarFrame(self.event_manager, 35, window_name, icon, self)
+
+        # # Создаем виджеты для изменения размеров окна
+        self.resizeLineWidth = 4
+        self.resizeWidthR_widget = resizeWidthR_Qwidget(self.event_manager, window_name, self)
+        self.resizeWidthL_widget = resizeWidthL_Qwidget(self.event_manager, window_name, self)
+        self.resizeHeigthLow_widget = resizeHeigthLow_Qwidget(self.event_manager, window_name, self)
+        self.resizeHeigthTop_widget = resizeHeigthTop_Qwidget(self.event_manager, window_name, self)
+        self.resizeDiag_BotRigth_widget = resizeDiag_BotRigth_Qwidget(self.event_manager, window_name, self)
+        self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(self.event_manager, window_name, self)
+        self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self.event_manager, window_name, self)
+        self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self.event_manager, window_name, self)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.title_bar_frame.resize(self.width(), self.title_bar_frame.height())
+        self.resizeWidthR_widget.setGeometry(self.width() - self.resizeLineWidth,
+                                             self.resizeLineWidth, self.resizeLineWidth,
+                                             self.height() - (self.resizeLineWidth * 2))
+        self.resizeWidthL_widget.setGeometry(0, self.resizeLineWidth, self.resizeLineWidth,
+                                             self.height() - (self.resizeLineWidth * 2))
+        self.resizeHeigthLow_widget.setGeometry(self.resizeLineWidth, self.height() - self.resizeLineWidth,
+                                                self.width() - (self.resizeLineWidth * 2),
+                                                self.resizeLineWidth)
+        self.resizeHeigthTop_widget.setGeometry(self.resizeLineWidth, 0,
+                                                self.width() - (self.resizeLineWidth * 2),
+                                                self.resizeLineWidth)
+        self.resizeDiag_BotRigth_widget.move(self.width() - self.resizeLineWidth,
+                                             self.height() - self.resizeLineWidth)
+        self.resizeDiag_TopLeft_widget.move(0, 0)
+        self.resizeDiag_TopRigth_widget.move(self.width() - self.resizeLineWidth, 0)
+        self.resizeDiag_BotLeft_widget.move(0, self.height() - self.resizeLineWidth)
+
+        event.accept()
 
 
 class AQ_SimplifiedTitleBarFrame(QFrame):
@@ -64,6 +113,92 @@ class AQ_SimplifiedTitleBarFrame(QFrame):
 
         event.accept()
 
+
+class AQ_FullTitleBarFrame(AQ_SimplifiedTitleBarFrame):
+    def __init__(self, event_manager, height, name, icon, parent=None):
+        super().__init__(event_manager, height, name, icon, parent)
+        self.name = name
+        # self.event_manager = event_manager
+        # self.setGeometry(QRect(0, 0, parent.width(), height))
+        # self.setStyleSheet("background-color: #2b2d30;\n"
+        #                                   "border-top-left-radius: 0px;\n"
+        #                                   "border-top-right-radius: 0px;\n"
+        #                                   "border-bottom-left-radius: 0px;\n"
+        #                                   "border-bottom-right-radius: 0px;")
+        # self.setObjectName("title_bar_frame")
+        # # Добавляем обработку событий мыши для перетаскивания окна
+        # self.mousePressEvent = partial(mousePressEvent_Dragging, self)
+        # self.mouseMoveEvent = partial(mouseMoveEvent_Dragging, self, self.event_manager, 'dragging_' + self.name)
+        # self.mouseReleaseEvent = partial(mouseReleaseEvent_Dragging, self)
+
+        # # Создаем метку с названием приложения
+        # self.title_name = QLabel(name, self)
+        # self.title_name.setFont(QFont("Verdana", 10))  # Задаем шрифт и размер
+        # self.title_name.setStyleSheet("color: #D0D0D0;")  # Задаем цвет шрифта (серый)
+        # self.title_name.setAlignment(Qt.AlignHCenter)  # Выравнивание по горизонтали по центру
+        # self.title_name.setGeometry(0, 8, self.width(), 35)  # Устанавливаем геометрию метки
+
+        # # Создаем QLabel для отображения иконки приложения
+        # self.app_icon_label = QLabel(self)
+        # self.app_icon_label.setPixmap(icon.pixmap(30, 30))  # Устанавливаем иконку и масштабируем ее
+        # self.app_icon_label.setGeometry(2, 2, 30, 30)  # Устанавливаем координаты и размеры QLabel
+
+        # Переміщюємо кнопку закрити
+        # self.icoClose = QIcon('Icons/Close.png')
+        #
+        # self.btn_close = QPushButton('', self)
+        # self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
+        self.btn_close.setGeometry(self.width() - 35, 0, 35,
+                                   35)  # установите координаты и размеры кнопки
+        # # добавляем обработчик события нажатия на кнопку закрытия
+        # self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close_' + self.name))
+        # self.btn_close.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+
+        # Переміщюємо кнопку згорнути
+        # self.icoMinimize = QIcon('Icons/Minimize.png')
+        # self.btn_minimize = QPushButton('', self)
+        # self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
+        self.btn_minimize.setGeometry(self.width() - 105, 0, 35,
+                                      35)  # установите координаты и размеры кнопки
+        # self.btn_minimize.clicked.connect(lambda: self.event_manager.emit_event('minimize_' + self.name))
+        # self.btn_minimize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+
+        # Создаем кнопку развернуть/нормализировать
+        self.icoMaximize = QIcon('Icons/Maximize.png')
+        self.icoNormalize = QIcon('Icons/_Normalize.png')
+        self.isMaximized = False  # Флаг, указывающий на текущее состояние окна
+        self.btn_maximize = QPushButton('', self)
+        self.btn_maximize.setIcon(QIcon(self.icoMaximize))  # установите свою иконку для кнопки
+        self.btn_maximize.setGeometry(self.width() - 70, 0, 35,
+                                      35)  # установите координаты и размеры кнопки
+        self.btn_maximize.clicked.connect(self.toggleMaximize)
+        self.btn_maximize.setStyleSheet(""" QPushButton:hover {background-color: #555555;}""")
+
+    def toggleMaximize(self):
+        try:
+            if self.isMaximized:
+                self.event_manager.emit_event('normalize_' + self.name)
+                self.btn_maximize.setIcon(QIcon(self.icoMaximize))
+                self.isMaximized = False
+            else:
+                self.event_manager.emit_event('maximize_' + self.name)
+                self.btn_maximize.setIcon(QIcon(self.icoNormalize))
+                self.isMaximized = True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+
+    def name_label_resize(self):
+        self.title_name.setGeometry(0, 8, self.width(), 30)  # Устанавливаем геометрию метки
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.btn_maximize.move(self.width() - 70, 0)
+        self.btn_minimize.move(self.width() - 105, 0)
+        self.btn_close.move(self.width() - 35, 0)
+        self.name_label_resize()
+        event.accept()
+
+
 # MainFieldFrame
 class AQ_ReducedMainFieldFrame(QFrame):
     def __init__(self, shift_y, parent=None):
@@ -76,7 +211,7 @@ class AQ_ReducedMainFieldFrame(QFrame):
 
 
 class AQ_SimplifiedDialog(QDialog):
-    def __init__(self, event_manager, name='default'):
+    def __init__(self, event_manager, window_name='default'):
         super().__init__()
         self.event_manager = event_manager
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -84,16 +219,52 @@ class AQ_SimplifiedDialog(QDialog):
 
         self.AQicon = QIcon('Icons/AQico_silver.png')
 
-        self.setWindowTitle(name)
+        self.setWindowTitle(window_name)
         self.setWindowIcon(self.AQicon)
         self.setObjectName("AQ_simplified_Dialog")
         self.setStyleSheet("#template_window { border: 1px solid #9ef1d3;\n }")
+
+        # Рєєструємо обробники подій
+        self.event_manager.register_event_handler('minimize_' + window_name, self.showMinimized)
+        self.event_manager.register_event_handler('close_' + window_name, self.close)
+        self.event_manager.register_event_handler('dragging_' + window_name, self.move)
 
         # MainWindowFrame
         self.main_window_frame = AQ_SimplifiedMainFrame(self)
         self.main_window_frame.setGeometry(1, 0, self.main_window_frame.width() - 2, self.main_window_frame.height() - 1)
         # TitleBarFrame
-        self.title_bar_frame = AQ_SimplifiedTitleBarFrame(self.event_manager, 35, name, self.AQicon, self.main_window_frame)
+        self.title_bar_frame = AQ_SimplifiedTitleBarFrame(self.event_manager, 35, window_name, self.AQicon, self.main_window_frame)
+
+
+class AQ_FullDialog(AQ_SimplifiedDialog):
+    def __init__(self, event_manager, window_name='default'):
+        super().__init__(event_manager, window_name)
+        self.setObjectName("AQ_full_Dialog")
+        self.event_manager.register_event_handler('maximize_' + window_name, self.showMaximized)
+        self.event_manager.register_event_handler('normalize_' + window_name, self.showNormal)
+        self.event_manager.register_event_handler('resize_' + window_name, self.resize_window)
+        # MainWindowFrame
+        self.main_window_frame = AQ_FullMainFrame(event_manager, window_name, self.AQicon, self)
+        self.main_window_frame.setGeometry(1, 0, self.main_window_frame.width() - 2, self.main_window_frame.height() - 1)
+
+
+    def resize_window(self, pos_x, pos_y, width, height):
+        if pos_x == '%':
+            pos_x = self.pos().x()
+        if pos_y == '%':
+            pos_y = self.pos().y()
+        if width == '%':
+            width = self.width()
+        if height == '%':
+            height = self.height()
+
+        self.setGeometry(pos_x, pos_y, width, height)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        # Переопределяем метод resizeEvent и вызываем resize для main_window_frame
+        self.main_window_frame.resize(self.width(), self.height())
+        event.accept()
 
 
 # Создание комбо-бокса
