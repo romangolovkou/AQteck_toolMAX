@@ -14,8 +14,8 @@ class AQ_DialogParamList(AQ_SimplifiedDialog):
         self.event_manager = event_manager
         self.device = device
         self.setGeometry(0, 0, 900, 800)
-        self.main_window_frame.setGeometry(1, 0, self.width() - 2,
-                                           self.height() - 1)
+        self.main_window_frame.setGeometry(0, 0, self.width(),
+                                           self.height())
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
@@ -27,9 +27,8 @@ class AQ_DialogParamList(AQ_SimplifiedDialog):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         # Переопределяем метод resizeEvent и вызываем resize для main_window_frame
-        self.title_bar_frame.resize(self.width(), self.title_bar_frame.height())
-        self.param_list_manager_frame.setGeometry(0, self.title_bar_frame.height(), self.width(),
-                                                  self.height() - self.title_bar_frame.height())
+        self.param_list_manager_frame.setGeometry(0, self.main_window_frame.title_bar_frame.height(), self.width(),
+                                                  self.height() - self.main_window_frame.title_bar_frame.height())
         event.accept()
 
 

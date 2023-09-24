@@ -8,7 +8,7 @@ from AQ_CustomWindowTemplates import AQ_SimplifiedMainFrame
 
 class AQ_MainWindowFrame(AQ_SimplifiedMainFrame):
     def __init__(self, event_manager, main_name, icon, parent=None):
-        super().__init__(parent)
+        super().__init__(event_manager, main_name, icon, parent)
 
         self.event_manager = event_manager
         # TitleBarFrame

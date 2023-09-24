@@ -33,12 +33,12 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
 
         # Створюємо фрейм з налаштуваннями з'єднання
         self.network_settings_frame = AQ_NetworkSettingsFrame(event_manager, self.main_window_frame)
-        self.network_settings_frame.setGeometry(25, self.title_bar_frame.height() + 2, int(self.width() * 0.4),
-                                                self.height() - self.title_bar_frame.height() - 4)
+        self.network_settings_frame.setGeometry(25, self.main_window_frame.title_bar_frame.height() + 2, int(self.width() * 0.4),
+                                                self.height() - self.main_window_frame.title_bar_frame.height() - 4)
 
         # Создаем QTableWidget с 4 столбцами
         self.table_widget = AQ_addDevice_TableWidget(self.main_window_frame)
-        self.table_widget.move(self.network_settings_frame.width() + 50, self.title_bar_frame.height() + 5)
+        self.table_widget.move(self.network_settings_frame.width() + 50, self.main_window_frame.title_bar_frame.height() + 5)
 
         # Створюємо віджет з рухомими шестернями
         self.rotating_gears = AQ_RotatingGearsWidget(self.main_window_frame)

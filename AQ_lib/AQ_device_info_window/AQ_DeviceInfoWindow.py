@@ -14,16 +14,11 @@ class AQ_DialogDeviceInfo(AQ_SimplifiedDialog):
         self.event_manager = event_manager
         self.device = device
         self.setGeometry(0, 0, 500, 500)
-        self.main_window_frame.setGeometry(1, 0, self.width() - 2,
-                                           self.height() - 1)
+        self.main_window_frame.setGeometry(0, 0, self.width(),
+                                           self.height())
         self.screen_geometry = QApplication.desktop().screenGeometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
-
-        # Рєєструємо обробники подій
-        self.event_manager.register_event_handler('minimize_' + window_name, self.showMinimized)
-        self.event_manager.register_event_handler('close_' + window_name, self.close)
-        self.event_manager.register_event_handler('dragging_' + window_name, self.move)
 
         # Створюємо головний фрейм
         self.device_info_manager_frame = AQ_DeviceInfoManagerFrame(self.device, self.event_manager, self)
@@ -32,7 +27,6 @@ class AQ_DialogDeviceInfo(AQ_SimplifiedDialog):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         # Переопределяем метод resizeEvent и вызываем resize window_frame
-        self.title_bar_frame.resize(self.width(), self.title_bar_frame.height())
-        self.device_info_manager_frame.setGeometry(0, self.title_bar_frame.height(), self.width(),
-                                                  self.height() - self.title_bar_frame.height())
+        self.device_info_manager_frame.setGeometry(0, self.main_window_frame.title_bar_frame.height(), self.width(),
+                                                  self.height() - self.main_window_frame.title_bar_frame.height())
         event.accept()
