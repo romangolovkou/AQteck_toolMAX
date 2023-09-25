@@ -27,6 +27,7 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("delete_device", self.delete_device)
         self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
         self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
+        self.event_manager.register_event_handler('add_parameter_to_watch_list', self.add_param_to_watch_list)
 
 
     def open_AddDevices(self):
@@ -44,8 +45,8 @@ class AQ_CurrentSession(QObject):
             device_info_window.exec_()
 
     def open_WatchList(self):
-        watch_list_window = AQ_DialogWatchList(self.event_manager, self.parent)
-        watch_list_window.show()
+        self.watch_list_window = AQ_DialogWatchList(self.event_manager, self.parent)
+        self.watch_list_window.show()
 
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
@@ -86,3 +87,9 @@ class AQ_CurrentSession(QObject):
     def restart_current_active_device(self):
         if self.cur_active_device is not None:
             self.restart_device(self.cur_active_device)
+
+    def add_param_to_watch_list(self, item):
+        if not hasattr(self, 'watch_list_window'):
+            self.open_WatchList()
+
+        self.event_manager.emit_event('add_item_to_watch_list', item)

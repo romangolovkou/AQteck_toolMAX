@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QStandardItemModel
 
 
-class AQ_TableViewItemModel(QStandardItemModel):
+class AQ_WatchListTableViewItemModel(QStandardItemModel):
     def __init__(self, event_manager, parent=None):
         super().__init__(parent)
         self.event_manager = event_manager

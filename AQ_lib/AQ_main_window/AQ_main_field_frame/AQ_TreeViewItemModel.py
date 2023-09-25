@@ -29,7 +29,6 @@ class AQ_TreeViewItemModel(QStandardItemModel):
                 self.update_parameter_value(child_item)
         else:
             manager_item.show_new_value()
-            # manager_item.update_status()
 
     def update_all_params_values(self):
         root = self.invisibleRootItem()
@@ -64,3 +63,7 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         sourse_item = item.get_sourse_item()
         self.device.write_parameter(sourse_item)
         self.update_parameter_status(item)
+
+    def add_parameter_to_watch_list(self, index):
+        item = self.itemFromIndex(index)
+        self.event_manager.emit_event('add_parameter_to_watch_list', item)

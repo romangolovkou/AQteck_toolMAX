@@ -37,9 +37,6 @@ class AQ_NameTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-    def set_item_color(self, index, color):
-        self.color_dict[index] = color
-
     def paint(self, painter, option, index):
 
         param_status = index.data(Qt.UserRole + 1)  # Получаем данные

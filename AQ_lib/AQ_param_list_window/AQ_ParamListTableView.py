@@ -27,14 +27,11 @@ class AQ_ParamListInfoTableView(QTableView):
 
         self.verticalHeader().setVisible(False)
         self.horizontalHeader().setVisible(False)
-        # self.horizontalHeader().setStyleSheet(
-        #     "QHeaderView::section { background-color: #2b2d30; color: #D0D0D0; border: 1px solid #1e1f22; }")
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.setStyleSheet("""QTableView {border: none; color: #D0D0D0;}
                            QTableView::item { padding-left: 3px; }
                            QTableView:item:!focus { background-color: transparent; color: #D0D0D0}""")
         self.setShowGrid(False)
-        # self.setSortingEnabled(True)
         self.setEditTriggers(QAbstractItemView.SelectedClicked | QAbstractItemView.EditKeyPressed)
         self.setModel(model)
         row_height = 25

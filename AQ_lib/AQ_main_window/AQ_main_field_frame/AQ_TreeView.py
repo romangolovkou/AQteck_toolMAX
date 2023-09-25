@@ -95,6 +95,10 @@ class AQ_TreeView(QTreeView):
                                             }
                                         """)
                     # Добавляем действие в контекстное меню
+                    action_watch = context_menu.addAction("Add parameters to Watch list")
+                    # Подключаем обработчик события выбора действия
+                    action_watch.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
+                    # Добавляем действие в контекстное меню
                     action_read = context_menu.addAction("Read parameters")
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.model().read_parameter(index))
