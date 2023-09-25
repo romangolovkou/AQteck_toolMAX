@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QApplication
 
 from AQ_CustomWindowTemplates import AQ_FullDialog
+from AQ_WatchListManagerFrame import AQ_WatchListManagerFrame
+
 
 class AQ_DialogWatchList(AQ_FullDialog):
     def __init__(self, event_manager, parent):
@@ -12,8 +14,9 @@ class AQ_DialogWatchList(AQ_FullDialog):
         self.move(self.screen_geometry.width() - self.width() - 100,
                   self.screen_geometry.height() // 5)
 
-    # def resize_window(self, pos_x, pos_y, width, height):
-    #     # super().resize_window(pos_x, pos_y, width, height)
+        # Створюємо головний фрейм
+        self.watch_list_manager_frame = AQ_WatchListManagerFrame(self.event_manager, self)
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         # Переопределяем метод resizeEvent и вызываем resize для main_window_frame

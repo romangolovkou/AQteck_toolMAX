@@ -5,7 +5,7 @@ from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
-from AQ_CustomTreeItems import AQ_param_manager_item
+from AQ_CustomTreeItems import AQ_ParamManagerItem
 from AQ_TreeView import AQ_TreeView
 
 
@@ -14,7 +14,7 @@ class AQ_TreeViewFrame(QFrame):
         super().__init__(parent)
         self.event_manager = event_manager
         self.setStyleSheet("background-color: transparent;")
-        self.tree_view_manager = AQ_treeView_manager(self.event_manager, self)
+        self.tree_view_manager = AQ_TreeViewManager(self.event_manager, self)
         self.tree_view_manager.setGeometry(0, 0, self.width(), self.height())
 
     def resizeEvent(self, event):
@@ -23,7 +23,7 @@ class AQ_TreeViewFrame(QFrame):
 
         event.accept()
 
-class AQ_treeView_manager(QStackedWidget):
+class AQ_TreeViewManager(QStackedWidget):
     def __init__(self, event_manager, parent):
         super().__init__(parent)
         self.event_manager = event_manager
@@ -96,7 +96,7 @@ class AQ_treeView_manager(QStackedWidget):
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
                         name = parameter_attributes.get('name', 'err_name')
-                        catalog = AQ_param_manager_item(child_item)
+                        catalog = AQ_ParamManagerItem(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
                         self.traverse_items_create_new_tree_for_view(child_item, catalog)
@@ -108,7 +108,7 @@ class AQ_treeView_manager(QStackedWidget):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
 
-        parameter_item = AQ_param_manager_item(item)
+        parameter_item = AQ_ParamManagerItem(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
         value_item = QStandardItem()
         min_limit_item = self.get_min_limit_item(parameter_attributes)

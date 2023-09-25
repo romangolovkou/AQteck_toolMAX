@@ -133,7 +133,7 @@ class AQ_DateTimeParamItem(AQ_ParamItem):
         self.editor = AQ_DateTimeLineEdit
 
 
-class AQ_param_manager_item(QStandardItem):
+class AQ_ParamManagerItem(QStandardItem):
     def __init__(self, sourse_item):
         param_attributes = sourse_item.data(Qt.UserRole)
         super().__init__(param_attributes.get('name', 'err_name'))
