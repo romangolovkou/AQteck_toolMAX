@@ -45,7 +45,7 @@ class AQ_CurrentSession(QObject):
 
     def open_WatchList(self):
         watch_list_window = AQ_DialogWatchList(self.event_manager, self.parent)
-        watch_list_window.exec_()
+        watch_list_window.show()
 
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):

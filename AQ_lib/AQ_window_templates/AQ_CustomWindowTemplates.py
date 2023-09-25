@@ -203,9 +203,24 @@ class AQ_SimplifiedDialog(QDialog):
         self.main_window_frame = AQ_SimplifiedMainFrame(self.event_manager, window_name, self.AQicon, self)
         self.main_window_frame.setGeometry(0, 0, self.main_window_frame.width(), self.main_window_frame.height())
 
+        # Прибрати коли буде UI
+        self.left_border = QFrame(self)
+        self.left_border.setGeometry(0, 0, 1, self.height())
+        self.left_border.setStyleSheet("background-color: #FFFFFF;\n")
+        self.right_border = QFrame(self)
+        self.right_border.setGeometry(0, self.height() - 1, self.width(), 1)
+        self.right_border.setStyleSheet("background-color: #FFFFFF;\n")
+        self.bottom_border = QFrame(self)
+        self.bottom_border.setGeometry(self.width() - 1, 0, 1, self.height())
+        self.bottom_border.setStyleSheet("background-color: #FFFFFF;\n")
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.main_window_frame.resize(self.width(), self.height())
+        # Прибрати коли буде UI
+        self.left_border.setGeometry(0, 0, 1, self.height())
+        self.right_border.setGeometry(0, self.height() - 1, self.width(), 1)
+        self.bottom_border.setGeometry(self.width() - 1, 0, 1, self.height())
         event.accept()
 
 
@@ -219,6 +234,17 @@ class AQ_FullDialog(AQ_SimplifiedDialog):
         # MainWindowFrame
         self.main_window_frame = AQ_FullMainFrame(event_manager, window_name, self.AQicon, self)
         self.main_window_frame.setGeometry(0, 0, self.main_window_frame.width(), self.main_window_frame.height())
+
+        # Прибрати коли буде UI
+        self.left_border = QFrame(self)
+        self.left_border.setGeometry(0, 0, 1, self.height())
+        self.left_border.setStyleSheet("background-color: #FFFFFF;\n")
+        self.right_border = QFrame(self)
+        self.right_border.setGeometry(0, self.height() - 1, self.width(), 1)
+        self.right_border.setStyleSheet("background-color: #FFFFFF;\n")
+        self.bottom_border = QFrame(self)
+        self.bottom_border.setGeometry(self.width() - 1, 0, 1, self.height())
+        self.bottom_border.setStyleSheet("background-color: #FFFFFF;\n")
 
 
     def resize_window(self, pos_x, pos_y, width, height):
@@ -234,9 +260,12 @@ class AQ_FullDialog(AQ_SimplifiedDialog):
         self.setGeometry(pos_x, pos_y, width, height)
 
     def resizeEvent(self, event):
-        # super().resizeEvent(event)
         # Переопределяем метод resizeEvent и вызываем resize для main_window_frame
         self.main_window_frame.resize(self.width(), self.height())
+        # Прибрати коли буде UI
+        self.left_border.setGeometry(0, 0, 1, self.height())
+        self.right_border.setGeometry(0, self.height() - 1, self.width(), 1)
+        self.bottom_border.setGeometry(self.width() - 1, 0, 1, self.height())
         event.accept()
 
 
