@@ -1,5 +1,6 @@
-from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QCheckBox
+from PySide6.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, Signal
+from PySide6.QtGui import QScreen
+from PySide6.QtWidgets import QApplication, QCheckBox
 
 from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_AddDevicesAddButton import AQ_addButton
@@ -19,7 +20,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.parent = parent
         self.event_manager = event_manager
         self.selected_devices_list = []
-        self.screen_geometry = QApplication.desktop().screenGeometry()
+        self.screen_geometry = QScreen().geometry()
         self.move(self.screen_geometry.width() // 2 - self.width() // 2,
                   self.screen_geometry.height() // 2 - self.height() // 2,)
 
@@ -120,9 +121,9 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.connect_err_label.show()
 
 class ConnectDeviceThread(QThread):
-    finished = pyqtSignal()
-    error = pyqtSignal(str)
-    result_signal = pyqtSignal(object)  # Сигнал для передачи данных в главное окно
+    finished = Signal()
+    error = Signal(str)
+    result_signal = Signal(object)  # Сигнал для передачи данных в главное окно
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent

@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
-from PyQt5.QtCore import Qt, QTimer, QRect, QSize
+from PySide6.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
+from PySide6.QtCore import Qt, QTimer, QRect, QSize
 from AQ_ToolbarLayaout import AQ_ToolbarLayout
 
 

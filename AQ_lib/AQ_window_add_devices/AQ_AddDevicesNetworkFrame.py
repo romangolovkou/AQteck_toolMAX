@@ -1,7 +1,7 @@
 import os
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
+from PySide6.QtGui import QFont
+from PySide6.QtCore import Qt, QSettings
+from PySide6.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
 from AQ_CustomWindowTemplates import AQ_ComboBox, AQ_Label, AQ_IpLineEdit, AQ_SlaveIdLineEdit
 import serial.tools.list_ports
 from AQ_IsValidIpFunc import is_valid_ip

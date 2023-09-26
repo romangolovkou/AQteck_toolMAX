@@ -2,8 +2,7 @@ import array
 import struct
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PySide6.QtCore import Qt
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \

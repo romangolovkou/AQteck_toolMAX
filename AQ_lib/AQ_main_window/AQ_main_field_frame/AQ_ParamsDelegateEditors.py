@@ -4,8 +4,8 @@ import ipaddress
 import socket
 import struct
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QComboBox, QLineEdit
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import QComboBox, QLineEdit
 from AQ_CustomWindowTemplates import AQ_Label
 
 

@@ -1,8 +1,4 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView
-
-from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
+from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
 
 class AQ_ParamListTableView(QTableView):

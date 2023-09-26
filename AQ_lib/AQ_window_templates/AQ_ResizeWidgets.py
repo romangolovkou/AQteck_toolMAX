@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, QTimer, QRect, QSize, QEvent
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
+from PySide6.QtCore import Qt, QTimer, QRect, QSize, QEvent
+from PySide6.QtWidgets import QMainWindow, QApplication, QWidget
 from functools import partial
 from AQ_MouseEventFunc import mousePressEvent_WidthR, mouseMoveEvent_WidthR, \
                             mousePressEvent_WidthL, mouseMoveEvent_WidthL, \

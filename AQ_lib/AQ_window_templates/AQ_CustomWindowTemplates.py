@@ -1,16 +1,12 @@
-from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
-from PyQt5.QtCore import Qt, QTimer, QRect, QSize
-from PyQt5.QtGui import QIcon, QFont, QPainter, QColor, QPen
-
-# from AQ_MainFieldFrame import AQ_MainFieldFrame
-# from AQ_MainWindowFrame import AQ_MainWindowFrame
+from PySide6.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
+from PySide6.QtCore import Qt, QTimer, QRect, QSize
+from PySide6.QtGui import QIcon, QFont, QPainter, QColor, QPen
 from AQ_MouseEventFunc import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 from functools import partial
 
 from AQ_ResizeWidgets import resizeWidthR_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
     resizeDiag_BotRigth_Qwidget, resizeWidthL_Qwidget, resizeDiag_BotLeft_Qwidget, resizeDiag_TopLeft_Qwidget, \
     resizeDiag_TopRigth_Qwidget
-from AQ_TitlebarFrame import AQ_TitleBarFrame
 
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 

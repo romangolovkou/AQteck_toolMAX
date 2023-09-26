@@ -1,9 +1,9 @@
 import csv
 import os
 
-from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
+from PySide6.QtCore import Qt, QSettings
+from PySide6.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
 
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView, AQ_ParamListInfoTableView

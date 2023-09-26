@@ -1,11 +1,8 @@
 import struct
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
-# from AQ_DeviceInfoTableViewDelegates import AQ_DeviceInfoTableViewDelegate
-from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
 from AQ_ParamsDelegateEditors import AQ_UintTreeLineEdit, AQ_EnumROnlyTreeLineEdit, AQ_IpTreeLineEdit, \
     AQ_IntTreeLineEdit, AQ_FloatTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_TreeLineEdit
 

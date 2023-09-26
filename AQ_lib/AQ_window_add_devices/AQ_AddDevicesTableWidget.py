@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QCheckBox
-from PyQt5.QtCore import Qt
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QCheckBox
+from PySide6.QtCore import Qt
 
 
 class AQ_addDevice_TableWidget(QTableWidget):

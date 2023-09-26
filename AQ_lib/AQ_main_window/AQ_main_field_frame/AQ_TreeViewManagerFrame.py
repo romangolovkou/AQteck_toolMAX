@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QStandardItem
-from PyQt5.QtWidgets import QFrame, QStackedWidget
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QStandardItem
+from PySide6.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
 from AQ_CustomTreeItems import AQ_ParamManagerItem

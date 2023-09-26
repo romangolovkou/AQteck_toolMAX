@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGraphicsPixmapItem, QWidget, QGraphicsView, QFrame, QGraphicsScene
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QGraphicsPixmapItem, QWidget, QGraphicsView, QFrame, QGraphicsScene
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
 class AQ_RotatingGearsWidget(QWidget):

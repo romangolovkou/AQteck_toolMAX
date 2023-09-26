@@ -2,8 +2,7 @@ import socket
 import struct
 
 from Crypto.Cipher import DES
-from PyQt5.QtCore import QObject
-from PyQt5.QtGui import QStandardItem
+from PySide6.QtCore import QObject
 from pymodbus.client import serial
 import serial.tools.list_ports
 

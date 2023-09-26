@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
 from AQ_DeviceInfoManagerFrame import AQ_DeviceInfoManagerFrame

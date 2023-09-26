@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QMenu, QTreeView
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import QMenu, QTreeView
 
 from AQ_TreeViewDelegates import AQ_NameTreeDelegate, AQ_ValueTreeDelegate
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget, AQ_have_error_widget
@@ -108,7 +108,7 @@ class AQ_TreeView(QTreeView):
                         # Подключаем обработчик события выбора действия
                         action_write.triggered.connect(lambda: self.model().write_parameter(index))
                     # # Показываем контекстное меню
-                    context_menu.exec_(event.globalPos())
+                    context_menu.exec(event.globalPos())
                 else:
                     # Создаем контекстное меню
                     context_menu = QMenu(self)
@@ -136,7 +136,7 @@ class AQ_TreeView(QTreeView):
                         action_write.triggered.connect(lambda: self.model().write_parameter(index))
 
                     # Показываем контекстное меню
-                    context_menu.exec_(event.globalPos())
+                    context_menu.exec(event.globalPos())
         else:
             # Если индекс недействителен, вызывается обработчик события контекстного меню по умолчанию
             super().contextMenuEvent(event)

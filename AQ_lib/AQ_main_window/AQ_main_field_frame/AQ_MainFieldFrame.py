@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QLabel
 
 from AQ_LeftWidgetPanel import AQ_left_widget_panel_frame
 from AQ_TreeViewManagerFrame import AQ_TreeViewFrame

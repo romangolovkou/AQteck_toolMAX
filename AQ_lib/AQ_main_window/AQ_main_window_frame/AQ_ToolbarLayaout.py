@@ -1,5 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QMenu, QAction, QHBoxLayout, \
-                            QFrame
+from PySide6.QtWidgets import QHBoxLayout, QFrame
 from AQ_ToolbarGroup import AQ_device_action_group, AQ_param_action_group, AQ_utils_group, AQ_archieve_group, \
                              AQ_firmware_group, AQ_other_group
 

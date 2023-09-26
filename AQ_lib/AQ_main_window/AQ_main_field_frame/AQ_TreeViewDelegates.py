@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QFont, QColor
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QComboBox, QLineEdit, QStyledItemDelegate
+from PySide6.QtGui import QColor
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QStyledItemDelegate
 
 
 class AQ_ValueTreeDelegate(QStyledItemDelegate):

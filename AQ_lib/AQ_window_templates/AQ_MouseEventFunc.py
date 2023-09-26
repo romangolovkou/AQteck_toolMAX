@@ -1,6 +1,6 @@
 from AQ_ResizeFunc import resize_window_width, resize_window_height, resize_and_move_win_width,\
     resize_and_move_win_height
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 
 
 def mousePressEvent_Dragging(self, event):

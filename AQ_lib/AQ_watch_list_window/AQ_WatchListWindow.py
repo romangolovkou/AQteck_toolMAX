@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from AQ_CustomWindowTemplates import AQ_FullDialog
 from AQ_WatchListManagerFrame import AQ_WatchListManagerFrame

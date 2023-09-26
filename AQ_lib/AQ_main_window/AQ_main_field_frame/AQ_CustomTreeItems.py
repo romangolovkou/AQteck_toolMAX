@@ -1,14 +1,14 @@
-from PyQt5.QtCore import Qt, QModelIndex, QObject, pyqtSignal
-from PyQt5.QtGui import QStandardItem
+from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
+from PySide6.QtGui import QStandardItem
 
 from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
     AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit
 
 
-class AQ_ItemsSignals(QObject):
+class AQ_ItemsSignals(QStandardItem):
     def __init__(self):
         super().__init__()
-        self.i_am_changed = pyqtSignal(QStandardItem, str)
+        self.i_am_changed = Signal(QStandardItem, str)
 
 
 class AQ_ParamItem(QStandardItem):

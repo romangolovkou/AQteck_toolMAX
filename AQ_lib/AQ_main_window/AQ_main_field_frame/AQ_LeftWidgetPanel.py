@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QFont, QPalette, QColor
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap, QFont, QPalette, QColor
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
 
 from AQ_CustomWindowTemplates import AQ_Label
 
@@ -163,5 +163,5 @@ class AQ_left_device_widget(QWidget):
         #     # Подключаем обработчик события выбора действия
         #     action_write.triggered.connect(lambda: self.write_catalog_by_modbus(index, 1))
         # # Показываем контекстное меню
-        context_menu.exec_(event.globalPos())
+        context_menu.exec(event.globalPos())
 

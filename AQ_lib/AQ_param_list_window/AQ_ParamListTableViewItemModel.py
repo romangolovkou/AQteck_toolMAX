@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QStandardItemModel
+from PySide6.QtGui import QStandardItemModel
 
 
 class AQ_TableViewItemModel(QStandardItemModel):

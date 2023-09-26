@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView
+from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
 
 class AQ_WatchListTableView(QTableView):
