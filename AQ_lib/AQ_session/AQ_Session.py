@@ -88,8 +88,10 @@ class AQ_CurrentSession(QObject):
         if self.cur_active_device is not None:
             self.restart_device(self.cur_active_device)
 
-    def add_param_to_watch_list(self, item):
+    def add_param_to_watch_list(self, item, model):
         if not hasattr(self, 'watch_list_window'):
             self.open_WatchList()
+        elif self.watch_list_window is None:
+            self.open_WatchList()
 
-        self.event_manager.emit_event('add_item_to_watch_list', item)
+        self.event_manager.emit_event('add_item_to_watch_list', item, model)

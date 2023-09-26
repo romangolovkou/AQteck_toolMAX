@@ -20,11 +20,12 @@ class AQ_TreeView(QTreeView):
                                 border: 1px solid #9ef1d3;
                                 color: #D0D0D0;
                             }
-
                             QTreeView::item {
                                 border: 1px solid #2b2d30;
                             }
-
+                            QTreeView:item:!focus { 
+                                background-color: transparent; color: #D0D0D0
+                            }
                             QHeaderView::section {
                                 border: 1px solid #1e1f22;
                                 color: #D0D0D0;

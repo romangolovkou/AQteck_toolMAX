@@ -19,6 +19,6 @@ class AQ_DialogWatchList(AQ_FullDialog):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self.watch_list_manager_frame.setGeometry(0, self.main_window_frame.title_bar_frame.height(), self.width(),
-                                                  self.height() - self.main_window_frame.title_bar_frame.height())
+        self.watch_list_manager_frame.setGeometry(4, self.main_window_frame.title_bar_frame.height(), self.width() - 8,
+                                                  self.height() - self.main_window_frame.title_bar_frame.height() - 4)
         event.accept()
