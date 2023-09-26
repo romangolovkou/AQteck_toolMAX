@@ -5,6 +5,12 @@ from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, A
     AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit
 
 
+class AQ_ItemsSignals(QObject):
+    def __init__(self):
+        super().__init__()
+        self.i_am_changed = pyqtSignal(QStandardItem, str)
+
+
 class AQ_ParamItem(QStandardItem):
     def __init__(self, name):
         super().__init__(name)
@@ -12,6 +18,8 @@ class AQ_ParamItem(QStandardItem):
         self.last_value_from_device = None
         self.editor = None
         self.param_status = None
+        self.signals = AQ_ItemsSignals()
+
 
     @property
     def value(self):
@@ -40,6 +48,7 @@ class AQ_ParamItem(QStandardItem):
                     self.param_status = 'ok'
                 else:
                     self.param_status = 'changed'
+                    self.i_am_changed.emit(self, self.param_status)
             self._value = new_value
         else:
             self.param_status = 'error'

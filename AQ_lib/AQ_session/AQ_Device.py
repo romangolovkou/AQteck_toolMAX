@@ -3,6 +3,7 @@ import struct
 
 from Crypto.Cipher import DES
 from PyQt5.QtCore import QObject
+from PyQt5.QtGui import QStandardItem
 from pymodbus.client import serial
 import serial.tools.list_ports
 
@@ -24,6 +25,7 @@ class AQ_Device(QObject):
         self.address = None
         self.device_tree = None
         self.address_tuple = address_tuple
+        self.changed_param_stack = []
         self.client = self.create_client(address_tuple)
         self.client.open()
         self.device_data = self.read_device_data()
@@ -52,6 +54,9 @@ class AQ_Device(QObject):
         # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
         # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2'
         # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
+
+    def add_changed_param(self, item):
+        self.changed_param_stack.append(item)
 
     def get_device_status(self):
         return self.device_data.get('status', None)

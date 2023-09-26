@@ -51,9 +51,28 @@ class AQ_CurrentSession(QObject):
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
             self.devices.append(new_devices_list[i])
+            self.set_slots_in_parameters(self.devices[-1])
             self.devices[-1].read_all_parameters()
 
         self.event_manager.emit_event('new_devices_added', new_devices_list)
+
+    def set_slots_in_parameters(self, device):
+        device_data = device.get_device_data()
+        device_tree = device_data.get('device_tree', None)
+        if device_tree is not None:
+            root = device_tree.invisibleRootItem()
+            self.traverse_items_add_slots_in_items(root, device.add_changed_param)
+
+    def traverse_items_add_slots_in_items(self, item, slot):
+        for row in range(item.rowCount()):
+            child_item = item.child(row)
+            if child_item is not None:
+                parameter_attributes = child_item.data(Qt.UserRole)
+                if parameter_attributes is not None:
+                    if parameter_attributes.get('is_catalog', 0) == 1:
+                        self.traverse_items_add_slots_in_items(child_item, slot)
+                    else:
+                        child_item.signals.i_am_changed.connect(slot)
 
     def set_cur_active_device(self, device):
         if device is not None:
