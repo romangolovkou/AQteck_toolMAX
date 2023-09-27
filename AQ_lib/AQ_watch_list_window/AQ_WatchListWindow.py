@@ -1,3 +1,4 @@
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QApplication
 
 from AQ_CustomWindowTemplates import AQ_FullDialog
@@ -10,9 +11,10 @@ class AQ_DialogWatchList(AQ_FullDialog):
         super().__init__(event_manager, window_name)
         self.window_name = window_name
         self.setGeometry(0, 0, 500, 300)
-        self.screen_geometry = QApplication.desktop().screenGeometry()
-        self.move(self.screen_geometry.width() - self.width() - 100,
-                  self.screen_geometry.height() // 5)
+        # Получаем геометрию основного экрана
+        screen_geometry = QGuiApplication.primaryScreen().geometry()
+        self.move(screen_geometry.width() - self.width() - 100,
+                  screen_geometry.height() // 5)
 
         # Створюємо головний фрейм
         self.watch_list_manager_frame = AQ_WatchListManagerFrame(self.event_manager, self)

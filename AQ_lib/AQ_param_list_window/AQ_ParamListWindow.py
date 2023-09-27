@@ -1,3 +1,4 @@
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QApplication
 
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
@@ -16,9 +17,10 @@ class AQ_DialogParamList(AQ_SimplifiedDialog):
         self.setGeometry(0, 0, 900, 800)
         self.main_window_frame.setGeometry(0, 0, self.width(),
                                            self.height())
-        self.screen_geometry = QApplication.desktop().screenGeometry()
-        self.move(self.screen_geometry.width() // 2 - self.width() // 2,
-                  self.screen_geometry.height() // 2 - self.height() // 2,)
+        # Получаем геометрию основного экрана
+        screen_geometry = QGuiApplication.primaryScreen().geometry()
+        self.move(screen_geometry.width() // 2 - self.width() // 2,
+                  screen_geometry.height() // 2 - self.height() // 2,)
 
         #Створюємо головний фрейм
         self.param_list_manager_frame = AQ_ParamListManagerFrame(self.device, self.event_manager, self)

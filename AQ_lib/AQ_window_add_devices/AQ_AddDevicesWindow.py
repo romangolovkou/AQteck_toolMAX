@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, Signal
-from PySide6.QtGui import QScreen
+from PySide6.QtGui import QScreen, QGuiApplication
 from PySide6.QtWidgets import QApplication, QCheckBox
 
 from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
@@ -20,9 +20,10 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.parent = parent
         self.event_manager = event_manager
         self.selected_devices_list = []
-        self.screen_geometry = QScreen().geometry()
-        self.move(self.screen_geometry.width() // 2 - self.width() // 2,
-                  self.screen_geometry.height() // 2 - self.height() // 2,)
+        # Получаем геометрию основного экрана
+        screen_geometry = QGuiApplication.primaryScreen().geometry()
+        self.move(screen_geometry.width() // 2 - self.width() // 2,
+                  screen_geometry.height() // 2 - self.height() // 2,)
 
         # Рєєструємо обробники подій
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)

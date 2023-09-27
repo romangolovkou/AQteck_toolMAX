@@ -181,7 +181,7 @@ class AQ_ParamListManagerFrame(QFrame):
         if initial_path == '':
             initial_path = "C:/"
         self.file_dialog = QFileDialog(self)
-        options = self.file_dialog.Options()
+        options = self.file_dialog.options()
         # options |= self.file_dialog.DontUseNativeDialog
 
         # Открываем диалог для выбора файла и места сохранения
