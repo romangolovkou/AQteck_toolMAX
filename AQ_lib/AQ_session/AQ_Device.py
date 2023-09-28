@@ -6,6 +6,8 @@ from PySide6.QtCore import QObject
 from pymodbus.client import serial
 import serial.tools.list_ports
 
+from AQ_CustomTreeItems import AQ_ParamItem
+from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_IsValidIpFunc import is_valid_ip
 from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
@@ -18,6 +20,7 @@ class AQ_Device(QObject):
     def __init__(self, event_manager, address_tuple, parent=None):
         super().__init__(parent)
         self.event_manager = event_manager
+        self.local_event_manager = AQ_EventManager()
         self.device_name = None
         self.serial_number = None
         self.version = None
@@ -25,6 +28,7 @@ class AQ_Device(QObject):
         self.device_tree = None
         self.address_tuple = address_tuple
         self.changed_param_stack = []
+        self.update_param_stack = []
         self.client = self.create_client(address_tuple)
         self.client.open()
         self.device_data = self.read_device_data()
@@ -53,9 +57,14 @@ class AQ_Device(QObject):
         # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
         # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2'
         # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
+        self.local_event_manager.register_event_handler('param_changed', self.add_changed_param)
+        self.local_event_manager.register_event_handler('param_need_update', self.add_param_to_update_stack)
 
     def add_changed_param(self, item):
         self.changed_param_stack.append(item)
+
+    def add_param_to_update_stack(self, item):
+        self.update_param_stack.append(item)
 
     def get_device_status(self):
         return self.device_data.get('status', None)
@@ -291,106 +300,129 @@ class AQ_Device(QObject):
 
         return decrypt_res
 
+    def read_parameters(self, items=None):
+        if items is None:
+            root = self.device_tree.invisibleRootItem()
+            for row in range(root.rowCount()):
+                child_item = root.child(row)
+                self.read_parameters(child_item)
+
+            self.update_param_stack.clear()
+            self.event_manager.emit_event('current_device_data_updated', self)
+            return
+        elif isinstance(items, AQ_ParamItem):
+            param_attributes = items.get_param_attributes()
+            if param_attributes.get('is_catalog', 0) == 1:
+                row_count = items.rowCount()
+                for row in range(row_count):
+                    child_item = items.child(row)
+                    self.read_parameters(child_item)
+            else:
+                self.read_parameter(items)
+        elif isinstance(items, list):
+            for i in range(len(items)):
+                self.read_parameter(items[i])
+
+        if len(self.update_param_stack) > 0:
+            self.event_manager.emit_event('current_device_data_updated', self)
+            self.update_param_stack.clear()
+
     def read_parameter(self, item):
-        param_attibutes = item.get_param_attributes()
-        if param_attibutes.get('is_catalog', 0) == 1:
-            row_count = item.rowCount()
-            for row in range(row_count):
-                child_item = item.child(row)
-                self.read_parameter(child_item)
-        else:
-            param_type = param_attibutes.get('type', '')
-            param_size = param_attibutes.get('param_size', '')
-            modbus_reg = param_attibutes.get('modbus_reg', '')
+        param_attributes = item.get_param_attributes()
 
-            if param_type != '' and param_size != ''and modbus_reg != '':
-                if param_type == 'enum':
-                    if param_size > 16:
-                        reg_count = 2
-                        byte_size = 4
-                    else:
-                        reg_count = 1
-                        byte_size = 1
+        param_type = param_attributes.get('type', '')
+        param_size = param_attributes.get('param_size', '')
+        modbus_reg = param_attributes.get('modbus_reg', '')
+
+        if param_type != '' and param_size != ''and modbus_reg != '':
+            if param_type == 'enum':
+                if param_size > 16:
+                    reg_count = 2
+                    byte_size = 4
                 else:
-                    byte_size = param_size
-                    if byte_size < 2:
-                        reg_count = 1
-                    else:
-                        reg_count = byte_size // 2
-                # Выполняем запрос
-                response = self.client.read_holding_registers(modbus_reg, reg_count)
-                # Конвертируем значения регистров в строку
-                hex_string = ''.join(format(value, '04X') for value in response.registers)
-                # Конвертируем строку в массив байт
-                byte_array = bytes.fromhex(hex_string)
-                if param_type == 'unsigned':
-                    if byte_size == 1:
-                        param_value = struct.unpack('>H', byte_array)[0]
-                    elif byte_size == 2:
-                        param_value = struct.unpack('>H', byte_array)[0]
-                    elif byte_size == 4:
-                        byte_array = reverse_modbus_registers(byte_array)
-                        param_value = struct.unpack('>I', byte_array)[0]
-                    elif byte_size == 6:  # MAC address
-                        byte_array = reverse_modbus_registers(byte_array)
-                        param_value = byte_array  # struct.unpack('>I', byte_array)[0]
-                    elif byte_size == 8:
-                        byte_array = reverse_modbus_registers(byte_array)
-                        param_value = struct.unpack('>Q', byte_array)[0]
-                elif param_type == 'signed':
-                    if byte_size == 1:
-                        param_value = struct.unpack('b', byte_array[1])[0]
-                    elif byte_size == 2:
-                        param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-                    elif byte_size == 4 or byte_size == 8:
-                        byte_array = reverse_modbus_registers(byte_array)
-                        param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-                elif param_type == 'string':
-                    byte_array = swap_modbus_bytes(byte_array, reg_count)
-                    # Расшифровуем в строку
-                    text = byte_array.decode('ANSI')
-                    param_value = remove_empty_bytes(text)
-                elif param_type == 'enum':
-                    # костиль для enum з розміром два регістра
-                    if byte_size == 4:
-                        param_value = struct.unpack('>I', byte_array)[0]
-                    else:
-                        param_value = struct.unpack('>H', byte_array)[0]
+                    reg_count = 1
+                    byte_size = 1
+            else:
+                byte_size = param_size
+                if byte_size < 2:
+                    reg_count = 1
+                else:
+                    reg_count = byte_size // 2
+            # Выполняем запрос
+            response = self.client.read_holding_registers(modbus_reg, reg_count)
+            # Конвертируем значения регистров в строку
+            hex_string = ''.join(format(value, '04X') for value in response.registers)
+            # Конвертируем строку в массив байт
+            byte_array = bytes.fromhex(hex_string)
+            if param_type == 'unsigned':
+                if byte_size == 1:
+                    param_value = struct.unpack('>H', byte_array)[0]
+                elif byte_size == 2:
+                    param_value = struct.unpack('>H', byte_array)[0]
+                elif byte_size == 4:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = struct.unpack('>I', byte_array)[0]
+                elif byte_size == 6:  # MAC address
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = byte_array  # struct.unpack('>I', byte_array)[0]
+                elif byte_size == 8:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = struct.unpack('>Q', byte_array)[0]
+            elif param_type == 'signed':
+                if byte_size == 1:
+                    param_value = struct.unpack('b', byte_array[1])[0]
+                elif byte_size == 2:
+                    param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+                elif byte_size == 4 or byte_size == 8:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+            elif param_type == 'string':
+                byte_array = swap_modbus_bytes(byte_array, reg_count)
+                # Расшифровуем в строку
+                text = byte_array.decode('ANSI')
+                param_value = remove_empty_bytes(text)
+            elif param_type == 'enum':
+                # костиль для enum з розміром два регістра
+                if byte_size == 4:
+                    param_value = struct.unpack('>I', byte_array)[0]
+                else:
+                    param_value = struct.unpack('>H', byte_array)[0]
 
-                elif param_type == 'float':
-                    byte_array = swap_modbus_bytes(byte_array, reg_count)
-                    param_value = struct.unpack('f', byte_array)[0]
-                    param_value = round(param_value, 7)
-                elif param_type == 'date_time':
-                    if byte_size == 4:
-                        byte_array = reverse_modbus_registers(byte_array)
-                        param_value = struct.unpack('>I', byte_array)[0]
+            elif param_type == 'float':
+                byte_array = swap_modbus_bytes(byte_array, reg_count)
+                param_value = struct.unpack('f', byte_array)[0]
+                param_value = round(param_value, 7)
+            elif param_type == 'date_time':
+                if byte_size == 4:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = struct.unpack('>I', byte_array)[0]
 
-                item.set_last_value_from_device(param_value)
+            item.force_set_value(param_value)
+            item.synchronized = True
 
-    def read_all_parameters(self):
-        root = self.device_tree.invisibleRootItem()
-
-        # self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-        # self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
-        #
-        # max_value = 100  # Максимальное значение для прогресс-бара
-        # row_count = root.rowCount()
-        # step_value = max_value // row_count
-        for row in range(root.rowCount()):
-            child_item = root.child(row)
-            self.read_parameter(child_item)
-            # if result == 'read_error':
-            #     self.wait_widget.hide()
-            #     self.wait_widget.deleteLater()
-            #     return
-            # self.wait_widget.progress_bar.setValue((row + 1) * step_value)
-
-        self.event_manager.emit_event('current_device_data_updated', self)
-
-        # self.wait_widget.progress_bar.setValue(max_value)
-        # self.wait_widget.hide()
-        # self.wait_widget.deleteLater()
+    # def read_all_parameters(self):
+    #     root = self.device_tree.invisibleRootItem()
+    #
+    #     # self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
+    #     # self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
+    #     #
+    #     # max_value = 100  # Максимальное значение для прогресс-бара
+    #     # row_count = root.rowCount()
+    #     # step_value = max_value // row_count
+    #     for row in range(root.rowCount()):
+    #         child_item = root.child(row)
+    #         self.read_parameter(child_item)
+    #         # if result == 'read_error':
+    #         #     self.wait_widget.hide()
+    #         #     self.wait_widget.deleteLater()
+    #         #     return
+    #         # self.wait_widget.progress_bar.setValue((row + 1) * step_value)
+    #
+    #     self.event_manager.emit_event('current_device_data_updated', self)
+    #
+    #     # self.wait_widget.progress_bar.setValue(max_value)
+    #     # self.wait_widget.hide()
+    #     # self.wait_widget.deleteLater()
 
     def write_parameter(self, item):
         param_attibutes = item.get_param_attributes()

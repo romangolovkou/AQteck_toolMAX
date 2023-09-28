@@ -29,7 +29,7 @@ class AQ_TreeViewManager(QStackedWidget):
         self.event_manager = event_manager
         self.event_manager.register_event_handler("new_devices_added", self.add_new_devices_trees)
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
-        self.event_manager.register_event_handler("current_device_data_updated", self.update_device_values)
+        # self.event_manager.register_event_handler("current_device_data_updated", self.update_device_values)
         self.event_manager.register_event_handler("current_device_data_written", self.update_device_param_statuses)
         self.event_manager.register_event_handler("delete_device", self.delete_device_view)
         self.devices_views = {}

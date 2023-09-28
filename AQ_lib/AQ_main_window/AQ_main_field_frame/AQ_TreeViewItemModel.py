@@ -18,6 +18,7 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         super().__init__(parent)
         self.device = device
         self.event_manager = event_manager
+        self.event_manager.register_event_handler('current_device_data_updated', self.update_params_values)
 
     def update_parameter_value(self, manager_item):
         param_attributes = manager_item.get_param_attributes()
@@ -29,11 +30,12 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         else:
             manager_item.show_new_value()
 
-    def update_all_params_values(self):
-        root = self.invisibleRootItem()
-        for row in range(root.rowCount()):
-            child_item = root.child(row)
-            self.update_parameter_value(child_item)
+    def update_params_values(self, device, param_stack):
+        if self.device == device:
+            root = self.invisibleRootItem()
+            for row in range(root.rowCount()):
+                child_item = root.child(row)
+                self.update_parameter_value(child_item)
 
     def update_parameter_status(self, manager_item):
         param_attributes = manager_item.get_param_attributes()
@@ -54,7 +56,7 @@ class AQ_TreeViewItemModel(QStandardItemModel):
     def read_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
-        self.device.read_parameter(sourse_item)
+        self.device.read_parameters(sourse_item)
         self.update_parameter_value(item)
 
     def write_parameter(self, index):
