@@ -21,21 +21,26 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         self.event_manager.register_event_handler('current_device_data_updated', self.update_params_values)
 
     def update_parameter_value(self, manager_item):
-        param_attributes = manager_item.get_param_attributes()
-        if param_attributes.get('is_catalog', 0) == 1:
-            row_count = manager_item.rowCount()
-            for row in range(row_count):
-                child_item = manager_item.child(row)
-                self.update_parameter_value(child_item)
-        else:
-            manager_item.show_new_value()
+        manager_item.show_new_value()
 
-    def update_params_values(self, device, param_stack):
-        if self.device == device:
-            root = self.invisibleRootItem()
-            for row in range(root.rowCount()):
-                child_item = root.child(row)
+    def update_params_catalog(self, manager_item):
+        row_count = manager_item.rowCount()
+        for row in range(row_count):
+            child_item = manager_item.child(row)
+            param_attributes = child_item.get_param_attributes()
+            if param_attributes.get('is_catalog', 0) == 1:
+                self.update_params_catalog(child_item)
+            else:
                 self.update_parameter_value(child_item)
+
+    def update_params_values(self, device, param_stack=None):
+        if self.device == device:
+            if param_stack is None:
+                root = self.invisibleRootItem()
+                for row in range(root.rowCount()):
+                    child_item = root.child(row)
+                    self.update_params_catalog(child_item)
+
 
     def update_parameter_status(self, manager_item):
         param_attributes = manager_item.get_param_attributes()

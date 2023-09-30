@@ -302,30 +302,36 @@ class AQ_Device(QObject):
 
     def read_parameters(self, items=None):
         if items is None:
-            root = self.device_tree.invisibleRootItem()
-            for row in range(root.rowCount()):
-                child_item = root.child(row)
-                self.read_parameters(child_item)
-
-            self.update_param_stack.clear()
-            self.event_manager.emit_event('current_device_data_updated', self)
-            return
+            self.read_all_parameters()
         elif isinstance(items, AQ_ParamItem):
-            param_attributes = items.get_param_attributes()
-            if param_attributes.get('is_catalog', 0) == 1:
-                row_count = items.rowCount()
-                for row in range(row_count):
-                    child_item = items.child(row)
-                    self.read_parameters(child_item)
-            else:
-                self.read_parameter(items)
+            self.read_item(items)
         elif isinstance(items, list):
             for i in range(len(items)):
                 self.read_parameter(items[i])
 
         if len(self.update_param_stack) > 0:
-            self.event_manager.emit_event('current_device_data_updated', self)
+            self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
             self.update_param_stack.clear()
+
+    def read_all_parameters(self):
+        root = self.device_tree.invisibleRootItem()
+        for row in range(root.rowCount()):
+            child_item = root.child(row)
+            self.read_item(child_item)
+
+        self.update_param_stack.clear()
+        self.event_manager.emit_event('current_device_data_updated', self)
+        return
+
+    def read_item(self,  item):
+        param_attributes = item.get_param_attributes()
+        if param_attributes.get('is_catalog', 0) == 1:
+            row_count = item.rowCount()
+            for row in range(row_count):
+                child_item = item.child(row)
+                self.read_item(child_item)
+        else:
+            self.read_parameter(item)
 
     def read_parameter(self, item):
         param_attributes = item.get_param_attributes()
