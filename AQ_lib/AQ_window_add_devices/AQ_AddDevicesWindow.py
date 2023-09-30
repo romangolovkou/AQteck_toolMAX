@@ -9,6 +9,7 @@ from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
 from AQ_Device import AQ_Device
+from AQ_Device_110china import AQ_Device110China
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -107,7 +108,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         finded_devices_list = []
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
-            device = AQ_Device(self.event_manager, network_settings_list[i])
+            device = self.get_device_by_settings(self.event_manager, network_settings_list[i])
             device_status = device.get_device_status()
             if device_status == 'ok' or device_status == 'data_error':
                 finded_devices_list.append(device)
@@ -115,6 +116,14 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
                 self.show_connect_err_label()
 
         return finded_devices_list
+
+    def get_device_by_settings(self, event_manager, network_settings):
+        if len(network_settings) > 2:
+            device = AQ_Device110China(event_manager, network_settings)
+        else:
+            device = AQ_Device110China(event_manager, network_settings)
+
+        return device
 
     def show_connect_err_label(self):
         self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)

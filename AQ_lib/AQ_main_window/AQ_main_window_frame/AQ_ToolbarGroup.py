@@ -77,10 +77,10 @@ class AQ_device_action_group(AQ_toolbar_group_template):
         self.btn_delete_devices.clicked.connect(lambda: self.event_manager.emit_event('delete_cur_active_device'))
         self.buttons.append(self.btn_delete_devices)
     # кнопка 3
-        self.ico_btn_ip_adresses = QIcon(PROJ_DIR + 'Icons/ip_adresses.png')
-        self.btn_ip_adresses = AQ_ToolButton('IP Addresses', self.ico_btn_ip_adresses)
-        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.buttons.append(self.btn_ip_adresses)
+    #     self.ico_btn_ip_adresses = QIcon(PROJ_DIR + 'Icons/ip_adresses.png')
+    #     self.btn_ip_adresses = AQ_ToolButton('IP Addresses', self.ico_btn_ip_adresses)
+    #     # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+    #     self.buttons.append(self.btn_ip_adresses)
 
     # Створюємо початковий горизонтальний лейаут
         self.group_layout = Group_LayH(self, *self.buttons)
@@ -103,16 +103,16 @@ class AQ_param_action_group(AQ_toolbar_group_template):
         self.btn_write.clicked.connect(lambda: self.event_manager.emit_event('write_params_cur_active_device'))
         self.buttons.append(self.btn_write)
     # кнопка 3
-        self.ico_btn_factory_settings = QIcon(PROJ_DIR + 'Icons/test_Button.png')
-        self.btn_factory_settings = AQ_ToolButton('Factory settings', self.ico_btn_factory_settings)
-        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.buttons.append(self.btn_factory_settings)
+    #     self.ico_btn_factory_settings = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+    #     self.btn_factory_settings = AQ_ToolButton('Factory settings', self.ico_btn_factory_settings)
+    #     # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+    #     self.buttons.append(self.btn_factory_settings)
     # кнопка 4
-        self.ico_btn_watch_list = QIcon(PROJ_DIR + 'Icons/test_Button.png')
-        self.btn_watch_list = AQ_ToolButton('Watch list', self.ico_btn_watch_list)
-        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.btn_watch_list.clicked.connect(lambda: self.event_manager.emit_event('open_WatchList'))
-        self.buttons.append(self.btn_watch_list)
+    #     self.ico_btn_watch_list = QIcon(PROJ_DIR + 'Icons/test_Button.png')
+    #     self.btn_watch_list = AQ_ToolButton('Watch list', self.ico_btn_watch_list)
+    #     # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+    #     self.btn_watch_list.clicked.connect(lambda: self.event_manager.emit_event('open_WatchList'))
+    #     self.buttons.append(self.btn_watch_list)
 
     # Створюємо початковий горизонтальний лейаут
         self.group_layout = Group_LayH(self, *self.buttons)

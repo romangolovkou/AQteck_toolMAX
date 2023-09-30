@@ -45,6 +45,7 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         self.auto_load_settings = auto_load_settings
         self.setContentsMargins(0, 0, 0, 0)  # Устанавливаем отступы макета
         self.setAlignment(Qt.AlignTop)  # Установка выравнивания вверху макета
+        self.path = '110_device_conf/'
 
 
     # Создаем текстовую метку заголовка настроек соединения
@@ -54,10 +55,19 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         self.title_text.setFont(QFont("Verdana", 12))  # Задаем шрифт и размер
         self.title_text.setAlignment(Qt.AlignCenter)
 
+    # Создание комбо-бокса вибору пристрою
+        self.device_combo_box = AQ_ComboBox()
+        self.device_combo_box.setObjectName(self.parent.objectName() + "_" + "device_combo_box")
+        # Получаем список файлов в указанной директории
+        files = [f for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
+
+        # Добавляем имена файлов в комбобокс
+        self.device_combo_box.addItems(files)
+
     # Создаем текстовую метку выбора интерфейса
         self.interface_combo_box_label = AQ_Label("Interface")
 
-    # Создание комбо-бокса
+    # Создание комбо-бокса інтерфейсу
         self.interface_combo_box = AQ_ComboBox()
         self.interface_combo_box.setObjectName(self.parent.objectName() + "_" + "interface_combo_box")
         self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
@@ -114,6 +124,7 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
 
     # Додаємо все створені віджеті в порядку відображення
         self.addWidget(self.title_text)
+        self.addWidget(self.device_combo_box)
         self.addWidget(self.interface_combo_box_label)
         self.addWidget(self.interface_combo_box)
         self.addWidget(self.ip_line_edit_label)
@@ -140,13 +151,14 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
 
     def get_network_settings_list(self):
         network_settings_list = []
+        selected_dev = self.device_combo_box.currentText()
         selected_if = self.interface_combo_box.currentText()
         if selected_if == "Ethernet":
             address = self.ip_line_edit.text()
         else:
             address = int(self.slave_id_line_edit.text())
 
-        network_setting = (selected_if, address)
+        network_setting = (selected_if, address, selected_dev)
         network_settings_list.append(network_setting)
 
         return network_settings_list
