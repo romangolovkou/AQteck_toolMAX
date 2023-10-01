@@ -180,6 +180,7 @@ class AQ_ReducedMainFieldFrame(QFrame):
 class AQ_SimplifiedDialog(QDialog):
     def __init__(self, event_manager, window_name='default'):
         super().__init__()
+        self.window_name = window_name
         self.event_manager = event_manager
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setGeometry(0, 0, 800, 600)
@@ -218,7 +219,6 @@ class AQ_SimplifiedDialog(QDialog):
         self.right_border.setGeometry(0, self.height() - 1, self.width(), 1)
         self.bottom_border.setGeometry(self.width() - 1, 0, 1, self.height())
         event.accept()
-
 
 class AQ_FullDialog(AQ_SimplifiedDialog):
     def __init__(self, event_manager, window_name='default'):

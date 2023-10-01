@@ -30,9 +30,6 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
         self.event_manager.register_event_handler('AddDevice_connect_error', self.show_connect_err_label)
         self.event_manager.register_event_handler('Add_device', self.add_selected_devices_to_session)
-        self.event_manager.register_event_handler('minimize_' + window_name, self.showMinimized)
-        self.event_manager.register_event_handler('close_' + window_name, self.close)
-        self.event_manager.register_event_handler('dragging_' + window_name, self.move)
 
         # Створюємо фрейм з налаштуваннями з'єднання
         self.network_settings_frame = AQ_NetworkSettingsFrame(event_manager, self.main_window_frame)

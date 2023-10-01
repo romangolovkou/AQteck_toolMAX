@@ -14,6 +14,9 @@ class AQ_TreeView(QTreeView):
         self.setItemDelegateForColumn(0, name_delegate)
         value_delegate = AQ_ValueTreeDelegate(self)
         self.setItemDelegateForColumn(1, value_delegate)
+        # Разрешаем отображение скроллбаров
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         self.setStyleSheet("""
                             QTreeView {
@@ -32,9 +35,14 @@ class AQ_TreeView(QTreeView):
                                 background-color: #2b2d30;
                                 padding-left: 6px;
                             }
-                            QTreeView QScrollBar { 
-                                background-color: #F0F0F0; 
-                                width: 10px; }
+                            QScrollBar:vertical {
+                                background: #1e1f22;
+                                width: 10px;  /* Ширина вертикального скроллбара */
+                            }
+                            QScrollBar:horizontal {
+                                background: #1e1f22;
+                                height: 10px;  /* Высота горизонтального скроллбара */
+                            }
                         """)
 
     def setModel(self, model):
