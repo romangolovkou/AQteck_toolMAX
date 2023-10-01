@@ -96,7 +96,7 @@ class AQ_TreeViewItemModel(QStandardItemModel):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
         self.device.read_parameters(sourse_item)
-        self.update_parameter_value(item)
+        # self.update_parameter_value(item)
 
     def write_parameter(self, index):
         item = self.itemFromIndex(index)
