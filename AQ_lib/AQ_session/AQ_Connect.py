@@ -2,7 +2,9 @@ from abc import abstractmethod
 
 from PySide6.QtCore import QObject
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
+from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
+from pymodbus.pdu import ModbusResponse
 
 
 class AQ_connect(QObject):
@@ -30,6 +32,7 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def __init__(self, _port, _baudrate, slave_id):
         super().__init__()
         self.slave_id = slave_id
+        self.boudrate = _baudrate
         self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate)
 
     def open(self):
@@ -41,15 +44,22 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def read_param(self, start_address, register_count, read_func):
         if read_func == 3:
             response = self.modbus_rtu_client.read_holding_registers(start_address, register_count, self.slave_id)
-            if start_address == 64:
-                response.registers
+
+            if isinstance(response, ModbusIOException):
+                response = 'modbus_error'
+
             return response
         elif read_func == 2:
             result = self.modbus_rtu_client.read_discrete_inputs(start_address, 1, self.slave_id)
+            if isinstance(result, ModbusIOException):
+                return 'modbus_error'
             return result.bits
         elif read_func == 1:
             result = self.modbus_rtu_client.read_coils(start_address, 1, self.slave_id)
+            if isinstance(result, ModbusIOException):
+                return 'modbus_error'
             return result.bits
+
 
     def read_file_record(self, file_number, record_number, record_length):
         # Создание экземпляра структуры ReadFileRecordRequest
@@ -70,6 +80,18 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
             elif write_func == 5:
                 # Запись одного дискретного выхода (бита)
                 result = self.modbus_rtu_client.write_coil(modbus_reg, registers, self.slave_id)
+            elif write_func == 6:
+                if modbus_reg == 100:
+                    # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
+                    result = self.modbus_rtu_client.write_register(modbus_reg, registers, 0)
+                    if not isinstance(result, ModbusIOException):
+                        self.slave_id = registers
+                else:
+                    # Запись одного регистра
+                    result = self.modbus_rtu_client.write_register(modbus_reg, registers, self.slave_id)
+
+            if isinstance(result, ModbusIOException):
+                result = 'modbus_error'
 
             return result
         except Exception as e:
