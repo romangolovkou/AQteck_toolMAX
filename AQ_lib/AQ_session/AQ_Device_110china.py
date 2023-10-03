@@ -418,6 +418,9 @@ class AQ_Device110China(AQ_Device):
                             param_value = struct.unpack('>I', byte_array)[0]
                         else:
                             param_value = struct.unpack('>H', byte_array)[0]
+                            if modbus_reg == 101:
+                                param_value = param_value - 1
+
 
                     elif param_type == 'float':
                         byte_array = swap_modbus_bytes(byte_array, reg_count)
@@ -539,6 +542,8 @@ class AQ_Device110China(AQ_Device):
                         result = self.client.write_param(modbus_reg, value, write_func)
                         item.synchro_last_value_and_value()
                     elif write_func == 6:
+                        if modbus_reg == 101:
+                            value += 1
                         result = self.client.write_param(modbus_reg, value, write_func)
                         item.synchro_last_value_and_value()
 

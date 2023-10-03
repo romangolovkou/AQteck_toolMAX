@@ -44,7 +44,6 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def read_param(self, start_address, register_count, read_func):
         if read_func == 3:
             response = self.modbus_rtu_client.read_holding_registers(start_address, register_count, self.slave_id)
-
             if isinstance(response, ModbusIOException):
                 response = 'modbus_error'
 

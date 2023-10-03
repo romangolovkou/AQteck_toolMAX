@@ -94,6 +94,7 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
     # Создание комбо-бокса швидкості
         self.boudrate_combo_box = AQ_ComboBox()
         self.boudrate_combo_box.setObjectName(self.parent.objectName() + "_" + "boudrate_combo_box")
+        self.boudrate_combo_box.addItem("4800")
         self.boudrate_combo_box.addItem("9600")
         self.boudrate_combo_box.addItem("19200")
         self.boudrate_combo_box.addItem("38400")
