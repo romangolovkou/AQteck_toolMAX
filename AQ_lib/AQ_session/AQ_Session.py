@@ -1,4 +1,6 @@
 from PySide6.QtCore import QObject, Qt
+from PySide6.QtGui import QGuiApplication, QFont
+from PySide6.QtWidgets import QWidget, QFrame, QLabel
 
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AQ_ParamListWindow import AQ_DialogParamList
@@ -80,8 +82,14 @@ class AQ_CurrentSession(QObject):
         self.cur_active_device = None
 
     def read_params_cur_active_device(self):
+        self.wait_label = AQ_wait_label_widget('Please wait...', self.parent)
+        self.wait_label.show()
+
         if self.cur_active_device is not None:
             self.cur_active_device.read_parameters()
+
+        self.wait_label.hide()
+        self.wait_label.deleteLater()
 
     def write_params_cur_active_device(self):
         if self.cur_active_device is not None:
@@ -93,6 +101,7 @@ class AQ_CurrentSession(QObject):
 
     def delete_device(self, device):
         if device is not None:
+            device.client.close()
             index_to_remove = self.devices.index(device)
             removed_element = self.devices.pop(index_to_remove)
             if len(self.devices) == 0:
@@ -112,3 +121,21 @@ class AQ_CurrentSession(QObject):
             self.open_WatchList()
 
         self.event_manager.emit_event('add_item_to_watch_list', item, model)
+
+class AQ_wait_label_widget(QWidget):
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.frame = QFrame(self)
+        self.frame.setGeometry(0, 0, 230, 80)
+        # Получаем геометрию основного экрана
+        screen_geometry = QGuiApplication.primaryScreen().geometry()
+        self.setGeometry(screen_geometry.width() // 2 - self.frame.width() // 2,
+                         screen_geometry.height() // 2 - self.frame.height() // 2,
+                         self.frame.width(), self.frame.height())
+        self.frame.setStyleSheet("border: 2px solid #fe2d2d; border-radius: 5px; background-color: #1e1f22")
+        self.text_label = QLabel(text, self)
+        self.text_label.setFont(QFont("Segoe UI", 12))
+        self.text_label.move(10, 5)
+        self.text_label.setStyleSheet("border: none; color: #E0E0E0; background-color: transparent")
+        self.show()

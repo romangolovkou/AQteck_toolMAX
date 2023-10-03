@@ -24,7 +24,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         # Получаем геометрию основного экрана
         screen_geometry = QGuiApplication.primaryScreen().geometry()
         self.move(screen_geometry.width() // 2 - self.width() // 2,
-                  screen_geometry.height() // 2 - self.height() // 2,)
+                  screen_geometry.height() // 2 - self.height() // 2)
 
         # Рєєструємо обробники подій
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
@@ -101,7 +101,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.add_devices_to_table_widget(finded_devices)
         self.add_finded_devices_to_all_list(finded_devices)
 
-    def connect_to_device (self):
+    def connect_to_device(self):
         finded_devices_list = []
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
@@ -118,7 +118,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         if len(network_settings) > 2:
             device = AQ_Device110China(event_manager, network_settings)
         else:
-            device = AQ_Device110China(event_manager, network_settings)
+            device = AQ_Device(event_manager, network_settings)
 
         return device
 

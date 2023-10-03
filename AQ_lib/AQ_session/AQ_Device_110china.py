@@ -4,6 +4,8 @@ import struct
 
 from Crypto.Cipher import DES
 from PySide6.QtCore import QObject, Qt
+from PySide6.QtGui import QFont, QGuiApplication
+from PySide6.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial
 import serial.tools.list_ports
 
@@ -51,7 +53,7 @@ class AQ_Device110China(AQ_Device):
             self.device_data['status'] = 'connect_error'
 
         self.add_address_string_to_device_data(address_tuple)
-        self.device_data['network_info'] = self.make_network_info_list()
+        # self.device_data['network_info'] = self.make_network_info_list()
 
         # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
         # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694ACFDF674DB57A4B9 - b'I will restart the device now!\x00\x00\x1e\x00\x00\x00Y\xdbZ^'
@@ -123,20 +125,21 @@ class AQ_Device110China(AQ_Device):
             for port in com_ports:
                 if port.description == interface:
                     selected_port = port.device
-                    client = AQ_modbusRTU_connect(selected_port, 9600, address)
+                    boudrate = address_tuple[3]
+                    client = AQ_modbusRTU_connect(selected_port, boudrate, address)
                     return client
 
         return None
 
     def read_device_data(self):
-        try:
-            self.device_name = self.read_device_name()
-            self.version = self.read_version()
-            self.serial_number = self.read_serial_number()
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            # "Ошибка при подключении к COM
-            return 'connect_err'
+        # try:
+        self.device_name = self.read_device_name()
+        #     self.version = self.read_version()
+        #     self.serial_number = self.read_serial_number()
+        # except Exception as e:
+        #     print(f"Error occurred: {str(e)}")
+        #     # "Ошибка при подключении к COM
+        #     return 'connect_err'
 
         device_data = {}
         device_config = self.read_configuration()
@@ -148,19 +151,20 @@ class AQ_Device110China(AQ_Device):
 
 
     def read_device_name(self):
-        # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
-        start_address = 0xF000
-        register_count = 16
-        # Выполняем запрос
-        response = self.client.read_holding_registers(start_address, register_count)
-        # Конвертируем значения регистров в строку
-        hex_string = ''.join(format(value, '04X') for value in response.registers)
-        # Конвертируем строку в массив байт
-        byte_array = bytes.fromhex(hex_string)
-        byte_array = swap_modbus_bytes(byte_array, register_count)
-        # Расшифровуем в строку
-        text = byte_array.decode('ANSI')
-        device_name = remove_empty_bytes(text)
+        file_path = '110_device_conf/' + self.address_tuple[2]
+        data = []
+        with open(file_path, 'r', newline='\n') as csvfile:
+            csv_reader = csv.reader(csvfile)
+            for row in csv_reader:
+                # Добавляем имена из каждой ячейки строки в список
+                data.append(row[0])
+                # Тут нас цікавить тільки перша строка файлу
+                break
+
+        # Разделение записи на поля по символу ';'
+        fields = data[0].split(';')
+
+        device_name = fields[0]
 
         return device_name
 
@@ -204,11 +208,15 @@ class AQ_Device110China(AQ_Device):
     def read_configuration(self):
         file_path = '110_device_conf/' + self.address_tuple[2]
         data = []
+        count = 0
         with open(file_path, 'r', newline='\n') as csvfile:
             csv_reader = csv.reader(csvfile)
             for row in csv_reader:
                 # Добавляем имена из каждой ячейки строки в список
-                data.append(row[0])
+                # Перші дві строки пропускаємо
+                count += 1
+                if count > 2:
+                    data.append(row[0])
 
         return data
 
@@ -268,10 +276,13 @@ class AQ_Device110China(AQ_Device):
                         parameter_name = fields[0]
                         param_attributes['name'] = parameter_name
                         param_attributes['modbus_reg'] = int(fields[2])
-                        if fields[6] != '16':
+                        param_attributes['read_func'] = int(fields[4])
+                        if fields[5] == '-':
                             param_attributes['R_Only'] = 1
                             param_attributes['W_Only'] = 0
-                        parts = fields[7].split(' ')
+                        else:
+                            param_attributes['write_func'] = int(fields[5])
+                        parts = fields[6].split(' ')
                         param_type = parts[0]
                         if param_type == 'enum' or param_type == 'string':
                             param_size = int(parts[1])
@@ -281,7 +292,7 @@ class AQ_Device110China(AQ_Device):
                         param_attributes['param_size'] = param_size
 
                         if param_type == 'enum':
-                            enum_strings = fields[8].split('/')
+                            enum_strings = fields[7].split('/')
                             param_attributes['enum_strings'] = enum_strings
 
                         param_item = get_item_by_type(param_attributes.get('type', ''), parameter_name)
@@ -334,10 +345,6 @@ class AQ_Device110China(AQ_Device):
             child_item = root.child(row)
             self.read_item(child_item)
 
-        # self.update_param_stack.clear()
-        # self.event_manager.emit_event('current_device_data_updated', self)
-        # return
-
     def read_item(self,  item):
         param_attributes = item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
@@ -354,6 +361,7 @@ class AQ_Device110China(AQ_Device):
         param_type = param_attributes.get('type', '')
         param_size = param_attributes.get('param_size', '')
         modbus_reg = param_attributes.get('modbus_reg', '')
+        read_func = param_attributes.get('read_func', '')
 
         if param_type != '' and param_size != ''and modbus_reg != '':
             if param_type == 'enum':
@@ -370,53 +378,59 @@ class AQ_Device110China(AQ_Device):
                 else:
                     reg_count = byte_size // 2
             # Выполняем запрос
-            response = self.client.read_holding_registers(modbus_reg, reg_count)
-            # Конвертируем значения регистров в строку
-            hex_string = ''.join(format(value, '04X') for value in response.registers)
-            # Конвертируем строку в массив байт
-            byte_array = bytes.fromhex(hex_string)
-            if param_type == 'unsigned':
-                if byte_size == 1:
-                    param_value = struct.unpack('>H', byte_array)[0]
-                elif byte_size == 2:
-                    param_value = struct.unpack('>H', byte_array)[0]
-                elif byte_size == 4:
-                    byte_array = reverse_modbus_registers(byte_array)
-                    param_value = struct.unpack('>I', byte_array)[0]
-                elif byte_size == 6:  # MAC address
-                    byte_array = reverse_modbus_registers(byte_array)
-                    param_value = byte_array  # struct.unpack('>I', byte_array)[0]
-                elif byte_size == 8:
-                    byte_array = reverse_modbus_registers(byte_array)
-                    param_value = struct.unpack('>Q', byte_array)[0]
-            elif param_type == 'signed':
-                if byte_size == 1:
-                    param_value = struct.unpack('b', byte_array[1])[0]
-                elif byte_size == 2:
-                    param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-                elif byte_size == 4 or byte_size == 8:
-                    byte_array = reverse_modbus_registers(byte_array)
-                    param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-            elif param_type == 'string':
-                byte_array = swap_modbus_bytes(byte_array, reg_count)
-                # Расшифровуем в строку
-                text = byte_array.decode('ANSI')
-                param_value = remove_empty_bytes(text)
-            elif param_type == 'enum':
-                # костиль для enum з розміром два регістра
-                if byte_size == 4:
-                    param_value = struct.unpack('>I', byte_array)[0]
-                else:
-                    param_value = struct.unpack('>H', byte_array)[0]
+            response = self.client.read_param(modbus_reg, reg_count, read_func)
+            if read_func == 3:
+                # Конвертируем значения регистров в строку
+                hex_string = ''.join(format(value, '04X') for value in response.registers)
+                # Конвертируем строку в массив байт
+                byte_array = bytes.fromhex(hex_string)
+                if param_type == 'unsigned':
+                    if byte_size == 1:
+                        param_value = struct.unpack('>H', byte_array)[0]
+                    elif byte_size == 2:
+                        param_value = struct.unpack('>H', byte_array)[0]
+                    elif byte_size == 4:
+                        byte_array = reverse_modbus_registers(byte_array)
+                        param_value = struct.unpack('>I', byte_array)[0]
+                    elif byte_size == 6:  # MAC address
+                        byte_array = reverse_modbus_registers(byte_array)
+                        param_value = byte_array  # struct.unpack('>I', byte_array)[0]
+                    elif byte_size == 8:
+                        byte_array = reverse_modbus_registers(byte_array)
+                        param_value = struct.unpack('>Q', byte_array)[0]
+                elif param_type == 'signed':
+                    if byte_size == 1:
+                        param_value = struct.unpack('b', byte_array[1])[0]
+                    elif byte_size == 2:
+                        param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+                    elif byte_size == 4 or byte_size == 8:
+                        byte_array = reverse_modbus_registers(byte_array)
+                        param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+                elif param_type == 'string':
+                    byte_array = swap_modbus_bytes(byte_array, reg_count)
+                    # Расшифровуем в строку
+                    text = byte_array.decode('ANSI')
+                    param_value = remove_empty_bytes(text)
+                elif param_type == 'enum':
+                    # костиль для enum з розміром два регістра
+                    if byte_size == 4:
+                        param_value = struct.unpack('>I', byte_array)[0]
+                    else:
+                        param_value = struct.unpack('>H', byte_array)[0]
 
-            elif param_type == 'float':
-                byte_array = swap_modbus_bytes(byte_array, reg_count)
-                param_value = struct.unpack('f', byte_array)[0]
-                param_value = round(param_value, 7)
-            elif param_type == 'date_time':
-                if byte_size == 4:
-                    byte_array = reverse_modbus_registers(byte_array)
-                    param_value = struct.unpack('>I', byte_array)[0]
+                elif param_type == 'float':
+                    byte_array = swap_modbus_bytes(byte_array, reg_count)
+                    param_value = struct.unpack('f', byte_array)[0]
+                    param_value = round(param_value, 7)
+                elif param_type == 'date_time':
+                    if byte_size == 4:
+                        byte_array = reverse_modbus_registers(byte_array)
+                        param_value = struct.unpack('>I', byte_array)[0]
+            elif read_func == 2 or read_func == 1:
+                if response[0] is True:
+                    param_value = 1
+                else:
+                    param_value = 0
 
             item.force_set_value(param_value)
             item.synchronized = True
@@ -459,61 +473,71 @@ class AQ_Device110China(AQ_Device):
                 modbus_reg = param_attibutes.get('modbus_reg', '')
                 value = item.value
                 if param_type != '' and param_size != '' and modbus_reg != '':
-                    if param_type == 'unsigned':
-                        if param_size == 1:
-                            packed_data = struct.pack('H', value)
-                        elif param_size == 2:
-                            packed_data = struct.pack('H', value)
-                        elif param_size == 4:
-                                packed_data = struct.pack('I', value)
-                        elif param_size == 6:  # MAC address
-                            packed_data = struct.pack('H', value)
-                        elif param_size == 8:
-                            packed_data = struct.pack('Q', value)
-                        # Разбиваем упакованные данные на 16-битные значения (2 байта)
-                        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-                    elif param_type == 'signed':
-                        if param_size == 1:
-                            packed_data = struct.pack('h', value)
-                        elif param_size == 2:
-                            packed_data = struct.pack('h', value)
-                        elif param_size == 4:
-                            packed_data = struct.pack('i', value)
-                        elif param_size == 8:
-                            packed_data = struct.pack('q', value)
-                        # Разбиваем упакованные данные на 16-битные значения (2 байта)
-                        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-                    elif param_type == 'string':
-                        text_bytes = value.encode('ANSI')
-                        # Добавляем нулевой байт в конец, если длина списка не кратна 2
-                        if len(text_bytes) % 2 != 0:
-                            text_bytes += b'\x00'
-                        registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
-                    elif param_type == 'enum':
-                        # костиль для enum з розміром два регістра
-                        if param_size == 4:
-                            packed_data = struct.pack('I', value)
+                    write_func = param_attibutes.get('write_func', None)
+                    if write_func == 16:
+                        if param_type == 'unsigned':
+                            if param_size == 1:
+                                packed_data = struct.pack('H', value)
+                            elif param_size == 2:
+                                packed_data = struct.pack('H', value)
+                            elif param_size == 4:
+                                    packed_data = struct.pack('I', value)
+                            elif param_size == 6:  # MAC address
+                                packed_data = struct.pack('H', value)
+                            elif param_size == 8:
+                                packed_data = struct.pack('Q', value)
+                            # Разбиваем упакованные данные на 16-битные значения (2 байта)
                             registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-                        else:
-                            packed_data = struct.pack('H', value)
-                            registers = struct.unpack('H', packed_data)
-                    elif param_type == 'float':
-                        if param_size == 4:
-                            floats = struct.pack('f', value)
-                            registers = struct.unpack('HH', floats)  # Возвращает два short int значения
-                        elif param_size == 8:
-                            floats_doubble = struct.pack('d', value)
-                            registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
-                    # elif param_type == 'date_time':
-                    #     if byte_size == 4:
-                    #         byte_array = reverse_modbus_registers(byte_array)
-                    #         param_value = struct.unpack('>I', byte_array)[0]
+                        elif param_type == 'signed':
+                            if param_size == 1:
+                                packed_data = struct.pack('h', value)
+                            elif param_size == 2:
+                                packed_data = struct.pack('h', value)
+                            elif param_size == 4:
+                                packed_data = struct.pack('i', value)
+                            elif param_size == 8:
+                                packed_data = struct.pack('q', value)
+                            # Разбиваем упакованные данные на 16-битные значения (2 байта)
+                            registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+                        elif param_type == 'string':
+                            text_bytes = value.encode('ANSI')
+                            # Добавляем нулевой байт в конец, если длина списка не кратна 2
+                            if len(text_bytes) % 2 != 0:
+                                text_bytes += b'\x00'
+                            registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
+                        elif param_type == 'enum':
+                            # костиль для enum з розміром два регістра
+                            if param_size == 4:
+                                packed_data = struct.pack('I', value)
+                                registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+                            else:
+                                packed_data = struct.pack('H', value)
+                                registers = struct.unpack('H', packed_data)
+                        elif param_type == 'float':
+                            if param_size == 4:
+                                floats = struct.pack('f', value)
+                                registers = struct.unpack('HH', floats)  # Возвращает два short int значения
+                            elif param_size == 8:
+                                floats_doubble = struct.pack('d', value)
+                                registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
+                        # elif param_type == 'date_time':
+                        #     if byte_size == 4:
+                        #         byte_array = reverse_modbus_registers(byte_array)
+                        #         param_value = struct.unpack('>I', byte_array)[0]
 
-                    try:
-                        self.client.write_registers(modbus_reg, registers)
+                        try:
+                            self.client.write_param(modbus_reg, registers, write_func)
+                            item.synchro_last_value_and_value()
+                        except Exception as e:
+                            print(f"Error occurred: {str(e)}")
+                    elif write_func == 5:
+                        if value == 1:
+                            value = True
+                        elif value == 0:
+                            value = False
+                        result = self.client.write_param(modbus_reg, value, write_func)
                         item.synchro_last_value_and_value()
-                    except Exception as e:
-                        print(f"Error occurred: {str(e)}")
+
 
 
     def write_all_parameters(self):

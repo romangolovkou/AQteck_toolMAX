@@ -42,10 +42,14 @@ class AQ_ParamItem(QStandardItem):
     @synchronized.setter
     def synchronized(self, flag):
         if flag is True:
-            if self.value_in_device != self.value:
-                self.value_in_device = self.value
-                if self.local_event_manager is not None:
-                    self.local_event_manager.emit_event('param_need_update', self)
+            # if self.value_in_device != self.value:
+            self.value_in_device = self.value
+            if self.local_event_manager is not None:
+                self.local_event_manager.emit_event('param_need_update', self)
+            # else:
+            #     if self.param_status == 'changed':
+            #         self.param_status = 'ok'
+            #         self.local_event_manager.emit_event('param_need_update', self)
 
         self.synchro_flag = flag
 

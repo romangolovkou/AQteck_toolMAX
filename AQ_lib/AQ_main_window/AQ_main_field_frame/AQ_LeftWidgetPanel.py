@@ -81,9 +81,9 @@ class AQ_left_device_widget(QWidget):
         self.address_label.move(50, 27)
         self.address_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
         serial = device_data.get('serial_number', 'err_serial_number')
-        self.serial_label = AQ_Label('S/N' + serial, self)
-        self.serial_label.move(50, 47)
-        self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
+        # self.serial_label = AQ_Label('S/N' + serial, self)
+        # self.serial_label.move(50, 47)
+        # self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
 
         # Создаем палитру с фоновыми цветами
         self.normal_palette = self.palette()

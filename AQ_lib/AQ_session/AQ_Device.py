@@ -49,7 +49,7 @@ class AQ_Device(QObject):
             self.device_data['status'] = 'connect_error'
 
         self.add_address_string_to_device_data(address_tuple)
-        self.device_data['network_info'] = self.make_network_info_list()
+        # self.device_data['network_info'] = self.make_network_info_list()
 
         # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
         # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694ACFDF674DB57A4B9 - b'I will restart the device now!\x00\x00\x1e\x00\x00\x00Y\xdbZ^'

@@ -38,9 +38,18 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def close(self):
         self.modbus_rtu_client.close()
 
-    def read_holding_registers(self, start_address, register_count):
-        response = self.modbus_rtu_client.read_holding_registers(start_address, register_count, self.slave_id)
-        return response
+    def read_param(self, start_address, register_count, read_func):
+        if read_func == 3:
+            response = self.modbus_rtu_client.read_holding_registers(start_address, register_count, self.slave_id)
+            if start_address == 64:
+                response.registers
+            return response
+        elif read_func == 2:
+            result = self.modbus_rtu_client.read_discrete_inputs(start_address, 1, self.slave_id)
+            return result.bits
+        elif read_func == 1:
+            result = self.modbus_rtu_client.read_coils(start_address, 1, self.slave_id)
+            return result.bits
 
     def read_file_record(self, file_number, record_number, record_length):
         # Создание экземпляра структуры ReadFileRecordRequest
@@ -53,9 +62,16 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
 
         return result
 
-    def write_registers(self, modbus_reg, registers):
+    def write_param(self, modbus_reg, registers, write_func):
         try:
-            self.modbus_rtu_client.write_registers(modbus_reg, registers, self.slave_id)
+            result = None
+            if write_func == 16:
+                result = self.modbus_rtu_client.write_registers(modbus_reg, registers, self.slave_id)
+            elif write_func == 5:
+                # Запись одного дискретного выхода (бита)
+                result = self.modbus_rtu_client.write_coil(modbus_reg, registers, self.slave_id)
+
+            return result
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise
