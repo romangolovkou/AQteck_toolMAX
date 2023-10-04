@@ -54,17 +54,19 @@ class AQ_Device110China(AQ_Device):
         else:
             self.device_data['status'] = 'connect_error'
 
-        self.add_address_string_to_device_data(address_tuple)
-        # self.device_data['network_info'] = self.make_network_info_list()
+        if self.device_data['status'] != 'connect_error':
 
-        # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
-        # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694ACFDF674DB57A4B9 - b'I will restart the device now!\x00\x00\x1e\x00\x00\x00Y\xdbZ^'
-        # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2 - b'I will restart the device now!\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-        # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
-        # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2'
-        # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
-        self.local_event_manager.register_event_handler('param_changed', self.add_changed_param)
-        self.local_event_manager.register_event_handler('param_need_update', self.add_param_to_update_stack)
+            self.add_address_string_to_device_data(address_tuple)
+            # self.device_data['network_info'] = self.make_network_info_list()
+
+            # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
+            # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694ACFDF674DB57A4B9 - b'I will restart the device now!\x00\x00\x1e\x00\x00\x00Y\xdbZ^'
+            # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2 - b'I will restart the device now!\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
+            # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2'
+            # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
+            self.local_event_manager.register_event_handler('param_changed', self.add_changed_param)
+            self.local_event_manager.register_event_handler('param_need_update', self.add_param_to_update_stack)
 
     def add_changed_param(self, item):
         self.changed_param_stack.append(item)

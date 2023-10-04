@@ -28,7 +28,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
 
         # Рєєструємо обробники подій
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
-        self.event_manager.register_event_handler('AddDevice_connect_error', self.show_connect_err_label)
+        # self.event_manager.register_event_handler('AddDevice_connect_error', self.show_connect_err_label)
         self.event_manager.register_event_handler('Add_device', self.add_selected_devices_to_session)
 
         # Створюємо фрейм з налаштуваннями з'єднання
@@ -126,6 +126,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)
         self.connect_err_label.move(0, self.height() - 50)
         self.connect_err_label.show()
+
 
 class ConnectDeviceThread(QThread):
     finished = Signal()
