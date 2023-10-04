@@ -302,6 +302,12 @@ class AQ_Device110China(AQ_Device):
                             param_attributes['W_Only'] = 0
                         else:
                             param_attributes['write_func'] = int(fields[5])
+
+                        if fields[7] != '' and fields[7] != '-':
+                            param_attributes['min_limit'] = int(fields[7])
+                        if fields[8] != '' and fields[8] != '-':
+                            param_attributes['max_limit'] = int(fields[8])
+                        param_attributes['unit'] = fields[9]
                         parts = fields[6].split(' ')
                         param_type = parts[0]
                         if param_type == 'enum' or param_type == 'string':
@@ -311,8 +317,14 @@ class AQ_Device110China(AQ_Device):
                         param_attributes['type'] = param_type
                         param_attributes['param_size'] = param_size
 
+                        if fields[10] != '' and fields[10] != '-':
+                            if param_type == 'float':
+                                param_attributes['def_value'] = float(fields[10])
+                            else:
+                                param_attributes['def_value'] = int(fields[10])
+
                         if param_type == 'enum':
-                            enum_strings = fields[7].split('/')
+                            enum_strings = fields[11].split('/')
                             param_attributes['enum_strings'] = enum_strings
 
                         param_item = get_item_by_type(param_attributes.get('type', ''), parameter_name)
