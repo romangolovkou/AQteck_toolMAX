@@ -33,6 +33,7 @@ class AQ_Device110China(AQ_Device):
         self.address_tuple = address_tuple
         self.changed_param_stack = []
         self.update_param_stack = []
+        self.read_error_flag = False
         self.client = self.create_client(address_tuple)
         if self.client.open():
             self.device_data = self.read_device_data()
@@ -371,6 +372,10 @@ class AQ_Device110China(AQ_Device):
             self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
             self.update_param_stack.clear()
 
+        if self.read_error_flag is True:
+            self.read_error_flag = False
+            self.event_manager.emit_event('param_read_error')
+
     def read_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
         for row in range(root.rowCount()):
@@ -470,6 +475,8 @@ class AQ_Device110China(AQ_Device):
 
                 item.force_set_value(param_value)
                 item.synchronized = True
+            else:
+                self.read_error_flag = True
 
     # def read_all_parameters(self):
     #     root = self.device_tree.invisibleRootItem()
