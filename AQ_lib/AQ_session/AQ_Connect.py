@@ -33,7 +33,7 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
         super().__init__()
         self.slave_id = slave_id
         self.boudrate = _baudrate
-        self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate)
+        self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity='N')
 
     def open(self):
         self.modbus_rtu_client.connect()

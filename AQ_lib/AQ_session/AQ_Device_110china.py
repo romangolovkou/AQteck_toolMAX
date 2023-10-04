@@ -34,8 +34,10 @@ class AQ_Device110China(AQ_Device):
         self.changed_param_stack = []
         self.update_param_stack = []
         self.client = self.create_client(address_tuple)
-        self.client.open()
-        self.device_data = self.read_device_data()
+        if self.client.open():
+            self.device_data = self.read_device_data()
+        else:
+            self.device_data = 'connect_err'
         if self.device_data != 'connect_err':
             device_config = self.device_data.get('device_config')
             if device_config != 'decrypt_err':
