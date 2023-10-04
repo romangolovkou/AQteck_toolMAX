@@ -105,6 +105,19 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         if self.auto_load_settings is not None:
             load_last_combobox_state(self.auto_load_settings, self.boudrate_combo_box)
 
+    # Создаем текстовую метку выбора четности
+        self.parity_combo_box_label = AQ_Label("Parity")
+
+        # Создание комбо-бокса швидкості
+        self.parity_combo_box = AQ_ComboBox()
+        self.parity_combo_box.setObjectName(self.parent.objectName() + "_" + "parity_combo_box")
+        self.parity_combo_box.addItem("None")
+        self.parity_combo_box.addItem("Even")
+
+        # Встановлюємо попередне обране значення, якщо воно існує
+        if self.auto_load_settings is not None:
+            load_last_combobox_state(self.auto_load_settings, self.parity_combo_box)
+
     # Создаем поле ввода IP адресса
         self.ip_line_edit_label = AQ_Label("IP Address")
         self.ip_line_edit = AQ_IpLineEdit()
@@ -152,6 +165,8 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         self.addWidget(self.interface_combo_box)
         self.addWidget(self.boudrate_combo_box_label)
         self.addWidget(self.boudrate_combo_box)
+        self.addWidget(self.parity_combo_box_label)
+        self.addWidget(self.parity_combo_box)
         self.addWidget(self.ip_line_edit_label)
         self.addWidget(self.ip_line_edit)
         self.addWidget(self.slave_id_line_edit_label)
@@ -189,7 +204,9 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
             address = int(self.slave_id_line_edit.text())
             boudrate = int(self.boudrate_combo_box.currentText())
 
-        network_setting = (selected_if, address, selected_dev, boudrate)
+        parity = self.parity_combo_box.currentText()
+
+        network_setting = (selected_if, address, selected_dev, boudrate, parity)
         network_settings_list.append(network_setting)
 
         return network_settings_list

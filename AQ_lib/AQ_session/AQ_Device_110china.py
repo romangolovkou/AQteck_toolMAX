@@ -130,7 +130,8 @@ class AQ_Device110China(AQ_Device):
                 if port.description == interface:
                     selected_port = port.device
                     boudrate = address_tuple[3]
-                    client = AQ_modbusRTU_connect(selected_port, boudrate, address)
+                    parity = address_tuple[4][:1]
+                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, address)
                     return client
 
         return None
