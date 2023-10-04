@@ -134,14 +134,15 @@ class AQ_Device110China(AQ_Device):
         return None
 
     def read_device_data(self):
-        # try:
-        self.device_name = self.read_device_name()
+        try:
+            self.device_name = self.read_device_name()
+            self.read_slave_id()
         #     self.version = self.read_version()
         #     self.serial_number = self.read_serial_number()
-        # except Exception as e:
-        #     print(f"Error occurred: {str(e)}")
-        #     # "Ошибка при подключении к COM
-        #     return 'connect_err'
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            # "Ошибка при подключении к COM
+            return 'connect_err'
 
         device_data = {}
         device_config = self.read_configuration()
@@ -206,6 +207,20 @@ class AQ_Device110China(AQ_Device):
 
         return serial_number
 
+    def read_slave_id(self):
+        # Читаем 16 регистров начиная с адреса 0xF086 (serial_number)
+        start_address = 100
+        register_count = 1
+        read_func = 3
+        # Выполняем запрос
+        response = self.client.read_param(start_address, register_count, read_func)
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in response.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+        param_value = struct.unpack('>H', byte_array)[0]
+
+        return param_value
 
     def read_configuration(self):
         file_path = '110_device_conf/' + self.address_tuple[2]

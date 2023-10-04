@@ -36,7 +36,7 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
         self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity='N')
 
     def open(self):
-        self.modbus_rtu_client.connect()
+        return self.modbus_rtu_client.connect()
 
     def close(self):
         self.modbus_rtu_client.close()
