@@ -14,6 +14,7 @@ class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
         self.event_manager.register_event_handler('set_active_device', self.show_hide_main_pic)
         self.event_manager.register_event_handler('no_devices', self.show_hide_main_pic)
         self.event_manager.register_event_handler('param_read_error', self.show_read_error_label)
+        self.event_manager.register_event_handler('param_write_error', self.show_write_error_label)
 
         self.setGeometry(QRect(0, (shift_y + 2), parent.width(), parent.height() - (shift_y + 2)))
 

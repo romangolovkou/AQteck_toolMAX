@@ -34,6 +34,7 @@ class AQ_Device110China(AQ_Device):
         self.changed_param_stack = []
         self.update_param_stack = []
         self.read_error_flag = False
+        self.write_error_flag = False
         self.client = self.create_client(address_tuple)
         if self.client.open():
             self.device_data = self.read_device_data()
@@ -508,7 +509,9 @@ class AQ_Device110China(AQ_Device):
             row_count = item.rowCount()
             for row in range(row_count):
                 child_item = item.child(row)
-                self.write_parameter(child_item)
+                result = self.write_parameter(child_item)
+                if result == 'write_error':
+                    return result
         else:
             if item.get_status() == 'changed':
                 param_type = param_attibutes.get('type', '')
@@ -569,8 +572,11 @@ class AQ_Device110China(AQ_Device):
                         #         param_value = struct.unpack('>I', byte_array)[0]
 
                         try:
-                            self.client.write_param(modbus_reg, registers, write_func)
-                            item.synchro_last_value_and_value()
+                            result = self.client.write_param(modbus_reg, registers, write_func)
+                            if result != 'modbus_error':
+                                item.synchro_last_value_and_value()
+                            else:
+                                self.write_error_flag = True
                         except Exception as e:
                             print(f"Error occurred: {str(e)}")
                     elif write_func == 5:
@@ -579,12 +585,26 @@ class AQ_Device110China(AQ_Device):
                         elif value == 0:
                             value = False
                         result = self.client.write_param(modbus_reg, value, write_func)
-                        item.synchro_last_value_and_value()
+                        if result != 'modbus_error':
+                            item.synchro_last_value_and_value()
+                        else:
+                            self.write_error_flag = True
                     elif write_func == 6:
                         if modbus_reg == 101:
                             value += 1
                         result = self.client.write_param(modbus_reg, value, write_func)
-                        item.synchro_last_value_and_value()
+                        if result != 'modbus_error':
+                            item.synchro_last_value_and_value()
+                        else:
+                            self.write_error_flag = True
+
+        if self.write_error_flag is True:
+            self.write_error_flag = False
+            self.event_manager.emit_event('param_write_error')
+            return 'write_err'
+
+        return 'ok'
+
 
     def write_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -597,7 +617,9 @@ class AQ_Device110China(AQ_Device):
         # step_value = max_value // row_count
         for row in range(root.rowCount()):
             child_item = root.child(row)
-            self.write_parameter(child_item)
+            result = self.write_parameter(child_item)
+            if result == 'write_error':
+                break
             # if result == 'read_error':
             #     self.wait_widget.hide()
             #     self.wait_widget.deleteLater()
