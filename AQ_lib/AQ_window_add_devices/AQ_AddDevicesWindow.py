@@ -12,6 +12,7 @@ from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label,
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
 from AQ_Device import AQ_Device
 from AQ_Device_110china import AQ_Device110China
+from AQ_Device_DY500 import AQ_DeviceDY500
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -117,7 +118,9 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         return finded_devices_list
 
     def get_device_by_settings(self, event_manager, network_settings):
-        if len(network_settings) > 2:
+        if network_settings[2] == 'МВ110-24_1ТД.csv':
+            device = AQ_DeviceDY500(event_manager, network_settings)
+        elif len(network_settings) > 2:
             device = AQ_Device110China(event_manager, network_settings)
         else:
             device = AQ_Device(event_manager, network_settings)

@@ -20,7 +20,7 @@ from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_c
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
 
 
-class AQ_Device110China(AQ_Device):
+class AQ_DeviceDY500(AQ_Device):
     def __init__(self, event_manager, address_tuple, parent=None):
         # super().__init__(event_manager, address_tuple, parent)
         self.event_manager = event_manager
@@ -217,8 +217,8 @@ class AQ_Device110China(AQ_Device):
 
     def read_slave_id(self):
         # Читаем 16 регистров начиная с адреса 0xF086 (serial_number)
-        start_address = 100
-        register_count = 1
+        start_address = 40052
+        register_count = 2
         read_func = 3
         # Выполняем запрос
         response = self.client.read_param(start_address, register_count, read_func)
@@ -226,7 +226,7 @@ class AQ_Device110China(AQ_Device):
         hex_string = ''.join(format(value, '04X') for value in response.registers)
         # Конвертируем строку в массив байт
         byte_array = bytes.fromhex(hex_string)
-        param_value = struct.unpack('>H', byte_array)[0]
+        param_value = struct.unpack('>HH', byte_array)[0]
 
         return param_value
 
@@ -410,7 +410,7 @@ class AQ_Device110China(AQ_Device):
                     reg_count = 2
                     byte_size = 4
                 else:
-                    reg_count = 1
+                    reg_count = 2
                     byte_size = 1
             else:
                 byte_size = param_size
@@ -458,7 +458,7 @@ class AQ_Device110China(AQ_Device):
                         if byte_size == 4:
                             param_value = struct.unpack('>I', byte_array)[0]
                         else:
-                            param_value = struct.unpack('>H', byte_array)[0]
+                            param_value = struct.unpack('>HH', byte_array)[0]
                             if modbus_reg == 101:
                                 param_value = param_value - 1
 
