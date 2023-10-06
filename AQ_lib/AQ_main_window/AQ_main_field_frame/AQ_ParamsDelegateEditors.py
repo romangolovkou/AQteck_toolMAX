@@ -136,9 +136,13 @@ class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
                 return
             # Если цифра
             else:
+                if self.hasSelectedText():
+                    self.backspace()
+
                 str_copy = self.text()
                 str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
                 user_data = int(str_copy)  # Преобразуем подстроку в целое число
+
                 if self.min_limit is not None:
                     if user_data < self.min_limit:
                         self.red_blink_timer.start()
@@ -215,6 +219,9 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
                         return
                     self.backspace()
                 return
+
+            if self.hasSelectedText():
+                self.backspace()
 
             cursor_position = self.cursorPosition()
             text = event.text()
@@ -297,6 +304,9 @@ class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
                 self.backspace()
                 return
 
+            if self.hasSelectedText():
+                self.backspace()
+
             cursor_position = self.cursorPosition()
             text = event.text()
             if not text.isdigit() and text != '-':
@@ -372,6 +382,9 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
             elif key == Qt.Key_Backspace:
                 self.backspace()
                 return
+
+            if self.hasSelectedText():
+                self.backspace()
 
             cursor_position = self.cursorPosition()
             text = event.text()

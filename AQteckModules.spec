@@ -20,6 +20,7 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
+    icon='Icons/robo.ico',
     noarchive=False,
 )
 pyz = PYZ(a.pure)
