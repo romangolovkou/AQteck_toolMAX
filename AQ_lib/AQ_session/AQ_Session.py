@@ -1,10 +1,14 @@
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QGuiApplication, QFont
 from PySide6.QtWidgets import QWidget, QFrame, QLabel
+from pymodbus.client import serial
+import serial.tools.list_ports
 
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
+from AQ_Connect import AQ_modbusRTU_connect
 from AQ_ParamListWindow import AQ_DialogParamList
 from AQ_DeviceInfoWindow import AQ_DialogDeviceInfo
+from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
 from AQ_WatchListWindow import AQ_DialogWatchList
 
 
@@ -19,6 +23,7 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("open_ParameterList", self.open_ParameterList)
         self.event_manager.register_event_handler("open_DeviceInfo", self.open_DeviceInfo)
         self.event_manager.register_event_handler("open_WatchList", self.open_WatchList)
+        self.event_manager.register_event_handler("open_SetSlaveId", self.open_SetSlaveId)
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
         self.event_manager.register_event_handler("set_active_device", self.set_cur_active_device)
         self.event_manager.register_event_handler("read_params_cur_active_device", self.read_params_cur_active_device)
@@ -28,6 +33,7 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
         self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
         self.event_manager.register_event_handler('add_parameter_to_watch_list', self.add_param_to_watch_list)
+        self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
 
 
     def open_AddDevices(self):
@@ -47,6 +53,10 @@ class AQ_CurrentSession(QObject):
     def open_WatchList(self):
         self.watch_list_window = AQ_DialogWatchList(self.event_manager, self.parent)
         self.watch_list_window.show()
+
+    def open_SetSlaveId(self):
+        self.set_slave_id_window = AQ_DialogSetSlaveId(self.event_manager, self.parent)
+        self.set_slave_id_window.show()
 
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
@@ -121,6 +131,34 @@ class AQ_CurrentSession(QObject):
             self.open_WatchList()
 
         self.event_manager.emit_event('add_item_to_watch_list', item, model)
+
+    def set_slave_id(self, network_settings):
+        network_settings = network_settings[0]
+
+        if network_settings[2] == 'МВ110-24_1ТД.csv':
+            pass
+        else:
+            interface = network_settings[0]
+            # Получаем список доступных COM-портов
+            com_ports = serial.tools.list_ports.comports()
+            for port in com_ports:
+                if port.description == interface:
+                    selected_port = port.device
+                    boudrate = network_settings[3]
+                    parity = network_settings[4][:1]
+                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, 0)
+
+            start_address = 100
+            register_count = 1
+            write_func = 6
+            new_slave_id = network_settings[1]
+            # Выполняем запрос
+            result = client.write_param(start_address, new_slave_id, write_func)
+            if result != 'modbus_error':
+                self.event_manager.emit_event('set_slave_id_connect_ok')
+            else:
+                self.event_manager.emit_event('set_slave_id_connect_error')
+
 
 class AQ_wait_label_widget(QWidget):
     def __init__(self, text, parent=None):

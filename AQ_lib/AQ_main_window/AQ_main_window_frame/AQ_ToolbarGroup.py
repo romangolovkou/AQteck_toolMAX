@@ -123,21 +123,27 @@ class AQ_utils_group(AQ_toolbar_group_template):
     def __init__(self, event_manager, parent=None):
         super().__init__(event_manager, parent)
     # кнопка 1
-        self.ico_btn_rtc = QIcon('Icons/test_Button.png')
-        self.btn_rtc = AQ_ToolButton('Real-time clock', self.ico_btn_rtc)
+        self.ico_btn_set_slave_id = QIcon('Icons/test_Button.png')
+        self.btn_set_slave_id = AQ_ToolButton('Set slave id', self.ico_btn_set_slave_id)
         # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        # self.btn_rtc.clicked.connect(self.change_oriental)
-        self.buttons.append(self.btn_rtc)
-    # кнопка 2
-        self.ico_btn_pass = QIcon('Icons/test_Button.png')
-        self.btn_pass = AQ_ToolButton('Password', self.ico_btn_pass)
-        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.buttons.append(self.btn_pass)
-    # кнопка 3
-        self.ico_btn_calib = QIcon('Icons/test_Button.png')
-        self.btn_calib = AQ_ToolButton('Calibration', self.ico_btn_calib)
-        # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
-        self.buttons.append(self.btn_calib)
+        self.btn_set_slave_id.clicked.connect(lambda: self.event_manager.emit_event('open_SetSlaveId'))
+        self.buttons.append(self.btn_set_slave_id)
+    # # кнопка 1
+    #     self.ico_btn_rtc = QIcon('Icons/test_Button.png')
+    #     self.btn_rtc = AQ_ToolButton('Real-time clock', self.ico_btn_rtc)
+    #     # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+    #     # self.btn_rtc.clicked.connect(self.change_oriental)
+    #     self.buttons.append(self.btn_rtc)
+    # # кнопка 2
+    #     self.ico_btn_pass = QIcon('Icons/test_Button.png')
+    #     self.btn_pass = AQ_ToolButton('Password', self.ico_btn_pass)
+    #     # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+    #     self.buttons.append(self.btn_pass)
+    # # кнопка 3
+    #     self.ico_btn_calib = QIcon('Icons/test_Button.png')
+    #     self.btn_calib = AQ_ToolButton('Calibration', self.ico_btn_calib)
+    #     # тут вставить привязку к функции self.btn_add_devices.clicked.connect(???)
+    #     self.buttons.append(self.btn_calib)
 
     # Створюємо початковий горизонтальний лейаут
         self.group_layout = Group_LayH(self, *self.buttons)

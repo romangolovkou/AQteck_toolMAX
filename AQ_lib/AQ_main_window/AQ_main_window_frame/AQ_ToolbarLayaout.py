@@ -20,8 +20,8 @@ class AQ_ToolbarLayout(QHBoxLayout):
         self.param_action_group = AQ_param_action_group(event_manager, self.parent)
         self.groups.append(self.param_action_group)
     # Группа 3
-    #     self.utils_group = AQ_utils_group(event_manager, self.parent)
-    #     self.groups.append(self.utils_group)
+        self.utils_group = AQ_utils_group(event_manager, self.parent)
+        self.groups.append(self.utils_group)
     # Группа 4
     #     self.archieve_group = AQ_archieve_group(event_manager, self.parent)
     #     self.groups.append(self.archieve_group)
