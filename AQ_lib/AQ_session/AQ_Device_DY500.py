@@ -16,7 +16,7 @@ from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_IsValidIpFunc import is_valid_ip
 from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
 from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
-    get_storage_container, parse_tree, reverse_modbus_registers, get_item_by_type
+    get_storage_container, parse_tree, reverse_modbus_registers, get_item_by_type, swap_modbus_registers
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
 
 
@@ -426,19 +426,20 @@ class AQ_DeviceDY500(AQ_Device):
                     hex_string = ''.join(format(value, '04X') for value in response.registers)
                     # Конвертируем строку в массив байт
                     byte_array = bytes.fromhex(hex_string)
+                    # byte_array = swap_modbus_registers(byte_array)
                     if param_type == 'unsigned':
                         if byte_size == 1:
-                            param_value = struct.unpack('>H', byte_array)[0]
+                            param_value = struct.unpack('>HH', byte_array)[0]
                         elif byte_size == 2:
-                            param_value = struct.unpack('>H', byte_array)[0]
+                            param_value = struct.unpack('>HH', byte_array)[0]
                         elif byte_size == 4:
-                            byte_array = reverse_modbus_registers(byte_array)
+                            # byte_array = reverse_modbus_registers(byte_array)
                             param_value = struct.unpack('>I', byte_array)[0]
                         elif byte_size == 6:  # MAC address
-                            byte_array = reverse_modbus_registers(byte_array)
+                            # byte_array = reverse_modbus_registers(byte_array)
                             param_value = byte_array  # struct.unpack('>I', byte_array)[0]
                         elif byte_size == 8:
-                            byte_array = reverse_modbus_registers(byte_array)
+                            # byte_array = reverse_modbus_registers(byte_array)
                             param_value = struct.unpack('>Q', byte_array)[0]
                     elif param_type == 'signed':
                         if byte_size == 1:
@@ -446,10 +447,10 @@ class AQ_DeviceDY500(AQ_Device):
                         elif byte_size == 2:
                             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
                         elif byte_size == 4 or byte_size == 8:
-                            byte_array = reverse_modbus_registers(byte_array)
+                            # byte_array = reverse_modbus_registers(byte_array)
                             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
                     elif param_type == 'string':
-                        byte_array = swap_modbus_bytes(byte_array, reg_count)
+                        # byte_array = swap_modbus_bytes(byte_array, reg_count)
                         # Расшифровуем в строку
                         text = byte_array.decode('ANSI')
                         param_value = remove_empty_bytes(text)
@@ -458,14 +459,14 @@ class AQ_DeviceDY500(AQ_Device):
                         if byte_size == 4:
                             param_value = struct.unpack('>I', byte_array)[0]
                         else:
-                            param_value = struct.unpack('>HH', byte_array)[0]
+                            param_value = struct.unpack('>I', byte_array)[0]
                             if modbus_reg == 101:
                                 param_value = param_value - 1
 
 
                     elif param_type == 'float':
-                        byte_array = swap_modbus_bytes(byte_array, reg_count)
-                        param_value = struct.unpack('f', byte_array)[0]
+                        # byte_array = swap_modbus_bytes(byte_array, reg_count)
+                        param_value = struct.unpack('>f', byte_array)[0]
                         param_value = round(param_value, 7)
                     elif param_type == 'date_time':
                         if byte_size == 4:
@@ -564,8 +565,8 @@ class AQ_DeviceDY500(AQ_Device):
                                 registers = struct.unpack('H', packed_data)
                         elif param_type == 'float':
                             if param_size == 4:
-                                floats = struct.pack('f', value)
-                                registers = struct.unpack('HH', floats)  # Возвращает два short int значения
+                                floats = struct.pack('>f', value)
+                                registers = struct.unpack('>HH', floats)  # Возвращает два short int значения
                             elif param_size == 8:
                                 floats_doubble = struct.pack('d', value)
                                 registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения

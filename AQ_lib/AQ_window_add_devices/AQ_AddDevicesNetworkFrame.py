@@ -216,6 +216,10 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
         save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
         save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
+        save_combobox_current_state(self.parent.auto_load_settings, self.device_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.boudrate_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.parity_combo_box)
+
 
     def find_button_clicked(self):
         # Перед викликом події перевіряємо чи не порожні поля, та корректні в них дані
