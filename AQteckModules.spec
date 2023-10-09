@@ -12,6 +12,7 @@ a = Analysis(
                 'AQ_lib/AQ_session',
                 'AQ_lib/AQ_watch_list_window',
                 'AQ_lib/AQ_window_add_devices',
+                'AQ_lib/AQ_set_slave_id_window',
                 'AQ_lib/AQ_window_templates'],
     binaries=[],
     datas=[('Icons', 'Icons'), ('110_device_conf', '110_device_conf')],
@@ -20,7 +21,7 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    icon='Icons/robo.ico',
+    icon='Icons/AQico_silver.ico',
     noarchive=False,
 )
 pyz = PYZ(a.pure)
@@ -35,12 +36,13 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='Icons/AQico_silver.ico',
 )
 coll = COLLECT(
     exe,

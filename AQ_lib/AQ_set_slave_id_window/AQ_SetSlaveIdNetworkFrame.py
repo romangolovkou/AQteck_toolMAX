@@ -129,6 +129,19 @@ class AQ_SetSlaveIdNetworkSettingsLayout(QVBoxLayout):
         if self.auto_load_settings is not None:
             load_last_combobox_state(self.auto_load_settings, self.parity_combo_box)
 
+    # Создаем текстовую метку выбора четности
+        self.stopbits_combo_box_label = AQ_Label("Stop bits")
+
+        # Создание комбо-бокса швидкості
+        self.stopbits_combo_box = AQ_ComboBox()
+        self.stopbits_combo_box.setObjectName(self.parent.objectName() + "_" + "stopbits_combo_box")
+        self.stopbits_combo_box.addItem("1")
+        self.stopbits_combo_box.addItem("2")
+
+        # Встановлюємо попередне обране значення, якщо воно існує
+        if self.auto_load_settings is not None:
+            load_last_combobox_state(self.auto_load_settings, self.stopbits_combo_box)
+
     # Создаем поле ввода Slave ID
         self.slave_id_line_edit_label = AQ_Label("Slave ID to set")
         self.slave_id_line_edit = AQ_SlaveIdLineEdit()
@@ -172,6 +185,8 @@ class AQ_SetSlaveIdNetworkSettingsLayout(QVBoxLayout):
         self.addWidget(self.boudrate_combo_box)
         self.addWidget(self.parity_combo_box_label)
         self.addWidget(self.parity_combo_box)
+        self.addWidget(self.stopbits_combo_box_label)
+        self.addWidget(self.stopbits_combo_box)
         self.addWidget(self.slave_id_line_edit_label)
         self.addWidget(self.slave_id_line_edit)
         self.addWidget(self.find_btn)
@@ -204,8 +219,9 @@ class AQ_SetSlaveIdNetworkSettingsLayout(QVBoxLayout):
         boudrate = int(self.boudrate_combo_box.currentText())
 
         parity = self.parity_combo_box.currentText()
+        stopbits = int(self.stopbits_combo_box.currentText())
 
-        network_setting = (selected_if, address, selected_dev, boudrate, parity)
+        network_setting = (selected_if, address, selected_dev, boudrate, parity, stopbits)
         network_settings_list.append(network_setting)
 
         return network_settings_list
@@ -213,6 +229,10 @@ class AQ_SetSlaveIdNetworkSettingsLayout(QVBoxLayout):
     def save_current_fields(self):
         save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
         save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
+        save_combobox_current_state(self.parent.auto_load_settings, self.device_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.boudrate_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.parity_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.stopbits_combo_box)
 
     def find_button_clicked(self):
         # Перед викликом події перевіряємо чи не порожні поля, та корректні в них дані

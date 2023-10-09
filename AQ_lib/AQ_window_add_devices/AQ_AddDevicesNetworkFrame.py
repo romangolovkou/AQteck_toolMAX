@@ -75,7 +75,7 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
     # Создание комбо-бокса інтерфейсу
         self.interface_combo_box = AQ_ComboBox()
         self.interface_combo_box.setObjectName(self.parent.objectName() + "_" + "interface_combo_box")
-        self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
+        # self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
         # Получаем список доступных COM-портов
         self.com_ports = serial.tools.list_ports.comports()
         # Заполняем выпадающий список COM-портами
@@ -118,6 +118,19 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         # Встановлюємо попередне обране значення, якщо воно існує
         if self.auto_load_settings is not None:
             load_last_combobox_state(self.auto_load_settings, self.parity_combo_box)
+
+    # Создаем текстовую метку выбора четности
+        self.stopbits_combo_box_label = AQ_Label("Stop bits")
+
+        # Создание комбо-бокса швидкості
+        self.stopbits_combo_box = AQ_ComboBox()
+        self.stopbits_combo_box.setObjectName(self.parent.objectName() + "_" + "stopbits_combo_box")
+        self.stopbits_combo_box.addItem("1")
+        self.stopbits_combo_box.addItem("2")
+
+        # Встановлюємо попередне обране значення, якщо воно існує
+        if self.auto_load_settings is not None:
+            load_last_combobox_state(self.auto_load_settings, self.stopbits_combo_box)
 
     # Создаем поле ввода IP адресса
         self.ip_line_edit_label = AQ_Label("IP Address")
@@ -168,6 +181,8 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         self.addWidget(self.boudrate_combo_box)
         self.addWidget(self.parity_combo_box_label)
         self.addWidget(self.parity_combo_box)
+        self.addWidget(self.stopbits_combo_box_label)
+        self.addWidget(self.stopbits_combo_box)
         self.addWidget(self.ip_line_edit_label)
         self.addWidget(self.ip_line_edit)
         self.addWidget(self.slave_id_line_edit_label)
@@ -206,8 +221,9 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
             boudrate = int(self.boudrate_combo_box.currentText())
 
         parity = self.parity_combo_box.currentText()
+        stopbits = int(self.stopbits_combo_box.currentText())
 
-        network_setting = (selected_if, address, selected_dev, boudrate, parity)
+        network_setting = (selected_if, address, selected_dev, boudrate, parity, stopbits)
         network_settings_list.append(network_setting)
 
         return network_settings_list
@@ -219,6 +235,7 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         save_combobox_current_state(self.parent.auto_load_settings, self.device_combo_box)
         save_combobox_current_state(self.parent.auto_load_settings, self.boudrate_combo_box)
         save_combobox_current_state(self.parent.auto_load_settings, self.parity_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.stopbits_combo_box)
 
 
     def find_button_clicked(self):

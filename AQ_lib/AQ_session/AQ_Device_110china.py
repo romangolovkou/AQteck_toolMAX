@@ -136,7 +136,8 @@ class AQ_Device110China(AQ_Device):
                     selected_port = port.device
                     boudrate = address_tuple[3]
                     parity = address_tuple[4][:1]
-                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, address)
+                    stopbits = address_tuple[5]
+                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, address)
                     return client
 
         return None

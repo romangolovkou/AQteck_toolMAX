@@ -146,7 +146,8 @@ class AQ_CurrentSession(QObject):
                     selected_port = port.device
                     boudrate = network_settings[3]
                     parity = network_settings[4][:1]
-                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, 0)
+                    stopbits = network_settings[5]
+                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
 
             start_address = 100
             register_count = 1

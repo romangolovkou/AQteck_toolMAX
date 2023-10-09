@@ -29,11 +29,12 @@ class AQ_TCP_connect(AQ_connect):
 
 
 class AQ_modbusRTU_connect(AQ_COM_connect):
-    def __init__(self, _port, _baudrate, _parity, slave_id):
+    def __init__(self, _port, _baudrate, _parity, _stopbits, slave_id):
         super().__init__()
         self.slave_id = slave_id
         self.boudrate = _baudrate
-        self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity)
+        self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity,
+                                                    stopbits=_stopbits)
 
     def open(self):
         return self.modbus_rtu_client.connect()
