@@ -531,13 +531,13 @@ class AQ_DeviceDY500(AQ_Device):
                             elif param_size == 2:
                                 packed_data = struct.pack('H', value)
                             elif param_size == 4:
-                                    packed_data = struct.pack('I', value)
+                                    packed_data = struct.pack('>I', value)
                             elif param_size == 6:  # MAC address
                                 packed_data = struct.pack('H', value)
                             elif param_size == 8:
                                 packed_data = struct.pack('Q', value)
                             # Разбиваем упакованные данные на 16-битные значения (2 байта)
-                            registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+                            registers = [struct.unpack('>H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
                         elif param_type == 'signed':
                             if param_size == 1:
                                 packed_data = struct.pack('h', value)
@@ -548,7 +548,7 @@ class AQ_DeviceDY500(AQ_Device):
                             elif param_size == 8:
                                 packed_data = struct.pack('q', value)
                             # Разбиваем упакованные данные на 16-битные значения (2 байта)
-                            registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+                            registers = [struct.unpack('>H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
                         elif param_type == 'string':
                             text_bytes = value.encode('ANSI')
                             # Добавляем нулевой байт в конец, если длина списка не кратна 2
