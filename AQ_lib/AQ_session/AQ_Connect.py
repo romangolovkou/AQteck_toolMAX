@@ -33,8 +33,9 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
         super().__init__()
         self.slave_id = slave_id
         self.boudrate = _baudrate
+        self.timeout = 0.8
         self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity,
-                                                    stopbits=_stopbits)
+                                                    stopbits=_stopbits, timeout=self.timeout)
 
     def open(self):
         return self.modbus_rtu_client.connect()
