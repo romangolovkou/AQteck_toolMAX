@@ -128,7 +128,8 @@ class AQ_TreeViewManager(QStackedWidget):
     def get_min_limit_item(self, param_attributes):
         param_type = param_attributes.get('type', '')
         visual_type = param_attributes.get('visual_type', '')
-        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
+        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string'\
+            or visual_type == 'hex':
             min_limit_item = QStandardItem('')
         elif param_type == 'date_time':
             start_time = datetime(2000, 1, 1).timestamp()
@@ -148,7 +149,8 @@ class AQ_TreeViewManager(QStackedWidget):
     def get_max_limit_item(self, param_attributes):
         param_type = param_attributes.get('type', '')
         visual_type = param_attributes.get('visual_type', '')
-        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
+        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string'\
+           or visual_type == 'hex':
             max_limit_item = QStandardItem('')
         elif param_type == 'date_time':
             start_time = datetime(2000, 1, 1).timestamp()

@@ -180,11 +180,19 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         if selected_item == "Ethernet":
             self.boudrate_combo_box_label.setVisible(False)
             self.boudrate_combo_box.setVisible(False)
+            self.parity_combo_box_label.setVisible(False)
+            self.parity_combo_box.setVisible(False)
+            self.stopbits_combo_box_label.setVisible(False)
+            self.stopbits_combo_box.setVisible(False)
             self.ip_line_edit_label.setVisible(True)
             self.ip_line_edit.setVisible(True)
             self.slave_id_line_edit_label.setVisible(False)
             self.slave_id_line_edit.setVisible(False)
         else:
+            self.parity_combo_box_label.setVisible(True)
+            self.parity_combo_box.setVisible(True)
+            self.stopbits_combo_box_label.setVisible(True)
+            self.stopbits_combo_box.setVisible(True)
             self.boudrate_combo_box_label.setVisible(True)
             self.boudrate_combo_box.setVisible(True)
             self.ip_line_edit_label.setVisible(False)
@@ -198,14 +206,14 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         boudrate = None
         if selected_if == "Ethernet":
             address = self.ip_line_edit.text()
+            network_setting = (selected_if, address)
         else:
             address = int(self.slave_id_line_edit.text())
             boudrate = int(self.boudrate_combo_box.currentText())
+            parity = self.parity_combo_box.currentText()
+            stopbits = int(self.stopbits_combo_box.currentText())
+            network_setting = (selected_if, address, boudrate, parity, stopbits)
 
-        parity = self.parity_combo_box.currentText()
-        stopbits = int(self.stopbits_combo_box.currentText())
-
-        network_setting = (selected_if, address, selected_dev, boudrate, parity, stopbits)
         network_settings_list.append(network_setting)
 
         return network_settings_list
@@ -214,7 +222,6 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
         save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
         save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
-        save_combobox_current_state(self.parent.auto_load_settings, self.device_combo_box)
         save_combobox_current_state(self.parent.auto_load_settings, self.boudrate_combo_box)
         save_combobox_current_state(self.parent.auto_load_settings, self.parity_combo_box)
         save_combobox_current_state(self.parent.auto_load_settings, self.stopbits_combo_box)

@@ -338,6 +338,9 @@ class AQ_SlaveIdLineEdit(QLineEdit):
             self.backspace()
             return
 
+        if self.hasSelectedText():
+            self.backspace()
+
         cursor_position = self.cursorPosition()
         text = event.text()
         if not text.isdigit():
@@ -437,6 +440,9 @@ class AQ_IpLineEdit(QLineEdit):
                     return
                 self.backspace()
             return
+
+        if self.hasSelectedText():
+            self.backspace()
 
         cursor_position = self.cursorPosition()
         text = event.text()

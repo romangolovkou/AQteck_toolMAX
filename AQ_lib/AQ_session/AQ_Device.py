@@ -121,7 +121,10 @@ class AQ_Device(QObject):
             for port in com_ports:
                 if port.description == interface:
                     selected_port = port.device
-                    client = AQ_modbusRTU_connect(selected_port, 9600, address)
+                    boudrate = address_tuple[2]
+                    parity = address_tuple[3][:1]
+                    stopbits = address_tuple[4]
+                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, address)
                     return client
 
         return None
