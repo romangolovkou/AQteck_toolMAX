@@ -11,6 +11,7 @@ from AQ_MouseEventFunc import mousePressEvent_WidthR, mouseMoveEvent_WidthR, \
                             mousePressEvent_Diag_BotRigth, mouseMoveEvent_Diag_BotRigth, \
                             mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 
+
 class resizeWidthR_Qwidget(QWidget):
     def __init__(self, event_manager, window_name, parent=None):
         super().__init__(parent)

@@ -23,15 +23,12 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         # Получаем геометрию основного экрана
         screen_geometry = QGuiApplication.primaryScreen().geometry()
         self.move(screen_geometry.width() // 2 - self.width() // 2,
-                  screen_geometry.height() // 2 - self.height() // 2,)
+                  screen_geometry.height() // 2 - self.height() // 2)
 
         # Рєєструємо обробники подій
         self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
         self.event_manager.register_event_handler('AddDevice_connect_error', self.show_connect_err_label)
         self.event_manager.register_event_handler('Add_device', self.add_selected_devices_to_session)
-        self.event_manager.register_event_handler('minimize_' + window_name, self.showMinimized)
-        self.event_manager.register_event_handler('close_' + window_name, self.close)
-        self.event_manager.register_event_handler('dragging_' + window_name, self.move)
 
         # Створюємо фрейм з налаштуваннями з'єднання
         self.network_settings_frame = AQ_NetworkSettingsFrame(event_manager, self.main_window_frame)
@@ -103,11 +100,11 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.add_devices_to_table_widget(finded_devices)
         self.add_finded_devices_to_all_list(finded_devices)
 
-    def connect_to_device (self):
+    def connect_to_device(self):
         finded_devices_list = []
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
-            device = AQ_Device(self.event_manager, network_settings_list[i])
+            device = self.get_device_by_settings(self.event_manager, network_settings_list[i])
             device_status = device.get_device_status()
             if device_status == 'ok' or device_status == 'data_error':
                 finded_devices_list.append(device)
@@ -116,10 +113,21 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
 
         return finded_devices_list
 
+    def get_device_by_settings(self, event_manager, network_settings):
+        if network_settings[2] == 'МВ110-24_1ТД.csv':
+            device = AQ_DeviceDY500(event_manager, network_settings)
+        elif len(network_settings) > 2:
+            device = AQ_Device110China(event_manager, network_settings)
+        else:
+            device = AQ_Device(event_manager, network_settings)
+
+        return device
+
     def show_connect_err_label(self):
         self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)
         self.connect_err_label.move(0, self.height() - 50)
         self.connect_err_label.show()
+
 
 class ConnectDeviceThread(QThread):
     finished = Signal()

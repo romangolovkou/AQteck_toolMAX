@@ -14,6 +14,9 @@ class AQ_TreeView(QTreeView):
         self.setItemDelegateForColumn(0, name_delegate)
         value_delegate = AQ_ValueTreeDelegate(self)
         self.setItemDelegateForColumn(1, value_delegate)
+        # Разрешаем отображение скроллбаров
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         self.setStyleSheet("""
                             QTreeView {
@@ -32,9 +35,14 @@ class AQ_TreeView(QTreeView):
                                 background-color: #2b2d30;
                                 padding-left: 6px;
                             }
-                            QTreeView QScrollBar { 
-                                background-color: #F0F0F0; 
-                                width: 10px; }
+                            QScrollBar:vertical {
+                                background: #1e1f22;
+                                width: 10px;  /* Ширина вертикального скроллбара */
+                            }
+                            QScrollBar:horizontal {
+                                background: #1e1f22;
+                                height: 10px;  /* Высота горизонтального скроллбара */
+                            }
                         """)
 
     def setModel(self, model):
@@ -126,6 +134,10 @@ class AQ_TreeView(QTreeView):
                                                 color: #808080; /* Цвет для неактивных действий */
                                             }
                                         """)
+                    # # Добавляем действие в контекстное меню
+                    # action_watch = context_menu.addAction("Add parameter to Watch list")
+                    # # Подключаем обработчик события выбора действия
+                    # action_watch.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
                     # Добавляем действие в контекстное меню
                     action_read = context_menu.addAction("Read parameter")
                     # Подключаем обработчик события выбора действия
