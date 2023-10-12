@@ -322,9 +322,9 @@ class AQ_Device(QObject):
             child_item = root.child(row)
             self.read_item(child_item)
 
-        self.update_param_stack.clear()
-        self.event_manager.emit_event('current_device_data_updated', self)
-        return
+        # self.update_param_stack.clear()
+        # self.event_manager.emit_event('current_device_data_updated', self)
+        # return
 
     def read_item(self,  item):
         param_attributes = item.get_param_attributes()
