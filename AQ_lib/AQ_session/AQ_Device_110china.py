@@ -443,7 +443,8 @@ class AQ_Device110China(AQ_Device):
                             param_value = struct.unpack('>Q', byte_array)[0]
                     elif param_type == 'signed':
                         if byte_size == 1:
-                            param_value = struct.unpack('b', byte_array[1])[0]
+                            # param_value = struct.unpack('>b', byte_array[1])[0]
+                            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
                         elif byte_size == 2:
                             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
                         elif byte_size == 4 or byte_size == 8:
@@ -466,7 +467,7 @@ class AQ_Device110China(AQ_Device):
 
                     elif param_type == 'float':
                         byte_array = swap_modbus_bytes(byte_array, reg_count)
-                        param_value = struct.unpack('f', byte_array)[0]
+                        param_value = struct.unpack('>f', byte_array)[0]
                         param_value = round(param_value, 7)
                     elif param_type == 'date_time':
                         if byte_size == 4:
