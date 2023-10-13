@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-09-29T15:05:02.699Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="yTfckrshb-8MjXdC3YZA" version="21.8.2" type="github" pages="9">
+<mxfile host="app.diagrams.net" modified="2023-10-13T13:31:51.270Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="vpUUZyUrtWSZMxBJ8lmk" version="21.8.0" type="github" pages="9">
   <diagram name="Страница — 1" id="IXAunNYzJMYk3vZA_leA">
-    <mxGraphModel dx="1434" dy="790" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="880" dy="478" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1214,7 +1214,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="kYDECnq7GESs7CxAmDQw" name="Вичтення значення параметру">
-    <mxGraphModel dx="1434" dy="790" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1760" dy="956" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1443,7 +1443,7 @@
         <mxCell id="nI_ZcGRXbZ12Guh3HpIB-70" value="2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="700" y="760" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="nI_ZcGRXbZ12Guh3HpIB-71" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;Робота кнопки &quot;Read parameters&quot; (вичтення усіх параметрів поточного активного девайсу)&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="nI_ZcGRXbZ12Guh3HpIB-71" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;Робота кнопки &quot;Read parameters&quot; (вичтення усіх параметрів поточного активного девайсу)&amp;nbsp; Старий алгоритм&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="110" y="380" width="750" height="70" as="geometry" />
         </mxCell>
         <mxCell id="nI_ZcGRXbZ12Guh3HpIB-72" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;AQ_treeViewItemModel&lt;br&gt;::read_parameter&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
@@ -1485,7 +1485,7 @@
             <mxPoint x="440" y="730" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="szHkyvCjC236E64nqO2V-7" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;Робота кнопок &quot;Read parameters/Read parameter&quot; з контекстного меню у дереві (вичтення окремих параметрів або каталогів з контекстного меню яких викликали вичтення)&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="szHkyvCjC236E64nqO2V-7" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;Робота кнопок &quot;Read parameters/Read parameter&quot; з контекстного меню у дереві (вичтення окремих параметрів або каталогів з контекстного меню яких викликали вичтення) Старий алгоритм&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="100" y="910" width="750" height="70" as="geometry" />
         </mxCell>
         <mxCell id="2aXuEsZlENtjFxsIq0yE-1" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
@@ -1566,7 +1566,7 @@
             <mxPoint x="180" y="1390" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="2aXuEsZlENtjFxsIq0yE-25" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;Робота кнопок &quot;Read parameters/Read parameter&quot; з контекстного меню у дереві (вичтення окремих параметрів або каталогів з контекстного меню яких викликали вичтення)&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="2aXuEsZlENtjFxsIq0yE-25" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;Робота кнопок &quot;Read parameters/Read parameter&quot; з кнопки у тулбарі та з контекстного меню у дереві (вичтення окремих параметрів або каталогів з контекстного меню яких викликали вичтення)&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="101" y="1540" width="750" height="70" as="geometry" />
         </mxCell>
         <mxCell id="2aXuEsZlENtjFxsIq0yE-26" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;AQ_ParamItem::&lt;br&gt;&lt;div style=&quot;&quot;&gt;&lt;div style=&quot;&quot;&gt;synchronized&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
@@ -1632,7 +1632,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="WxthAZFxuyVh2pcHDTKE-1" value="IF EXIST" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="8nG60CeLMqUzrLAUtZOp-3">
+        <mxCell id="WxthAZFxuyVh2pcHDTKE-1" value="IF EXIST" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="8nG60CeLMqUzrLAUtZOp-3" vertex="1" connectable="0">
           <mxGeometry x="0.1556" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
