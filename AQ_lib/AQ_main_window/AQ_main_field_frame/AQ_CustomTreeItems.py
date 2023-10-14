@@ -32,6 +32,7 @@ class AQ_ParamItem(QStandardItem):
                     else:
                         self.param_status = 'changed'
                         self.synchronized = False
+                        self.local_event_manager.emit_event('param_changed', self)
                 self._value = new_value
         else:
             self.param_status = 'error'
