@@ -22,6 +22,7 @@ class AQ_TreeViewItemModel(QStandardItemModel):
 
     def update_parameter_value(self, manager_item):
         manager_item.show_new_value()
+        manager_item.update_status()
 
     def update_params_catalog(self, manager_item):
         row_count = manager_item.rowCount()
@@ -46,6 +47,7 @@ class AQ_TreeViewItemModel(QStandardItemModel):
                     manager_item = self.travers_find_manager_by_sourse_item(sourse_item)
                     if manager_item is not None:
                         manager_item.show_new_value()
+                        manager_item.update_status()
 
     def travers_find_manager_by_sourse_item(self, sourse_item):
         manager_item = None
