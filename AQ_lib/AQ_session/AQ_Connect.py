@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 from PySide6.QtCore import QObject
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
+from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 
 
@@ -57,7 +58,11 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
 
     def write_registers(self, modbus_reg, registers):
         try:
-            self.modbus_rtu_client.write_registers(modbus_reg, registers, self.slave_id)
+            result = self.modbus_rtu_client.write_registers(modbus_reg, registers, self.slave_id)
+            if isinstance(result, ModbusIOException):
+                result = 'modbus_error'
+
+            return result
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise
@@ -104,7 +109,11 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
 
     def write_registers(self, modbus_reg, registers):
         try:
-            self.modbus_tcp_client.write_registers(modbus_reg, registers, self.slave_id)
+            result = self.modbus_tcp_client.write_registers(modbus_reg, registers, self.slave_id)
+            if isinstance(result, ModbusIOException):
+                result = 'modbus_error'
+
+            return result
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise

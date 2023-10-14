@@ -61,7 +61,8 @@ class AQ_Device(QObject):
         self.local_event_manager.register_event_handler('param_need_update', self.add_param_to_update_stack)
 
     def add_param_to_changed_stack(self, item):
-        self.changed_param_stack.append(item)
+        if item not in self.changed_param_stack:
+            self.changed_param_stack.append(item)
 
     def add_param_to_update_stack(self, item):
         self.update_param_stack.append(item)
@@ -518,8 +519,12 @@ class AQ_Device(QObject):
                 #         param_value = struct.unpack('>I', byte_array)[0]
 
                 try:
-                    self.client.write_registers(modbus_reg, registers)
-                    item.synchro_last_value_and_value()
+                    result = self.client.write_registers(modbus_reg, registers)
+                    if result != 'modbus_error':
+                        item.synchronized = True
+                        # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
+                        removed_index = self.changed_param_stack.index(item)
+                        self.changed_param_stack.pop(removed_index)
                 except Exception as e:
                     print(f"Error occurred: {str(e)}")
 
