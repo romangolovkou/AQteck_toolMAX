@@ -152,8 +152,8 @@ class AQ_left_device_widget(QWidget):
         action_write = context_menu.addAction("Write parameters")
         action_delete = context_menu.addAction("Delete device")
         # Подключаем обработчик события выбора действия
-        action_read.triggered.connect(lambda: self.device.read_all_parameters())
-        action_write.triggered.connect(lambda: self.device.write_all_parameters())
+        action_read.triggered.connect(lambda: self.device.read_parameters())
+        action_write.triggered.connect(lambda: self.device.write_parameters())
         action_delete.triggered.connect(lambda: self.event_manager.emit_event('delete_device', self.device))
         # if self.traverse_items_R_Only_catalog_check(item) > 0:
         #     action_write = context_menu.addAction("Write parameters")

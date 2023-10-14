@@ -101,8 +101,8 @@ class AQ_TreeViewItemModel(QStandardItemModel):
     def write_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
-        self.device.write_parameter(sourse_item)
-        self.update_parameter_status(item)
+        self.device.write_parameters(sourse_item)
+        # self.update_parameter_status(item)
 
     def add_parameter_to_watch_list(self, index):
         item = self.itemFromIndex(index)
