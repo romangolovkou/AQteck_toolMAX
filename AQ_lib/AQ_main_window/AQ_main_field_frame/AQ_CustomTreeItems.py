@@ -32,7 +32,7 @@ class AQ_ParamItem(QStandardItem):
                     else:
                         self.param_status = 'changed'
                         self.synchronized = False
-                        self.local_event_manager.emit_event('param_changed', self)
+                        self.local_event_manager.emit_event('add_param_to_changed_stack', self)
                 self._value = new_value
         else:
             self.param_status = 'error'
@@ -47,11 +47,10 @@ class AQ_ParamItem(QStandardItem):
             # if self.value_in_device != self.value:
             self.value_in_device = self.value
             if self.local_event_manager is not None:
-                self.local_event_manager.emit_event('param_need_update', self)
-            # else:
-            #     if self.param_status == 'changed':
-            #         self.param_status = 'ok'
-            #         self.local_event_manager.emit_event('param_need_update', self)
+                self.local_event_manager.emit_event('add_param_to_update_stack', self)
+
+            if self.param_status == 'changed':
+                self.param_status = 'ok'
 
         self.synchro_flag = flag
 
@@ -79,9 +78,9 @@ class AQ_ParamItem(QStandardItem):
         self.param_status = 'ok'
         return True
 
-    def synchro_last_value_and_value(self):
-        self.value_in_device = self._value
-        self.param_status = 'ok'
+    # def synchro_last_value_and_value(self):
+    #     self.value_in_device = self._value
+    #     self.param_status = 'ok'
 
     def get_param_attributes(self):
         param_attributes = self.data(Qt.UserRole)

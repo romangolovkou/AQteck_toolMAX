@@ -67,8 +67,8 @@ class AQ_Device(QObject):
         # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
         # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2'
         # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
-        self.local_event_manager.register_event_handler('param_changed', self.add_param_to_changed_stack)
-        self.local_event_manager.register_event_handler('param_need_update', self.add_param_to_update_stack)
+        self.local_event_manager.register_event_handler('add_param_to_changed_stack', self.add_param_to_changed_stack)
+        self.local_event_manager.register_event_handler('add_param_to_update_stack', self.add_param_to_update_stack)
 
     def add_param_to_changed_stack(self, item):
         if item not in self.changed_param_stack:
