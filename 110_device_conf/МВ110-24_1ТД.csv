@@ -1,0 +1,40 @@
+МВ110-24.1ТД;;;;;;;;;;;
+Имя парметра;Каталог;Номер регистра/бита;Кол-во регистров/битов;Функция чтения;Функция записи;Тип данных;Минимальное значение;Максимальное значение;Ед. Изм;Значение по умолчанию;строки (только для enum)
+Slave address;Communication settings;40052;2;3;16;unsigned 32;1;128;;1;
+Boudrate;Communication settings;40050;2;3;16;enum 3;0;7;;4;1200/2400/4800/9600/19200/38400/57600/115200
+Weight value;Values;40100;2;3;-;float 32;;;;;
+AD code value;Values;40102;2;3;-;float 32;;;;;
+DA code value;Values;40104;2;3;-;float 32;;;;;
+System Status;;40106;2;3;-;float 32;0;3;;;Stability/Instability/none /Empty load
+Multifunction register;;40108;2;3;16;float 32;0;3;;;Zero/Validation numerical calibration/Confirm the weight calibration
+Caliated weight;;40110;2;3;16;float 32;0;999999;;;
+Power up zero clearence range;;40120;2;3;16;float 32;0;10000;;;
+Stability determination range;;40122;2;3;16;float 32;0;100;;;
+Determine stability period;;40124;2;3;16;float 32;1;5000;;;
+Zero-bit trace;;40126;2;3;16;float 32;0;20;;;
+Digital filtering;;40128;2;3;16;float 32;1;200;;;
+Automatic Zero clearence setting;;40130;2;3;16;float 32;0;1333;;;
+Automatic Zero clearence trigger threshold;;40132;2;3;16;float 32;0;9999999;;;
+Automatic Zero clearence delay;;40134;2;3;16;float 32;0;100;;;
+radix point/decimal point/decimal;;40136;2;3;16;float 32;0;4;;2;
+Rating quantitative range;;40140;2;3;16;float 32;100;999999;;10000;
+Sampling rate;;40142;2;3;16;float 32;0;2;;0;
+Protocol;;40146;2;3;16;float 32;0;3;;1;
+Data format;;40148;2;3;16;float 32;0;2;;0;
+Automatic sending packet interval;;40154;2;3;16;float 32;1;1200;;10;
+System zero point;;40156;2;3;16;float 32;1000;9999999;;;
+Measing coefficient;;40158;2;3;16;float 32;10;1999999;;5000;
+Sensor sensitivity;;40160;2;3;16;float 32;5000;100000;;20000;
+AD 0;;40162;2;3;16;float 32;;;;;
+AD 1;;40164;2;3;16;float 32;;;;;
+Sensor measurment range;;40166;2;3;16;float 32;100;999999;;10000;
+Automatic calibration;;40168;2;3;16;float 32;0;1;;0;
+Transof capacity;;40172;2;3;16;float 32;10;4040;;4040;
+Transmission starting point;;40174;2;3;16;float 32;99999;999999;;;
+Sensor coding;;2000;2;3;16;unsigned 32;;;;;
+Sensor standby;;2002;2;3;16;unsigned 32;;;;;
+Sensor unit;;2004;2;3;16;unsigned 32;;;;;
+Sensor decimal point;;2006;2;3;16;unsigned 32;;;;;
+Sensor rated value;;2008;2;3;16;unsigned 32;;;;;
+Sensor sensitivity factor;;2010;2;3;16;unsigned 32;;;;;
+Version date;;114;2;3;16;unsigned 32;;;;;
