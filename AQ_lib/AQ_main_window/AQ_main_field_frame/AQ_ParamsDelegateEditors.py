@@ -67,7 +67,9 @@ class AQ_EnumTreeComboBox(QComboBox):
         self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
         self.save_new_value = None
-        enum_strings = param_attributes.get('enum_strings', '')
+        self.enum_str_dict = param_attributes.get('enum_strings', '')
+        enum_strings = self.enum_str_dict.values()
+        enum_strings = list(enum_strings)
         for i in range(len(enum_strings)):
             enum_str = enum_strings[i]
             self.addItem(enum_str)
@@ -76,13 +78,23 @@ class AQ_EnumTreeComboBox(QComboBox):
 
     def updateIndex(self, index):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        self.save_new_value(index)
+        string = self.itemText(index)
+        key = self.get_key_by_value(self.enum_str_dict, string)
+        self.save_new_value(key)
 
     def set_new_value_handler(self, handler):
         self.save_new_value = handler
 
     def set_value(self, value):
-        self.setCurrentIndex(value)
+        string = self.enum_str_dict.get(value, '')
+        self.setCurrentText(string)
+        # self.setCurrentIndex(value)
+
+    def get_key_by_value(self, dictionary, value):
+        for key, val in dictionary.items():
+            if val == value:
+                return key
+        return None  # Возвращаем None, если объект не найден
 
 
 class AQ_EnumROnlyTreeLineEdit(AQ_TreeLineEdit):

@@ -331,7 +331,13 @@ class AQ_Device110China(AQ_Device):
 
                         if param_type == 'enum':
                             enum_strings = fields[11].split('/')
-                            param_attributes['enum_strings'] = enum_strings
+
+                            enum_str_dict = {}
+                            for row in range(len(enum_strings)):
+                                string_key = enum_strings[row].split('-')
+                                enum_str_dict[int(string_key[0])] = string_key[1]
+
+                            param_attributes['enum_strings'] = enum_str_dict
 
                         param_item = get_item_by_type(param_attributes.get('type', ''), parameter_name)
                         param_item.setData(param_attributes, Qt.UserRole)
@@ -461,8 +467,8 @@ class AQ_Device110China(AQ_Device):
                             param_value = struct.unpack('>I', byte_array)[0]
                         else:
                             param_value = struct.unpack('>H', byte_array)[0]
-                            if modbus_reg == 101:
-                                param_value = param_value - 1
+                            # if modbus_reg == 101:
+                            #     param_value = param_value - 1
 
 
                     elif param_type == 'float':
