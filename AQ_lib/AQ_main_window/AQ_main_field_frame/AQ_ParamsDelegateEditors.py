@@ -475,6 +475,30 @@ class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
         self.setText(str(value))
 
 
+class AQ_SignedToFloatTreeLineEdit(AQ_FloatTreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+        self.enum_str_dict = param_attributes.get('enum_strings', '')
+        self.multiply = param_attributes.get('multiply', None)
+
+    def set_value(self, value):
+        err_code = self.enum_str_dict.get(value, None)
+        if err_code is not None:
+            self.setText(str(err_code))
+        else:
+            value_in_float = value * self.multiply
+            self.setText(str(value_in_float))
+
+    def line_edit_changed_update_value(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        if text != '' and text != '-':
+            value = float(text)/self.multiply
+            value = int(value)
+        else:
+            value = None
+        self.save_new_value(value)
+
+
 class AQ_EditorErrorLabel(AQ_Label):
     def __init__(self, pos, min_limit, max_limit, parent=None):
         super().__init__('Invalid value', parent)

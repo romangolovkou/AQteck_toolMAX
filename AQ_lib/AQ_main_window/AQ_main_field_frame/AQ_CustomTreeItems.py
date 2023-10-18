@@ -2,7 +2,8 @@ from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
 from PySide6.QtGui import QStandardItem
 
 from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
-    AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit
+    AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit, \
+    AQ_SignedToFloatTreeLineEdit
 
 
 class AQ_ParamItem(QStandardItem):
@@ -158,6 +159,20 @@ class AQ_DateTimeParamItem(AQ_ParamItem):
         super().__init__(name)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_DateTimeLineEdit
+
+
+class AQ_SignedToFloatParamItem(AQ_ParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AQ_SignedToFloatTreeLineEdit
+
+
+class AQ_UnsignedToFloatParamItem(AQ_ParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AQ_SignedToFloatTreeLineEdit
 
 
 class AQ_ParamManagerItem(QStandardItem):

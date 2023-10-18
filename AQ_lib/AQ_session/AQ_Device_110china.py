@@ -145,7 +145,7 @@ class AQ_Device110China(AQ_Device):
     def read_device_data(self):
         try:
             self.device_name = self.read_device_name()
-            self.read_slave_id()
+            # self.read_slave_id()
         #     self.version = self.read_version()
         #     self.serial_number = self.read_serial_number()
         except Exception as e:
@@ -338,6 +338,18 @@ class AQ_Device110China(AQ_Device):
                                 enum_str_dict[int(string_key[0])] = string_key[1]
 
                             param_attributes['enum_strings'] = enum_str_dict
+
+                        if param_type == 'signed_to_float' or param_type == 'unsigned_to_float':
+                            enum_strings = fields[11].split('/')
+
+                            enum_str_dict = {}
+                            for row in range(len(enum_strings)):
+                                string_key = enum_strings[row].split('=')
+                                enum_str_dict[int(string_key[0])] = string_key[1]
+
+                            param_attributes['enum_strings'] = enum_str_dict
+                            multiply = float(fields[12])
+                            param_attributes['multiply'] = multiply
 
                         param_item = get_item_by_type(param_attributes.get('type', ''), parameter_name)
                         param_item.setData(param_attributes, Qt.UserRole)

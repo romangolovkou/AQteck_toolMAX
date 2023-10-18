@@ -6,7 +6,8 @@ from PySide6.QtCore import Qt
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
-    AQ_SignedParamItem, AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem
+    AQ_SignedParamItem, AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem, AQ_SignedToFloatParamItem, \
+    AQ_UnsignedToFloatParamItem
 
 
 def swap_modbus_bytes(data, num_pairs):
@@ -575,6 +576,10 @@ def get_item_by_type(type, name):
         item = AQ_StringParamItem(name)
     elif type == 'date_time':
         item = AQ_DateTimeParamItem(name)
+    elif type == 'signed_to_float':
+        item = AQ_SignedToFloatParamItem(name)
+    elif type == 'unsigned_to_float':
+        item = AQ_UnsignedToFloatParamItem(name)
     else:
         item = AQ_ParamItem(name)
 
