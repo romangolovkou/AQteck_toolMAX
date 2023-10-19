@@ -3,7 +3,7 @@ from PySide6.QtGui import QStandardItem
 
 from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
     AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit, \
-    AQ_SignedToFloatTreeLineEdit
+    AQ_SignedToFloatTreeLineEdit, AQ_FloatEnumROnlyTreeLineEdit, AQ_FloatEnumTreeComboBox
 
 
 class AQ_ParamItem(QStandardItem):
@@ -173,6 +173,14 @@ class AQ_UnsignedToFloatParamItem(AQ_ParamItem):
         super().__init__(name)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_SignedToFloatTreeLineEdit
+
+
+class AQ_FloatEnumParamItem(AQ_EnumParamItem):
+    def __init__(self, name):
+        super().__init__(name)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor_RW = AQ_FloatEnumTreeComboBox
+        self.editor_R_Only = AQ_FloatEnumROnlyTreeLineEdit
 
 
 class AQ_ParamManagerItem(QStandardItem):

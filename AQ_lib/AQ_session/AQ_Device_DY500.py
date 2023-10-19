@@ -145,7 +145,7 @@ class AQ_DeviceDY500(AQ_Device):
     def read_device_data(self):
         try:
             self.device_name = self.read_device_name()
-            self.read_slave_id()
+            # self.read_slave_id()
         #     self.version = self.read_version()
         #     self.serial_number = self.read_serial_number()
         except Exception as e:
@@ -329,9 +329,29 @@ class AQ_DeviceDY500(AQ_Device):
                             else:
                                 param_attributes['def_value'] = int(fields[10])
 
-                        if param_type == 'enum':
+                        if param_type == 'enum' or param_type == 'float_enum':
                             enum_strings = fields[11].split('/')
-                            param_attributes['enum_strings'] = enum_strings
+
+                            enum_str_dict = {}
+                            for row in range(len(enum_strings)):
+                                string_key = enum_strings[row].split('=')
+                                enum_str_dict[int(string_key[0])] = string_key[1]
+
+                            param_attributes['enum_strings'] = enum_str_dict
+
+                        if param_type == 'signed_to_float' or param_type == 'unsigned_to_float':
+                            if fields[11] != '':
+                                enum_strings = fields[11].split('/')
+
+                                enum_str_dict = {}
+                                for row in range(len(enum_strings)):
+                                    string_key = enum_strings[row].split('=')
+                                    enum_str_dict[int(string_key[0])] = string_key[1]
+
+                                param_attributes['enum_strings'] = enum_str_dict
+
+                            multiply = float(fields[12])
+                            param_attributes['multiply'] = multiply
 
                         param_item = get_item_by_type(param_attributes.get('type', ''), parameter_name)
                         param_item.setData(param_attributes, Qt.UserRole)
@@ -465,7 +485,7 @@ class AQ_DeviceDY500(AQ_Device):
                                 param_value = param_value - 1
 
 
-                    elif param_type == 'float':
+                    elif param_type == 'float' or param_type == 'float_enum':
                         # byte_array = swap_modbus_bytes(byte_array, reg_count)
                         param_value = struct.unpack('>f', byte_array)[0]
                         param_value = round(param_value, 7)
@@ -564,7 +584,7 @@ class AQ_DeviceDY500(AQ_Device):
                             else:
                                 packed_data = struct.pack('H', value)
                                 registers = struct.unpack('H', packed_data)
-                        elif param_type == 'float':
+                        elif param_type == 'float' or param_type == 'float_enum':
                             if param_size == 4:
                                 floats = struct.pack('>f', value)
                                 registers = struct.unpack('>HH', floats)  # Возвращает два short int значения

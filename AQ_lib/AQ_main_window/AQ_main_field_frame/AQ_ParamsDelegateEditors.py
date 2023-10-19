@@ -503,6 +503,37 @@ class AQ_SignedToFloatTreeLineEdit(AQ_FloatTreeLineEdit):
         self.save_new_value(value)
 
 
+class AQ_FloatEnumTreeComboBox(AQ_EnumTreeComboBox):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+
+    def updateIndex(self, index):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        string = self.itemText(index)
+        key = self.get_key_by_value(self.enum_str_dict, string)
+        value = bin(key)[2:]
+        value = float(value)
+        self.save_new_value(value)
+
+    def set_value(self, value):
+        value = int(value)
+        value = '0b' + str(value)
+        value = int(value, 2)
+        string = self.enum_str_dict.get(value, '')
+        self.setCurrentText(string)
+
+
+class AQ_FloatEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+
+    def set_value(self, value):
+        value = int(value)
+        value = '0b' + str(value)
+        value = int(value, 2)
+        self.setText(self.enum_strings[value])
+
+
 class AQ_EditorErrorLabel(AQ_Label):
     def __init__(self, pos, min_limit, max_limit, parent=None):
         super().__init__('Invalid value', parent)

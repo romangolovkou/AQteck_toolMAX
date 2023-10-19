@@ -329,7 +329,7 @@ class AQ_Device110China(AQ_Device):
                             else:
                                 param_attributes['def_value'] = int(fields[10])
 
-                        if param_type == 'enum':
+                        if param_type == 'enum' or param_type == 'float_enum':
                             enum_strings = fields[11].split('/')
 
                             enum_str_dict = {}

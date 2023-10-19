@@ -62,7 +62,7 @@ class AQ_CurrentSession(QObject):
         for i in range(len(new_devices_list)):
             self.devices.append(new_devices_list[i])
             self.set_local_event_manager_in_parameters(self.devices[-1])
-            self.devices[-1].read_parameters()
+            # self.devices[-1].read_parameters()
 
         self.event_manager.emit_event('new_devices_added', new_devices_list)
 
