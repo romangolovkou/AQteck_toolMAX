@@ -11,7 +11,7 @@ PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 class AQ_MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        main_name = 'AQteck Tool MAX'
+        main_name = 'AQteckModules'
         PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
         self.AQicon = QIcon('Icons/AQico_silver.png')
         self.setWindowFlags(Qt.FramelessWindowHint)
