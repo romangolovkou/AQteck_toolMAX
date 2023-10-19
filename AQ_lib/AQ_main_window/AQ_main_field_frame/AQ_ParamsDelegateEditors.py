@@ -478,11 +478,15 @@ class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
 class AQ_SignedToFloatTreeLineEdit(AQ_FloatTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
-        self.enum_str_dict = param_attributes.get('enum_strings', '')
+        self.enum_str_dict = param_attributes.get('enum_strings', None)
         self.multiply = param_attributes.get('multiply', None)
 
     def set_value(self, value):
-        err_code = self.enum_str_dict.get(value, None)
+        if self.enum_str_dict is not None:
+            err_code = self.enum_str_dict.get(value, None)
+        else:
+            err_code = None
+
         if err_code is not None:
             self.setText(str(err_code))
         else:

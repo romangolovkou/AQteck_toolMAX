@@ -145,7 +145,7 @@ class AQ_Device110China(AQ_Device):
     def read_device_data(self):
         try:
             self.device_name = self.read_device_name()
-            # self.read_slave_id()
+            self.read_slave_id()
         #     self.version = self.read_version()
         #     self.serial_number = self.read_serial_number()
         except Exception as e:
@@ -334,20 +334,22 @@ class AQ_Device110China(AQ_Device):
 
                             enum_str_dict = {}
                             for row in range(len(enum_strings)):
-                                string_key = enum_strings[row].split('-')
+                                string_key = enum_strings[row].split('=')
                                 enum_str_dict[int(string_key[0])] = string_key[1]
 
                             param_attributes['enum_strings'] = enum_str_dict
 
                         if param_type == 'signed_to_float' or param_type == 'unsigned_to_float':
-                            enum_strings = fields[11].split('/')
+                            if fields[11] != '':
+                                enum_strings = fields[11].split('/')
 
-                            enum_str_dict = {}
-                            for row in range(len(enum_strings)):
-                                string_key = enum_strings[row].split('=')
-                                enum_str_dict[int(string_key[0])] = string_key[1]
+                                enum_str_dict = {}
+                                for row in range(len(enum_strings)):
+                                    string_key = enum_strings[row].split('=')
+                                    enum_str_dict[int(string_key[0])] = string_key[1]
 
-                            param_attributes['enum_strings'] = enum_str_dict
+                                param_attributes['enum_strings'] = enum_str_dict
+
                             multiply = float(fields[12])
                             param_attributes['multiply'] = multiply
 
@@ -445,7 +447,7 @@ class AQ_Device110China(AQ_Device):
                     hex_string = ''.join(format(value, '04X') for value in response.registers)
                     # Конвертируем строку в массив байт
                     byte_array = bytes.fromhex(hex_string)
-                    if param_type == 'unsigned':
+                    if param_type == 'unsigned' or param_type == 'unsigned_to_float':
                         if byte_size == 1:
                             param_value = struct.unpack('>H', byte_array)[0]
                         elif byte_size == 2:
@@ -459,7 +461,7 @@ class AQ_Device110China(AQ_Device):
                         elif byte_size == 8:
                             byte_array = reverse_modbus_registers(byte_array)
                             param_value = struct.unpack('>Q', byte_array)[0]
-                    elif param_type == 'signed':
+                    elif param_type == 'signed' or param_type == 'signed_to_float':
                         if byte_size == 1:
                             # param_value = struct.unpack('>b', byte_array[1])[0]
                             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
@@ -544,7 +546,7 @@ class AQ_Device110China(AQ_Device):
                 if param_type != '' and param_size != '' and modbus_reg != '':
                     write_func = param_attibutes.get('write_func', None)
                     if write_func == 16:
-                        if param_type == 'unsigned':
+                        if param_type == 'unsigned' or param_type == 'unsigned_to_float':
                             if param_size == 1:
                                 packed_data = struct.pack('H', value)
                             elif param_size == 2:
@@ -557,7 +559,7 @@ class AQ_Device110China(AQ_Device):
                                 packed_data = struct.pack('Q', value)
                             # Разбиваем упакованные данные на 16-битные значения (2 байта)
                             registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-                        elif param_type == 'signed':
+                        elif param_type == 'signed' or param_type == 'signed_to_float':
                             if param_size == 1:
                                 packed_data = struct.pack('h', value)
                             elif param_size == 2:
@@ -613,8 +615,6 @@ class AQ_Device110China(AQ_Device):
                         else:
                             self.write_error_flag = True
                     elif write_func == 6:
-                        if modbus_reg == 101:
-                            value += 1
                         result = self.client.write_param(modbus_reg, value, write_func)
                         if result != 'modbus_error':
                             item.synchro_last_value_and_value()
