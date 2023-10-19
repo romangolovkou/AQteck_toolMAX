@@ -41,7 +41,7 @@ class AQ_TreeViewManager(QStackedWidget):
             device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
             tree_view.setModel(device_view_tree_model)
             self.devices_views[new_devices_list[i]] = tree_view
-            # self.update_device_values(new_devices_list[i])
+            self.update_device_values(new_devices_list[i])
             self.addWidget(tree_view)
             self.show()
 
@@ -51,7 +51,7 @@ class AQ_TreeViewManager(QStackedWidget):
             widget = self.devices_views.get(device, None)
             if widget is not None:
                 self.setCurrentWidget(widget)
-                # self.update_device_values(device)
+                self.update_device_values(device)
             else:
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
                 QTimer.singleShot(50, lambda: self.set_active_device_tree(device))

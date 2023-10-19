@@ -145,7 +145,7 @@ class AQ_DeviceDY500(AQ_Device):
     def read_device_data(self):
         try:
             self.device_name = self.read_device_name()
-            # self.read_slave_id()
+            self.read_slave_id()
         #     self.version = self.read_version()
         #     self.serial_number = self.read_serial_number()
         except Exception as e:
