@@ -149,7 +149,11 @@ class AQ_CurrentSession(QObject):
                     stopbits = network_settings[5]
                     client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
 
-            start_address = 100
+            if network_settings[2] == 'МВ110-24_8АС.csv' or network_settings[2] == 'МВ110-24_8А.csv':
+                start_address = 30
+            else:
+                start_address = 100
+
             register_count = 1
             write_func = 6
             new_slave_id = network_settings[1]
