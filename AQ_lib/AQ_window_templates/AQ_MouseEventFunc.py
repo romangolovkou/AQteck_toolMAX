@@ -1,6 +1,6 @@
 from AQ_ResizeFunc import resize_window_width, resize_window_height, resize_and_move_win_width,\
     resize_and_move_win_height
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 
 
 def mousePressEvent_Dragging(self, event):
@@ -118,7 +118,7 @@ def mouseMoveEvent_Diag_TopRigth(self, event):
         new_height = self.start_height - delta_y
         # Формат передачі агрументів у евент ('resize_main_window', new_pos_x, new_pos_y, new_width, new_height)
         # Строка з символом % - ознака, що цей параметр у розмірі вікна змінювати не потрібно
-        self.event_manager.emit_event('resize_main_window', '%', event.globalPos().y(), new_width, new_height)
+        self.event_manager.emit_event('resize_' + self.window_name, '%', event.globalPos().y(), new_width, new_height)
         self.start_pos_x = event.globalPos().x()
         self.start_pos_y = event.globalPos().y()
         self.start_width = self.parent().width()
@@ -145,7 +145,7 @@ def mouseMoveEvent_Diag_BotLeft(self, event):
         new_height = self.start_height + delta_y
         # Формат передачі агрументів у евент ('resize_main_window', new_pos_x, new_pos_y, new_width, new_height)
         # Строка з символом % - ознака, що цей параметр у розмірі вікна змінювати не потрібно
-        self.event_manager.emit_event('resize_main_window', event.globalPos().x(), '%', new_width, new_height)
+        self.event_manager.emit_event('resize_' + self.window_name, event.globalPos().x(), '%', new_width, new_height)
         self.start_pos_x = event.globalPos().x()
         self.start_pos_y = event.globalPos().y()
         self.start_width = self.parent().width()

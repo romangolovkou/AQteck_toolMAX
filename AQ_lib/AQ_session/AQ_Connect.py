@@ -1,7 +1,8 @@
 from abc import abstractmethod
 
-from PyQt5.QtCore import QObject
+from PySide6.QtCore import QObject
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
+from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 
 
@@ -27,10 +28,12 @@ class AQ_TCP_connect(AQ_connect):
 
 
 class AQ_modbusRTU_connect(AQ_COM_connect):
-    def __init__(self, _port, _baudrate, slave_id):
+    def __init__(self, _port, _baudrate, _parity, _stopbits, slave_id):
         super().__init__()
         self.slave_id = slave_id
-        self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate)
+        self.timeout = 1.0
+        self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity,
+                                                    stopbits=_stopbits, timeout=self.timeout)
 
     def open(self):
         self.modbus_rtu_client.connect()
@@ -55,7 +58,11 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
 
     def write_registers(self, modbus_reg, registers):
         try:
-            self.modbus_rtu_client.write_registers(modbus_reg, registers, self.slave_id)
+            result = self.modbus_rtu_client.write_registers(modbus_reg, registers, self.slave_id)
+            if isinstance(result, ModbusIOException):
+                result = 'modbus_error'
+
+            return result
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise
@@ -102,7 +109,11 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
 
     def write_registers(self, modbus_reg, registers):
         try:
-            self.modbus_tcp_client.write_registers(modbus_reg, registers, self.slave_id)
+            result = self.modbus_tcp_client.write_registers(modbus_reg, registers, self.slave_id)
+            if isinstance(result, ModbusIOException):
+                result = 'modbus_error'
+
+            return result
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise

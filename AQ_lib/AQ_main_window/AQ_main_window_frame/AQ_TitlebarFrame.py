@@ -1,8 +1,8 @@
 from functools import partial
 
-from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtWidgets import QFrame, QLabel, QPushButton
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtGui import QFont, QIcon
+from PySide6.QtWidgets import QFrame, QLabel, QPushButton
 
 from AQ_MouseEventFunc import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 

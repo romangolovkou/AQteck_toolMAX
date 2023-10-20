@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, QModelIndex, QObject, pyqtSignal
-from PyQt5.QtGui import QStandardItem
+from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
+from PySide6.QtGui import QStandardItem
 
 from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
     AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit
@@ -9,9 +9,11 @@ class AQ_ParamItem(QStandardItem):
     def __init__(self, name):
         super().__init__(name)
         self._value = None
-        self.last_value_from_device = None
+        self.value_in_device = None
         self.editor = None
+        self.synchro_flag = False
         self.param_status = None
+        self.local_event_manager = None
 
     @property
     def value(self):
@@ -20,42 +22,64 @@ class AQ_ParamItem(QStandardItem):
     @value.setter
     def value(self, new_value):
         if new_value is not None:
-            param_attibutes = self.data(Qt.UserRole)
-            min_limit = param_attibutes.get('min_limit', None)
-            if min_limit is not None:
-                if new_value < min_limit:
-                    self.param_status = 'error'
-                    raise ValueError("value < min_limit, {} < {}".format(new_value, min_limit))
-
-            max_limit = param_attibutes.get('max_limit', None)
-            if max_limit is not None:
-                if new_value > max_limit:
-                    self.param_status = 'error'
-                    raise ValueError("value > max_limit, {} > {}".format(new_value, max_limit))
-
-            if self.last_value_from_device is None:
-                self.last_value_from_device = new_value
-            else:
-                if self.last_value_from_device == new_value:
-                    self.param_status = 'ok'
+            if self.validate(new_value) is True:
+                if self.value_in_device is None:
+                    self.value_in_device = new_value
                 else:
-                    self.param_status = 'changed'
-            self._value = new_value
+                    if self.value_in_device == new_value:
+                        self.param_status = 'ok'
+                    else:
+                        self.param_status = 'changed'
+                        self.synchronized = False
+                        self.local_event_manager.emit_event('add_param_to_changed_stack', self)
+                self._value = new_value
         else:
             self.param_status = 'error'
 
-    def set_last_value_from_device(self, new_value):
-        self.last_value_from_device = new_value
-        try:
-            self.value = new_value
-            # self.param_status = 'ok'
-        except:
-            self._value = new_value
-            self.param_status = 'error'
+    @property
+    def synchronized(self):
+        return self.synchro_flag
 
-    def synchro_last_value_and_value(self):
-        self.last_value_from_device = self._value
+    @synchronized.setter
+    def synchronized(self, flag):
+        if flag is True:
+            # if self.value_in_device != self.value:
+            self.value_in_device = self.value
+            if self.local_event_manager is not None:
+                self.local_event_manager.emit_event('add_param_to_update_stack', self)
+
+            if self.param_status == 'changed':
+                self.param_status = 'ok'
+
+        self.synchro_flag = flag
+
+    def force_set_value(self, new_value):
+        self.validate(new_value)
+        self._value = new_value
+
+
+    def validate(self, new_value):
+        param_attributes = self.data(Qt.UserRole)
+        min_limit = param_attributes.get('min_limit', None)
+        if min_limit is not None:
+            if new_value < min_limit:
+                self.param_status = 'error'
+                print("value < min_limit, {} < {}".format(new_value, min_limit))
+                return False
+
+        max_limit = param_attributes.get('max_limit', None)
+        if max_limit is not None:
+            if new_value > max_limit:
+                self.param_status = 'error'
+                print("value > max_limit, {} > {}".format(new_value, max_limit))
+                return False
+
         self.param_status = 'ok'
+        return True
+
+    # def synchro_last_value_and_value(self):
+    #     self.value_in_device = self._value
+    #     self.param_status = 'ok'
 
     def get_param_attributes(self):
         param_attributes = self.data(Qt.UserRole)
@@ -66,6 +90,9 @@ class AQ_ParamItem(QStandardItem):
 
     def get_status(self):
         return self.param_status
+
+    def set_local_event_manager(self, local_event_manager):
+        self.local_event_manager = local_event_manager
 
 
 class AQ_CatalogItem(AQ_ParamItem):
@@ -133,7 +160,7 @@ class AQ_DateTimeParamItem(AQ_ParamItem):
         self.editor = AQ_DateTimeLineEdit
 
 
-class AQ_param_manager_item(QStandardItem):
+class AQ_ParamManagerItem(QStandardItem):
     def __init__(self, sourse_item):
         param_attributes = sourse_item.data(Qt.UserRole)
         super().__init__(param_attributes.get('name', 'err_name'))

@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QStandardItem
-from PyQt5.QtWidgets import QFrame, QStackedWidget
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QStandardItem
+from PySide6.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
-from AQ_CustomTreeItems import AQ_param_manager_item
+from AQ_CustomTreeItems import AQ_ParamManagerItem
 from AQ_TreeView import AQ_TreeView
 
 
@@ -14,7 +14,7 @@ class AQ_TreeViewFrame(QFrame):
         super().__init__(parent)
         self.event_manager = event_manager
         self.setStyleSheet("background-color: transparent;")
-        self.tree_view_manager = AQ_treeView_manager(self.event_manager, self)
+        self.tree_view_manager = AQ_TreeViewManager(self.event_manager, self)
         self.tree_view_manager.setGeometry(0, 0, self.width(), self.height())
 
     def resizeEvent(self, event):
@@ -23,13 +23,13 @@ class AQ_TreeViewFrame(QFrame):
 
         event.accept()
 
-class AQ_treeView_manager(QStackedWidget):
+class AQ_TreeViewManager(QStackedWidget):
     def __init__(self, event_manager, parent):
         super().__init__(parent)
         self.event_manager = event_manager
         self.event_manager.register_event_handler("new_devices_added", self.add_new_devices_trees)
         self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
-        self.event_manager.register_event_handler("current_device_data_updated", self.update_device_values)
+        # self.event_manager.register_event_handler("current_device_data_updated", self.update_device_values)
         self.event_manager.register_event_handler("current_device_data_written", self.update_device_param_statuses)
         self.event_manager.register_event_handler("delete_device", self.delete_device_view)
         self.devices_views = {}
@@ -41,7 +41,7 @@ class AQ_treeView_manager(QStackedWidget):
             device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
             tree_view.setModel(device_view_tree_model)
             self.devices_views[new_devices_list[i]] = tree_view
-            self.update_device_values(new_devices_list[i])
+            # self.update_device_values(new_devices_list[i])
             self.addWidget(tree_view)
             self.show()
 
@@ -68,7 +68,7 @@ class AQ_treeView_manager(QStackedWidget):
     def update_device_values(self, device):
         tree_view = self.devices_views.get(device, None)
         if tree_view is not None:
-            tree_view.model().update_all_params_values()
+            tree_view.model().update_params_values(device)
 
     def update_device_param_statuses(self, device):
         tree_view = self.devices_views.get(device, None)
@@ -96,7 +96,7 @@ class AQ_treeView_manager(QStackedWidget):
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
                         name = parameter_attributes.get('name', 'err_name')
-                        catalog = AQ_param_manager_item(child_item)
+                        catalog = AQ_ParamManagerItem(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
                         self.traverse_items_create_new_tree_for_view(child_item, catalog)
@@ -108,7 +108,7 @@ class AQ_treeView_manager(QStackedWidget):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
 
-        parameter_item = AQ_param_manager_item(item)
+        parameter_item = AQ_ParamManagerItem(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
         value_item = QStandardItem()
         min_limit_item = self.get_min_limit_item(parameter_attributes)
@@ -128,7 +128,8 @@ class AQ_treeView_manager(QStackedWidget):
     def get_min_limit_item(self, param_attributes):
         param_type = param_attributes.get('type', '')
         visual_type = param_attributes.get('visual_type', '')
-        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
+        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string'\
+            or visual_type == 'hex':
             min_limit_item = QStandardItem('')
         elif param_type == 'date_time':
             start_time = datetime(2000, 1, 1).timestamp()
@@ -148,7 +149,8 @@ class AQ_treeView_manager(QStackedWidget):
     def get_max_limit_item(self, param_attributes):
         param_type = param_attributes.get('type', '')
         visual_type = param_attributes.get('visual_type', '')
-        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string':
+        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string'\
+           or visual_type == 'hex':
             max_limit_item = QStandardItem('')
         elif param_type == 'date_time':
             start_time = datetime(2000, 1, 1).timestamp()

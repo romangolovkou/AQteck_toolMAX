@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QFont, QColor
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QComboBox, QLineEdit, QStyledItemDelegate
+from PySide6.QtGui import QColor
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QStyledItemDelegate
 
 
 class AQ_ValueTreeDelegate(QStyledItemDelegate):
@@ -36,9 +36,6 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
 class AQ_NameTreeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
-
-    def set_item_color(self, index, color):
-        self.color_dict[index] = color
 
     def paint(self, painter, option, index):
 

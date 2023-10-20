@@ -2,8 +2,7 @@ import array
 import struct
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PySide6.QtCore import Qt
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
@@ -609,7 +608,10 @@ def set_standard_min_limit(param_attributes):
         if param_attributes.get('visual_type', '') == 'ip_format':
             cur_par_min = None
         else:
-            cur_par_min = int('0')
+            if size == 6:# MAC-address
+                cur_par_min = None
+            else:
+                cur_par_min = int('0')
     elif param_type == 'date_time':
         cur_par_min = 0  #'01.01.2000 0:00:00' дата від якої у нас йде відлік часу у секундах
     else:
@@ -645,7 +647,7 @@ def set_standard_max_limit(param_attributes):
         elif size == 4:
             cur_par_max = int('4294967295')
         elif size == 6:  # MAC address
-            cur_par_max = 'FF:FF:FF:FF:FF:FF'
+            cur_par_max = None
         elif size == 8:
             cur_par_max = int('18446744073709551615')
     elif param_type == 'date_time':

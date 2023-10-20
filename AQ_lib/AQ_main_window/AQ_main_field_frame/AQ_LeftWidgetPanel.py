@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QFont, QPalette, QColor
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap, QFont, QPalette, QColor
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
 
 from AQ_CustomWindowTemplates import AQ_Label
 
@@ -152,8 +152,8 @@ class AQ_left_device_widget(QWidget):
         action_write = context_menu.addAction("Write parameters")
         action_delete = context_menu.addAction("Delete device")
         # Подключаем обработчик события выбора действия
-        action_read.triggered.connect(lambda: self.device.read_all_parameters())
-        action_write.triggered.connect(lambda: self.device.write_all_parameters())
+        action_read.triggered.connect(lambda: self.device.read_parameters())
+        action_write.triggered.connect(lambda: self.device.write_parameters())
         action_delete.triggered.connect(lambda: self.event_manager.emit_event('delete_device', self.device))
         # if self.traverse_items_R_Only_catalog_check(item) > 0:
         #     action_write = context_menu.addAction("Write parameters")
@@ -163,5 +163,5 @@ class AQ_left_device_widget(QWidget):
         #     # Подключаем обработчик события выбора действия
         #     action_write.triggered.connect(lambda: self.write_catalog_by_modbus(index, 1))
         # # Показываем контекстное меню
-        context_menu.exec_(event.globalPos())
+        context_menu.exec(event.globalPos())
 

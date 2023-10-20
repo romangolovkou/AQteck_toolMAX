@@ -1,18 +1,19 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMainWindow
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMainWindow
 from AQ_MainWindowFrame import AQ_MainWindowFrame
 from AQ_Session import AQ_CurrentSession
 from AQ_EventManager import AQ_EventManager
 # Defines
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
+
 class AQ_MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         main_name = 'AQteck Tool MAX'
         PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
-        self.AQicon = QIcon(PROJ_DIR + 'Icons/AQico_silver.png')
+        self.AQicon = QIcon('Icons/AQico_silver.png')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle(main_name)
         self.setWindowIcon(self.AQicon)
@@ -29,7 +30,7 @@ class AQ_MainWindow(QMainWindow):
         self.event_manager.register_event_handler('maximize_' + main_name, self.showMaximized)
         self.event_manager.register_event_handler('normalize_' + main_name, self.showNormal)
         self.event_manager.register_event_handler('dragging_' + main_name, self.move)
-        self.event_manager.register_event_handler('resize_main_window', self.resize_MainWindow)
+        self.event_manager.register_event_handler('resize_' + main_name, self.resize_MainWindow)
         # Поточна сессія
         self.current_session = AQ_CurrentSession(self.event_manager, self)
 

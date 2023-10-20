@@ -1,7 +1,7 @@
 import os
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
+from PySide6.QtGui import QFont
+from PySide6.QtCore import Qt, QSettings
+from PySide6.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
 from AQ_CustomWindowTemplates import AQ_ComboBox, AQ_Label, AQ_IpLineEdit, AQ_SlaveIdLineEdit
 import serial.tools.list_ports
 from AQ_IsValidIpFunc import is_valid_ip
@@ -73,6 +73,50 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         if self.auto_load_settings is not None:
             load_last_combobox_state(self.auto_load_settings, self.interface_combo_box)
 
+    # Создаем текстовую метку выбора интерфейса
+        self.boudrate_combo_box_label = AQ_Label("Boudrate")
+
+    # Создание комбо-бокса швидкості
+        self.boudrate_combo_box = AQ_ComboBox()
+        self.boudrate_combo_box.setObjectName(self.parent.objectName() + "_" + "boudrate_combo_box")
+        self.boudrate_combo_box.addItem("4800")
+        self.boudrate_combo_box.addItem("9600")
+        self.boudrate_combo_box.addItem("19200")
+        self.boudrate_combo_box.addItem("38400")
+        self.boudrate_combo_box.addItem("57600")
+        self.boudrate_combo_box.addItem("115200")
+
+        # Встановлюємо попередне обране значення, якщо воно існує
+        if self.auto_load_settings is not None:
+            load_last_combobox_state(self.auto_load_settings, self.boudrate_combo_box)
+
+    # Создаем текстовую метку выбора четности
+        self.parity_combo_box_label = AQ_Label("Parity")
+
+        # Создание комбо-бокса швидкості
+        self.parity_combo_box = AQ_ComboBox()
+        self.parity_combo_box.setObjectName(self.parent.objectName() + "_" + "parity_combo_box")
+        self.parity_combo_box.addItem("None")
+        self.parity_combo_box.addItem("Even")
+        self.parity_combo_box.addItem("Odd")
+
+        # Встановлюємо попередне обране значення, якщо воно існує
+        if self.auto_load_settings is not None:
+            load_last_combobox_state(self.auto_load_settings, self.parity_combo_box)
+
+    # Создаем текстовую метку выбора четности
+        self.stopbits_combo_box_label = AQ_Label("Stop bits")
+
+        # Создание комбо-бокса швидкості
+        self.stopbits_combo_box = AQ_ComboBox()
+        self.stopbits_combo_box.setObjectName(self.parent.objectName() + "_" + "stopbits_combo_box")
+        self.stopbits_combo_box.addItem("1")
+        self.stopbits_combo_box.addItem("2")
+
+        # Встановлюємо попередне обране значення, якщо воно існує
+        if self.auto_load_settings is not None:
+            load_last_combobox_state(self.auto_load_settings, self.stopbits_combo_box)
+
     # Создаем поле ввода IP адресса
         self.ip_line_edit_label = AQ_Label("IP Address")
         self.ip_line_edit = AQ_IpLineEdit()
@@ -116,6 +160,12 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         self.addWidget(self.title_text)
         self.addWidget(self.interface_combo_box_label)
         self.addWidget(self.interface_combo_box)
+        self.addWidget(self.boudrate_combo_box_label)
+        self.addWidget(self.boudrate_combo_box)
+        self.addWidget(self.parity_combo_box_label)
+        self.addWidget(self.parity_combo_box)
+        self.addWidget(self.stopbits_combo_box_label)
+        self.addWidget(self.stopbits_combo_box)
         self.addWidget(self.ip_line_edit_label)
         self.addWidget(self.ip_line_edit)
         self.addWidget(self.slave_id_line_edit_label)
@@ -128,11 +178,23 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
     def change_view_by_combobox_selection(self):
         selected_item = self.interface_combo_box.currentText()
         if selected_item == "Ethernet":
+            self.boudrate_combo_box_label.setVisible(False)
+            self.boudrate_combo_box.setVisible(False)
+            self.parity_combo_box_label.setVisible(False)
+            self.parity_combo_box.setVisible(False)
+            self.stopbits_combo_box_label.setVisible(False)
+            self.stopbits_combo_box.setVisible(False)
             self.ip_line_edit_label.setVisible(True)
             self.ip_line_edit.setVisible(True)
             self.slave_id_line_edit_label.setVisible(False)
             self.slave_id_line_edit.setVisible(False)
         else:
+            self.parity_combo_box_label.setVisible(True)
+            self.parity_combo_box.setVisible(True)
+            self.stopbits_combo_box_label.setVisible(True)
+            self.stopbits_combo_box.setVisible(True)
+            self.boudrate_combo_box_label.setVisible(True)
+            self.boudrate_combo_box.setVisible(True)
             self.ip_line_edit_label.setVisible(False)
             self.ip_line_edit.setVisible(False)
             self.slave_id_line_edit_label.setVisible(True)
@@ -141,12 +203,17 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
     def get_network_settings_list(self):
         network_settings_list = []
         selected_if = self.interface_combo_box.currentText()
+        boudrate = None
         if selected_if == "Ethernet":
             address = self.ip_line_edit.text()
+            network_setting = (selected_if, address)
         else:
             address = int(self.slave_id_line_edit.text())
+            boudrate = int(self.boudrate_combo_box.currentText())
+            parity = self.parity_combo_box.currentText()
+            stopbits = int(self.stopbits_combo_box.currentText())
+            network_setting = (selected_if, address, boudrate, parity, stopbits)
 
-        network_setting = (selected_if, address)
         network_settings_list.append(network_setting)
 
         return network_settings_list
@@ -155,6 +222,10 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         save_combobox_current_state(self.parent.auto_load_settings, self.interface_combo_box)
         save_current_text_value(self.parent.auto_load_settings, self.ip_line_edit)
         save_current_text_value(self.parent.auto_load_settings, self.slave_id_line_edit)
+        save_combobox_current_state(self.parent.auto_load_settings, self.boudrate_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.parity_combo_box)
+        save_combobox_current_state(self.parent.auto_load_settings, self.stopbits_combo_box)
+
 
     def find_button_clicked(self):
         # Перед викликом події перевіряємо чи не порожні поля, та корректні в них дані
