@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QFont, QPalette, QColor
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
 
+import AQ_Device
 from AQ_CustomWindowTemplates import AQ_Label
 
 
@@ -47,10 +48,10 @@ class AQ_left_widget_panel_frame(QFrame):
 
 
 class AQ_left_device_widget(QWidget):
-    def __init__(self, device, event_manager, parent=None):
+    def __init__(self, device: AQ_Device, event_manager, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.device = device
+        self.device: AQ_Device = device
         self.event_manager = event_manager
         self.is_active_now = 1
         self.setFixedHeight(70)
@@ -151,10 +152,14 @@ class AQ_left_device_widget(QWidget):
         action_read = context_menu.addAction("Read parameters")
         action_write = context_menu.addAction("Write parameters")
         action_delete = context_menu.addAction("Delete device")
+        action_save_config = context_menu.addAction("Save configuration")
+        action_load_config = context_menu.addAction("Load configuration")
         # Подключаем обработчик события выбора действия
         action_read.triggered.connect(lambda: self.device.read_all_parameters())
         action_write.triggered.connect(lambda: self.device.write_all_parameters())
         action_delete.triggered.connect(lambda: self.event_manager.emit_event('delete_device', self.device))
+        action_save_config.triggered.connect(lambda: self.event_manager.emit_event('save_device_configuration', self.device))
+        action_load_config.triggered.connect(lambda: self.event_manager.emit_event('load_device_configuration', self.device))
         # if self.traverse_items_R_Only_catalog_check(item) > 0:
         #     action_write = context_menu.addAction("Write parameters")
         #     have_error = self.travers_have_error_check(index)

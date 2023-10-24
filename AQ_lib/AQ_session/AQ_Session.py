@@ -1,15 +1,20 @@
+from PySide6.QtCore import QObject, Qt, QCoreApplication
+from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QGuiApplication, QFont
 from PySide6.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial
 import serial.tools.list_ports
 
+import AQ_Device
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AQ_Connect import AQ_modbusRTU_connect
 from AQ_ParamListWindow import AQ_DialogParamList
 from AQ_DeviceInfoWindow import AQ_DialogDeviceInfo
 from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
 from AQ_WatchListWindow import AQ_DialogWatchList
+import pickle
+import io
 
 
 class AQ_CurrentSession(QObject):
@@ -34,6 +39,8 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
         self.event_manager.register_event_handler('add_parameter_to_watch_list', self.add_param_to_watch_list)
         self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
+        self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
+        self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
 
     def open_AddDevices(self):
@@ -131,6 +138,50 @@ class AQ_CurrentSession(QObject):
             self.open_WatchList()
 
         self.event_manager.emit_event('add_item_to_watch_list', item, model)
+
+    def save_device_config(self, device: AQ_Device):
+        fname = None
+
+        f = io.BytesIO()
+        p = pickle.Pickler(f)
+
+        config = device.save_config()
+        p.dump(config)
+
+        dialog = QFileDialog()
+        dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        dialog.setLabelText(QFileDialog.DialogLabel.LookIn, "Save as...")
+        dialog.setNameFilter(QCoreApplication.translate("SaveFileDialog", u"AQteck device configuration (*.adc)", None))
+        if dialog.exec_():
+            fname = dialog.selectedFiles()
+
+        if fname[0] != None:
+            with open(fname[0], 'wb') as file:
+                file.write(f.getvalue())
+                file.close()
+
+        print('I wrote some shit')
+
+    def load_device_config(self, device: AQ_Device):
+        loadConf = None
+
+        dialog = QFileDialog()
+        dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
+        dialog.setNameFilter(QCoreApplication.translate("SaveFileDialog", u"AQteck device configuration (*.adc)", None))
+        if dialog.exec_():
+            fname = dialog.selectedFiles()
+
+        print('Filename ', fname)
+        # File has been choosed
+        if fname[0] != '':
+            with open (fname[0], 'rb') as cfgFile:
+                fileData = io.BytesIO(cfgFile.read())
+                loadConf = pickle.loads(fileData.getvalue())
+
+        if loadConf != None:
+            device.load_config(loadConf)
+
+        print ('Loaded')
 
     def set_slave_id(self, network_settings):
         network_settings = network_settings[0]
