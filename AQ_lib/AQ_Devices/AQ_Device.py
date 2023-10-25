@@ -40,11 +40,11 @@ class AQ_Device(QObject):
         self.update_param_stack = []
         self.client = self.create_client(address_tuple)
         self.client.open()
-        self.device_data = self.read_device_data()
+        self.device_data = self._read_device_data()
         if self.device_data != 'connect_err':
             default_prg = self.device_data.get('default_prg')
             if default_prg != 'decrypt_err':
-                self.device_tree = self.parse_default_prg(default_prg)
+                self.device_tree = self.__parse_default_prg(default_prg)
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
                     and isinstance(self.device_tree, AQ_TreeItemModel):
                     self.device_tree.set_device(self)
@@ -58,7 +58,7 @@ class AQ_Device(QObject):
         else:
             self.device_data['status'] = 'connect_error'
 
-        self.add_address_string_to_device_data(address_tuple)
+        self._add_address_string_to_device_data(address_tuple)
         # self.device_data['network_info'] = self.make_network_info_list()
 
         # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
@@ -76,13 +76,16 @@ class AQ_Device(QObject):
     def add_param_to_update_stack(self, item):
         self.update_param_stack.append(item)
 
-    def get_device_status(self):
+    def get_status(self):
         return self.device_data.get('status', None)
 
+    #This is BULLSHIT
+    #Внешние модули не должны парсить твоё инфо
+    #Всё отдаём через интерфейс
     def get_device_data(self):
         return self.device_data
 
-    def add_address_string_to_device_data(self, address_tuple):
+    def _add_address_string_to_device_data(self, address_tuple):
         interface = address_tuple[0]
         address = address_tuple[1]
         if interface == "Ethernet":
@@ -136,18 +139,18 @@ class AQ_Device(QObject):
 
         return None
 
-    def read_device_data(self):
+    def _read_device_data(self):
         try:
-            self.device_name = self.read_device_name()
-            self.version = self.read_version()
-            self.serial_number = self.read_serial_number()
+            self.device_name = self._read_device_name()
+            self.version = self._read_version()
+            self.serial_number = self._read_serial_number()
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             # "Ошибка при подключении к COM
             return 'connect_err'
 
         device_data = {}
-        default_prg = self.read_default_prg()
+        default_prg = self.__read_default_prg()
         device_data['device_name'] = self.device_name
         device_data['version'] = self.version
         device_data['serial_number'] = self.serial_number
@@ -155,21 +158,21 @@ class AQ_Device(QObject):
         return device_data
 
 
-    def read_device_name(self):
+    def _read_device_name(self):
         # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
         text = self.__read_string(0xF000, 16)
         device_name = remove_empty_bytes(text)
 
         return device_name
 
-    def read_version(self):
+    def _read_version(self):
         # Читаем 16 регистров начиная с адреса 0xF010 (soft version)
         text = self.__read_string(0xF010, 16)
         version = remove_empty_bytes(text)
 
         return version
 
-    def read_serial_number(self):
+    def _read_serial_number(self):
         # Читаем 16 регистров начиная с адреса 0xF086 (serial_number)
         text = self.__read_string(0xF086, 16)
         # Обрезаем длину до 20 символов
@@ -191,7 +194,7 @@ class AQ_Device(QObject):
         return text
 
 
-    def read_default_prg(self):
+    def __read_default_prg(self):
         # Установка значений полей структуры
         file_number = 0xFFE0
         record_number = 0
@@ -202,7 +205,7 @@ class AQ_Device(QObject):
         encrypt_res = result.records[0].record_data
 
         try:
-            decrypt_res = self.decrypt_data(encrypt_res)
+            decrypt_res = self.__decrypt_data(encrypt_res)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -229,7 +232,7 @@ class AQ_Device(QObject):
             if (len(encrypt_file) % 8) > 0:
                 padding = 8 - (len(encrypt_file) % 8)
                 encrypt_file = encrypt_file + bytes([padding] * padding)
-            decrypt_file = self.decrypt_data(encrypt_file)
+            decrypt_file = self.__decrypt_data(encrypt_file)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -241,14 +244,14 @@ class AQ_Device(QObject):
 
         return decrypt_file
 
-    def decrypt_data(self, encrypted_data):
+    def __decrypt_data(self, encrypted_data):
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
         cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
         decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
 
         return decrypted_data
 
-    def encrypt_data(self, data):
+    def __encrypt_data(self, data):
 
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
         cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
@@ -268,7 +271,7 @@ class AQ_Device(QObject):
         else:
             return self.password
 
-    def parse_default_prg(self, default_prg):
+    def __parse_default_prg(self, default_prg):
         try:
             containers_count = get_conteiners_count(default_prg)
             containers_offset = get_containers_offset(default_prg)
@@ -290,7 +293,7 @@ class AQ_Device(QObject):
         encrypt_res = result.records[0].record_data
 
         try:
-            decrypt_res = self.decrypt_data(encrypt_res)
+            decrypt_res = self.__decrypt_data(encrypt_res)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -301,10 +304,10 @@ class AQ_Device(QObject):
         if items is None:
             self.read_all_parameters()
         elif isinstance(items, AQ_ParamItem):
-            self.read_item(items)
+            self.__read_item(items)
         elif isinstance(items, list):
             for i in range(len(items)):
-                self.read_parameter(items[i])
+                self.__read_parameter(items[i])
 
         if len(self.update_param_stack) > 0:
             self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
@@ -314,23 +317,23 @@ class AQ_Device(QObject):
         root = self.device_tree.invisibleRootItem()
         for row in range(root.rowCount()):
             child_item = root.child(row)
-            self.read_item(child_item)
+            self.__read_item(child_item)
 
         self.update_param_stack.clear()
         self.event_manager.emit_event('current_device_data_updated', self)
         return
 
-    def read_item(self,  item):
+    def __read_item(self, item):
         param_attributes = item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             row_count = item.rowCount()
             for row in range(row_count):
                 child_item = item.child(row)
-                self.read_item(child_item)
+                self.__read_item(child_item)
         else:
-            self.read_parameter(item)
+            self.__read_parameter(item)
 
-    def read_parameter(self, item):
+    def __read_parameter(self, item):
         param_attributes = item.get_param_attributes()
 
         param_type = param_attributes.get('type', '')
@@ -522,7 +525,7 @@ class AQ_Device(QObject):
         # self.wait_widget.hide()
         # self.wait_widget.deleteLater()
 
-    def restart_device(self):
+    def restart(self):
         # "I will restart the device now!"
         file_number = 0xDEAD
         record_number = 0
@@ -534,7 +537,7 @@ class AQ_Device(QObject):
         padded_data = record_data + bytes([0x00] * pad_length)
         strange_tail = b'\x1e\x00\x00\x00Y\xdbZ^'
         record_data = padded_data + strange_tail
-        encrypted_record_data = self.encrypt_data(record_data)
+        encrypted_record_data = self.__encrypt_data(record_data)
         self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
         record_number = 20
         record_length = 0

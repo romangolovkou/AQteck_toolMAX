@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Qt, QCoreApplication
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QGuiApplication, QFont
@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-import AQ_Device
+from AQ_Devices import AQ_Device
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AQ_Connect import AQ_modbusRTU_connect
 from AQ_ParamListWindow import AQ_DialogParamList
@@ -125,7 +125,7 @@ class AQ_CurrentSession(QObject):
                 self.event_manager.emit_event('no_devices')
 
     def restart_device(self, device):
-        device.restart_device()
+        device.restart()
 
     def restart_current_active_device(self):
         if self.cur_active_device is not None:

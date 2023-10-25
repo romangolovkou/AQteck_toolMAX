@@ -1,18 +1,12 @@
-import time
-
-from PySide6.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, Signal
-from PySide6.QtGui import QScreen, QGuiApplication, QFont
-from PySide6.QtWidgets import QApplication, QCheckBox, QWidget, QFrame, QLabel
+from PySide6.QtCore import QTimer
+from PySide6.QtGui import QGuiApplication, QFont
+from PySide6.QtWidgets import QWidget, QFrame, QLabel
 
 from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
-from AQ_AddDevicesAddButton import AQ_addButton
-from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
-from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
-from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label, AQ_have_error_widget
-from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
-from AQ_Device import AQ_Device
-from AQ_Device_110china import AQ_Device110China
-from AQ_Device_DY500 import AQ_DeviceDY500
+from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
+from AQ_Devices.AQ_Device import AQ_Device
+from AQ_Devices.AQ_Device_110china import AQ_Device110China
+from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
 from AQ_SetSlaveIdNetworkFrame import AQ_SetSlaveIdNetworkSettingsFrame
 
 

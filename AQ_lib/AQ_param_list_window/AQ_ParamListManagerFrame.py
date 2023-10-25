@@ -3,9 +3,9 @@ import os
 
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit
 
-import AQ_Device
+from AQ_Devices import AQ_Device
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView, AQ_ParamListInfoTableView
 from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel

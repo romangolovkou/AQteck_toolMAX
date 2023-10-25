@@ -47,7 +47,7 @@ class AQ_Device110China(AQ_Device):
         self.write_error_flag = False
         self.client = self.create_client(address_tuple)
         if self.client.open():
-            self.device_data = self.read_device_data()
+            self.device_data = self._read_device_data()
         else:
             self.device_data = 'connect_err'
         if self.device_data != 'connect_err':
@@ -72,7 +72,7 @@ class AQ_Device110China(AQ_Device):
 
         if self.device_data['status'] != 'connect_error':
 
-            self.add_address_string_to_device_data(address_tuple)
+            self._add_address_string_to_device_data(address_tuple)
             # self.device_data['network_info'] = self.make_network_info_list()
 
             # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
@@ -90,13 +90,13 @@ class AQ_Device110China(AQ_Device):
     def add_param_to_update_stack(self, item):
         self.update_param_stack.append(item)
 
-    def get_device_status(self):
+    def get_status(self):
         return self.device_data.get('status', None)
 
     def get_device_data(self):
         return self.device_data
 
-    def add_address_string_to_device_data(self, address_tuple):
+    def _add_address_string_to_device_data(self, address_tuple):
         interface = address_tuple[0]
         address = address_tuple[1]
         if interface == "Ethernet":
@@ -153,9 +153,9 @@ class AQ_Device110China(AQ_Device):
 
         return None
 
-    def read_device_data(self):
+    def _read_device_data(self):
         try:
-            self.device_name = self.read_device_name()
+            self.device_name = self._read_device_name()
             self.read_slave_id()
         #     self.version = self.read_version()
         #     self.serial_number = self.read_serial_number()
@@ -173,7 +173,7 @@ class AQ_Device110China(AQ_Device):
         return device_data
 
 
-    def read_device_name(self):
+    def _read_device_name(self):
         file_path = '110_device_conf/' + self.address_tuple[2]
         data = []
         with open(file_path, 'r', newline='\n') as csvfile:
@@ -191,7 +191,7 @@ class AQ_Device110China(AQ_Device):
 
         return device_name
 
-    def read_version(self):
+    def _read_version(self):
         # Читаем 16 регистров начиная с адреса 0xF010 (soft version)
         start_address = 0xF010
         register_count = 16
@@ -208,7 +208,7 @@ class AQ_Device110China(AQ_Device):
 
         return version
 
-    def read_serial_number(self):
+    def _read_serial_number(self):
         # Читаем 16 регистров начиная с адреса 0xF086 (serial_number)
         start_address = 0xF086
         register_count = 16
@@ -257,7 +257,7 @@ class AQ_Device110China(AQ_Device):
 
         return data
 
-    def decrypt_data(self, iv, encrypted_data):
+    def __decrypt_data(self, iv, encrypted_data):
         # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
         key = b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524
 
@@ -267,7 +267,7 @@ class AQ_Device110China(AQ_Device):
 
         return decrypted_data
 
-    def encrypt_data(self, iv, data):
+    def __encrypt_data(self, iv, data):
         # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
         key = b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524
 
@@ -388,7 +388,7 @@ class AQ_Device110China(AQ_Device):
         encrypt_res = result.records[0].record_data
 
         try:
-            decrypt_res = self.decrypt_data(b'superkey', encrypt_res)
+            decrypt_res = self.__decrypt_data(b'superkey', encrypt_res)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -399,10 +399,10 @@ class AQ_Device110China(AQ_Device):
         if items is None:
             self.read_all_parameters()
         elif isinstance(items, AQ_ParamItem):
-            self.read_item(items)
+            self.__read_item(items)
         elif isinstance(items, list):
             for i in range(len(items)):
-                self.read_parameter(items[i])
+                self.__read_parameter(items[i])
 
         if len(self.update_param_stack) > 0:
             self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
@@ -416,19 +416,19 @@ class AQ_Device110China(AQ_Device):
         root = self.device_tree.invisibleRootItem()
         for row in range(root.rowCount()):
             child_item = root.child(row)
-            self.read_item(child_item)
+            self.__read_item(child_item)
 
-    def read_item(self,  item):
+    def __read_item(self, item):
         param_attributes = item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             row_count = item.rowCount()
             for row in range(row_count):
                 child_item = item.child(row)
-                self.read_item(child_item)
+                self.__read_item(child_item)
         else:
-            self.read_parameter(item)
+            self.__read_parameter(item)
 
-    def read_parameter(self, item):
+    def __read_parameter(self, item):
         param_attributes = item.get_param_attributes()
 
         param_type = param_attributes.get('type', '')
@@ -678,7 +678,7 @@ class AQ_Device110China(AQ_Device):
         padded_data = record_data + bytes([0x00] * pad_length)
         strange_tail = b'\x1e\x00\x00\x00Y\xdbZ^'
         record_data = padded_data + strange_tail
-        encrypted_record_data = self.encrypt_data(b'superkey', record_data)
+        encrypted_record_data = self.__encrypt_data(b'superkey', record_data)
         self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
         record_number = 20
         record_length = 0

@@ -1,18 +1,16 @@
-import time
-
-from PySide6.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QThread, Signal
-from PySide6.QtGui import QScreen, QGuiApplication
-from PySide6.QtWidgets import QApplication, QCheckBox
+from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtGui import QGuiApplication
+from PySide6.QtWidgets import QCheckBox
 
 from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_AddDevicesAddButton import AQ_addButton
 from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
 from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
-from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label, AQ_have_error_widget
+from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
-from AQ_Device import AQ_Device
-from AQ_Device_110china import AQ_Device110China
-from AQ_Device_DY500 import AQ_DeviceDY500
+from AQ_Devices.AQ_Device import AQ_Device
+from AQ_Devices.AQ_Device_110china import AQ_Device110China
+from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -109,7 +107,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
             device = self.get_device_by_settings(self.event_manager, network_settings_list[i])
-            device_status = device.get_device_status()
+            device_status = device.get_status()
             if device_status == 'ok' or device_status == 'data_error':
                 finded_devices_list.append(device)
             else:
