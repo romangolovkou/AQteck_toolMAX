@@ -20,6 +20,14 @@ from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_c
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
 
 
+class AQ_Device_Config:
+    #TODO: need to check device_ID (need add into devices too)
+    def __init__(self):
+        super().__init__()
+        self.device_name = ""
+        self.saved_param_list = []
+
+
 class AQ_Device110China(AQ_Device):
     def __init__(self, event_manager, address_tuple, parent=None):
         # super().__init__(event_manager, address_tuple, parent)
@@ -30,6 +38,8 @@ class AQ_Device110China(AQ_Device):
         self.version = None
         self.address = None
         self.device_tree = None
+        self.params_list = []
+        self.password = None
         self.address_tuple = address_tuple
         self.changed_param_stack = []
         self.update_param_stack = []
@@ -49,6 +59,7 @@ class AQ_Device110China(AQ_Device):
                     self.device_tree.set_device(self)
                     self.device_data['status'] = 'ok'
                     self.device_data['device_tree'] = self.device_tree
+                    self.__param_convert_tree_to_list()
                 else:
                     self.device_data['status'] = 'data_error'
                     self.client.close()
@@ -672,3 +683,44 @@ class AQ_Device110China(AQ_Device):
         record_number = 20
         record_length = 0
         self.client.write_file_record(file_number, record_number, record_length, b'\x00')
+
+    def __param_convert_tree_to_list(self):
+        root = self.device_tree.invisibleRootItem()
+        for row in range(root.rowCount()):
+            child_item = root.child(row)
+            self.__convert_tree_branch_to_list(child_item)
+
+    def __convert_tree_branch_to_list(self, item):
+        param_attributes = item.get_param_attributes()
+        if param_attributes.get('is_catalog', 0) == 1:
+            row_count = item.rowCount()
+            for row in range(row_count):
+                child_item = item.child(row)
+                self.__convert_tree_branch_to_list(child_item)
+        else:
+            self.params_list.append(item)
+
+    def save_config(self):
+        config = AQ_Device_Config()
+        config.device_name = self.device_name
+
+        for devParam in self.params_list:
+            param_attributes = devParam.get_param_attributes()
+            config.saved_param_list.append({'UID': param_attributes.get('UID', 0), 'modbus_reg': param_attributes.get('modbus_reg', 0), 'value': devParam.value})
+
+        return config
+
+    def load_config(self, config: AQ_Device_Config):
+        if self.device_name != config.device_name:
+            return NotImplementedError
+            #TODO: need generate custom exception or generate event to display error message
+
+        for cfgParam in config.saved_param_list:
+            for devParam in self.params_list:
+                param_attributes = devParam.get_param_attributes()
+                modbusReg = param_attributes.get('modbus_reg', 0)
+                if cfgParam['modbus_reg'] == modbusReg:
+                    devParam.value = cfgParam['value']
+        #TODO: optimize this algorithm
+
+        self.event_manager.emit_event('current_device_data_updated', self, self.changed_param_stack)
