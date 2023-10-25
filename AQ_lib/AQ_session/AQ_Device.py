@@ -15,8 +15,15 @@ from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_c
     get_storage_container, parse_tree, reverse_modbus_registers
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
 
+class AQ_Device_Config:
+    #TODO: need to check device_ID (need add into devices too)
+    def __init__(self):
+        super().__init__()
+        self.device_name = ""
+        self.saved_param_list = []
 
 class AQ_Device(QObject):
+
     def __init__(self, event_manager, address_tuple, parent=None):
         super().__init__(parent)
         self.event_manager = event_manager
@@ -26,6 +33,8 @@ class AQ_Device(QObject):
         self.version = None
         self.address = None
         self.device_tree = None
+        self.params_list = []
+        self.password = None
         self.address_tuple = address_tuple
         self.changed_param_stack = []
         self.update_param_stack = []
@@ -41,6 +50,7 @@ class AQ_Device(QObject):
                     self.device_tree.set_device(self)
                     self.device_data['status'] = 'ok'
                     self.device_data['device_tree'] = self.device_tree
+                    self.__param_convert_tree_to_list()
                 else:
                     self.device_data['status'] = 'data_error'
             else:
@@ -147,56 +157,38 @@ class AQ_Device(QObject):
 
     def read_device_name(self):
         # Читаем 16 регистров начиная с адреса 0xF000 (device_name)
-        start_address = 0xF000
-        register_count = 16
-        # Выполняем запрос
-        response = self.client.read_holding_registers(start_address, register_count)
-        # Конвертируем значения регистров в строку
-        hex_string = ''.join(format(value, '04X') for value in response.registers)
-        # Конвертируем строку в массив байт
-        byte_array = bytes.fromhex(hex_string)
-        byte_array = swap_modbus_bytes(byte_array, register_count)
-        # Расшифровуем в строку
-        text = byte_array.decode('ANSI')
+        text = self.__read_string(0xF000, 16)
         device_name = remove_empty_bytes(text)
 
         return device_name
 
     def read_version(self):
         # Читаем 16 регистров начиная с адреса 0xF010 (soft version)
-        start_address = 0xF010
-        register_count = 16
-        # Выполняем запрос
-        response = self.client.read_holding_registers(start_address, register_count)
-        # Конвертируем значения регистров в строку
-        hex_string = ''.join(format(value, '04X') for value in response.registers)
-        # Конвертируем строку в массив байт
-        byte_array = bytes.fromhex(hex_string)
-        byte_array = swap_modbus_bytes(byte_array, register_count)
-        # Расшифровуем в строку
-        text = byte_array.decode('ANSI')
+        text = self.__read_string(0xF010, 16)
         version = remove_empty_bytes(text)
 
         return version
 
     def read_serial_number(self):
         # Читаем 16 регистров начиная с адреса 0xF086 (serial_number)
-        start_address = 0xF086
-        register_count = 16
-        # Выполняем запрос
-        response = self.client.read_holding_registers(start_address, register_count)
-        # Конвертируем значения регистров в строку
-        hex_string = ''.join(format(value, '04X') for value in response.registers)
-        # Конвертируем строку в массив байт
-        byte_array = bytes.fromhex(hex_string)
-        byte_array = swap_modbus_bytes(byte_array, register_count)
-        # Расшифровуем в строку
-        text = byte_array.decode('ANSI')
-        # Обрезаем дляну до 20 символов
+        text = self.__read_string(0xF086, 16)
+        # Обрезаем длину до 20 символов
         text = text[:20]
         serial_number = remove_empty_bytes(text)
 
         return serial_number
+
+    def __read_string(self, start, num):
+        # Выполняем запрос
+        response = self.client.read_holding_registers(start, num)
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in response.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+        byte_array = swap_modbus_bytes(byte_array, num)
+        # Расшифровуем в строку
+        text = byte_array.decode('ANSI')
+        return text
 
 
     def read_default_prg(self):
@@ -210,7 +202,7 @@ class AQ_Device(QObject):
         encrypt_res = result.records[0].record_data
 
         try:
-            decrypt_res = self.decrypt_data(b'superkey', encrypt_res)
+            decrypt_res = self.decrypt_data(encrypt_res)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -237,7 +229,7 @@ class AQ_Device(QObject):
             if (len(encrypt_file) % 8) > 0:
                 padding = 8 - (len(encrypt_file) % 8)
                 encrypt_file = encrypt_file + bytes([padding] * padding)
-            decrypt_file = self.decrypt_data(b'superkey', encrypt_file)
+            decrypt_file = self.decrypt_data(encrypt_file)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -249,27 +241,32 @@ class AQ_Device(QObject):
 
         return decrypt_file
 
-    def decrypt_data(self, iv, encrypted_data):
-        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
-        key = b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524
-
+    def decrypt_data(self, encrypted_data):
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-        cipher = DES.new(key, DES.MODE_CBC, iv)
+        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
         decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
 
         return decrypted_data
 
-    def encrypt_data(self, iv, data):
-        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
-        key = b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524
+    def encrypt_data(self, data):
 
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-        cipher = DES.new(key, DES.MODE_CBC, iv)
+        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
 
         # Шифрование данных
         encrypted_data = cipher.encrypt(data)
 
         return encrypted_data
+
+    def __get_hash(self):
+        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+        return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
+
+    def __get_key(self):
+        if self.password == None:
+            return b'superkey'
+        else:
+            return self.password
 
     def parse_default_prg(self, default_prg):
         try:
@@ -293,7 +290,7 @@ class AQ_Device(QObject):
         encrypt_res = result.records[0].record_data
 
         try:
-            decrypt_res = self.decrypt_data(b'superkey', encrypt_res)
+            decrypt_res = self.decrypt_data(encrypt_res)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
@@ -537,8 +534,50 @@ class AQ_Device(QObject):
         padded_data = record_data + bytes([0x00] * pad_length)
         strange_tail = b'\x1e\x00\x00\x00Y\xdbZ^'
         record_data = padded_data + strange_tail
-        encrypted_record_data = self.encrypt_data(b'superkey', record_data)
+        encrypted_record_data = self.encrypt_data(record_data)
         self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
         record_number = 20
         record_length = 0
         self.client.write_file_record(file_number, record_number, record_length, b'\x00')
+
+    def __param_convert_tree_to_list(self):
+        root = self.device_tree.invisibleRootItem()
+        for row in range(root.rowCount()):
+            child_item = root.child(row)
+            self.__convert_tree_branch_to_list(child_item)
+
+    def __convert_tree_branch_to_list(self, item):
+        param_attributes = item.get_param_attributes()
+        if param_attributes.get('is_catalog', 0) == 1:
+            row_count = item.rowCount()
+            for row in range(row_count):
+                child_item = item.child(row)
+                self.__convert_tree_branch_to_list(child_item)
+        else:
+            self.params_list.append(item)
+
+    def save_config(self):
+        config = AQ_Device_Config()
+        config.device_name = self.device_name
+
+        for devParam in self.params_list:
+            param_attributes = devParam.get_param_attributes()
+            config.saved_param_list.append({'UID': param_attributes.get('UID', 0), 'modbus_reg': param_attributes.get('modbus_reg', 0), 'value': devParam.value})
+
+        return config
+
+    def load_config(self, config: AQ_Device_Config):
+        if self.device_name != config.device_name:
+            return NotImplementedError
+            #TODO: need generate custom exception or generate event to display error message
+
+        for cfgParam in config.saved_param_list:
+            for devParam in self.params_list:
+                param_attributes = devParam.get_param_attributes()
+                modbusReg = param_attributes.get('modbus_reg', 0)
+                if cfgParam['modbus_reg'] == modbusReg:
+                    devParam.value = cfgParam['value']
+        #TODO: optimize this algorithm
+
+        self.event_manager.emit_event('current_device_data_updated', self, self.changed_param_stack)
+

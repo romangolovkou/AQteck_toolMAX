@@ -20,6 +20,14 @@ from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_c
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
 
 
+class AQ_Device_Config:
+    #TODO: need to check device_ID (need add into devices too)
+    def __init__(self):
+        super().__init__()
+        self.device_name = ""
+        self.saved_param_list = []
+
+
 class AQ_DeviceDY500(AQ_Device):
     def __init__(self, event_manager, address_tuple, parent=None):
         # super().__init__(event_manager, address_tuple, parent)
@@ -30,6 +38,8 @@ class AQ_DeviceDY500(AQ_Device):
         self.version = None
         self.address = None
         self.device_tree = None
+        self.params_list = []
+        self.password = None
         self.address_tuple = address_tuple
         self.changed_param_stack = []
         self.update_param_stack = []
@@ -49,6 +59,7 @@ class AQ_DeviceDY500(AQ_Device):
                     self.device_tree.set_device(self)
                     self.device_data['status'] = 'ok'
                     self.device_data['device_tree'] = self.device_tree
+                    self.__param_convert_tree_to_list()
                 else:
                     self.device_data['status'] = 'data_error'
                     self.client.close()
