@@ -744,6 +744,7 @@ class AQ_Device110China(AQ_Device):
 
     def load_config(self, config: AQ_Device_Config):
         if self.device_name != config.device_name:
+            self.event_manager.emit_event('load_cfg_error')
             return NotImplementedError
             #TODO: need generate custom exception or generate event to display error message
 
