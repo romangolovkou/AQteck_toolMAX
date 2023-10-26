@@ -18,6 +18,35 @@ class AQ_connect(QObject):
         pass
 
 
+class AQ_IP_Connect:
+
+
+class AQ_COM_Connect():
+
+    def __init__(self):
+        super().__init__()
+
+    def isFree(self):
+        """Put you waiting logic here"""
+        return self._lock
+
+    def lock(self):
+        self._lock = 'locked'
+    def unlock(self):
+        self._lock = 'unlocked'
+
+
+class AQ_Modbus_Connect(AQ_connect):
+
+    def __init__(self, connect):
+        if connect.__name__ == '':
+            self.modbus_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity,
+                                                   stopbits=_stopbits, timeout=self.timeout)
+        elif connect.__name__ == '':
+            self.modbus_client = ModbusTcpClient(connect.info)
+        else:
+            Exception('ТЫ ПИДОР ЕБУЧИЙ')
+
 class AQ_COM_connect(AQ_connect):
     def __init__(self):
         super().__init__()
