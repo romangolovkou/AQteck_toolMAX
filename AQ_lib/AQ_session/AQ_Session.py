@@ -164,6 +164,7 @@ class AQ_CurrentSession(QObject):
 
     def load_device_config(self, device: AQ_Device):
         loadConf = None
+        fname = None
 
         dialog = QFileDialog()
         dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
@@ -171,17 +172,18 @@ class AQ_CurrentSession(QObject):
         if dialog.exec_():
             fname = dialog.selectedFiles()
 
-        print('Filename ', fname)
-        # File has been choosed
-        if fname[0] != '':
-            with open (fname[0], 'rb') as cfgFile:
-                fileData = io.BytesIO(cfgFile.read())
-                loadConf = pickle.loads(fileData.getvalue())
+        if fname is not None:
+            print('Filename ', fname)
+            # File has been choosed
+            if fname[0] != '':
+                with open (fname[0], 'rb') as cfgFile:
+                    fileData = io.BytesIO(cfgFile.read())
+                    loadConf = pickle.loads(fileData.getvalue())
 
-        if loadConf != None:
-            device.load_config(loadConf)
+            if loadConf != None:
+                device.load_config(loadConf)
 
-        print ('Loaded')
+            print ('Loaded')
 
     def set_slave_id(self, network_settings):
         network_settings = network_settings[0]
