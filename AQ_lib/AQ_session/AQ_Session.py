@@ -177,14 +177,21 @@ class AQ_CurrentSession(QObject):
             print('Filename ', fname)
             # File has been choosed
             if fname[0] != '':
-                with open (fname[0], 'rb') as cfgFile:
-                    fileData = io.BytesIO(cfgFile.read())
-                    loadConf = pickle.loads(fileData.getvalue())
+                try:
+                    with open (fname[0], 'rb') as cfgFile:
+                        fileData = io.BytesIO(cfgFile.read())
+                        loadConf = pickle.loads(fileData.getvalue())
+                except Exception as e:
+                    print(f"Error occurred: {str(e)}")
+                    loadConf = None
+                    self.event_manager.emit_event('parsing_cfg_error')
+
 
             if loadConf != None:
                 device.load_config(loadConf)
-
-            print ('Loaded')
+                print('Loaded')
+            else:
+                print('Load failed')
 
     def set_slave_id(self, network_settings):
         network_settings = network_settings[0]

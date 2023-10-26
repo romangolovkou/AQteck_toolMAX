@@ -16,6 +16,7 @@ class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
         self.event_manager.register_event_handler('param_read_error', self.show_read_error_label)
         self.event_manager.register_event_handler('param_write_error', self.show_write_error_label)
         self.event_manager.register_event_handler('load_cfg_error', self.show_load_cfg_error_label)
+        self.event_manager.register_event_handler('parsing_cfg_error', self.show_parsing_cfg_error_label)
 
         self.setGeometry(QRect(0, (shift_y + 2), parent.width(), parent.height() - (shift_y + 2)))
 
@@ -85,3 +86,13 @@ class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
         self.load_cfg_err_widget.show()
         # Запускаем таймер на 4 секунды, чтобы скрыть плашку
         QTimer.singleShot(4000, self.load_cfg_err_widget.deleteLater)
+
+    def show_parsing_cfg_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.parsing_cfg_err_widget = AQ_have_error_widget("<html>Can`t load configuration.<br>The file is damaged<html>",
+                                                        self.parent)
+        self.parsing_cfg_err_widget.move(self.width() // 2 - self.parsing_cfg_err_widget.width() // 2,
+                                      self.height() // 3 - self.parsing_cfg_err_widget.height() // 2)
+        self.parsing_cfg_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.parsing_cfg_err_widget.deleteLater)
