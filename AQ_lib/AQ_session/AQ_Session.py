@@ -155,12 +155,13 @@ class AQ_CurrentSession(QObject):
         if dialog.exec_():
             fname = dialog.selectedFiles()
 
-        if fname[0] != None:
-            with open(fname[0], 'wb') as file:
-                file.write(f.getvalue())
-                file.close()
+        if fname is not None:
+            if fname[0] != None:
+                with open(fname[0], 'wb') as file:
+                    file.write(f.getvalue())
+                    file.close()
 
-        print('I wrote some shit')
+            print('I wrote some shit')
 
     def load_device_config(self, device: AQ_Device):
         loadConf = None
