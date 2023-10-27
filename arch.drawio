@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-10-27T11:53:58.533Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="CdwAR-vnd1dKNR__jlYc" version="22.0.0" type="github" pages="8">
+<mxfile host="app.diagrams.net" modified="2023-10-27T12:19:52.520Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="2FsaKdmBd71PV6guwE3N" version="22.0.0" type="github" pages="8">
   <diagram name="Страница — 1" id="IXAunNYzJMYk3vZA_leA">
     <mxGraphModel dx="2049" dy="1129" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -501,6 +501,9 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-5" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="-980" y="30" width="970" height="770" as="geometry" />
+        </mxCell>
         <mxCell id="9FuSQClnPyxOfHgjxImo-1" value="AQ_Connect(QObject)&lt;br&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&amp;nbsp;&lt;font style=&quot;&quot;&gt;&lt;i style=&quot;&quot;&gt;(owner - ?&lt;/i&gt;&lt;i style=&quot;&quot;&gt;)&lt;/i&gt;&lt;/font&gt;&lt;/span&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=60;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=#ffd966;" vertex="1" parent="1">
           <mxGeometry x="30" y="450" width="250" height="220" as="geometry" />
         </mxCell>
@@ -624,14 +627,50 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="v7F2Zrus7pnQ1kxigCbu-1" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;crate connect&lt;br&gt;в сесии&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
-          <mxGeometry x="-1420" y="110" width="150" height="60" as="geometry" />
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-1" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;вечный цикл смотреть ссылку в скайпе&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-940" y="450" width="150" height="60" as="geometry" />
         </mxCell>
         <mxCell id="v7F2Zrus7pnQ1kxigCbu-2" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;структура коннекта&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
           <mxGeometry x="-1170" y="110" width="150" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="v7F2Zrus7pnQ1kxigCbu-3" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
-          <mxGeometry x="-920" y="260" width="150" height="60" as="geometry" />
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-3" value="готовій коннект" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-940" y="60" width="150" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-6" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;crate connect&lt;br&gt;в сесии&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-1390" y="110" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-7" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;read&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-940" y="560" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-8" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;write&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-940" y="690" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-9" value="List" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-690" y="80" width="140" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-10" value="Item 1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="v7F2Zrus7pnQ1kxigCbu-9">
+          <mxGeometry y="30" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-11" value="Item 2" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="v7F2Zrus7pnQ1kxigCbu-9">
+          <mxGeometry y="60" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-12" value="Item 3" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="v7F2Zrus7pnQ1kxigCbu-9">
+          <mxGeometry y="90" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7F2Zrus7pnQ1kxigCbu-3" target="v7F2Zrus7pnQ1kxigCbu-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-770" y="430" as="sourcePoint" />
+            <mxPoint x="-720" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-14" value="&lt;div style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;NEDD TO DO SOMETHINK&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="-360" y="260" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v7F2Zrus7pnQ1kxigCbu-15" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.99;exitY=0.861;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7F2Zrus7pnQ1kxigCbu-3" target="v7F2Zrus7pnQ1kxigCbu-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-770" y="430" as="sourcePoint" />
+            <mxPoint x="-720" y="380" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
