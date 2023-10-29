@@ -45,8 +45,10 @@ class AQ_Device110China(AQ_Device):
         self.update_param_stack = []
         self.read_error_flag = False
         self.write_error_flag = False
-        self.client = self.create_client(address_tuple)
-        if self.client.open():
+        self.connect = None
+        # self.client = self.create_client(address_tuple)
+        self.event_manager.emit_event('create_new_connect', self)
+        if self.connect is not None and self.connect.open():
             self.device_data = self.read_device_data()
         else:
             self.device_data = 'connect_err'
@@ -62,13 +64,13 @@ class AQ_Device110China(AQ_Device):
                     self.__param_convert_tree_to_list()
                 else:
                     self.device_data['status'] = 'data_error'
-                    self.client.close()
+                    self.connect.close()
             else:
                 self.device_data['status'] = 'data_error'
-                self.client.close()
+                self.connect.close()
         else:
             self.device_data['status'] = 'connect_error'
-            self.client.close()
+            self.connect.close()
 
         if self.device_data['status'] != 'connect_error':
 
@@ -117,7 +119,7 @@ class AQ_Device110China(AQ_Device):
         # Выполняем запрос
         modbus_reg = 26  #у всіх приборах на кс2 для поточного IP повинен буди однаковий
         reg_count = 2
-        response = self.client.read_holding_registers(modbus_reg, reg_count)
+        response = self.connect.read_holding_registers(modbus_reg, reg_count)
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in response.registers)
         # Конвертируем строку в массив байт
@@ -133,26 +135,26 @@ class AQ_Device110China(AQ_Device):
                      'Registers order: Least significant register first']
         return info_list
 
-    def create_client(self, address_tuple):
-        interface = address_tuple[0]
-        address = address_tuple[1]
-        if interface == "Ethernet":
-            if is_valid_ip(address):
-                client = AQ_modbusTCP_connect(address)
-                return client
-        else:
-            # Получаем список доступных COM-портов
-            com_ports = serial.tools.list_ports.comports()
-            for port in com_ports:
-                if port.description == interface:
-                    selected_port = port.device
-                    boudrate = address_tuple[3]
-                    parity = address_tuple[4][:1]
-                    stopbits = address_tuple[5]
-                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, address)
-                    return client
-
-        return None
+    # def create_client(self, address_tuple):
+    #     interface = address_tuple[0]
+    #     address = address_tuple[1]
+    #     if interface == "Ethernet":
+    #         if is_valid_ip(address):
+    #             client = AQ_modbusTCP_connect(address)
+    #             return client
+    #     else:
+    #         # Получаем список доступных COM-портов
+    #         com_ports = serial.tools.list_ports.comports()
+    #         for port in com_ports:
+    #             if port.description == interface:
+    #                 selected_port = port.device
+    #                 boudrate = address_tuple[3]
+    #                 parity = address_tuple[4][:1]
+    #                 stopbits = address_tuple[5]
+    #                 client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, address)
+    #                 return client
+    #
+    #     return None
 
     def read_device_data(self):
         try:
@@ -197,7 +199,7 @@ class AQ_Device110China(AQ_Device):
         start_address = 0xF010
         register_count = 16
         # Выполняем запрос
-        response = self.client.read_holding_registers(start_address, register_count)
+        response = self.connect.read_holding_registers(start_address, register_count)
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in response.registers)
         # Конвертируем строку в массив байт
@@ -214,7 +216,7 @@ class AQ_Device110China(AQ_Device):
         start_address = 0xF086
         register_count = 16
         # Выполняем запрос
-        response = self.client.read_holding_registers(start_address, register_count)
+        response = self.connect.read_holding_registers(start_address, register_count)
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in response.registers)
         # Конвертируем строку в массив байт
@@ -234,7 +236,7 @@ class AQ_Device110China(AQ_Device):
         register_count = 1
         read_func = 3
         # Выполняем запрос
-        response = self.client.read_param(start_address, register_count, read_func)
+        response = self.connect.request(start_address, register_count, read_func)
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in response.registers)
         # Конвертируем строку в массив байт
@@ -384,7 +386,7 @@ class AQ_Device110China(AQ_Device):
         record_number = 0
         record_length = 124
 
-        result = self.client.read_file_record(file_number, record_number, record_length)
+        result = self.connect.read_file_record(file_number, record_number, record_length)
 
         encrypt_res = result.records[0].record_data
 
@@ -452,7 +454,7 @@ class AQ_Device110China(AQ_Device):
                 else:
                     reg_count = byte_size // 2
             # Выполняем запрос
-            response = self.client.read_param(modbus_reg, reg_count, read_func)
+            response = self.connect.read_param(modbus_reg, reg_count, read_func)
             if response != 'modbus_error':
                 if read_func == 3:
                     # Конвертируем значения регистров в строку
@@ -631,7 +633,7 @@ class AQ_Device110China(AQ_Device):
                     #         param_value = struct.unpack('>I', byte_array)[0]
 
                     try:
-                        result = self.client.write_param(modbus_reg, registers, write_func)
+                        result = self.connect.write_param(modbus_reg, registers, write_func)
                         if result != 'modbus_error':
                             item.synchronized = True
                             # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
@@ -646,7 +648,7 @@ class AQ_Device110China(AQ_Device):
                         value = True
                     elif value == 0:
                         value = False
-                    result = self.client.write_param(modbus_reg, value, write_func)
+                    result = self.connect.write_param(modbus_reg, value, write_func)
                     if result != 'modbus_error':
                         item.synchronized = True
                         # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
@@ -655,7 +657,7 @@ class AQ_Device110China(AQ_Device):
                     else:
                         self.write_error_flag = True
                 elif write_func == 6:
-                    result = self.client.write_param(modbus_reg, value, write_func)
+                    result = self.connect.write_param(modbus_reg, value, write_func)
                     if result != 'modbus_error':
                         item.synchronized = True
                         # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
@@ -711,10 +713,10 @@ class AQ_Device110China(AQ_Device):
         strange_tail = b'\x1e\x00\x00\x00Y\xdbZ^'
         record_data = padded_data + strange_tail
         encrypted_record_data = self.encrypt_data(b'superkey', record_data)
-        self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
+        self.connect.write_file_record(file_number, record_number, record_length, encrypted_record_data)
         record_number = 20
         record_length = 0
-        self.client.write_file_record(file_number, record_number, record_length, b'\x00')
+        self.connect.write_file_record(file_number, record_number, record_length, b'\x00')
 
     def __param_convert_tree_to_list(self):
         root = self.device_tree.invisibleRootItem()

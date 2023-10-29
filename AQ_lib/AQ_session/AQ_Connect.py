@@ -6,6 +6,8 @@ from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 from pymodbus.pdu import ModbusResponse
 
+from AQ_SigletonMeta import AQ_SingletonMeta
+
 
 class AQ_connect(QObject):
     def __init__(self):
@@ -19,12 +21,14 @@ class AQ_connect(QObject):
 
 
 class AQ_IP_Connect:
+    pass
 
 
-class AQ_COM_Connect():
+class AQ_COM_Connect(QObject):
 
     def __init__(self):
         super().__init__()
+        self._lock = 'unlocked'
 
     def isFree(self):
         """Put you waiting logic here"""
@@ -32,6 +36,7 @@ class AQ_COM_Connect():
 
     def lock(self):
         self._lock = 'locked'
+
     def unlock(self):
         self._lock = 'unlocked'
 
@@ -45,7 +50,9 @@ class AQ_Modbus_Connect(AQ_connect):
         elif connect.__name__ == '':
             self.modbus_client = ModbusTcpClient(connect.info)
         else:
-            Exception('ТЫ ПИДОР ЕБУЧИЙ')
+            Exception('')
+
+        self.connect = connect
 
 class AQ_COM_connect(AQ_connect):
     def __init__(self):
@@ -58,9 +65,13 @@ class AQ_TCP_connect(AQ_connect):
 
 
 class AQ_modbusRTU_connect(AQ_COM_connect):
-    def __init__(self, _port, _baudrate, _parity, _stopbits, slave_id):
+    def __init__(self, connect_manager, _port, _baudrate, _parity, _stopbits, slave_id):
         super().__init__()
         self.slave_id = slave_id
+        self.start_address = None
+        self.register_count = None
+        self.func = None
+        self.connect_manager = connect_manager
         self.timeout = 1.0
         self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity,
                                                     stopbits=_stopbits, timeout=self.timeout)
@@ -71,20 +82,27 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def close(self):
         self.modbus_rtu_client.close()
 
-    def read_param(self, start_address, register_count, read_func):
-        if read_func == 3:
-            response = self.modbus_rtu_client.read_holding_registers(start_address, register_count, self.slave_id)
+    def request(self, start_address, register_count, func):
+        self.start_address = start_address
+        self.register_count = register_count
+        self.func = func
+        if func == 3 or func == 2 or func == 1:
+            self.connect_manager.add_request(self.read_param)
+
+    def read_param(self):
+        if self.func == 3:
+            response = self.modbus_rtu_client.read_holding_registers(self.start_address, self.register_count, self.slave_id)
             if isinstance(response, ModbusIOException):
                 response = 'modbus_error'
 
             return response
-        elif read_func == 2:
-            result = self.modbus_rtu_client.read_discrete_inputs(start_address, 1, self.slave_id)
+        elif self.func == 2:
+            result = self.modbus_rtu_client.read_discrete_inputs(self.start_address, 1, self.slave_id)
             if isinstance(result, ModbusIOException):
                 return 'modbus_error'
             return result.bits
-        elif read_func == 1:
-            result = self.modbus_rtu_client.read_coils(start_address, 1, self.slave_id)
+        elif self.func == 1:
+            result = self.modbus_rtu_client.read_coils(self.start_address, 1, self.slave_id)
             if isinstance(result, ModbusIOException):
                 return 'modbus_error'
             return result.bits

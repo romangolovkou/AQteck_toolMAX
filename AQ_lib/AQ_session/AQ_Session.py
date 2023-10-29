@@ -9,6 +9,7 @@ import serial.tools.list_ports
 import AQ_Device
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AQ_Connect import AQ_modbusRTU_connect
+from AQ_ConnectManager import AQ_ConnectManager
 from AQ_ParamListWindow import AQ_DialogParamList
 from AQ_DeviceInfoWindow import AQ_DialogDeviceInfo
 from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
@@ -42,6 +43,8 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
+    # Створюємо коннект менеджер
+        self.connect_manager = AQ_ConnectManager(self.event_manager, self)
 
     def open_AddDevices(self):
         AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
@@ -224,6 +227,12 @@ class AQ_CurrentSession(QObject):
                 self.event_manager.emit_event('set_slave_id_connect_ok')
             else:
                 self.event_manager.emit_event('set_slave_id_connect_error')
+
+    def connect_manager_finished(self):
+        pass
+
+    def connect_manager_error(self):
+        pass
 
 
 class AQ_wait_label_widget(QWidget):
