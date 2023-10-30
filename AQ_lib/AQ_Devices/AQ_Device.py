@@ -29,15 +29,18 @@ class AQ_Device(QObject):
         self.event_manager = event_manager
         self.local_event_manager = AQ_EventManager()
         self.device_name = None
+        self.changed_param_stack = []
+        self.update_param_stack = []
+        self.device_tree = None
+        self.params_list = []
+
+
         self.serial_number = None
         self.version = None
         self.address = None
-        self.device_tree = None
-        self.params_list = []
         self.password = None
         self.address_tuple = address_tuple
-        self.changed_param_stack = []
-        self.update_param_stack = []
+
         self.client = self.create_client(address_tuple)
         self.client.open()
         self.device_data = self._read_device_data()
