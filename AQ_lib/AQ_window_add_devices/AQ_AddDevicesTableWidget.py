@@ -2,6 +2,8 @@ from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QCheckBox
 from PySide6.QtCore import Qt
 
+from AqBaseDevice import AqBaseDevice
+
 
 class AQ_addDevice_TableWidget(QTableWidget):
     def __init__(self, parent=None):
@@ -38,8 +40,9 @@ class AQ_addDevice_TableWidget(QTableWidget):
             for i in range(3):
                 self.item(row, i).setBackground(QColor("#9d4d4f"))
 
-    def append_device_row(self, device_data):
-        if device_data.get('status', 'data_error') == 'ok':
+    # TODO: Rename this func like "append_device_to_table"
+    def append_device_row(self, device: AqBaseDevice):
+        if device.status == 'ok':
             err_flag = 0
         else:
             err_flag = 1
@@ -48,9 +51,9 @@ class AQ_addDevice_TableWidget(QTableWidget):
         self.setRowCount(self.rowCount() + 1)
         # Создаем элементы таблицы для каждой строки
         checkbox_item = QTableWidgetItem()
-        name_item = QTableWidgetItem(device_data.get('device_name'))
+        name_item = QTableWidgetItem(device.info('name'))
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
-        address_item = QTableWidgetItem(device_data.get('address'))
+        address_item = QTableWidgetItem(device.info('address'))
         address_item.setFlags(address_item.flags() & ~Qt.ItemIsEditable)
         # version_item = QTableWidgetItem(device_data.get('version'))
         # version_item.setFlags(version_item.flags() & ~Qt.ItemIsEditable)

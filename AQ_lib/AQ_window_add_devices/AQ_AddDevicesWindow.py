@@ -11,6 +11,7 @@ from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
 from AQ_Devices.AQ_Device import AQ_Device
 from AQ_Devices.AQ_Device_110china import AQ_Device110China
 from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
+from AqAutoDetectionDevice import AqAutoDetectionDevice
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -50,7 +51,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
 
     def add_devices_to_table_widget(self, finded_devices):
         for i in range(len(finded_devices)):
-            self.table_widget.append_device_row(finded_devices[i].get_device_data())
+            self.table_widget.append_device_row(finded_devices[i])
 
         bottom_right_corner_table_widget = self.table_widget.mapTo(self.main_window_frame, self.table_widget.rect().bottomRight())
         summ_rows_height = self.table_widget.get_sum_of_rows_height()
@@ -107,7 +108,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
             device = self.get_device_by_settings(self.event_manager, network_settings_list[i])
-            device_status = device.get_status()
+            device_status = device.status
             if device_status == 'ok' or device_status == 'data_error':
                 finded_devices_list.append(device)
             else:
@@ -118,6 +119,8 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
     def get_device_by_settings(self, event_manager, network_settings):
         if network_settings[2] == 'МВ110-24_1ТД.csv':
             device = AQ_DeviceDY500(event_manager, network_settings)
+        elif network_settings[2] == "AqAutoDetectionDevice":
+            device = AqAutoDetectionDevice(event_manager, None, network_settings)
         elif len(network_settings) > 2:
             device = AQ_Device110China(event_manager, network_settings)
         else:

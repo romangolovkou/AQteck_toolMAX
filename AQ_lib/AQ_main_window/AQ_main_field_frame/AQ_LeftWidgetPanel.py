@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
 
 from AQ_Devices import AQ_Device
 from AQ_CustomWindowTemplates import AQ_Label
+from AqBaseDevice import AqBaseDevice
 
 
 class AQ_left_widget_panel_frame(QFrame):
@@ -48,10 +49,10 @@ class AQ_left_widget_panel_frame(QFrame):
 
 
 class AQ_left_device_widget(QWidget):
-    def __init__(self, device: AQ_Device, event_manager, parent=None):
+    def __init__(self, device: AqBaseDevice, event_manager, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.device: AQ_Device = device
+        self.device: AqBaseDevice = device
         self.event_manager = event_manager
         self.is_active_now = 1
         self.setFixedHeight(70)
@@ -70,21 +71,26 @@ class AQ_left_device_widget(QWidget):
         self.ico_label.setStyleSheet("background-color: transparent;")
         self.ico_label.show()
         # Наповпнюємо віджет текстовими мітками
-        device_data = self.device.get_device_data()
-        name = device_data.get('device_name', 'err_name')
+        name = self.device.info('name')
         self.name_label = AQ_Label(name, self)
         font = QFont("Segoe UI", 14)
         self.name_label.setFont(font)
         self.name_label.move(50, 5)
         self.name_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;")
-        address = device_data.get('address', 'err_address')
-        self.address_label = AQ_Label('address:' + address, self)
+        # TODO: Refactor this. Connection string should be get from connect object
+        connection = device.info('connection')
+        address = device.info('address')
+        connect_str = connection + ':' + address if connection == 'IP' \
+            else 'Address: ' + address + ' (' + connection + ')'
+        # end refactor zone
+        self.address_label = AQ_Label(connect_str, self)
         self.address_label.move(50, 27)
         self.address_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
-        serial = device_data.get('serial_number', 'err_serial_number')
-        # self.serial_label = AQ_Label('S/N' + serial, self)
-        # self.serial_label.move(50, 47)
-        # self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
+        serial = device.info('serial_num')
+        sn_str = 'S/N: ' + serial if serial else 'No S/N'
+        self.serial_label = AQ_Label(sn_str, self)
+        self.serial_label.move(50, 47)
+        self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
 
         # Создаем палитру с фоновыми цветами
         self.normal_palette = self.palette()

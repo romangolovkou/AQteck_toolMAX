@@ -2,80 +2,19 @@ import array
 import struct
 from datetime import datetime
 
-from PySide6.QtCore import Qt
-
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
-    AQ_SignedParamItem, AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem, AQ_SignedToFloatParamItem, \
-    AQ_UnsignedToFloatParamItem, AQ_FloatEnumParamItem
-
-# TODO: delete this file
-# Use AqModbusTips and AqAutoDetectionLibrary instead
+from AQ_CustomTreeItems import *
 
 
-def swap_modbus_bytes(data, num_pairs):
-    str_flag = 0
-    bytes_flag = 0
-    if isinstance(data, str):
-        # Преобразование строки в массив байт
-        str_flag = 1
-        data = bytearray.fromhex(data)
-    elif isinstance(data, bytes):
-        # Преобразование неизменяемого массива байт в изменяемый
-        bytes_flag = 1
-        data = bytearray(data)
-    elif not isinstance(data, bytearray):
-        raise TypeError("Data must be a string, bytes, or bytearray")
+def get_containers_count(default_prg):
+    containers_count = int.from_bytes((default_prg[16:20][::-1]), byteorder='big')
+    return containers_count
 
-    for i in range(num_pairs):
-        start_index = i * 2
-        end_index = start_index + 2
-
-        # Проверяем, что индексы не выходят за пределы массива
-        if end_index <= len(data):
-            # Меняем местами пару байт
-            data[start_index:end_index] = data[start_index:end_index][::-1]
-
-    if str_flag:
-        data = data.hex()  # Преобразуем массив байт в строку
-    if bytes_flag:
-        data = bytes(data)
-
-    return data
-
-def swap_modbus_registers(data):
-    # Проверяем, что количество байтов четное, иначе возвращаем исходный массив без изменений
-    if len(data) % 4 != 0:
-        return data
-
-    swapped_data = bytearray(data)
-    for i in range(0, len(swapped_data), 4):
-        # Меняем местами пары байтов
-        swapped_data[i:i + 4] = swapped_data[i + 2:i + 4] + swapped_data[i:i + 2]
-
-    return swapped_data
-
-def reverse_modbus_registers(data):
-    if len(data) % 2 != 0:
-        raise ValueError("The data length must be even.")
-
-    reversed_pairs = [data[i:i+2][::-1] for i in range(0, len(data), 2)]
-    return b''.join(reversed_pairs)[::-1]
-
-def remove_empty_bytes(string):
-    # Используем метод rstrip() для удаления пустых байтов справа
-    cleaned_string = string.rstrip('\x00')
-    return cleaned_string
-
-
-def get_conteiners_count(default_prg):
-    conteiners_count = int.from_bytes((default_prg[16:20][::-1]), byteorder='big')
-    return conteiners_count
 
 def get_containers_offset(default_prg):
     # Позиция начала первого контейнера после заголовка
     pos = 20
-    containers_count = get_conteiners_count(default_prg)
+    containers_count = get_containers_count(default_prg)
     containers_offset = array.array('l', [0] * 32)
     for i in range(0, containers_count):
         containers_offset[i] = pos
@@ -101,6 +40,7 @@ def get_last_nonzero_element(arr):
 
     # Если все элементы равны 0, возвращаем None или другое значение по умолчанию
     return None
+
 
 def parse_tree(storage_container):
     in_size = int.from_bytes((storage_container[16:20][::-1]), byteorder='big')
@@ -138,7 +78,6 @@ def parse_tree(storage_container):
     end_pos_descr_area = pos_descr_area + size_descr_area
     descr = 0
     count_descr = 0
-
     while (descr < size_descr_area):
         count_descr += 1
         # +1 - байт содержащий размер конкретного дескриптора
@@ -152,7 +91,6 @@ def parse_tree(storage_container):
     # tree_model = QStandardItemModel()
     tree_model = AQ_TreeItemModel()
     tree_model.setColumnCount(1)
-    # tree_model.setHorizontalHeaderLabels(["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
 
     # Создание корневого элемента
     root_item = tree_model.invisibleRootItem()
@@ -163,6 +101,8 @@ def parse_tree(storage_container):
 
     return tree_model
 
+
+# TODO: Refactor this function to small blocks
 def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, string_array):
     pos = 6
     catalog_cnt = 0
@@ -177,6 +117,10 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
     level = 0
     # Кількість єлементів у каталозі
     row_count = 0
+
+    param_type = node_area[pos:pos + 2][::-1]
+
+
 
     while pos < len(node_area):
         # Проверка на is_katalog
@@ -253,7 +197,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 param_prop = prop_area[prop_pos:prop_pos + 4]
                 param_attributes = unpack_descr(param_descr, param_prop)
                 if param_attributes == -1:
-                    return -1 # Помилка
+                    return -1  # Помилка
                 # Перевірка на атрибут невидимості (3й біт - ознака невидимості)
                 if param_attributes.get('invis_and_net', 0) & 0x4:
                     pos = pos + 8
@@ -272,7 +216,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     enum_strings = []
                     string_num = param_attributes.get('string_num', '')
                     bit_size = param_attributes.get('param_size', 0)
-                    max_lim_from_bits = 2**bit_size - 1
+                    max_lim_from_bits = 2 ** bit_size - 1
                     enum_max_lim = param_attributes.get('max_limit', 0)
 
                     # Якщо max_limit більший за максимально можливий у розмірі в бітах, то перезаписуємо
@@ -312,34 +256,30 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 pos = pos + 8
 
 
+types = {
+    0: 'float',
+    1: 'fix_point_float',
+    2: 'unsigned',
+    3: 'signed',
+    4: 'enum',
+    5: 'date_time',
+    6: 'date',
+    7: 'time',
+    8: 'string',
+    9: 'stream'
+}
+
+
 def unpack_descr(param_descr, param_prop):
     param_attributes = {}  # Создание пустого словаря
     base_types = int.from_bytes((param_prop[0:2][::-1]), byteorder='big')
     hex_sequence = param_prop[0:4][::-1].hex()
-    type = base_types & 0xF
-    if type == 0:
-        type = 'float'
-    elif type == 1:
-        type = 'fix_point_float'
-    elif type == 2:
-        type = 'unsigned'
-    elif type == 3:
-        type = 'signed'
-    elif type == 4:
-        type = 'enum'
-    elif type == 5:
-        type = 'date_time'
-    elif type == 6:
-        type = 'date'
-    elif type == 7:
-        type = 'time'
-    elif type == 8:
-        type = 'string'
-    elif type == 9:
-        type = 'stream'
+    param_type = base_types & 0xF
+    if param_type in types:
+        param_attributes['type'] = types[param_type]
     else:
         return -1  # Помилка
-    param_attributes['type'] = type
+
     param_size = (base_types & 0x7F0) >> 4
     param_attributes['param_size'] = param_size
     packed = (base_types & 0x800) >> 11
@@ -353,18 +293,18 @@ def unpack_descr(param_descr, param_prop):
     is_complex_type = (base_types & 0x2000) >> 15
     param_attributes['is_complex_type'] = is_complex_type
 
-
     descr_size = param_descr[0]
     pos = 1
     while pos < descr_size:
         ID = param_descr[pos]
         pos = get_param_by_ID(param_descr, ID, pos + 1, param_attributes)
         if pos == -1:
-            return -1 # Помилка - невідомий дескриптор
+            return -1  # Помилка - невідомий дескриптор
 
     return param_attributes
 
 
+# TODO: Refactor this into independent blocks
 def get_param_by_ID(param_descr, ID, pos, param_attributes):
     if ID == 0:
         # Атрибути відображення та доступу по мережі
@@ -408,7 +348,7 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         # Значення за замовчуванням
         if param_attributes.get('type', 0) == 0:
             return -1  # Помилка
-        elif param_attributes.get('type', 0) == 'string': # 8 - string
+        elif param_attributes.get('type', 0) == 'string':  # 8 - string
             str_length = param_descr[pos]
             def_string_b = param_descr[pos + 1:pos + 1 + str_length]
             def_string = def_string_b.decode('cp1251')
@@ -478,12 +418,12 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         elif visual_type == 4:
             visual_type = 'ip_format'
         else:
-            return -1 # Помилка
+            return -1  # Помилка
         pos += 1
         param_attributes['visual_type'] = visual_type
         return pos
     elif ID == 0xA:
-        # Номер строкового параматру
+        # Номер строкового параметру
         string_num = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
         pos += 2
         param_attributes['string_num'] = string_num
@@ -500,7 +440,7 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         param_attributes['UID'] = UID
         return pos
     elif ID == 0xE:
-        # Розширені атрибути доступу по мережі (MQTT)
+        # Розширені атрибути доступу мережею (MQTT)
         mqtt_mask = param_descr[pos]
         pos += 1
         param_attributes['mqtt_mask'] = mqtt_mask
@@ -524,7 +464,7 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         pos = pos + 2
         return pos
     elif ID == 0x20 or ID == 0x21 or ID == 0x22 or ID == 0x23:
-        # Ім'я параметру для зовнішнього представлення MQTT та ін.
+        # Ім'я параметра для зовнішнього представлення MQTT та ін.
         mqtt_name_length = param_descr[pos]
         mqtt_parameter_name_b = param_descr[pos + 1:pos + 1 + mqtt_name_length]
         mqtt_parameter_name = mqtt_parameter_name_b.decode('cp1251')
@@ -532,10 +472,12 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         param_attributes['mqtt_name'] = mqtt_parameter_name
         return pos
     else:
-        return -1 # Помилка, невідомий дескриптор
+        return -1  # Помилка, невідомий дескриптор
 
 
+# TODO: Rename this function. I can`t understand what it do by name
 def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
+    value = None
     if param_type == 'float':
         if size == 4:
             # Распаковка в формате "f" (float)
@@ -567,6 +509,7 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
 
     return value
 
+
 def get_item_by_type(type, name):
     if type == 'enum':
         item = AQ_EnumParamItem(name)
@@ -591,11 +534,13 @@ def get_item_by_type(type, name):
 
     return item
 
+
 def check_min_max_limit(param_attributes):
     if param_attributes.get('min_limit', '') == '':
         set_standard_min_limit(param_attributes)
     if param_attributes.get('max_limit', '') == '':
         set_standard_max_limit(param_attributes)
+
 
 def set_standard_min_limit(param_attributes):
     param_type = param_attributes.get('type', '')
@@ -621,11 +566,12 @@ def set_standard_min_limit(param_attributes):
         else:
             cur_par_min = int('0')
     elif param_type == 'date_time':
-        cur_par_min = 0  #'01.01.2000 0:00:00' дата від якої у нас йде відлік часу у секундах
+        cur_par_min = 0  # '01.01.2000 0:00:00' дата від якої у нас йде відлік часу у секундах
     else:
         cur_par_min = None
     # Якщо min_limit у параметра немає, додаємо розрахунковий і у сам параметр
     param_attributes['min_limit'] = cur_par_min
+
 
 def set_standard_max_limit(param_attributes):
     param_type = param_attributes.get('type', '')
