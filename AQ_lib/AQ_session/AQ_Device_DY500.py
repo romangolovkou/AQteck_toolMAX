@@ -511,7 +511,7 @@ class AQ_DeviceDY500(AQ_Device):
                     else:
                         param_value = 0
 
-                item.force_set_value(param_value)
+                item.data_from_network(param_value)
                 item.synchronized = True
             else:
                 self.read_error_flag = True

@@ -213,17 +213,23 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         network_settings_list = []
         selected_dev = self.device_combo_box.currentText()
         selected_if = self.interface_combo_box.currentText()
-        boudrate = None
         if selected_if == "Ethernet":
-            address = self.ip_line_edit.text()
+            ip = self.ip_line_edit.text()
+            network_setting = {'interface': selected_if,
+                               'ip': ip,
+                               'device': selected_dev}
         else:
             address = int(self.slave_id_line_edit.text())
             boudrate = int(self.boudrate_combo_box.currentText())
+            parity = self.parity_combo_box.currentText()
+            stopbits = int(self.stopbits_combo_box.currentText())
+            network_setting = {'interface': selected_if,
+                               'address': address,
+                               'device': selected_dev,
+                               'boudrate': boudrate,
+                               'parity': parity,
+                               'stopbits': stopbits}
 
-        parity = self.parity_combo_box.currentText()
-        stopbits = int(self.stopbits_combo_box.currentText())
-
-        network_setting = (selected_if, address, selected_dev, boudrate, parity, stopbits)
         network_settings_list.append(network_setting)
 
         return network_settings_list

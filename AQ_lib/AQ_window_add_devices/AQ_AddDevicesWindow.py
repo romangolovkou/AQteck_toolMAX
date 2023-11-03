@@ -118,9 +118,14 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         return finded_devices_list
 
     def get_device_by_settings(self, event_manager, network_settings):
-        if network_settings[2] == 'МВ110-24_1ТД.csv':
+        if network_settings.get('device', None) == 'МВ110-24_1ТД.csv':
             device = AQ_DeviceDY500(event_manager, network_settings)
-        elif len(network_settings) > 2:
+        elif network_settings.get('device', None) == 'МВ110-24_8А.csv' or\
+                network_settings.get('device', None) == 'МВ110-24_8АС.csv' or\
+                network_settings.get('device', None) == 'МВ110-24_16Д.csv' or\
+                network_settings.get('device', None) == 'МК110-24_8Д_4Р.csv' or\
+                network_settings.get('device', None) == 'МУ110-24_3У.csv' or\
+                network_settings.get('device', None) == 'МУ110-24_8Р.csv':
             device = AQ_Device110China(event_manager, network_settings)
         else:
             device = AQ_Device(event_manager, network_settings)

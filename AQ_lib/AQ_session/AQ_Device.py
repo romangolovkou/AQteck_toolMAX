@@ -35,7 +35,7 @@ class AQ_Device(QObject):
         self.device_tree = None
         self.params_list = []
         self.password = None
-        self.address_tuple = address_tuple
+        self.network_settings = address_tuple
         self.changed_param_stack = []
         self.update_param_stack = []
         self.client = self.create_client(address_tuple)
@@ -397,7 +397,7 @@ class AQ_Device(QObject):
                     byte_array = reverse_modbus_registers(byte_array)
                     param_value = struct.unpack('>I', byte_array)[0]
 
-            item.force_set_value(param_value)
+            item.data_from_network(param_value)
             item.synchronized = True
 
     # def read_all_parameters(self):

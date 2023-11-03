@@ -6,8 +6,6 @@ from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 from pymodbus.pdu import ModbusResponse
 
-from AQ_SigletonMeta import AQ_SingletonMeta
-
 
 class AQ_connect(QObject):
     def __init__(self):
@@ -20,39 +18,78 @@ class AQ_connect(QObject):
         pass
 
 
-class AQ_IP_Connect:
-    pass
-
-
-class AQ_COM_Connect(QObject):
-
-    def __init__(self):
+class AQ_IP_Connect_settings:
+    def __init__(self, _ip):
         super().__init__()
-        self._lock = 'unlocked'
+        self.ip = _ip
 
-    def isFree(self):
-        """Put you waiting logic here"""
-        return self._lock
 
-    def lock(self):
-        self._lock = 'locked'
+class AQ_COM_Connect_settings:
 
-    def unlock(self):
-        self._lock = 'unlocked'
+    def __init__(self, _port, _baudrate, _parity, _stopbits):
+        super().__init__()
+        self.port = _port
+        self.baudrate = _baudrate
+        self.parity = _parity
+        self.stopbits = _stopbits
 
 
 class AQ_Modbus_Connect(AQ_connect):
 
-    def __init__(self, connect):
-        if connect.__name__ == '':
-            self.modbus_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity,
-                                                   stopbits=_stopbits, timeout=self.timeout)
-        elif connect.__name__ == '':
-            self.modbus_client = ModbusTcpClient(connect.info)
+    def __init__(self, connect_settings, slave_id, core_cv):
+        super().__init__()
+        self.connect_settings = connect_settings
+        self.core_cv = core_cv
+        self.param_request_stack = []
+        self.file_request_stack = []
+        self.timeout = 1.0
+        if type(self.connect_settings).__name__ == 'AQ_COM_Connect_settings':
+            self.client = ModbusSerialClient(method='rtu',
+                                                    port=self.connect_settings.port,
+                                                    baudrate=self.connect_settings.baudrate,
+                                                    parity=self.connect_settings.parity[:1],
+                                                    stopbits=self.connect_settings.stopbits,
+                                                    timeout=self.timeout)
+            self.slave_id = slave_id
+        elif type(self.connect_settings).__name__ == 'AQ_IP_Connect_settings':
+            self.client = ModbusTcpClient(self.connect_settings.ip)
+            self.slave_id = 1
         else:
-            Exception('')
+            Exception('Помилка. Невідомі налаштування коннекту')
 
-        self.connect = connect
+    def open(self):
+        return self.client.connect()
+
+    def close(self):
+        self.client.close()
+
+    def createParamRequest(self, request_stack):
+        self.param_request_stack = request_stack
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def createFileRequest(self, func, file_num, record_num, record_len, data):
+        self.file_request_stack.append({'func': func, 'file_num': file_num,
+                                        'record_num': record_num, 'record_len': record_len, 'data': data})
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def read_param(self, func, start, count, callback):
+        if func == 3:
+            result = self.client.read_holding_registers(start, count, self.slave_id)
+        elif func == 2:
+            result = self.client.read_discrete_inputs(start, 1, self.slave_id)
+        elif func == 1:
+            result = self.client.read_coils(start, 1, self.slave_id)
+        else:
+            return 'modbus_error'
+
+        if isinstance(result, ModbusIOException):
+            # return 'modbus_error'
+            callback(None, True, 'modbus_error')
+        else:
+            callback(result)
+
 
 class AQ_COM_connect(AQ_connect):
     def __init__(self):
@@ -82,10 +119,11 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def close(self):
         self.modbus_rtu_client.close()
 
-    def request(self, start_address, register_count, func):
+    def request(self, callback,  start_address, register_count, func):
         self.start_address = start_address
         self.register_count = register_count
         self.func = func
+        self.callback = callback
         if func == 3 or func == 2 or func == 1:
             self.connect_manager.add_request(self.read_param)
 
@@ -95,17 +133,20 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
             if isinstance(response, ModbusIOException):
                 response = 'modbus_error'
 
-            return response
+            # return response
+            self.callback(response)
         elif self.func == 2:
             result = self.modbus_rtu_client.read_discrete_inputs(self.start_address, 1, self.slave_id)
             if isinstance(result, ModbusIOException):
                 return 'modbus_error'
-            return result.bits
+            # return result.bits
+            self.callback(result.bits)
         elif self.func == 1:
             result = self.modbus_rtu_client.read_coils(self.start_address, 1, self.slave_id)
             if isinstance(result, ModbusIOException):
                 return 'modbus_error'
-            return result.bits
+            # return result.bits
+            self.callback(result.bits)
 
 
     def read_file_record(self, file_number, record_number, record_length):
@@ -207,3 +248,21 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
         result = self.modbus_tcp_client.write_file_record(self.slave_id, [request])
 
         return result
+
+
+class AQ_ModbusConnect():
+    def __init__(self):
+        self.param_request_stack = []
+        self.file_request_stack = []
+
+    def createParamRequest(self, func, start, count, data):
+        self.param_request_stack.append({'func': func, 'start': start,
+                                         'count': count, 'data':data})
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def createFileRequest(self, func, file_num, record_num, record_len, data):
+        self.file_request_stack.append({'func': func, 'file_num': file_num,
+                                        'record_num': record_num, 'record_len': record_len, 'data': data})
+        with self.core_cv:
+            self.core_cv.notify()

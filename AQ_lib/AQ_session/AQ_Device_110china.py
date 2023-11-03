@@ -1,3 +1,4 @@
+import asyncio
 import csv
 import socket
 import struct
@@ -14,7 +15,7 @@ from AQ_Device import AQ_Device
 from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_IsValidIpFunc import is_valid_ip
-from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect
+from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect, AQ_COM_Connect_settings, AQ_IP_Connect_settings
 from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
     get_storage_container, parse_tree, reverse_modbus_registers, get_item_by_type
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
@@ -29,10 +30,11 @@ class AQ_Device_Config:
 
 
 class AQ_Device110China(AQ_Device):
-    def __init__(self, event_manager, address_tuple, parent=None):
+    def __init__(self, event_manager, network_settings, parent=None):
         # super().__init__(event_manager, address_tuple, parent)
         self.event_manager = event_manager
         self.local_event_manager = AQ_EventManager()
+        self.packer = AQ_Device_110chinaPacker()
         self.device_name = None
         self.serial_number = None
         self.version = None
@@ -40,13 +42,14 @@ class AQ_Device110China(AQ_Device):
         self.device_tree = None
         self.params_list = []
         self.password = None
-        self.address_tuple = address_tuple
+        self.request_count = 0
+        self.network_settings = network_settings
         self.changed_param_stack = []
         self.update_param_stack = []
+        self.stack_to_read = []
         self.read_error_flag = False
         self.write_error_flag = False
         self.connect = None
-        # self.client = self.create_client(address_tuple)
         self.event_manager.emit_event('create_new_connect', self)
         if self.connect is not None and self.connect.open():
             self.device_data = self.read_device_data()
@@ -74,7 +77,7 @@ class AQ_Device110China(AQ_Device):
 
         if self.device_data['status'] != 'connect_error':
 
-            self.add_address_string_to_device_data(address_tuple)
+            self.add_address_string_to_device_data(network_settings)
             # self.device_data['network_info'] = self.make_network_info_list()
 
             # 0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C34694
@@ -92,6 +95,8 @@ class AQ_Device110China(AQ_Device):
 
     def add_param_to_update_stack(self, item):
         self.update_param_stack.append(item)
+        if len(self.update_param_stack) == self.request_count:
+            self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
 
     def get_device_status(self):
         return self.device_data.get('status', None)
@@ -99,9 +104,39 @@ class AQ_Device110China(AQ_Device):
     def get_device_data(self):
         return self.device_data
 
-    def add_address_string_to_device_data(self, address_tuple):
-        interface = address_tuple[0]
-        address = address_tuple[1]
+    def get_connect_settings(self, network_settings):
+        if network_settings.get('ip', False):
+            ip = network_settings.get('ip', None)
+            if ip is not None and is_valid_ip(ip):
+                self.connect_settings = AQ_IP_Connect_settings(_ip=ip)
+            else:
+                self.connect_settings = None
+        elif network_settings.get('boudrate', False):
+            interface = network_settings.get('interface', None)
+            # Получаем список доступных COM-портов
+            com_ports = serial.tools.list_ports.comports()
+            for port in com_ports:
+                if port.description == interface:
+                    selected_port = port.device
+
+            boudrate = network_settings.get('boudrate', None)
+            parity = network_settings.get('parity', None)
+            stopbits = network_settings.get('stopbits', None)
+
+            if selected_port is not None and \
+                    boudrate is not None and \
+                    parity is not None and \
+                    stopbits is not None:
+                self.connect_settings = AQ_COM_Connect_settings(_port=selected_port,
+                                                                _baudrate=boudrate,
+                                                                _parity=parity,
+                                                                _stopbits=stopbits)
+            else:
+                self.connect_settings = None
+
+    def add_address_string_to_device_data(self, network_settings):
+        interface = network_settings.get('interface', None)
+        address = network_settings.get('address', None)
         if interface == "Ethernet":
             if is_valid_ip(address):
                 self.device_data['address'] = str(address)
@@ -177,7 +212,7 @@ class AQ_Device110China(AQ_Device):
 
 
     def read_device_name(self):
-        file_path = '110_device_conf/' + self.address_tuple[2]
+        file_path = '110_device_conf/' + self.network_settings.get('device', None)
         data = []
         with open(file_path, 'r', newline='\n') as csvfile:
             csv_reader = csv.reader(csvfile)
@@ -234,9 +269,9 @@ class AQ_Device110China(AQ_Device):
         # Читаем 16 регистров начиная с адреса 0xF086 (serial_number)
         start_address = 100
         register_count = 1
-        read_func = 3
+        func = 3
         # Выполняем запрос
-        response = self.connect.request(start_address, register_count, read_func)
+        response = self.connect.client.read_holding_registers(start_address, register_count, self.connect.slave_id)
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in response.registers)
         # Конвертируем строку в массив байт
@@ -245,8 +280,11 @@ class AQ_Device110China(AQ_Device):
 
         return param_value
 
+    def connect_callback(self, response):
+        self.response = response
+
     def read_configuration(self):
-        file_path = '110_device_conf/' + self.address_tuple[2]
+        file_path = '110_device_conf/' + self.network_settings.get('device', None)
         data = []
         count = 0
         with open(file_path, 'r', newline='\n') as csvfile:
@@ -367,7 +405,7 @@ class AQ_Device110China(AQ_Device):
                             multiply = float(fields[12])
                             param_attributes['multiply'] = multiply
 
-                        param_item = get_item_by_type(param_attributes.get('type', ''), parameter_name)
+                        param_item = get_item_by_type(param_attributes.get('type', ''), parameter_name, self.packer)
                         param_item.setData(param_attributes, Qt.UserRole)
                         catalogs[i].appendRow(param_item)
 
@@ -407,13 +445,17 @@ class AQ_Device110China(AQ_Device):
             for i in range(len(items)):
                 self.read_parameter(items[i])
 
-        if len(self.update_param_stack) > 0:
-            self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
-            self.update_param_stack.clear()
+        self.request_count = len(self.stack_to_read)
 
-        if self.read_error_flag is True:
-            self.read_error_flag = False
-            self.event_manager.emit_event('param_read_error')
+        self.connect.createParamRequest(self.stack_to_read)
+
+        # if len(self.update_param_stack) > 0:
+        #     self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
+        #     self.update_param_stack.clear()
+        #
+        # if self.read_error_flag is True:
+        #     self.read_error_flag = False
+        #     self.event_manager.emit_event('param_read_error')
 
     def read_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -439,14 +481,12 @@ class AQ_Device110China(AQ_Device):
         modbus_reg = param_attributes.get('modbus_reg', '')
         read_func = param_attributes.get('read_func', '')
 
-        if param_type != '' and param_size != ''and modbus_reg != '':
+        if param_type != '' and param_size != '' and modbus_reg != '':
             if param_type == 'enum':
                 if param_size > 16:
                     reg_count = 2
-                    byte_size = 4
                 else:
                     reg_count = 1
-                    byte_size = 1
             else:
                 byte_size = param_size
                 if byte_size < 2:
@@ -454,93 +494,9 @@ class AQ_Device110China(AQ_Device):
                 else:
                     reg_count = byte_size // 2
             # Выполняем запрос
-            response = self.connect.read_param(modbus_reg, reg_count, read_func)
-            if response != 'modbus_error':
-                if read_func == 3:
-                    # Конвертируем значения регистров в строку
-                    hex_string = ''.join(format(value, '04X') for value in response.registers)
-                    # Конвертируем строку в массив байт
-                    byte_array = bytes.fromhex(hex_string)
-                    if param_type == 'unsigned' or param_type == 'unsigned_to_float':
-                        if byte_size == 1:
-                            param_value = struct.unpack('>H', byte_array)[0]
-                        elif byte_size == 2:
-                            param_value = struct.unpack('>H', byte_array)[0]
-                        elif byte_size == 4:
-                            byte_array = reverse_modbus_registers(byte_array)
-                            param_value = struct.unpack('>I', byte_array)[0]
-                        elif byte_size == 6:  # MAC address
-                            byte_array = reverse_modbus_registers(byte_array)
-                            param_value = byte_array  # struct.unpack('>I', byte_array)[0]
-                        elif byte_size == 8:
-                            byte_array = reverse_modbus_registers(byte_array)
-                            param_value = struct.unpack('>Q', byte_array)[0]
-                    elif param_type == 'signed' or param_type == 'signed_to_float':
-                        if byte_size == 1:
-                            # param_value = struct.unpack('>b', byte_array[1])[0]
-                            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-                        elif byte_size == 2:
-                            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-                        elif byte_size == 4 or byte_size == 8:
-                            byte_array = reverse_modbus_registers(byte_array)
-                            param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
-                    elif param_type == 'string':
-                        byte_array = swap_modbus_bytes(byte_array, reg_count)
-                        # Расшифровуем в строку
-                        text = byte_array.decode('ANSI')
-                        param_value = remove_empty_bytes(text)
-                    elif param_type == 'enum':
-                        # костиль для enum з розміром два регістра
-                        if byte_size == 4:
-                            param_value = struct.unpack('>I', byte_array)[0]
-                        else:
-                            param_value = struct.unpack('>H', byte_array)[0]
-                            # if modbus_reg == 101:
-                            #     param_value = param_value - 1
-
-
-                    elif param_type == 'float':
-                        byte_array = swap_modbus_bytes(byte_array, reg_count)
-                        param_value = struct.unpack('>f', byte_array)[0]
-                        param_value = round(param_value, 7)
-                    elif param_type == 'date_time':
-                        if byte_size == 4:
-                            byte_array = reverse_modbus_registers(byte_array)
-                            param_value = struct.unpack('>I', byte_array)[0]
-                elif read_func == 2 or read_func == 1:
-                    if response[0] is True:
-                        param_value = 1
-                    else:
-                        param_value = 0
-
-                item.force_set_value(param_value)
-                item.synchronized = True
-            else:
-                self.read_error_flag = True
-
-    # def read_all_parameters(self):
-    #     root = self.device_tree.invisibleRootItem()
-    #
-    #     # self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-    #     # self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
-    #     #
-    #     # max_value = 100  # Максимальное значение для прогресс-бара
-    #     # row_count = root.rowCount()
-    #     # step_value = max_value // row_count
-    #     for row in range(root.rowCount()):
-    #         child_item = root.child(row)
-    #         self.read_parameter(child_item)
-    #         # if result == 'read_error':
-    #         #     self.wait_widget.hide()
-    #         #     self.wait_widget.deleteLater()
-    #         #     return
-    #         # self.wait_widget.progress_bar.setValue((row + 1) * step_value)
-    #
-    #     self.event_manager.emit_event('current_device_data_updated', self)
-    #
-    #     # self.wait_widget.progress_bar.setValue(max_value)
-    #     # self.wait_widget.hide()
-    #     # self.wait_widget.deleteLater()
+            response = None
+            response = self.stack_to_read.append({'method': self.connect.read_param, 'func': read_func, 'start': modbus_reg,
+                                         'count': reg_count, 'callback': item.data_from_network})
 
     def write_parameters(self, items=None):
         if items is None:
@@ -759,3 +715,80 @@ class AQ_Device110China(AQ_Device):
         #TODO: optimize this algorithm
 
         self.event_manager.emit_event('current_device_data_updated', self, self.changed_param_stack)
+
+
+class AQ_Device_110chinaPacker:
+    def __init__(self):
+        super().__init__()
+
+    def pack(self):
+        pass
+
+    def unpack(self, item, data):
+        param_value = None
+        param_attributes = item.get_param_attributes()
+
+        param_type = param_attributes.get('type', '')
+        param_size = param_attributes.get('param_size', '')
+        read_func = param_attributes.get('read_func', '')
+        if read_func == 3:
+            # Конвертируем значения регистров в строку
+            hex_string = ''.join(format(value, '04X') for value in data.registers)
+            # Конвертируем строку в массив байт
+            byte_array = bytes.fromhex(hex_string)
+            if param_type == 'unsigned' or param_type == 'unsigned_to_float':
+                if param_size == 1:
+                    param_value = struct.unpack('>H', byte_array)[0]
+                elif param_size == 2:
+                    param_value = struct.unpack('>H', byte_array)[0]
+                elif param_size == 4:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = struct.unpack('>I', byte_array)[0]
+                elif param_size == 6:  # MAC address
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = byte_array  # struct.unpack('>I', byte_array)[0]
+                elif param_size == 8:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = struct.unpack('>Q', byte_array)[0]
+            elif param_type == 'signed' or param_type == 'signed_to_float':
+                if param_size == 1:
+                    # param_value = struct.unpack('>b', byte_array[1])[0]
+                    param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+                elif param_size == 2:
+                    param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+                elif param_size == 4 or param_size == 8:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
+            elif param_type == 'string':
+                reg_count = param_size // 2
+                byte_array = swap_modbus_bytes(byte_array, reg_count)
+                # Расшифровуем в строку
+                text = byte_array.decode('ANSI')
+                param_value = remove_empty_bytes(text)
+            elif param_type == 'enum':
+                if param_size > 16:
+                    byte_size = 4
+                else:
+                    byte_size = 1
+                # костиль для enum з розміром два регістра
+                if byte_size == 4:
+                    param_value = struct.unpack('>I', byte_array)[0]
+                else:
+                    param_value = struct.unpack('>H', byte_array)[0]
+
+            elif param_type == 'float':
+                reg_count = param_size // 2
+                byte_array = swap_modbus_bytes(byte_array, reg_count)
+                param_value = struct.unpack('>f', byte_array)[0]
+                param_value = round(param_value, 7)
+            elif param_type == 'date_time':
+                if param_size == 4:
+                    byte_array = reverse_modbus_registers(byte_array)
+                    param_value = struct.unpack('>I', byte_array)[0]
+        elif read_func == 2 or read_func == 1:
+            if data is True:
+                param_value = 1
+            else:
+                param_value = 0
+
+        return param_value

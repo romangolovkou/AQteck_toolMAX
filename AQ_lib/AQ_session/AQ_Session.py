@@ -1,3 +1,5 @@
+import time
+
 from PySide6.QtCore import QObject, Qt, QCoreApplication
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QObject, Qt
@@ -73,6 +75,9 @@ class AQ_CurrentSession(QObject):
             self.devices.append(new_devices_list[i])
             self.set_local_event_manager_in_parameters(self.devices[-1])
             self.devices[-1].read_parameters()
+
+        #     Здесь ожидаем пока все параметры в устройстве прочитаются, в это время крутим и пишем
+        time.sleep(10)
 
         self.event_manager.emit_event('new_devices_added', new_devices_list)
 
