@@ -493,9 +493,8 @@ class AQ_Device110China(AQ_Device):
                     reg_count = 1
                 else:
                     reg_count = byte_size // 2
-            # Выполняем запрос
-            response = None
-            response = self.stack_to_read.append({'method': self.connect.read_param, 'func': read_func, 'start': modbus_reg,
+            # Формируем запрос
+            self.stack_to_read.append({'method': self.connect.read_param, 'func': read_func, 'start': modbus_reg,
                                          'count': reg_count, 'callback': item.data_from_network})
 
     def write_parameters(self, items=None):

@@ -79,7 +79,6 @@ class AQ_ConnectManager(QObject):
         for i in range(len(request_stack)):
             request = request_stack.pop()
             function = request.get('method', None)
-            # param = request_list[1]
             func = request.get('func', None)
             start = request.get('start', None)
             count = request.get('count', None)
