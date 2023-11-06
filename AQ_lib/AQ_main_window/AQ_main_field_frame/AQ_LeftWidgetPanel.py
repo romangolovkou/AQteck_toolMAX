@@ -45,9 +45,6 @@ class AQ_left_widget_panel_frame(QFrame):
                     print(f"Error occurred: {str(e)}")
                     print(f"Немає жодного пристрою")
 
-
-
-
 class AQ_left_device_widget(QWidget):
     def __init__(self, device: AqBaseDevice, event_manager, parent=None):
         super().__init__(parent)

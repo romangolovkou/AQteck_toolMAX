@@ -12,6 +12,7 @@ from AQ_Devices.AQ_Device import AQ_Device
 from AQ_Devices.AQ_Device_110china import AQ_Device110China
 from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
 from AqAutoDetectionDevice import AqAutoDetectionDevice
+from AqDY500 import AqDY500
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -118,7 +119,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
 
     def get_device_by_settings(self, event_manager, network_settings):
         if network_settings[2] == 'МВ110-24_1ТД.csv':
-            device = AQ_DeviceDY500(event_manager, network_settings)
+            device = AqDY500(event_manager, None, network_settings)
         elif network_settings[2] == "AqAutoDetectionDevice":
             device = AqAutoDetectionDevice(event_manager, None, network_settings)
         elif len(network_settings) > 2:

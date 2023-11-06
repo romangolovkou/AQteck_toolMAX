@@ -40,8 +40,16 @@ class AQ_DeviceInfoManagerFrame(QFrame):
         #
         # Створюємо головний лейаут
         self.param_list_layout = AQ_DeviceInfoLayout(self.device, self.general_info_model,
-                                                     self.param_model, self.event_manager, self\
+                                                     self.param_model, self.event_manager, self)
 
+    def parse_status_file(self, status_file):
+        data_string = status_file.decode('ANSI')
+        # Разделение строк по переводу строки
+        data_rows = data_string.split('\n')
+        data = []
+        for row in data_rows:
+            # Разделение записи на поля по символу ';'
+            fields = row.split(';')
             data.append(fields)
 
         return data

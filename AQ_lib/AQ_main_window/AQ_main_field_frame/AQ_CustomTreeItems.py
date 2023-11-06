@@ -95,6 +95,12 @@ class AQ_ParamItem(QStandardItem):
     def set_local_event_manager(self, local_event_manager):
         self.local_event_manager = local_event_manager
 
+    def fromNetworkData(self):
+        pass
+
+    def toNetwork(self):
+        return 1
+
 
 class AQ_CatalogItem(AQ_ParamItem):
     def __init__(self, name):
