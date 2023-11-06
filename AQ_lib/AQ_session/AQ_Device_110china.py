@@ -96,7 +96,7 @@ class AQ_Device110China(AQ_Device):
             self.changed_param_stack.append(item)
 
     def add_param_to_update_stack(self, item):
-        if item not in self.changed_param_stack:
+        if item not in self.update_param_stack:
             self.update_param_stack.append(item)
             if len(self.update_param_stack) == self.read_request_count or \
                     len(self.update_param_stack) == self.write_request_count:
@@ -104,6 +104,10 @@ class AQ_Device110China(AQ_Device):
                 self.read_request_count = 0
                 self.write_request_count = 0
                 self.update_param_stack.clear()
+
+                # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
+                removed_index = self.changed_param_stack.index(item)
+                self.changed_param_stack.pop(removed_index)
 
     def get_device_status(self):
         return self.device_data.get('status', None)
