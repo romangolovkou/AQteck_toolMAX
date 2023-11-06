@@ -43,23 +43,34 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def close(self):
         self.modbus_rtu_client.close()
 
-    def read_param(self, start_address, register_count, read_func):
-        if read_func == 3:
-            response = self.modbus_rtu_client.read_holding_registers(start_address, register_count, self.slave_id)
+    # def request(self, callback,  start_address, register_count, func):
+    #     self.start_address = start_address
+    #     self.register_count = register_count
+    #     self.func = func
+    #     self.callback = callback
+    #     if func == 3 or func == 2 or func == 1:
+    #         self.connect_manager.add_request(self.read_param)
+
+    def read_param(self):
+        if self.func == 3:
+            response = self.modbus_rtu_client.read_holding_registers(self.start_address, self.register_count, self.slave_id)
             if isinstance(response, ModbusIOException):
                 response = 'modbus_error'
 
-            return response
-        elif read_func == 2:
-            result = self.modbus_rtu_client.read_discrete_inputs(start_address, 1, self.slave_id)
+            # return response
+            self.callback(response)
+        elif self.func == 2:
+            result = self.modbus_rtu_client.read_discrete_inputs(self.start_address, 1, self.slave_id)
             if isinstance(result, ModbusIOException):
                 return 'modbus_error'
-            return result.bits
-        elif read_func == 1:
-            result = self.modbus_rtu_client.read_coils(start_address, 1, self.slave_id)
+            # return result.bits
+            self.callback(result.bits)
+        elif self.func == 1:
+            result = self.modbus_rtu_client.read_coils(self.start_address, 1, self.slave_id)
             if isinstance(result, ModbusIOException):
                 return 'modbus_error'
-            return result.bits
+            # return result.bits
+            self.callback(result.bits)
 
 
     def read_file_record(self, file_number, record_number, record_length):
@@ -98,6 +109,7 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise
+
 
     def write_file_record(self, file_number, record_number, record_length, record_data):
         # Создание экземпляра структуры WriteFileRecordRequest
@@ -141,7 +153,11 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
 
     def write_registers(self, modbus_reg, registers):
         try:
-            self.modbus_tcp_client.write_registers(modbus_reg, registers, self.slave_id)
+            result = self.modbus_tcp_client.write_registers(modbus_reg, registers, self.slave_id)
+            if isinstance(result, ModbusIOException):
+                result = 'modbus_error'
+
+            return result
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise
@@ -157,3 +173,21 @@ class AQ_modbusTCP_connect(AQ_TCP_connect):
         result = self.modbus_tcp_client.write_file_record(self.slave_id, [request])
 
         return result
+
+
+class AQ_ModbusConnect():
+    def __init__(self):
+        self.param_request_stack = []
+        self.file_request_stack = []
+
+    def createParamRequest(self, func, start, count, data):
+        self.param_request_stack.append({'func': func, 'start': start,
+                                         'count': count, 'data':data})
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def createFileRequest(self, func, file_num, record_num, record_len, data):
+        self.file_request_stack.append({'func': func, 'file_num': file_num,
+                                        'record_num': record_num, 'record_len': record_len, 'data': data})
+        with self.core_cv:
+            self.core_cv.notify()

@@ -567,27 +567,27 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
 
     return value
 
-def get_item_by_type(type, name):
+def get_item_by_type(type, name, packer=None):
     if type == 'enum':
-        item = AQ_EnumParamItem(name)
+        item = AQ_EnumParamItem(name, packer)
     elif type == 'unsigned':
-        item = AQ_UnsignedParamItem(name)
+        item = AQ_UnsignedParamItem(name, packer)
     elif type == 'signed':
-        item = AQ_SignedParamItem(name)
+        item = AQ_SignedParamItem(name, packer)
     elif type == 'float':
-        item = AQ_FloatParamItem(name)
+        item = AQ_FloatParamItem(name, packer)
     elif type == 'string':
-        item = AQ_StringParamItem(name)
+        item = AQ_StringParamItem(name, packer)
     elif type == 'date_time':
-        item = AQ_DateTimeParamItem(name)
+        item = AQ_DateTimeParamItem(name, packer)
     elif type == 'signed_to_float':
-        item = AQ_SignedToFloatParamItem(name)
+        item = AQ_SignedToFloatParamItem(name, packer)
     elif type == 'unsigned_to_float':
-        item = AQ_UnsignedToFloatParamItem(name)
+        item = AQ_UnsignedToFloatParamItem(name, packer)
     elif type == 'float_enum':
-        item = AQ_FloatEnumParamItem(name)
+        item = AQ_FloatEnumParamItem(name, packer)
     else:
-        item = AQ_ParamItem(name)
+        item = AQ_ParamItem(name, packer)
 
     return item
 

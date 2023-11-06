@@ -6,9 +6,44 @@ from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, A
     AQ_SignedToFloatTreeLineEdit, AQ_FloatEnumROnlyTreeLineEdit, AQ_FloatEnumTreeComboBox
 
 
+class BaseItem:
+    def __init__(self):
+        super().__init__()
+        self._value = None
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, data):
+        print('I was setted with ', data)
+        self._value = data
+
+
+class ModbusItem(BaseItem):
+    def __init__(self, packer=None):
+        super().__init__()
+        self.my_protocol = "Modbus"
+        self._packer = packer
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, data):
+        if self._packer:
+            _value = self._packer.unpack()
+        else:
+            _value = data
+
+        print('I was setted with ', data,)
+
+
 class AQ_ParamItem(QStandardItem):
-    def __init__(self, name):
+    def __init__(self, name, packer=None):
         super().__init__(name)
+        self.packer = packer
         self._value = None
         self.value_in_device = None
         self.editor = None
@@ -32,6 +67,7 @@ class AQ_ParamItem(QStandardItem):
                     else:
                         self.param_status = 'changed'
                         self.synchronized = False
+                        # self.local_event_manager.emit_event('add_param_to_changed_stack', self)
                 self._value = new_value
         else:
             self.param_status = 'error'
@@ -45,19 +81,47 @@ class AQ_ParamItem(QStandardItem):
         if flag is True:
             # if self.value_in_device != self.value:
             self.value_in_device = self.value
+            if self.param_status == 'changed':
+                self.param_status = 'ok'
             if self.local_event_manager is not None:
-                self.local_event_manager.emit_event('param_need_update', self)
-            # else:
-            #     if self.param_status == 'changed':
-            #         self.param_status = 'ok'
-            #         self.local_event_manager.emit_event('param_need_update', self)
+                self.local_event_manager.emit_event('add_param_to_update_stack', self)
 
         self.synchro_flag = flag
 
-    def force_set_value(self, new_value):
-        self.validate(new_value)
-        self._value = new_value
+    def confirm_writing(self, result: bool, message=None):
+        """
+        The function must be called for each writing operation.
+        :param result: True - success writing, False - writing fail.
+        :param message: If need - error message.
+        :return:
+        """
+        self.synchronized = result
+        if not result:
+            self.set_error_flag(message)
 
+    def set_error_flag(self, message=None):
+        self.param_status = 'error'
+        self.error_message = message
+        if self.local_event_manager is not None:
+            self.local_event_manager.emit_event('add_param_to_update_stack', self)
+
+    def data_from_network(self, new_value, is_error=False, message=None):
+        if is_error:
+            self.set_error_flag(message)
+        else:
+            if self.packer:
+                new_value = self.packer.unpack(self, new_value)
+            self.validate(new_value)
+            self._value = new_value
+            self.synchronized = True
+
+    def data_for_network(self):
+        if self.packer:
+            value = self.packer.pack(self, self._value)
+        else:
+            value = self._value
+
+        return value
 
     def validate(self, new_value):
         param_attributes = self.data(Qt.UserRole)
@@ -78,9 +142,9 @@ class AQ_ParamItem(QStandardItem):
         self.param_status = 'ok'
         return True
 
-    def synchro_last_value_and_value(self):
-        self.value_in_device = self._value
-        self.param_status = 'ok'
+    # def synchro_last_value_and_value(self):
+    #     self.value_in_device = self._value
+    #     self.param_status = 'ok'
 
     def get_param_attributes(self):
         param_attributes = self.data(Qt.UserRole)
@@ -108,8 +172,8 @@ class AQ_CatalogItem(AQ_ParamItem):
 
 
 class AQ_EnumParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_RW = AQ_EnumTreeComboBox
         self.editor_R_Only = AQ_EnumROnlyTreeLineEdit
@@ -124,8 +188,8 @@ class AQ_EnumParamItem(AQ_ParamItem):
 
 
 class AQ_UnsignedParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_uint = AQ_UintTreeLineEdit
         self.editor_ip = AQ_IpTreeLineEdit
@@ -140,50 +204,50 @@ class AQ_UnsignedParamItem(AQ_ParamItem):
 
 
 class AQ_SignedParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_IntTreeLineEdit
 
 
 class AQ_FloatParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_FloatTreeLineEdit
 
 
 class AQ_StringParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_StringTreeLineEdit
 
 
 class AQ_DateTimeParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_DateTimeLineEdit
 
 
 class AQ_SignedToFloatParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_SignedToFloatTreeLineEdit
 
 
 class AQ_UnsignedToFloatParamItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_SignedToFloatTreeLineEdit
 
 
 class AQ_FloatEnumParamItem(AQ_EnumParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name, packer):
+        super().__init__(name, packer)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_RW = AQ_FloatEnumTreeComboBox
         self.editor_R_Only = AQ_FloatEnumROnlyTreeLineEdit

@@ -42,6 +42,8 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
+    # Створюємо коннект менеджер
+        self.connect_manager = AQ_ConnectManager(self.event_manager, self)
 
     def open_AddDevices(self):
         AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
@@ -68,7 +70,11 @@ class AQ_CurrentSession(QObject):
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
             self.devices.append(new_devices_list[i])
-            self.devices[-1].read_parameters()
+            self.set_local_event_manager_in_parameters(self.devices[-1])
+            self.devices[-1].init_parameters()
+
+        # #     Здесь ожидаем пока все параметры в устройстве прочитаются, в это время крутим и пишем
+        # time.sleep(10)
 
         self.event_manager.emit_event('new_devices_added', new_devices_list)
 
@@ -91,7 +97,7 @@ class AQ_CurrentSession(QObject):
 
     def write_params_cur_active_device(self):
         if self.cur_active_device is not None:
-            self.cur_active_device.write_all_parameters()
+            self.cur_active_device.write_parameters()
 
     def delete_cur_active_device(self):
         if self.cur_active_device is not None:
@@ -99,7 +105,7 @@ class AQ_CurrentSession(QObject):
 
     def delete_device(self, device):
         if device is not None:
-            device.client.close()
+            device.connect.close()
             index_to_remove = self.devices.index(device)
             removed_element = self.devices.pop(index_to_remove)
             if len(self.devices) == 0:
@@ -136,15 +142,17 @@ class AQ_CurrentSession(QObject):
         if dialog.exec_():
             fname = dialog.selectedFiles()
 
-        if fname[0] != None:
-            with open(fname[0], 'wb') as file:
-                file.write(f.getvalue())
-                file.close()
+        if fname is not None:
+            if fname[0] != None:
+                with open(fname[0], 'wb') as file:
+                    file.write(f.getvalue())
+                    file.close()
 
-        print('I wrote some shit')
+            print('I wrote some shit')
 
     def load_device_config(self, device: AQ_Device):
         loadConf = None
+        fname = None
 
         dialog = QFileDialog()
         dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
@@ -152,17 +160,25 @@ class AQ_CurrentSession(QObject):
         if dialog.exec_():
             fname = dialog.selectedFiles()
 
-        print('Filename ', fname)
-        # File has been choosed
-        if fname[0] != '':
-            with open (fname[0], 'rb') as cfgFile:
-                fileData = io.BytesIO(cfgFile.read())
-                loadConf = pickle.loads(fileData.getvalue())
+        if fname is not None:
+            print('Filename ', fname)
+            # File has been choosed
+            if fname[0] != '':
+                try:
+                    with open (fname[0], 'rb') as cfgFile:
+                        fileData = io.BytesIO(cfgFile.read())
+                        loadConf = pickle.loads(fileData.getvalue())
+                except Exception as e:
+                    print(f"Error occurred: {str(e)}")
+                    loadConf = None
+                    self.event_manager.emit_event('parsing_cfg_error')
 
-        if loadConf != None:
-            device.load_config(loadConf)
 
-        print ('Loaded')
+            if loadConf != None:
+                device.load_config(loadConf)
+                print('Loaded')
+            else:
+                print('Load failed')
 
     def set_slave_id(self, network_settings):
         network_settings = network_settings[0]
@@ -195,6 +211,12 @@ class AQ_CurrentSession(QObject):
                 self.event_manager.emit_event('set_slave_id_connect_ok')
             else:
                 self.event_manager.emit_event('set_slave_id_connect_error')
+
+    def connect_manager_finished(self):
+        pass
+
+    def connect_manager_error(self):
+        pass
 
 
 class AQ_wait_label_widget(QWidget):

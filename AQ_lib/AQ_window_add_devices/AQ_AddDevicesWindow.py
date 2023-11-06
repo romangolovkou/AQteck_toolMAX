@@ -6,7 +6,7 @@ from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_AddDevicesAddButton import AQ_addButton
 from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
 from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
-from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
+from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label, AQ_have_error_widget
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
 from AQ_Devices.AQ_Device import AQ_Device
 from AQ_Devices.AQ_Device_110china import AQ_Device110China

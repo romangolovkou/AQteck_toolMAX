@@ -158,8 +158,8 @@ class AQ_left_device_widget(QWidget):
         action_save_config = context_menu.addAction("Save configuration")
         action_load_config = context_menu.addAction("Load configuration")
         # Подключаем обработчик события выбора действия
-        action_read.triggered.connect(lambda: self.device.read_all_parameters())
-        action_write.triggered.connect(lambda: self.device.write_all_parameters())
+        action_read.triggered.connect(lambda: self.device.read_parameters())
+        action_write.triggered.connect(lambda: self.device.write_parameters())
         action_delete.triggered.connect(lambda: self.event_manager.emit_event('delete_device', self.device))
         action_save_config.triggered.connect(lambda: self.event_manager.emit_event('save_device_configuration', self.device))
         action_load_config.triggered.connect(lambda: self.event_manager.emit_event('load_device_configuration', self.device))
