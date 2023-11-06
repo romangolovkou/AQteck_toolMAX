@@ -74,6 +74,25 @@ class AQ_Modbus_Connect(AQ_connect):
         with self.core_cv:
             self.core_cv.notify()
 
+    def proceed_request(self, request):
+        function = request.get('method', None)
+        if function.__name__ == 'read_param':
+            func = request.get('func', None)
+            start = request.get('start', None)
+            count = request.get('count', None)
+            callback = request.get('callback', None)
+            if func is not None and start is not None \
+                    and count is not None and callback is not None:
+                function(func, start, count, callback)
+        elif function.__name__ == 'write_param':
+            func = request.get('func', None)
+            start = request.get('start', None)
+            data = request.get('data', None)
+            callback = request.get('callback', None)
+            if func is not None and start is not None \
+                    and data is not None:
+                function(func, start, data, callback)
+
     def read_param(self, func, start, count, callback):
         if func == 3:
             result = self.client.read_holding_registers(start, count, self.slave_id)
@@ -89,6 +108,33 @@ class AQ_Modbus_Connect(AQ_connect):
             callback(None, True, 'modbus_error')
         else:
             callback(result)
+
+    def write_param(self, func, start, data, callback):
+        try:
+            result = None
+            if func == 16:
+                result = self.client.write_registers(start, data, self.slave_id)
+            elif func == 5:
+                # Запись одного дискретного выхода (бита)
+                result = self.client.write_coil(start, data, self.slave_id)
+            elif func == 6:
+                if start == 100:
+                    # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
+                    result = self.client.write_register(start, data, 0)
+                    if not isinstance(result, ModbusIOException):
+                        self.slave_id = data
+                else:
+                    # Запись одного регистра
+                    result = self.client.write_register(start, data, self.slave_id)
+
+            if isinstance(result, ModbusIOException):
+                callback(False, 'modbus_error')
+            else:
+                callback(True)
+
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            raise
 
 
 class AQ_COM_connect(AQ_connect):
@@ -119,13 +165,13 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
     def close(self):
         self.modbus_rtu_client.close()
 
-    def request(self, callback,  start_address, register_count, func):
-        self.start_address = start_address
-        self.register_count = register_count
-        self.func = func
-        self.callback = callback
-        if func == 3 or func == 2 or func == 1:
-            self.connect_manager.add_request(self.read_param)
+    # def request(self, callback,  start_address, register_count, func):
+    #     self.start_address = start_address
+    #     self.register_count = register_count
+    #     self.func = func
+    #     self.callback = callback
+    #     if func == 3 or func == 2 or func == 1:
+    #         self.connect_manager.add_request(self.read_param)
 
     def read_param(self):
         if self.func == 3:
@@ -185,6 +231,7 @@ class AQ_modbusRTU_connect(AQ_COM_connect):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise
+
 
     def write_file_record(self, file_number, record_number, record_length, record_data):
         # Создание экземпляра структуры WriteFileRecordRequest

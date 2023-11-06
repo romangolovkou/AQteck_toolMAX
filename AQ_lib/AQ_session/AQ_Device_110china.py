@@ -42,11 +42,13 @@ class AQ_Device110China(AQ_Device):
         self.device_tree = None
         self.params_list = []
         self.password = None
-        self.request_count = 0
+        self.read_request_count = 0
+        self.write_request_count = 0
         self.network_settings = network_settings
         self.changed_param_stack = []
         self.update_param_stack = []
         self.stack_to_read = []
+        self.stack_to_write = []
         self.read_error_flag = False
         self.write_error_flag = False
         self.connect = None
@@ -94,9 +96,14 @@ class AQ_Device110China(AQ_Device):
             self.changed_param_stack.append(item)
 
     def add_param_to_update_stack(self, item):
-        self.update_param_stack.append(item)
-        if len(self.update_param_stack) == self.request_count:
-            self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
+        if item not in self.changed_param_stack:
+            self.update_param_stack.append(item)
+            if len(self.update_param_stack) == self.read_request_count or \
+                    len(self.update_param_stack) == self.write_request_count:
+                self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
+                self.read_request_count = 0
+                self.write_request_count = 0
+                self.update_param_stack.clear()
 
     def get_device_status(self):
         return self.device_data.get('status', None)
@@ -437,25 +444,18 @@ class AQ_Device110China(AQ_Device):
         return decrypt_res
 
     def read_parameters(self, items=None):
-        if items is None:
-            self.read_all_parameters()
-        elif isinstance(items, AQ_ParamItem):
-            self.read_item(items)
-        elif isinstance(items, list):
-            for i in range(len(items)):
-                self.read_parameter(items[i])
+        if self.read_request_count == 0:
+            if items is None:
+                self.read_all_parameters()
+            elif isinstance(items, AQ_ParamItem):
+                self.read_item(items)
+            elif isinstance(items, list):
+                for i in range(len(items)):
+                    self.read_parameter(items[i])
 
-        self.request_count = len(self.stack_to_read)
+            self.read_request_count = len(self.stack_to_read)
 
-        self.connect.createParamRequest(self.stack_to_read)
-
-        # if len(self.update_param_stack) > 0:
-        #     self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
-        #     self.update_param_stack.clear()
-        #
-        # if self.read_error_flag is True:
-        #     self.read_error_flag = False
-        #     self.event_manager.emit_event('param_read_error')
+            self.connect.createParamRequest(self.stack_to_read)
 
     def read_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -497,18 +497,30 @@ class AQ_Device110China(AQ_Device):
             self.stack_to_read.append({'method': self.connect.read_param, 'func': read_func, 'start': modbus_reg,
                                          'count': reg_count, 'callback': item.data_from_network})
 
-    def write_parameters(self, items=None):
-        if items is None:
-            self.write_all_parameters()
-        elif isinstance(items, AQ_ParamItem):
-            self.write_item(items)
-        elif isinstance(items, list):
-            for i in range(len(items)):
-                self.write_parameter(items[i])
+        # if self.read_error_flag is True:
+        #     self.read_error_flag = False
+        #     self.event_manager.emit_event('param_read_error')
+        #     return 'read_err'
+        #
+        # return 'ok'
 
-        if len(self.update_param_stack) > 0:
-            self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
-            self.update_param_stack.clear()
+    def write_parameters(self, items=None):
+        if self.write_request_count == 0:
+            if items is None:
+                self.write_all_parameters()
+            elif isinstance(items, AQ_ParamItem):
+                self.write_item(items)
+            elif isinstance(items, list):
+                for i in range(len(items)):
+                    self.write_parameter(items[i])
+
+            self.write_request_count = len(self.stack_to_write)
+
+            self.connect.createParamRequest(self.stack_to_write)
+
+        # if len(self.update_param_stack) > 0:
+        #     self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
+        #     self.update_param_stack.clear()
 
     def write_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -530,130 +542,55 @@ class AQ_Device110China(AQ_Device):
         if item in self.changed_param_stack:
             param_attributes = item.get_param_attributes()
 
-            param_type = param_attributes.get('type', '')
-            param_size = param_attributes.get('param_size', '')
+            # param_type = param_attributes.get('type', '')
+            # param_size = param_attributes.get('param_size', '')
             modbus_reg = param_attributes.get('modbus_reg', '')
-            value = item.value
-            if param_type != '' and param_size != '' and modbus_reg != '':
-                write_func = param_attributes.get('write_func', None)
-                if write_func == 16:
-                    if param_type == 'unsigned' or param_type == 'unsigned_to_float':
-                        if param_size == 1:
-                            packed_data = struct.pack('H', value)
-                        elif param_size == 2:
-                            packed_data = struct.pack('H', value)
-                        elif param_size == 4:
-                                packed_data = struct.pack('I', value)
-                        elif param_size == 6:  # MAC address
-                            packed_data = struct.pack('H', value)
-                        elif param_size == 8:
-                            packed_data = struct.pack('Q', value)
-                        # Разбиваем упакованные данные на 16-битные значения (2 байта)
-                        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-                    elif param_type == 'signed' or param_type == 'signed_to_float':
-                        if param_size == 1:
-                            packed_data = struct.pack('h', value)
-                        elif param_size == 2:
-                            packed_data = struct.pack('h', value)
-                        elif param_size == 4:
-                            packed_data = struct.pack('i', value)
-                        elif param_size == 8:
-                            packed_data = struct.pack('q', value)
-                        # Разбиваем упакованные данные на 16-битные значения (2 байта)
-                        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-                    elif param_type == 'string':
-                        text_bytes = value.encode('ANSI')
-                        # Добавляем нулевой байт в конец, если длина списка не кратна 2
-                        if len(text_bytes) % 2 != 0:
-                            text_bytes += b'\x00'
-                        registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
-                    elif param_type == 'enum':
-                        # костиль для enum з розміром два регістра
-                        if param_size == 4:
-                            packed_data = struct.pack('I', value)
-                            registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-                        else:
-                            packed_data = struct.pack('H', value)
-                            registers = struct.unpack('H', packed_data)
-                    elif param_type == 'float':
-                        if param_size == 4:
-                            floats = struct.pack('f', value)
-                            registers = struct.unpack('HH', floats)  # Возвращает два short int значения
-                        elif param_size == 8:
-                            floats_doubble = struct.pack('d', value)
-                            registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
-                    # elif param_type == 'date_time':
-                    #     if byte_size == 4:
-                    #         byte_array = reverse_modbus_registers(byte_array)
-                    #         param_value = struct.unpack('>I', byte_array)[0]
+            write_func = param_attributes.get('write_func', '')
+            data = item.data_for_network()
+            # if param_type != '' and param_size != '' and modbus_reg != '':
+            #     if write_func == 16:
+            #         try:
+            #             result = self.connect.write_param(modbus_reg, data, write_func)
+            #             if result != 'modbus_error':
+            #                 item.synchronized = True
+            #                 # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
+            #                 removed_index = self.changed_param_stack.index(item)
+            #                 self.changed_param_stack.pop(removed_index)
+            #             else:
+            #                 self.write_error_flag = True
+            #         except Exception as e:
+            #             print(f"Error occurred: {str(e)}")
+            #     elif write_func == 5:
+            #         result = self.connect.write_param(modbus_reg, data, write_func)
+            #         if result != 'modbus_error':
+            #             item.synchronized = True
+            #             # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
+            #             removed_index = self.changed_param_stack.index(item)
+            #             self.changed_param_stack.pop(removed_index)
+            #         else:
+            #             self.write_error_flag = True
+            #     elif write_func == 6:
+            #         result = self.connect.write_param(modbus_reg, data, write_func)
+            #         if result != 'modbus_error':
+            #             item.synchronized = True
+            #             # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
+            #             removed_index = self.changed_param_stack.index(item)
+            #             self.changed_param_stack.pop(removed_index)
+            #         else:
+            #             self.write_error_flag = True
 
-                    try:
-                        result = self.connect.write_param(modbus_reg, registers, write_func)
-                        if result != 'modbus_error':
-                            item.synchronized = True
-                            # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
-                            removed_index = self.changed_param_stack.index(item)
-                            self.changed_param_stack.pop(removed_index)
-                        else:
-                            self.write_error_flag = True
-                    except Exception as e:
-                        print(f"Error occurred: {str(e)}")
-                elif write_func == 5:
-                    if value == 1:
-                        value = True
-                    elif value == 0:
-                        value = False
-                    result = self.connect.write_param(modbus_reg, value, write_func)
-                    if result != 'modbus_error':
-                        item.synchronized = True
-                        # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
-                        removed_index = self.changed_param_stack.index(item)
-                        self.changed_param_stack.pop(removed_index)
-                    else:
-                        self.write_error_flag = True
-                elif write_func == 6:
-                    result = self.connect.write_param(modbus_reg, value, write_func)
-                    if result != 'modbus_error':
-                        item.synchronized = True
-                        # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
-                        removed_index = self.changed_param_stack.index(item)
-                        self.changed_param_stack.pop(removed_index)
-                    else:
-                        self.write_error_flag = True
+            self.stack_to_write.append({'method': self.connect.write_param, 'func': write_func, 'start': modbus_reg,
+                                       'data': data, 'callback': item.confirm_writing})
 
-        if self.write_error_flag is True:
-            self.write_error_flag = False
-            self.event_manager.emit_event('param_write_error')
-            return 'write_err'
-
-        return 'ok'
+        # if self.write_error_flag is True:
+        #     self.write_error_flag = False
+        #     self.event_manager.emit_event('param_write_error')
+        #     return 'write_err'
+        #
+        # return 'ok'
 
 
-    # def write_all_parameters(self):
-    #     root = self.device_tree.invisibleRootItem()
-    #
-    #     # self.wait_widget = AQ_wait_progress_bar_widget('Reading current values...', self.parent)
-    #     # self.wait_widget.setGeometry(self.parent.width() // 2 - 170, self.parent.height() // 4, 340, 50)
-    #     #
-    #     # max_value = 100  # Максимальное значение для прогресс-бара
-    #     # row_count = root.rowCount()
-    #     # step_value = max_value // row_count
-    #     for row in range(root.rowCount()):
-    #         child_item = root.child(row)
-    #         result = self.write_parameter(child_item)
-    #         if result == 'write_error':
-    #             break
-    #         # if result == 'read_error':
-    #         #     self.wait_widget.hide()
-    #         #     self.wait_widget.deleteLater()
-    #         #     return
-    #         # self.wait_widget.progress_bar.setValue((row + 1) * step_value)
-    #
-    #     self.event_manager.emit_event('current_device_data_written', self)
-    #
-    #     # self.wait_widget.progress_bar.setValue(max_value)
-    #     # self.wait_widget.hide()
-    #     # self.wait_widget.deleteLater()
+
 
     def restart_device(self):
         # "I will restart the device now!"
@@ -720,8 +657,76 @@ class AQ_Device_110chinaPacker:
     def __init__(self):
         super().__init__()
 
-    def pack(self):
-        pass
+    def pack(self, item, value):
+        param_value = None
+        param_attributes = item.get_param_attributes()
+
+        param_type = param_attributes.get('type', '')
+        param_size = param_attributes.get('param_size', '')
+        read_func = param_attributes.get('read_func', '')
+        if param_type != '' and param_size != '':
+            write_func = param_attributes.get('write_func', None)
+            if write_func == 16:
+                if param_type == 'unsigned' or param_type == 'unsigned_to_float':
+                    if param_size == 1:
+                        packed_data = struct.pack('H', value)
+                    elif param_size == 2:
+                        packed_data = struct.pack('H', value)
+                    elif param_size == 4:
+                        packed_data = struct.pack('I', value)
+                    elif param_size == 6:  # MAC address
+                        packed_data = struct.pack('H', value)
+                    elif param_size == 8:
+                        packed_data = struct.pack('Q', value)
+                    # Разбиваем упакованные данные на 16-битные значения (2 байта)
+                    registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+                elif param_type == 'signed' or param_type == 'signed_to_float':
+                    if param_size == 1:
+                        packed_data = struct.pack('h', value)
+                    elif param_size == 2:
+                        packed_data = struct.pack('h', value)
+                    elif param_size == 4:
+                        packed_data = struct.pack('i', value)
+                    elif param_size == 8:
+                        packed_data = struct.pack('q', value)
+                    # Разбиваем упакованные данные на 16-битные значения (2 байта)
+                    registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+                elif param_type == 'string':
+                    text_bytes = value.encode('ANSI')
+                    # Добавляем нулевой байт в конец, если длина списка не кратна 2
+                    if len(text_bytes) % 2 != 0:
+                        text_bytes += b'\x00'
+                    registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
+                elif param_type == 'enum':
+                    # костиль для enum з розміром два регістра
+                    if param_size == 4:
+                        packed_data = struct.pack('I', value)
+                        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+                    else:
+                        packed_data = struct.pack('H', value)
+                        registers = struct.unpack('H', packed_data)
+                elif param_type == 'float':
+                    if param_size == 4:
+                        floats = struct.pack('f', value)
+                        registers = struct.unpack('HH', floats)  # Возвращает два short int значения
+                    elif param_size == 8:
+                        floats_doubble = struct.pack('d', value)
+                        registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
+                # elif param_type == 'date_time':
+                #     if byte_size == 4:
+                #         byte_array = reverse_modbus_registers(byte_array)
+                #         param_value = struct.unpack('>I', byte_array)[0]
+                return  registers
+
+            elif write_func == 5:
+                if value == 1:
+                    data = True
+                else:
+                    data = False
+                return data
+
+            elif write_func == 6:
+                return value
 
     def unpack(self, item, data):
         param_value = None

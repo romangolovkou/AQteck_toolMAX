@@ -58,8 +58,6 @@ class AQ_ParamItem(QStandardItem):
     @value.setter
     def value(self, new_value):
         if new_value is not None:
-            if self.packer:
-                new_value = self.packer.unpack(self, new_value)
             if self.validate(new_value) is True:
                 if self.value_in_device is None:
                     self.value_in_device = new_value
@@ -83,13 +81,23 @@ class AQ_ParamItem(QStandardItem):
         if flag is True:
             # if self.value_in_device != self.value:
             self.value_in_device = self.value
+            if self.param_status == 'changed':
+                self.param_status = 'ok'
             if self.local_event_manager is not None:
                 self.local_event_manager.emit_event('add_param_to_update_stack', self)
 
-            if self.param_status == 'changed':
-                self.param_status = 'ok'
-
         self.synchro_flag = flag
+
+    def confirm_writing(self, result: bool, message=None):
+        """
+        The function must be called for each writing operation.
+        :param result: True - success writing, False - writing fail.
+        :param message: If need - error message.
+        :return:
+        """
+        self.synchronized = result
+        if not result:
+            self.set_error_flag(message)
 
     def set_error_flag(self, message=None):
         self.param_status = 'error'
@@ -107,6 +115,13 @@ class AQ_ParamItem(QStandardItem):
             self._value = new_value
             self.synchronized = True
 
+    def data_for_network(self):
+        if self.packer:
+            value = self.packer.pack(self, self._value)
+        else:
+            value = self._value
+
+        return value
 
     def validate(self, new_value):
         param_attributes = self.data(Qt.UserRole)

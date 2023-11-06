@@ -71,21 +71,21 @@ class AQ_ConnectManager(QObject):
                 self.core_cv.wait()
                 for i in range(len(self.connect_list)):
                     while len(self.connect_list[i].param_request_stack) > 0:
-                        await self.proceedParamRequest(self.connect_list[i].param_request_stack)
+                        await self.proceedParamRequest(self.connect_list[i])
                     while len(self.connect_list[i].file_request_stack) > 0:
                         await self.proceedFileRequest(self.connect_list[i].param_request_stack.pop())
 
-    async def proceedParamRequest(self, request_stack):
-        for i in range(len(request_stack)):
-            request = request_stack.pop()
-            function = request.get('method', None)
-            func = request.get('func', None)
-            start = request.get('start', None)
-            count = request.get('count', None)
-            callback = request.get('callback', None)
-            if func is not None and start is not None\
-                    and count is not None and callback is not None:
-                function(func, start, count, callback)
+    async def proceedParamRequest(self, connect):
+        for i in range(len(connect.param_request_stack)):
+            request = connect.param_request_stack.pop()
+            # function = request.get('method', None)
+            # func = request.get('func', None)
+            # start = request.get('start', None)
+            # count = request.get('count', None)
+            # callback = request.get('callback', None)
+            # if func is not None and start is not None\
+            #         and count is not None and callback is not None:
+            connect.proceed_request(request)
 
     async def proceedFileRequest(self, req_data):
         data_storage = req_data['data']
