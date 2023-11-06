@@ -2,6 +2,7 @@ import asyncio
 import csv
 import socket
 import struct
+import threading
 
 from Crypto.Cipher import DES
 from PySide6.QtCore import QObject, Qt
@@ -42,16 +43,17 @@ class AQ_Device110China(AQ_Device):
         self.device_tree = None
         self.params_list = []
         self.password = None
-        self.read_request_count = 0
-        self.write_request_count = 0
+        self.request_count = list()
         self.network_settings = network_settings
-        self.changed_param_stack = []
+        # self.changed_param_stack = []
         self.update_param_stack = []
         self.stack_to_read = []
         self.stack_to_write = []
         self.read_error_flag = False
         self.write_error_flag = False
         self.connect = None
+        self.params_inited = False
+        self.core_cv = threading.Condition()
         self.event_manager.emit_event('create_new_connect', self)
         if self.connect is not None and self.connect.open():
             self.device_data = self.read_device_data()
@@ -88,26 +90,39 @@ class AQ_Device110China(AQ_Device):
             # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C3E4AB'
             # hex_string = '0D403EAF19E7DA52CC2504F97AAA07A3E86C04B685C7EA96614844FC13C346945474D02935FDF5A2'
             # self.decrypt_data(b'superkey', bytes.fromhex(hex_string))
-            self.local_event_manager.register_event_handler('add_param_to_changed_stack', self.add_param_to_changed_stack)
+            # self.local_event_manager.register_event_handler('add_param_to_changed_stack', self.add_param_to_changed_stack)
             self.local_event_manager.register_event_handler('add_param_to_update_stack', self.add_param_to_update_stack)
+            self.event_manager.register_event_handler('current_device_data_updated', self.read_complete)
 
-    def add_param_to_changed_stack(self, item):
-        if item not in self.changed_param_stack:
-            self.changed_param_stack.append(item)
+    def init_parameters(self):
+        for i in self.params_list:
+            self.read_parameters(i)
+            with self.core_cv:
+                self.core_cv.wait()
+                # TODO: Установить значение по умолчанию или 0
+
+        return True
+
+    def read_complete(self, device, item):
+        if device == self:
+            with self.core_cv:
+                self.core_cv.notify()
+
+    # def add_param_to_changed_stack(self, item):
+    #     if item not in self.changed_param_stack:
+    #         self.changed_param_stack.append(item)
 
     def add_param_to_update_stack(self, item):
         if item not in self.update_param_stack:
             self.update_param_stack.append(item)
-            if len(self.update_param_stack) == self.read_request_count or \
-                    len(self.update_param_stack) == self.write_request_count:
+            if len(self.update_param_stack) == self.request_count[0]:
+                self.request_count.pop(0)
                 self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
-                self.read_request_count = 0
-                self.write_request_count = 0
                 self.update_param_stack.clear()
 
-                # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
-                removed_index = self.changed_param_stack.index(item)
-                self.changed_param_stack.pop(removed_index)
+                # # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
+                # removed_index = self.changed_param_stack.index(item)
+                # self.changed_param_stack.pop(removed_index)
 
     def get_device_status(self):
         return self.device_data.get('status', None)
@@ -448,7 +463,7 @@ class AQ_Device110China(AQ_Device):
         return decrypt_res
 
     def read_parameters(self, items=None):
-        if self.read_request_count == 0:
+        if len(self.request_count) == 0:
             if items is None:
                 self.read_all_parameters()
             elif isinstance(items, AQ_ParamItem):
@@ -457,7 +472,7 @@ class AQ_Device110China(AQ_Device):
                 for i in range(len(items)):
                     self.read_parameter(items[i])
 
-            self.read_request_count = len(self.stack_to_read)
+            self.request_count.append(len(self.stack_to_read))
 
             self.connect.createParamRequest(self.stack_to_read)
 
@@ -509,7 +524,7 @@ class AQ_Device110China(AQ_Device):
         # return 'ok'
 
     def write_parameters(self, items=None):
-        if self.write_request_count == 0:
+        if len(self.request_count) == 0:
             if items is None:
                 self.write_all_parameters()
             elif isinstance(items, AQ_ParamItem):
@@ -518,7 +533,7 @@ class AQ_Device110China(AQ_Device):
                 for i in range(len(items)):
                     self.write_parameter(items[i])
 
-            self.write_request_count = len(self.stack_to_write)
+            self.request_count.append(len(self.stack_to_write))
 
             self.connect.createParamRequest(self.stack_to_write)
 
@@ -543,45 +558,13 @@ class AQ_Device110China(AQ_Device):
             self.write_parameter(item)
 
     def write_parameter(self, item):
-        if item in self.changed_param_stack:
+        # if item in self.changed_param_stack:
+        if item.get_status() == 'changed':
             param_attributes = item.get_param_attributes()
 
-            # param_type = param_attributes.get('type', '')
-            # param_size = param_attributes.get('param_size', '')
             modbus_reg = param_attributes.get('modbus_reg', '')
             write_func = param_attributes.get('write_func', '')
             data = item.data_for_network()
-            # if param_type != '' and param_size != '' and modbus_reg != '':
-            #     if write_func == 16:
-            #         try:
-            #             result = self.connect.write_param(modbus_reg, data, write_func)
-            #             if result != 'modbus_error':
-            #                 item.synchronized = True
-            #                 # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
-            #                 removed_index = self.changed_param_stack.index(item)
-            #                 self.changed_param_stack.pop(removed_index)
-            #             else:
-            #                 self.write_error_flag = True
-            #         except Exception as e:
-            #             print(f"Error occurred: {str(e)}")
-            #     elif write_func == 5:
-            #         result = self.connect.write_param(modbus_reg, data, write_func)
-            #         if result != 'modbus_error':
-            #             item.synchronized = True
-            #             # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
-            #             removed_index = self.changed_param_stack.index(item)
-            #             self.changed_param_stack.pop(removed_index)
-            #         else:
-            #             self.write_error_flag = True
-            #     elif write_func == 6:
-            #         result = self.connect.write_param(modbus_reg, data, write_func)
-            #         if result != 'modbus_error':
-            #             item.synchronized = True
-            #             # Якщо запис успішний, видаляємо параметр зі стеку змінених параметрів
-            #             removed_index = self.changed_param_stack.index(item)
-            #             self.changed_param_stack.pop(removed_index)
-            #         else:
-            #             self.write_error_flag = True
 
             self.stack_to_write.append({'method': self.connect.write_param, 'func': write_func, 'start': modbus_reg,
                                        'data': data, 'callback': item.confirm_writing})
