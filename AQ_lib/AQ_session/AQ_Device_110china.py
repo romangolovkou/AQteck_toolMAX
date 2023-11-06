@@ -790,7 +790,7 @@ class AQ_Device_110chinaPacker:
                     byte_array = reverse_modbus_registers(byte_array)
                     param_value = struct.unpack('>I', byte_array)[0]
         elif read_func == 2 or read_func == 1:
-            if data is True:
+            if data.bits[0] is True:
                 param_value = 1
             else:
                 param_value = 0
