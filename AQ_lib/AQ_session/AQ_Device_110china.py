@@ -31,7 +31,7 @@ class AQ_Device_Config:
 
 
 class AQ_Device110China(AQ_Device):
-    def __init__(self, event_manager, network_settings, parent=None):
+    def __init__(self, event_manager, connect, network_settings, parent=None):
         # super().__init__(event_manager, address_tuple, parent)
         self.event_manager = event_manager
         self.local_event_manager = AQ_EventManager()
@@ -51,10 +51,10 @@ class AQ_Device110China(AQ_Device):
         self.stack_to_write = []
         self.read_error_flag = False
         self.write_error_flag = False
-        self.connect = None
+        self.connect = connect
         self.params_inited = False
         self.core_cv = threading.Condition()
-        self.event_manager.emit_event('create_new_connect', self)
+        # self.event_manager.emit_event('create_new_connect', self)
         if self.connect is not None and self.connect.open():
             self.device_data = self.read_device_data()
         else:

@@ -24,13 +24,17 @@ class AQ_ConnectManager(QObject):
         self.core_thread = threading.Thread(target=self.run)
         self.core_thread.start()
 
-    def create_connect(self, device):
-        connect_settings = self.get_connect_settings(device.network_settings)
+    def create_connect(self, network_settings, callback_dict):
+        connect_settings = self.get_connect_settings(network_settings)
         if connect_settings is not None:
             try:
-                device.connect = AQ_Modbus_Connect(connect_settings, device.network_settings.get('address', 1),
-                                                   self.core_cv)
-                self.connect_list.append(device.connect)
+                connect = AQ_Modbus_Connect(connect_settings, network_settings.get('address', 1), self.core_cv)
+                if connect.open():
+                    connect.close()
+                    self.connect_list.append(connect)
+                    callback_dict['connect'] = connect
+                else:
+                    callback_dict['connect'] = 'connect_error'
             except Exception as e:
                 print(str(e))
 

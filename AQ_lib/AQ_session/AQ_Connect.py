@@ -76,6 +76,7 @@ class AQ_Modbus_Connect(AQ_connect):
 
     def proceed_request(self, request):
         function = request.get('method', None)
+
         if function.__name__ == 'read_param':
             func = request.get('func', None)
             start = request.get('start', None)
