@@ -6,50 +6,24 @@ from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, A
     AQ_SignedToFloatTreeLineEdit, AQ_FloatEnumROnlyTreeLineEdit, AQ_FloatEnumTreeComboBox
 
 
-class BaseItem:
-    def __init__(self):
-        super().__init__()
-        self._value = None
-    @property
-    def value(self):
-        return self._value
 
-    @value.setter
-    def value(self, data):
-        print('I was setted with ', data)
-        self._value = data
-
-
-class ModbusItem(BaseItem):
-    def __init__(self, packer=None):
-        super().__init__()
-        self.my_protocol = "Modbus"
-        self._packer = packer
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, data):
-        if self._packer:
-            _value = self._packer.unpack()
-        else:
-            _value = data
-
-        print('I was setted with ', data,)
 
 
 class AQ_ParamItem(QStandardItem):
-    def __init__(self, name, packer=None):
+    def __init__(self, param_attributes):
+        name = param_attributes.get('name', None)
+        R_Only = param_attributes.get('R_Only', None)
+        W_Only = param_attributes.get('W_Only', None)
+        if name is None or R_Only is None or W_Only is None:
+            raise Exception('AQ_ParamItemError: "name" is not exist')
         super().__init__(name)
-        self.packer = packer
         self._value = None
         self.value_in_device = None
         self.editor = None
         self.synchro_flag = False
         self.param_status = None
         self.local_event_manager = None
+        self.setData(param_attributes, Qt.UserRole)
 
     @property
     def value(self):
@@ -109,19 +83,19 @@ class AQ_ParamItem(QStandardItem):
         if is_error:
             self.set_error_flag(message)
         else:
-            if self.packer:
-                new_value = self.packer.unpack(self, new_value)
+            new_value = self.unpack(self, new_value)
             self.validate(new_value)
             self._value = new_value
             self.synchronized = True
 
     def data_for_network(self):
-        if self.packer:
-            value = self.packer.pack(self, self._value)
-        else:
-            value = self._value
+        return self.pack()
 
-        return value
+    def pack(self):
+        return self._value
+
+    def unpack(self, data):
+        return data
 
     def validate(self, new_value):
         param_attributes = self.data(Qt.UserRole)
@@ -160,8 +134,37 @@ class AQ_ParamItem(QStandardItem):
         self.local_event_manager = local_event_manager
 
 
+class AQ_ModbusItem(AQ_ParamItem):
+    def __init__(self, param_attributes):
+
+        modbus_reg = param_attributes.get('modbus_reg', None)
+        param_size = param_attributes.get('param_size', None)
+        if param_size is None or modbus_reg is None:
+            raise Exception('ModbusItemError: "modbus_reg" or "param_size" not exist')
+        # TODO: Переделать c размера в байхтах на колличество регистров
+        read_func = param_attributes.get('read_func', None)
+        if read_func is None:
+            raise Exception('ModbusItemError: "read_func" is not exist')
+
+        if not (param_attributes.get('R_Only', None) == 1 and
+                param_attributes.get('W_Only', None) == 0):
+            write_func = param_attributes.get('write_func', None)
+            if write_func is None:
+                raise Exception('"write_func" is not exist')
+
+        param_attributes['protocol'] = 'modbus'
+
+        super().__init__(param_attributes)
+
+        self.setData(param_attributes, Qt.UserRole)
+
+
 class AQ_CatalogItem(AQ_ParamItem):
-    def __init__(self, name):
+    def __init__(self, param_attributes):
+        is_catalog = param_attributes.get('is_catalog', None)
+        if is_catalog is None:
+            raise Exception('AQ_CatalogItemError: "is_catalog" is not exist')
+        name = param_attributes.get('name', None)
         super().__init__(name)
 
 
@@ -182,19 +185,39 @@ class AQ_EnumParamItem(AQ_ParamItem):
 
 
 class AQ_UnsignedParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_UnsignedParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = 0
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = self.get_standart_max_limit(self.param_size)
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_uint = AQ_UintTreeLineEdit
-        self.editor_ip = AQ_IpTreeLineEdit
+        # self.editor_ip = AQ_IpTreeLineEdit
 
-    def get_editor(self):
-        param_attributes = self.data(Qt.UserRole)
-        if param_attributes is not None:
-            if param_attributes.get('visual_type', '') == 'ip_format':
-                return self.editor_ip
+    # def get_editor(self):
+    #     param_attributes = self.data(Qt.UserRole)
+    #     if param_attributes is not None:
+    #         if param_attributes.get('visual_type', '') == 'ip_format':
+    #             return self.editor_ip
+    #
+    #     return self.editor_uint
 
-        return self.editor_uint
+    def get_standart_max_limit(self, param_size):
+        if param_size == 1:
+            return int('255')
+        elif param_size == 2:
+            return int('65535')
+        elif param_size == 4:
+            return int('4294967295')
+        elif param_size == 8:
+            return int('18446744073709551615')
 
 
 class AQ_SignedParamItem(AQ_ParamItem):
