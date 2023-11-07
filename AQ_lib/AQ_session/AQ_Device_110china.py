@@ -686,7 +686,7 @@ class AQ_Device_110chinaPacker:
                     registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
                 elif param_type == 'enum':
                     # костиль для enum з розміром два регістра
-                    if param_size == 4:
+                    if param_size >= 16:
                         packed_data = struct.pack('I', value)
                         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
                     else:
