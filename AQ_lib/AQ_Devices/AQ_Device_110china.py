@@ -1,6 +1,7 @@
 import csv
 import socket
 import struct
+import threading
 
 from Crypto.Cipher import DES
 from PySide6.QtCore import QObject, Qt
@@ -506,7 +507,6 @@ class AQ_Device110China(AQ_Device):
             else:
                 byte_size = param_size
                 if byte_size < 2:
-                    /Ъ9
                     reg_count = 1
                 else:
                     reg_count = byte_size // 2

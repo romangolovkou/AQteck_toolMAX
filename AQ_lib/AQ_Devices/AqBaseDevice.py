@@ -1,3 +1,4 @@
+import threading
 from abc import ABC, abstractmethod
 
 from pymodbus.client import serial
@@ -12,14 +13,16 @@ from DeviceModels import AqDeviceInfoModel, AqDeviceConfig
 
 
 class AqBaseDevice(ABC):
-    def __init__(self, event_manager, connect, address_tuple):
+    def __init__(self, event_manager, connect, network_settings):
         self._event_manager = event_manager
         self._local_event_manager = None
         self._device_tree = None
-        self._params_list = []
+        self._params_list = list()
         self._changed_param_stack = []
         self._update_param_stack = []
-        self._connect = connect
+        self.connect = connect
+        self._request_count = list()
+        self._core_cv = threading.Condition()
 
         self._info = {
             'name':             None,
@@ -40,18 +43,22 @@ class AqBaseDevice(ABC):
         }
 
         # TODO: refactor this
-        self._address_tuple = address_tuple
-        self.client = self.__create_client(address_tuple)
-        self.client.open()
-        # end refactor zone
+        self.network_settings = network_settings
+        self._event_manager.emit_event('create_new_connect', self)
+        self.connect.open()
 
-        self.init_device()
+        if self.connect is not None and self.connect.open():
+            self.init_device()
+        else:
+            return False
+
+        # end refactor zone
 
         if self._device_tree is not None and isinstance(self._device_tree, AQ_TreeItemModel):
             self._device_tree.set_device(self)
 
         self.__param_convert_tree_to_list()
-        self.__create_local_event_manager
+        self.__create_local_event_manager()
         # self.__verify()
 
     @property
@@ -67,6 +74,24 @@ class AqBaseDevice(ABC):
 
     def info(self, param):
         return self._info[param]
+
+    def init_parameters(self):
+        self._event_manager.register_event_handler('current_device_data_updated', self.read_complete)
+        # TODO: check for offline connectivity
+        for i in self._params_list:
+            self.read_parameters(i)
+            with self._core_cv:
+                self._core_cv.wait()
+                # TODO: Установить значение по умолчанию или 0
+
+        self._event_manager.unregister_event_handler('current_device_data_updated', self.read_complete)
+        return True
+
+    def read_complete(self, device, item):
+        if device == self:
+            with self._core_cv:
+                self._core_cv.notify()
+
 
     def read_parameters(self, items=None):
         if items is None:

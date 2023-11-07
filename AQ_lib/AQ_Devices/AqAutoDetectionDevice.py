@@ -33,11 +33,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
     }
 
     # Add to init all what we need
-    def __init__(self, event_manager, connect, address_tuple):
-        super().__init__(event_manager, connect, address_tuple)
+    def __init__(self, event_manager, connect, network_settings):
+        super().__init__(event_manager, connect, network_settings)
         self._default_prg = None
 
     def init_device(self) -> bool:
+
         self._info['name'] = self.__read_string('name')
         self._info['version'] = self.__read_string('version')
         self._info['serial_num'] = self.__read_string('serial_num')

@@ -18,6 +18,125 @@ class AQ_connect(QObject):
         pass
 
 
+class AQ_IP_Connect_settings:
+    def __init__(self, _ip):
+        super().__init__()
+        self.ip = _ip
+
+
+class AQ_COM_Connect_settings:
+
+    def __init__(self, _port, _baudrate, _parity, _stopbits):
+        super().__init__()
+        self.port = _port
+        self.baudrate = _baudrate
+        self.parity = _parity
+        self.stopbits = _stopbits
+
+
+class AQ_Modbus_Connect(AQ_connect):
+
+    def __init__(self, connect_settings, slave_id, core_cv):
+        super().__init__()
+        self.connect_settings = connect_settings
+        self.core_cv = core_cv
+        self.param_request_stack = []
+        self.file_request_stack = []
+        self.timeout = 1.0
+        if type(self.connect_settings).__name__ == 'AQ_COM_Connect_settings':
+            self.client = ModbusSerialClient(method='rtu',
+                                                    port=self.connect_settings.port,
+                                                    baudrate=self.connect_settings.baudrate,
+                                                    parity=self.connect_settings.parity[:1],
+                                                    stopbits=self.connect_settings.stopbits,
+                                                    timeout=self.timeout)
+            self.slave_id = slave_id
+        elif type(self.connect_settings).__name__ == 'AQ_IP_Connect_settings':
+            self.client = ModbusTcpClient(self.connect_settings.ip)
+            self.slave_id = 1
+        else:
+            Exception('Помилка. Невідомі налаштування коннекту')
+
+    def open(self):
+        return self.client.connect()
+
+    def close(self):
+        self.client.close()
+
+    def createParamRequest(self, request_stack):
+        self.param_request_stack = request_stack
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def createFileRequest(self, func, file_num, record_num, record_len, data):
+        self.file_request_stack.append({'func': func, 'file_num': file_num,
+                                        'record_num': record_num, 'record_len': record_len, 'data': data})
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def proceed_request(self, request):
+        function = request.get('method', None)
+        if function.__name__ == 'read_param':
+            func = request.get('func', None)
+            start = request.get('start', None)
+            count = request.get('count', None)
+            callback = request.get('callback', None)
+            if func is not None and start is not None \
+                    and count is not None and callback is not None:
+                function(func, start, count, callback)
+        elif function.__name__ == 'write_param':
+            func = request.get('func', None)
+            start = request.get('start', None)
+            data = request.get('data', None)
+            callback = request.get('callback', None)
+            if func is not None and start is not None \
+                    and data is not None:
+                function(func, start, data, callback)
+
+    def read_param(self, func, start, count, callback):
+        if func == 3:
+            result = self.client.read_holding_registers(start, count, self.slave_id)
+        elif func == 2:
+            result = self.client.read_discrete_inputs(start, 1, self.slave_id)
+        elif func == 1:
+            result = self.client.read_coils(start, 1, self.slave_id)
+        else:
+            return 'modbus_error'
+
+        if isinstance(result, ModbusIOException):
+            # return 'modbus_error'
+            callback(None, True, 'modbus_error')
+        else:
+            callback(result)
+
+    def write_param(self, func, start, data, callback):
+        try:
+            result = None
+            if func == 16:
+                result = self.client.write_registers(start, data, self.slave_id)
+            elif func == 5:
+                # Запись одного дискретного выхода (бита)
+                result = self.client.write_coil(start, data, self.slave_id)
+            elif func == 6:
+                if start == 100:
+                    # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
+                    result = self.client.write_register(start, data, 0)
+                    if not isinstance(result, ModbusIOException):
+                        self.slave_id = data
+                else:
+                    # Запись одного регистра
+                    result = self.client.write_register(start, data, self.slave_id)
+
+            if isinstance(result, ModbusIOException):
+                callback(False, 'modbus_error')
+            else:
+                callback(True)
+
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            raise
+
+
 class AQ_COM_connect(AQ_connect):
     def __init__(self):
         super().__init__()
@@ -29,11 +148,14 @@ class AQ_TCP_connect(AQ_connect):
 
 
 class AQ_modbusRTU_connect(AQ_COM_connect):
-    def __init__(self, _port, _baudrate, _parity, _stopbits, slave_id):
+    def __init__(self, connect_manager, _port, _baudrate, _parity, _stopbits, slave_id):
         super().__init__()
         self.slave_id = slave_id
-        self.boudrate = _baudrate
-        self.timeout = 3.0
+        self.start_address = None
+        self.register_count = None
+        self.func = None
+        self.connect_manager = connect_manager
+        self.timeout = 1.0
         self.modbus_rtu_client = ModbusSerialClient(method='rtu', port=_port, baudrate=_baudrate, parity=_parity,
                                                     stopbits=_stopbits, timeout=self.timeout)
 
