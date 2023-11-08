@@ -173,8 +173,8 @@ class AQ_CatalogItem(AQ_ParamItem):
 class AQ_EnumParamItem(AQ_ParamItem):
     def __init__(self, param_attributes):
         self.param_size = param_attributes.get('param_size', None)
-        if self.param_size is None:
-            raise Exception('AQ_EnumParamItemError: "param_size" is not exist')
+        if self.param_size is None or param_attributes.get('enum_strings', None) is None:
+            raise Exception('AQ_EnumParamItemError: "param_size" or "enum_strings" is not exist')
 
         if param_attributes.get('min_limit', None) is None:
             param_attributes['min_limit'] = None
@@ -336,22 +336,52 @@ class AQ_DateTimeParamItem(AQ_ParamItem):
 
 
 class AQ_SignedToFloatParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None or param_attributes.get('multiply', None) is None:
+            raise Exception('AQ_SignedToFloatParamItemError: "param_size" or "multiply" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_SignedToFloatTreeLineEdit
 
 
 class AQ_UnsignedToFloatParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None or param_attributes.get('multiply', None) is None:
+            raise Exception('AQ_UnsignedToFloatParamItemError: "param_size" or "multiply" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AQ_SignedToFloatTreeLineEdit
 
 
 class AQ_FloatEnumParamItem(AQ_EnumParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None or param_attributes.get('enum_strings', None) is None:
+            raise Exception('AQ_FloatEnumParamItemError: "param_size" or "enum_strings" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_RW = AQ_FloatEnumTreeComboBox
         self.editor_R_Only = AQ_FloatEnumROnlyTreeLineEdit

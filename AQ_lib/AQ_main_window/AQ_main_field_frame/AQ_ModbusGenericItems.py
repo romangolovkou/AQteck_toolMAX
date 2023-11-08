@@ -1,7 +1,8 @@
 import struct
 
 from AQ_CustomTreeItems import AQ_UnsignedParamItem, AQ_ModbusItem, AQ_EnumParamItem, AQ_SignedParamItem, \
-    AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem
+    AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem, AQ_SignedToFloatParamItem, AQ_UnsignedToFloatParamItem, \
+    AQ_FloatEnumParamItem
 from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_EnumROnlyTreeLineEdit
 from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 
@@ -175,19 +176,42 @@ class AQ_ModbusStringParamItem(AQ_StringParamItem, AQ_ModbusItem):
         return param_value
 
 
-# class AQ_ModbusDateTimeParamItem(AQ_DateTimeParamItem, AQ_ModbusItem):
-#     def __init__(self, param_attributes):
-#         AQ_ModbusItem.__init__(param_attributes)
-#         AQ_DateTimeParamItem.__init__(param_attributes)
-#
-#     def pack(self):
-#     #     TODO: Реалізувати для запису типу дати та часу, тимчасово
-#
-#     def unpack(self, data):
-#         # Конвертируем значения регистров в строку
-#         hex_string = ''.join(format(value, '04X') for value in data.registers)
-#         # Конвертируем строку в массив байт
-#         byte_array = bytes.fromhex(hex_string)
-#
-#         byte_array = reverse_modbus_registers(byte_array)
-#         param_value = struct.unpack('>I', byte_array)[0]
+class AQ_ModbusDateTimeParamItem(AQ_DateTimeParamItem, AQ_ModbusItem):
+    def __init__(self, param_attributes):
+        AQ_ModbusItem.__init__(param_attributes)
+        AQ_DateTimeParamItem.__init__(param_attributes)
+
+    def pack(self):
+        packed_data = struct.pack('I', self.value)
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
+
+    def unpack(self, data):
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in data.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+
+        byte_array = reverse_modbus_registers(byte_array)
+        param_value = struct.unpack('>I', byte_array)[0]
+
+        return param_value
+
+
+class AQ_ModbusSignedToFloatParamItem(AQ_SignedToFloatParamItem, AQ_ModbusSignedParamItem):
+    def __init__(self, param_attributes):
+        AQ_ModbusSignedParamItem.__init__(param_attributes)
+        AQ_SignedToFloatParamItem.__init__(param_attributes)
+
+
+class AQ_ModbusSignedToFloatParamItem(AQ_UnsignedToFloatParamItem, AQ_ModbusUnsignedParamItem):
+    def __init__(self, param_attributes):
+        AQ_ModbusUnsignedParamItem.__init__(param_attributes)
+        AQ_UnsignedToFloatParamItem.__init__(param_attributes)
+
+
+class AQ_ModbusSignedToFloatParamItem(AQ_FloatEnumParamItem, AQ_ModbusEnumParamItem):
+    def __init__(self, param_attributes):
+        AQ_ModbusEnumParamItem.__init__(param_attributes)
+        AQ_FloatEnumParamItem.__init__(param_attributes)
