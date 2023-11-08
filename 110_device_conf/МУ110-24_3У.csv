@@ -1,7 +1,7 @@
 МУ110-24.3У;;;;;;;;;;;
 Имя парметра;Каталог;Номер регистра/бита;Кол-во регистров/битов;Функция чтения;Функция записи;Тип данных;Минимальное значение;Максимальное значение;Ед. Изм;Значение по умолчанию;строки (только для enum)
-AO 1;Analog outputs;0;1;3;6;unsigned 16;0;10000;mV;;
-AO 2;Analog outputs;1;1;3;6;unsigned 16;0;10000;mV;;
-AO 3;Analog outputs;2;1;3;6;unsigned 16;0;10000;mV;;
-Slave address;Communication settings;100;1;3;6;unsigned 8;1;255;;1;
-Communication setting;Communication settings;101;1;3;6;enum 4;1;8;;2;1=4800. None. 8. 1/2=9600. None. 8. 1/3=19200. None. 8. 1/4=38400. None. 8. 1/5=4800. Even. 8. 1/6=9600. Even. 8. 1/7=19200. Even. 8. 1/8=38400. Even. 8. 1
+AO 1;Analog outputs;0;1;3;6;AqModbusUnsignedParamItem 16;0;10000;mV;;
+AO 2;Analog outputs;1;1;3;6;AqModbusUnsignedParamItem 16;0;10000;mV;;
+AO 3;Analog outputs;2;1;3;6;AqModbusUnsignedParamItem 16;0;10000;mV;;
+Slave address;Communication settings;100;1;3;6;AqModbusUnsignedParamItem 8;1;255;;1;
+Communication setting;Communication settings;101;1;3;6;AqModbusEnumParamItem 4;1;8;;2;1=4800. None. 8. 1/2=9600. None. 8. 1/3=19200. None. 8. 1/4=38400. None. 8. 1/5=4800. Even. 8. 1/6=9600. Even. 8. 1/7=19200. Even. 8. 1/8=38400. Even. 8. 1
