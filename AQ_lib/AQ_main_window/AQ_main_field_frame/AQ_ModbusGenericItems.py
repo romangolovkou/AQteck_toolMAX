@@ -10,7 +10,7 @@ from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_emp
 # TODO: сделать модбас итем зависящий от функции
 
 
-class AQ_ModbusEnumParamItem(AQ_EnumParamItem, AQ_ModbusItem):
+class AqModbusEnumParamItem(AQ_EnumParamItem, AQ_ModbusItem):
     def __init__(self, param_attributes):
         AQ_ModbusItem.__init__(param_attributes)
         AQ_EnumParamItem.__init__(param_attributes)
@@ -39,7 +39,7 @@ class AQ_ModbusEnumParamItem(AQ_EnumParamItem, AQ_ModbusItem):
         return param_value
 
 
-class AQ_ModbusUnsignedParamItem(AQ_UnsignedParamItem, AQ_ModbusItem):
+class AqModbusUnsignedParamItem(AQ_UnsignedParamItem, AQ_ModbusItem):
     def __init__(self, param_attributes):
         AQ_ModbusItem.__init__(param_attributes)
         AQ_UnsignedParamItem.__init__(param_attributes)
@@ -80,7 +80,7 @@ class AQ_ModbusUnsignedParamItem(AQ_UnsignedParamItem, AQ_ModbusItem):
         return param_value
 
 
-class AQ_ModbusSignedParamItem(AQ_SignedParamItem, AQ_ModbusItem):
+class AqModbusSignedParamItem(AQ_SignedParamItem, AQ_ModbusItem):
     def __init__(self, param_attributes):
         AQ_ModbusItem.__init__(param_attributes)
         AQ_SignedParamItem.__init__(param_attributes)
@@ -116,7 +116,7 @@ class AQ_ModbusSignedParamItem(AQ_SignedParamItem, AQ_ModbusItem):
         return param_value
 
 
-class AQ_ModbusFloatParamItem(AQ_FloatParamItem, AQ_ModbusItem):
+class AqModbusFloatParamItem(AQ_FloatParamItem, AQ_ModbusItem):
     def __init__(self, param_attributes):
         AQ_ModbusItem.__init__(param_attributes)
         AQ_FloatParamItem.__init__(param_attributes)
@@ -147,7 +147,7 @@ class AQ_ModbusFloatParamItem(AQ_FloatParamItem, AQ_ModbusItem):
         return param_value
 
 
-class AQ_ModbusStringParamItem(AQ_StringParamItem, AQ_ModbusItem):
+class AqModbusStringParamItem(AQ_StringParamItem, AQ_ModbusItem):
     def __init__(self, param_attributes):
         AQ_ModbusItem.__init__(param_attributes)
         AQ_StringParamItem.__init__(param_attributes)
@@ -176,7 +176,7 @@ class AQ_ModbusStringParamItem(AQ_StringParamItem, AQ_ModbusItem):
         return param_value
 
 
-class AQ_ModbusDateTimeParamItem(AQ_DateTimeParamItem, AQ_ModbusItem):
+class AqModbusDateTimeParamItem(AQ_DateTimeParamItem, AQ_ModbusItem):
     def __init__(self, param_attributes):
         AQ_ModbusItem.__init__(param_attributes)
         AQ_DateTimeParamItem.__init__(param_attributes)
@@ -199,19 +199,19 @@ class AQ_ModbusDateTimeParamItem(AQ_DateTimeParamItem, AQ_ModbusItem):
         return param_value
 
 
-class AQ_ModbusSignedToFloatParamItem(AQ_SignedToFloatParamItem, AQ_ModbusSignedParamItem):
+class AqModbusSignedToFloatParamItem(AQ_SignedToFloatParamItem, AqModbusSignedParamItem):
     def __init__(self, param_attributes):
-        AQ_ModbusSignedParamItem.__init__(param_attributes)
+        AqModbusSignedParamItem.__init__(param_attributes)
         AQ_SignedToFloatParamItem.__init__(param_attributes)
 
 
-class AQ_ModbusSignedToFloatParamItem(AQ_UnsignedToFloatParamItem, AQ_ModbusUnsignedParamItem):
+class AqModbusUnsignedToFloatParamItem(AQ_UnsignedToFloatParamItem, AqModbusUnsignedParamItem):
     def __init__(self, param_attributes):
-        AQ_ModbusUnsignedParamItem.__init__(param_attributes)
+        AqModbusUnsignedParamItem.__init__(param_attributes)
         AQ_UnsignedToFloatParamItem.__init__(param_attributes)
 
 
-class AQ_ModbusSignedToFloatParamItem(AQ_FloatEnumParamItem, AQ_ModbusEnumParamItem):
+class AqModbusFloatEnumParamItem(AQ_FloatEnumParamItem, AqModbusEnumParamItem):
     def __init__(self, param_attributes):
-        AQ_ModbusEnumParamItem.__init__(param_attributes)
+        AqModbusEnumParamItem.__init__(param_attributes)
         AQ_FloatEnumParamItem.__init__(param_attributes)
