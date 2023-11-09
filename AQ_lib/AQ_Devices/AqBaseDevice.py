@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AQ_Connect import AQ_modbusRTU_connect, AQ_modbusTCP_connect
+from AqConnect import AqConnect
 from AQ_CustomTreeItems import AQ_ParamItem
 from AQ_EventManager import AQ_EventManager
 from AQ_IsValidIpFunc import is_valid_ip
@@ -13,22 +13,22 @@ from DeviceModels import AqDeviceInfoModel, AqDeviceConfig
 
 
 class AqBaseDevice(ABC):
-    def __init__(self, event_manager, connect, network_settings):
+    def __init__(self, event_manager, connect: AqConnect):
         self._event_manager = event_manager
         self._local_event_manager = None
         self._device_tree = None
+        self._connect = connect
         self._params_list = list()
-        self._changed_param_stack = []
         self._update_param_stack = []
-        self.connect = connect
         self._request_count = list()
+        self._stack_to_read = list()
+        self._stack_to_write = list()
         self._core_cv = threading.Condition()
 
         self._info = {
             'name':             None,
             'version':          None,
             'serial_num':       None,
-            'connection':       None,
             'address':          None
         }
         self._status = None
@@ -42,20 +42,18 @@ class AqBaseDevice(ABC):
             'restart': None
         }
 
-        # TODO: refactor this
-        self.network_settings = network_settings
-        self._event_manager.emit_event('create_new_connect', self)
-        self.connect.open()
-
-        if self.connect is not None and self.connect.open():
-            self.init_device()
+        if self._connect is not None and self._connect.open():
+            self._info['address'] = self._connect.address_string()
         else:
-            return False
+            raise Exception('AqBaseDeviceError: can`t open connect')
 
-        # end refactor zone
+        if not self.init_device():
+            raise Exception('AqBaseDeviceError: can`t initialize device')
 
         if self._device_tree is not None and isinstance(self._device_tree, AQ_TreeItemModel):
             self._device_tree.set_device(self)
+        else:
+            raise Exception('AqBaseDeviceError: device_tree isn`t exists')
 
         self.__param_convert_tree_to_list()
         self.__create_local_event_manager()
@@ -92,29 +90,37 @@ class AqBaseDevice(ABC):
             with self._core_cv:
                 self._core_cv.notify()
 
-
     def read_parameters(self, items=None):
-        if items is None:
-            self.read_all_parameters()
-        elif isinstance(items, AQ_ParamItem):
-            self.__read_item(items)
-        elif isinstance(items, list):
-            for i in range(len(items)):
-                self.read_parameter(items[i])
+        if len(self._request_count) == 0:
+            if items is None:
+                root = self._device_tree.invisibleRootItem()
+                for row in range(root.rowCount()):
+                    child_item = root.child(row)
+                    self.__read_item(child_item)
+            else:
+                if isinstance(items, AQ_ParamItem):
+                    items = [items]
+                for i in range(len(items)):
+                    self.__read_item(items[i])
 
-        if len(self._update_param_stack) > 0:
-            self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-            self._update_param_stack.clear()
+            self._request_count.append(len(self._stack_to_read))
+            self._connect.create_param_request(self._stack_to_read)
 
-    def read_all_parameters(self):
-        root = self._device_tree.invisibleRootItem()
-        for row in range(root.rowCount()):
-            child_item = root.child(row)
-            self.__read_item(child_item)
+    def write_parameters(self, items=None):
+        if len(self._request_count) == 0:
+            if items is None:
+                root = self.device_tree.invisibleRootItem()
+                for row in range(root.rowCount()):
+                    child_item = root.child(row)
+                    self.__write_item(child_item)
+            else:
+                if isinstance(items, AQ_ParamItem):
+                    items = list(items)
+                for i in range(len(items)):
+                    self.__write_item(items[i])
 
-        self._update_param_stack.clear()
-        self._event_manager.emit_event('current_device_data_updated', self)
-        return
+            self._request_count.append(len(self._stack_to_write))
+            self._connect.create_param_request(self._stack_to_write)
 
     @abstractmethod
     def read_parameter(self, item):
@@ -123,16 +129,8 @@ class AqBaseDevice(ABC):
 
     @abstractmethod
     def write_parameter(self, item):
-        """Write parameter to device"""
+        """Read parameter from device"""
         return NotImplementedError
-
-    def write_all_parameters(self):
-        root = self._device_tree.invisibleRootItem()
-        for row in range(root.rowCount()):
-            child_item = root.child(row)
-            self.write_parameter(child_item)
-
-        self._event_manager.emit_event('current_device_data_written', self)
 
     def reboot(self):
         """
@@ -186,39 +184,13 @@ class AqBaseDevice(ABC):
         return NotImplementedError
 
     # Private function
-
-    # TODO: Refactor this
-    def __create_client(self, address_tuple):
-        interface = address_tuple[0]
-        address = address_tuple[1]
-        if interface == "Ethernet":
-            if is_valid_ip(address):
-                self._info['connection'] = 'IP'
-                self._info['address'] = str(address)
-                client = AQ_modbusTCP_connect(address)
-                return client
-        else:
-            # Получаем список доступных COM-портов
-            com_ports = serial.tools.list_ports.comports()
-            for port in com_ports:
-                if port.description == interface:
-                    selected_port = port.device
-                    boudrate = address_tuple[3]
-                    parity = address_tuple[4][:1]
-                    stopbits = address_tuple[5]
-                    self._info['connection'] = str(selected_port)
-                    self._info['address'] = str(address)
-                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, address)
-                    return client
-
-        return None
-    # end refactor zone
-
-    def __add_changed_param(self, item):
-        self._changed_param_stack.append(item)
-
     def __add_param_to_update_stack(self, item):
-        self._update_param_stack.append(item)
+        if item not in self._update_param_stack:
+            self._update_param_stack.append(item)
+            if len(self._update_param_stack) == self._request_count[0]:
+                self._request_count.pop(0)
+                self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+                self._update_param_stack.clear()
 
     def __convert_tree_branch_to_list(self, item):
         param_attributes = item.get_param_attributes()
@@ -269,6 +241,16 @@ class AqBaseDevice(ABC):
         else:
             self.read_parameter(item)
 
+    def __write_item(self, item):
+        param_attributes = item.get_param_attributes()
+        if param_attributes.get('is_catalog', 0) == 1:
+            row_count = item.rowCount()
+            for row in range(row_count):
+                child_item = item.child(row)
+                self.__write_item(child_item)
+        else:
+            self.write_parameter(item)
+
     def __param_convert_tree_to_list(self):
         root = self._device_tree.invisibleRootItem()
         for row in range(root.rowCount()):
@@ -281,5 +263,4 @@ class AqBaseDevice(ABC):
         for item in self._params_list:
             item.set_local_event_manager(self._local_event_manager)
 
-        self._local_event_manager.register_event_handler('param_changed', self.__add_changed_param)
-        self._local_event_manager.register_event_handler('param_need_update', self.__add_param_to_update_stack)
+        self._local_event_manager.register_event_handler('add_param_to_update_stack', self.__add_param_to_update_stack)

@@ -5,8 +5,7 @@ from PySide6.QtCore import QThread, Signal, QObject
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect, AQ_IP_Connect_settings, AQ_COM_Connect_settings, \
-    AQ_Modbus_Connect
+from AqConnect import AqIpConnectSettings, AqComConnectSettings, AqModbusConnect
 from AQ_IsValidIpFunc import is_valid_ip
 
 
@@ -28,7 +27,7 @@ class AQ_ConnectManager(QObject):
         connect_settings = self.get_connect_settings(network_settings)
         if connect_settings is not None:
             try:
-                connect = AQ_Modbus_Connect(connect_settings, network_settings.get('address', 1), self.core_cv)
+                connect = AqModbusConnect(connect_settings, network_settings.get('address', 1), self.core_cv)
                 if connect.open():
                     connect.close()
                     self.connect_list.append(connect)
@@ -42,7 +41,7 @@ class AQ_ConnectManager(QObject):
         if network_settings.get('ip', False):
             ip = network_settings.get('ip', None)
             if ip is not None and is_valid_ip(ip):
-                return AQ_IP_Connect_settings(_ip=ip)
+                return AqIpConnectSettings(_ip=ip)
         elif network_settings.get('boudrate', False):
             interface = network_settings.get('interface', None)
             # Получаем список доступных COM-портов
@@ -59,10 +58,10 @@ class AQ_ConnectManager(QObject):
                     boudrate is not None and \
                     parity is not None and \
                     stopbits is not None:
-                return AQ_COM_Connect_settings(_port=selected_port,
-                                               _baudrate=boudrate,
-                                               _parity=parity,
-                                               _stopbits=stopbits)
+                return AqComConnectSettings(_port=selected_port,
+                                            _baudrate=boudrate,
+                                            _parity=parity,
+                                            _stopbits=stopbits)
 
         return None
 

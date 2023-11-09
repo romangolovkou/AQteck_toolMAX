@@ -6,9 +6,10 @@ from PySide6.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial
 import serial.tools.list_ports
 
+from AQ_ConnectManager import AQ_ConnectManager
 from AQ_Devices import AQ_Device
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
-from AQ_Connect import AQ_modbusRTU_connect
+from AqConnect import AqModbusConnect
 from AQ_ParamListWindow import AQ_DialogParamList
 from AQ_DeviceInfoWindow import AQ_DialogDeviceInfo
 from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
@@ -38,7 +39,7 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
         self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
         self.event_manager.register_event_handler('add_parameter_to_watch_list', self.add_param_to_watch_list)
-        self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
+        # self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
@@ -70,7 +71,6 @@ class AQ_CurrentSession(QObject):
     def add_new_devices(self, new_devices_list):
         for i in range(len(new_devices_list)):
             self.devices.append(new_devices_list[i])
-            self.set_local_event_manager_in_parameters(self.devices[-1])
             self.devices[-1].init_parameters()
 
         # #     Здесь ожидаем пока все параметры в устройстве прочитаются, в это время крутим и пишем
@@ -180,37 +180,37 @@ class AQ_CurrentSession(QObject):
             else:
                 print('Load failed')
 
-    def set_slave_id(self, network_settings):
-        network_settings = network_settings[0]
-
-        if network_settings[2] == 'МВ110-24_1ТД.csv':
-            pass
-        else:
-            interface = network_settings[0]
-            # Получаем список доступных COM-портов
-            com_ports = serial.tools.list_ports.comports()
-            for port in com_ports:
-                if port.description == interface:
-                    selected_port = port.device
-                    boudrate = network_settings[3]
-                    parity = network_settings[4][:1]
-                    stopbits = network_settings[5]
-                    client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
-
-            if network_settings[2] == 'МВ110-24_8АС.csv' or network_settings[2] == 'МВ110-24_8А.csv':
-                start_address = 30
-            else:
-                start_address = 100
-
-            register_count = 1
-            write_func = 6
-            new_slave_id = network_settings[1]
-            # Выполняем запрос
-            result = client.write_param(start_address, new_slave_id, write_func)
-            if result != 'modbus_error':
-                self.event_manager.emit_event('set_slave_id_connect_ok')
-            else:
-                self.event_manager.emit_event('set_slave_id_connect_error')
+    # def set_slave_id(self, network_settings):
+    #     network_settings = network_settings[0]
+    #
+    #     if network_settings[2] == 'МВ110-24_1ТД.csv':
+    #         pass
+    #     else:
+    #         interface = network_settings[0]
+    #         # Получаем список доступных COM-портов
+    #         com_ports = serial.tools.list_ports.comports()
+    #         for port in com_ports:
+    #             if port.description == interface:
+    #                 selected_port = port.device
+    #                 boudrate = network_settings[3]
+    #                 parity = network_settings[4][:1]
+    #                 stopbits = network_settings[5]
+    #                 client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
+    #
+    #         if network_settings[2] == 'МВ110-24_8АС.csv' or network_settings[2] == 'МВ110-24_8А.csv':
+    #             start_address = 30
+    #         else:
+    #             start_address = 100
+    #
+    #         register_count = 1
+    #         write_func = 6
+    #         new_slave_id = network_settings[1]
+    #         # Выполняем запрос
+    #         result = client.write_param(start_address, new_slave_id, write_func)
+    #         if result != 'modbus_error':
+    #             self.event_manager.emit_event('set_slave_id_connect_ok')
+    #         else:
+    #             self.event_manager.emit_event('set_slave_id_connect_error')
 
     def connect_manager_finished(self):
         pass

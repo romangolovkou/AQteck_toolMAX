@@ -15,14 +15,14 @@ from AQ_Device import AQ_Device
 from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_IsValidIpFunc import is_valid_ip
-from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect, AQ_COM_Connect_settings, AQ_IP_Connect_settings
+from AqConnect import AqModbusConnect, AqComConnectSettings, AqIpConnectSettings
 from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
     get_storage_container, parse_tree, reverse_modbus_registers, get_item_by_type
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
 
 
 class AQ_Device_Config:
-    #TODO: need to check device_ID (need add into devices too)
+    # TODO: need to check device_ID (need add into devices too)
     def __init__(self):
         super().__init__()
         self.device_name = ""
@@ -60,7 +60,7 @@ class AQ_Device110China(AQ_Device):
             if device_config != 'decrypt_err':
                 self.device_tree = self.parse_device_config(device_config)
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
-                    and isinstance(self.device_tree, AQ_TreeItemModel):
+                        and isinstance(self.device_tree, AQ_TreeItemModel):
                     self.device_tree.set_device(self)
                     self.device_data['status'] = 'ok'
                     self.device_data['device_tree'] = self.device_tree
@@ -76,7 +76,6 @@ class AQ_Device110China(AQ_Device):
             self.connect.close()
 
         if self.device_data['status'] != 'connect_error':
-
             self.add_address_string_to_device_data(network_settings)
             # self.device_data['network_info'] = self.make_network_info_list()
 
@@ -130,7 +129,7 @@ class AQ_Device110China(AQ_Device):
         if network_settings.get('ip', False):
             ip = network_settings.get('ip', None)
             if ip is not None and is_valid_ip(ip):
-                self.connect_settings = AQ_IP_Connect_settings(_ip=ip)
+                self.connect_settings = AqIpConnectSettings(_ip=ip)
             else:
                 self.connect_settings = None
         elif network_settings.get('boudrate', False):
@@ -149,10 +148,10 @@ class AQ_Device110China(AQ_Device):
                     boudrate is not None and \
                     parity is not None and \
                     stopbits is not None:
-                self.connect_settings = AQ_COM_Connect_settings(_port=selected_port,
-                                                                _baudrate=boudrate,
-                                                                _parity=parity,
-                                                                _stopbits=stopbits)
+                self.connect_settings = AqComConnectSettings(_port=selected_port,
+                                                             _baudrate=boudrate,
+                                                             _parity=parity,
+                                                             _stopbits=stopbits)
             else:
                 self.connect_settings = None
 
@@ -174,7 +173,7 @@ class AQ_Device110China(AQ_Device):
 
     def make_network_info_list(self):
         # Выполняем запрос
-        modbus_reg = 26  #у всіх приборах на кс2 для поточного IP повинен буди однаковий
+        modbus_reg = 26  # у всіх приборах на кс2 для поточного IP повинен буди однаковий
         reg_count = 2
         response = self.connect.read_holding_registers(modbus_reg, reg_count)
         # Конвертируем значения регистров в строку
@@ -231,7 +230,6 @@ class AQ_Device110China(AQ_Device):
         device_data['serial_number'] = self.serial_number
         device_data['device_config'] = device_config
         return device_data
-
 
     def read_device_name(self):
         file_path = '110_device_conf/' + self.network_settings.get('device', None)
@@ -470,7 +468,7 @@ class AQ_Device110China(AQ_Device):
 
             self.request_count.append(len(self.stack_to_read))
 
-            self.connect.createParamRequest(self.stack_to_read)
+            self.connect.create_param_request(self.stack_to_read)
 
     def read_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -478,7 +476,7 @@ class AQ_Device110China(AQ_Device):
             child_item = root.child(row)
             self.read_item(child_item)
 
-    def read_item(self,  item):
+    def read_item(self, item):
         param_attributes = item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             row_count = item.rowCount()
@@ -512,30 +510,25 @@ class AQ_Device110China(AQ_Device):
                     reg_count = byte_size // 2
             # Формируем запрос
             self.stack_to_read.append({'method': self.connect.read_param, 'func': read_func, 'start': modbus_reg,
-                                         'count': reg_count, 'callback': item.data_from_network})
-
+                                       'count': reg_count, 'callback': item.data_from_network})
 
     def write_parameters(self, items=None):
         if len(self.request_count) == 0:
             if items is None:
-                self.write_all_parameters()
-            elif isinstance(items, AQ_ParamItem):
-                self.write_item(items)
-            elif isinstance(items, list):
+                root = self.device_tree.invisibleRootItem()
+                for row in range(root.rowCount()):
+                    child_item = root.child(row)
+                    self.write_item(child_item)
+            else:
+                if isinstance(items, AQ_ParamItem):
+                    items = [items]
                 for i in range(len(items)):
-                    self.write_parameter(items[i])
+                    self.write_item(items[i])
 
             self.request_count.append(len(self.stack_to_write))
-            self.connect.createParamRequest(self.stack_to_write)
+            self.connect.create_param_request(self.stack_to_write)
 
-
-    def write_all_parameters(self):
-        root = self.device_tree.invisibleRootItem()
-        for row in range(root.rowCount()):
-            child_item = root.child(row)
-            self.write_item(child_item)
-
-    def write_item(self,  item):
+    def write_item(self, item):
         param_attributes = item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             row_count = item.rowCount()
@@ -555,7 +548,7 @@ class AQ_Device110China(AQ_Device):
             data = item.data_for_network()
 
             self.stack_to_write.append({'method': self.connect.write_param, 'func': write_func, 'start': modbus_reg,
-                                       'data': data, 'callback': item.confirm_writing})
+                                        'data': data, 'callback': item.confirm_writing})
 
         # if self.write_error_flag is True:
         #     self.write_error_flag = False
@@ -563,9 +556,6 @@ class AQ_Device110China(AQ_Device):
         #     return 'write_err'
         #
         # return 'ok'
-
-
-
 
     def restart_device(self):
         # "I will restart the device now!"
@@ -607,7 +597,9 @@ class AQ_Device110China(AQ_Device):
 
         for devParam in self.params_list:
             param_attributes = devParam.get_param_attributes()
-            config.saved_param_list.append({'UID': param_attributes.get('UID', 0), 'modbus_reg': param_attributes.get('modbus_reg', 0), 'value': devParam.value})
+            config.saved_param_list.append(
+                {'UID': param_attributes.get('UID', 0), 'modbus_reg': param_attributes.get('modbus_reg', 0),
+                 'value': devParam.value})
 
         return config
 
@@ -615,7 +607,7 @@ class AQ_Device110China(AQ_Device):
         if self.device_name != config.device_name:
             self.event_manager.emit_event('load_cfg_error')
             return NotImplementedError
-            #TODO: need generate custom exception or generate event to display error message
+            # TODO: need generate custom exception or generate event to display error message
 
         for cfgParam in config.saved_param_list:
             for devParam in self.params_list:
@@ -623,7 +615,7 @@ class AQ_Device110China(AQ_Device):
                 modbusReg = param_attributes.get('modbus_reg', 0)
                 if cfgParam['modbus_reg'] == modbusReg:
                     devParam.value = cfgParam['value']
-        #TODO: optimize this algorithm
+        # TODO: optimize this algorithm
 
         self.event_manager.emit_event('current_device_data_updated', self, self.changed_param_stack)
 
@@ -691,7 +683,7 @@ class AQ_Device_110chinaPacker:
                 #     if byte_size == 4:
                 #         byte_array = reverse_modbus_registers(byte_array)
                 #         param_value = struct.unpack('>I', byte_array)[0]
-                return  registers
+                return registers
 
             elif write_func == 5:
                 if value == 1:

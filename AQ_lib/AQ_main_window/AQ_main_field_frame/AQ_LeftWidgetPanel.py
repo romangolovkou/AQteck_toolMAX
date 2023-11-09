@@ -74,11 +74,7 @@ class AQ_left_device_widget(QWidget):
         self.name_label.setFont(font)
         self.name_label.move(50, 5)
         self.name_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;")
-        # TODO: Refactor this. Connection string should be get from connect object
-        connection = device.info('connection')
-        address = device.info('address')
-        connect_str = connection + ':' + address if connection == 'IP' \
-            else 'Address: ' + address + ' (' + connection + ')'
+        connect_str = 'Address: ' + device.info('address')
         # end refactor zone
         self.address_label = AQ_Label(connect_str, self)
         self.address_label.move(50, 27)

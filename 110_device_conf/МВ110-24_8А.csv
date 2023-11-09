@@ -2,6 +2,7 @@
 Name;ÌÂ110-24.8À;;;;;;;;;;;
 Protocol;ModbusRTU;;;;;;;;;;;
 Type;AqGenericModbusDevice;;;;;;;;;;;
+Parser_type;AqGenericParser;;;;;;;;;;;
 !/Device_descr_area;;;;;;;;;;;;
 !System_registers;;;;;;;;;;;;
 ;;;;;;;;;;;;

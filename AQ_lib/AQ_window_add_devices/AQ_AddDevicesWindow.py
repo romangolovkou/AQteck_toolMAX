@@ -108,14 +108,10 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         finded_devices_list = []
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
-            device = self.get_device_by_settings(self.event_manager, network_settings_list[i])
-            device_status = device.status
-            if device_status == 'ok' or device_status == 'data_error':
-                finded_devices_list.append(device)
             connect = self.get_connect_by_settings(network_settings_list[i])
             if connect != 'connect_error':
                 device = self.get_device_by_settings(self.event_manager, connect, network_settings_list[i])
-                device_status = device.get_device_status()
+                device_status = device.status
                 if device_status == 'ok' or device_status == 'data_error':
                     finded_devices_list.append(device)
                 else:
@@ -136,7 +132,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
                 network_settings.get('device', None) == 'МУ110-24_8Р.csv':
             device = AQ_Device110China(event_manager, connect, network_settings)
         elif network_settings.get('device', None) == "AqAutoDetectionDevice":
-            device = AqAutoDetectionDevice(event_manager, None, network_settings)
+            device = AqAutoDetectionDevice(event_manager, connect)
         else:
             device = AQ_Device(event_manager, network_settings)
 

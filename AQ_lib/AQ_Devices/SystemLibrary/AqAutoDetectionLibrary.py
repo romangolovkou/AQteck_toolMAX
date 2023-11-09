@@ -4,6 +4,7 @@ from datetime import datetime
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_CustomTreeItems import *
+from AqAutoDetectionPacker import AqAutoDetectionDevicePacker
 
 
 def get_containers_count(default_prg):
@@ -119,8 +120,6 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
     row_count = 0
 
     param_type = node_area[pos:pos + 2][::-1]
-
-
 
     while pos < len(node_area):
         # Проверка на is_katalog
@@ -510,27 +509,30 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
     return value
 
 
+packer = AqAutoDetectionDevicePacker()
+
+
 def get_item_by_type(type, name):
     if type == 'enum':
-        item = AQ_EnumParamItem(name)
+        item = AQ_EnumParamItem(name, packer)
     elif type == 'unsigned':
-        item = AQ_UnsignedParamItem(name)
+        item = AQ_UnsignedParamItem(name, packer)
     elif type == 'signed':
-        item = AQ_SignedParamItem(name)
+        item = AQ_SignedParamItem(name, packer)
     elif type == 'float':
-        item = AQ_FloatParamItem(name)
+        item = AQ_FloatParamItem(name, packer)
     elif type == 'string':
-        item = AQ_StringParamItem(name)
+        item = AQ_StringParamItem(name, packer)
     elif type == 'date_time':
-        item = AQ_DateTimeParamItem(name)
+        item = AQ_DateTimeParamItem(name, packer)
     elif type == 'signed_to_float':
-        item = AQ_SignedToFloatParamItem(name)
+        item = AQ_SignedToFloatParamItem(name, packer)
     elif type == 'unsigned_to_float':
-        item = AQ_UnsignedToFloatParamItem(name)
+        item = AQ_UnsignedToFloatParamItem(name, packer)
     elif type == 'float_enum':
-        item = AQ_FloatEnumParamItem(name)
+        item = AQ_FloatEnumParamItem(name, packer)
     else:
-        item = AQ_ParamItem(name)
+        item = AQ_ParamItem(name, packer)
 
     return item
 
