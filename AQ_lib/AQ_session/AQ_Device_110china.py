@@ -20,6 +20,7 @@ from AQ_Connect import AQ_modbusTCP_connect, AQ_modbusRTU_connect, AQ_COM_Connec
 from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
     get_storage_container, parse_tree, reverse_modbus_registers, get_item_by_type
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
+from AqParser import parse_config
 
 
 class AQ_Device_Config:
@@ -62,7 +63,8 @@ class AQ_Device110China(AQ_Device):
         if self.device_data != 'connect_err':
             device_config = self.device_data.get('device_config')
             if device_config != 'decrypt_err':
-                self.device_tree = self.parse_device_config(device_config)
+                # self.device_tree = self.parse_device_config(device_config)
+                self.device_tree = parse_config(device_config)
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
                     and isinstance(self.device_tree, AQ_TreeItemModel):
                     self.device_tree.set_device(self)

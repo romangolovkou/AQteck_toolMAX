@@ -85,7 +85,7 @@ class AQ_ParamItem(QStandardItem):
         if is_error:
             self.set_error_flag(message)
         else:
-            new_value = self.unpack(self, new_value)
+            new_value = self.unpack(new_value)
             self.validate(new_value)
             self._value = new_value
             self.synchronized = True
@@ -166,8 +166,9 @@ class AQ_CatalogItem(AQ_ParamItem):
         is_catalog = param_attributes.get('is_catalog', None)
         if is_catalog is None:
             raise Exception('AQ_CatalogItemError: "is_catalog" is not exist')
-        name = param_attributes.get('name', None)
-        super().__init__(name)
+        param_attributes['R_Only'] = 0
+        param_attributes['W_Only'] = 0
+        super().__init__(param_attributes)
 
 
 class AQ_EnumParamItem(AQ_ParamItem):
