@@ -112,22 +112,41 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
             device_status = device.status
             if device_status == 'ok' or device_status == 'data_error':
                 finded_devices_list.append(device)
+            connect = self.get_connect_by_settings(network_settings_list[i])
+            if connect != 'connect_error':
+                device = self.get_device_by_settings(self.event_manager, connect, network_settings_list[i])
+                device_status = device.get_device_status()
+                if device_status == 'ok' or device_status == 'data_error':
+                    finded_devices_list.append(device)
+                else:
+                    self.show_connect_err_label()
             else:
                 self.show_connect_err_label()
 
         return finded_devices_list
 
-    def get_device_by_settings(self, event_manager, network_settings):
-        if network_settings[2] == 'МВ110-24_1ТД.csv':
-            device = AqDY500(event_manager, None, network_settings)
-        elif network_settings[2] == "AqAutoDetectionDevice":
+    def get_device_by_settings(self, event_manager, connect, network_settings):
+        if network_settings.get('device', None) == 'МВ110-24_1ТД.csv':
+            device = AQ_DeviceDY500(event_manager, connect, network_settings)
+        elif network_settings.get('device', None) == 'МВ110-24_8А.csv' or\
+                network_settings.get('device', None) == 'МВ110-24_8АС.csv' or\
+                network_settings.get('device', None) == 'МВ110-24_16Д.csv' or\
+                network_settings.get('device', None) == 'МК110-24_8Д_4Р.csv' or\
+                network_settings.get('device', None) == 'МУ110-24_3У.csv' or\
+                network_settings.get('device', None) == 'МУ110-24_8Р.csv':
+            device = AQ_Device110China(event_manager, connect, network_settings)
+        elif network_settings.get('device', None) == "AqAutoDetectionDevice":
             device = AqAutoDetectionDevice(event_manager, None, network_settings)
-        elif len(network_settings) > 2:
-            device = AQ_Device110China(event_manager, network_settings)
         else:
             device = AQ_Device(event_manager, network_settings)
 
         return device
+
+    def get_connect_by_settings(self, network_settings):
+        callback_dict = dict()
+        self.event_manager.emit_event('create_new_connect', network_settings, callback_dict)
+        return callback_dict['connect']
+
 
     def show_connect_err_label(self):
         self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)
