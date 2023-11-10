@@ -6,7 +6,7 @@ from PySide6.QtCore import QObject
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AQ_CustomTreeItems import AQ_ParamItem
+from AQ_CustomTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_IsValidIpFunc import is_valid_ip
@@ -301,7 +301,7 @@ class AQ_Device(QObject):
     def read_parameters(self, items=None):
         if items is None:
             self.read_all_parameters()
-        elif isinstance(items, AQ_ParamItem):
+        elif isinstance(items, AqParamItem):
             self.read_item(items)
         elif isinstance(items, list):
             for i in range(len(items)):
@@ -427,7 +427,7 @@ class AQ_Device(QObject):
     def write_parameters(self, items=None):
         if items is None:
             self.write_all_parameters()
-        elif isinstance(items, AQ_ParamItem):
+        elif isinstance(items, AqParamItem):
             self.write_item(items)
         elif isinstance(items, list):
             for i in range(len(items)):

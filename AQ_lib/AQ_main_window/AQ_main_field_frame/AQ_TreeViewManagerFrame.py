@@ -5,7 +5,7 @@ from PySide6.QtGui import QStandardItem
 from PySide6.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
-from AQ_CustomTreeItems import AQ_ParamManagerItem
+from AQ_CustomTreeItems import AqParamManagerItem
 from AQ_TreeView import AQ_TreeView
 
 
@@ -96,7 +96,7 @@ class AQ_TreeViewManager(QStackedWidget):
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
                         name = parameter_attributes.get('name', 'err_name')
-                        catalog = AQ_ParamManagerItem(child_item)
+                        catalog = AqParamManagerItem(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
                         self.traverse_items_create_new_tree_for_view(child_item, catalog)
@@ -108,7 +108,7 @@ class AQ_TreeViewManager(QStackedWidget):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
 
-        parameter_item = AQ_ParamManagerItem(item)
+        parameter_item = AqParamManagerItem(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
         value_item = QStandardItem()
         min_limit_item = self.get_min_limit_item(parameter_attributes)

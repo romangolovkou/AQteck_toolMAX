@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem
+from AQ_CustomTreeItems import AqParamItem, AqCatalogItem
 from AQ_Device import AQ_Device
 from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
@@ -363,7 +363,7 @@ class AQ_Device110China(AQ_Device):
             # створюємо список з каталог-ітемами
             catalogs = []
             for i in range(len(sorted_list)):
-                catalog_item = AQ_CatalogItem(sorted_list[i])
+                catalog_item = AqCatalogItem(sorted_list[i])
                 param_attributes = {}
                 param_attributes['name'] = sorted_list[i]
                 param_attributes['is_catalog'] = 1
@@ -468,7 +468,7 @@ class AQ_Device110China(AQ_Device):
         if len(self.request_count) == 0:
             if items is None:
                 self.read_all_parameters()
-            elif isinstance(items, AQ_ParamItem):
+            elif isinstance(items, AqParamItem):
                 self.read_item(items)
             elif isinstance(items, list):
                 for i in range(len(items)):
@@ -529,7 +529,7 @@ class AQ_Device110China(AQ_Device):
         if len(self.request_count) == 0:
             if items is None:
                 self.write_all_parameters()
-            elif isinstance(items, AQ_ParamItem):
+            elif isinstance(items, AqParamItem):
                 self.write_item(items)
             elif isinstance(items, list):
                 for i in range(len(items)):

@@ -60,7 +60,7 @@ class AQ_TreeLineEdit(QLineEdit):
             self.red_blink_timer.stop()
 
 
-class AQ_EnumTreeComboBox(QComboBox):
+class AqEnumTreeComboBox(QComboBox):
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
         self.parent = parent
@@ -97,7 +97,7 @@ class AQ_EnumTreeComboBox(QComboBox):
         return None  # Возвращаем None, если объект не найден
 
 
-class AQ_EnumROnlyTreeLineEdit(AQ_TreeLineEdit):
+class AqEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.enum_strings = param_attributes.get('enum_strings', '')
@@ -106,7 +106,7 @@ class AQ_EnumROnlyTreeLineEdit(AQ_TreeLineEdit):
         self.setText(self.enum_strings[value])
 
 
-class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
+class AqUintTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.visual_type = param_attributes.get('visual_type', '')
@@ -289,7 +289,7 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
+class AqIntTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -368,7 +368,7 @@ class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
+class AqFloatTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -450,7 +450,7 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
+class AqStringTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -459,7 +459,7 @@ class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
         self.save_new_value(text)
 
 
-class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
+class AqDateTimeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -487,7 +487,7 @@ class AqBitLineEdit(AQ_TreeLineEdit):
         self.setText(str(new_value))
 
 
-class AQ_SignedToFloatTreeLineEdit(AQ_FloatTreeLineEdit):
+class AqSignedToFloatTreeLineEdit(AqFloatTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.enum_str_dict = param_attributes.get('enum_strings', None)
@@ -515,7 +515,7 @@ class AQ_SignedToFloatTreeLineEdit(AQ_FloatTreeLineEdit):
         self.save_new_value(value)
 
 
-class AQ_FloatEnumTreeComboBox(AQ_EnumTreeComboBox):
+class AqFloatEnumTreeComboBox(AqEnumTreeComboBox):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -535,7 +535,7 @@ class AQ_FloatEnumTreeComboBox(AQ_EnumTreeComboBox):
         self.setCurrentText(string)
 
 
-class AQ_FloatEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
+class AqFloatEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 

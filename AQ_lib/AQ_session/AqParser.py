@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
 
-from AQ_CustomTreeItems import AQ_CatalogItem
+from AQ_CustomTreeItems import AqCatalogItem
 from AQ_ParseFunc import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_ModbusGenericItems import *
@@ -56,7 +56,7 @@ def parse_config_csv(config_csv):
             param_attributes = dict()
             param_attributes['name'] = sorted_list[i]
             param_attributes['is_catalog'] = 1
-            catalog_item = AQ_CatalogItem(param_attributes)
+            catalog_item = AqCatalogItem(param_attributes)
             # catalog_item.setData(param_attributes, Qt.UserRole)
             catalogs.append(catalog_item)
 
