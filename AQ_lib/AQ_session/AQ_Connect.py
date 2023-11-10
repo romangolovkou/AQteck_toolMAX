@@ -126,7 +126,7 @@ class AQ_Modbus_Connect(AQ_connect):
                         self.slave_id = data
                 else:
                     # Запись одного регистра
-                    result = self.client.write_register(start, data, self.slave_id)
+                    result = self.client.write_register(start, data[0], self.slave_id)
 
             if isinstance(result, ModbusIOException):
                 callback(False, 'modbus_error')
