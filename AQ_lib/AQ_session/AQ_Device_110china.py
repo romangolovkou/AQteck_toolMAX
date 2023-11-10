@@ -503,7 +503,7 @@ class AQ_Device110China(AQ_Device):
         read_func = param_attributes.get('read_func', '')
 
         if param_type != '' and param_size != '' and modbus_reg != '':
-            if param_type == 'enum':
+            if param_type == 'AqModbusEnumParamItem':
                 if param_size > 16:
                     reg_count = 2
                 else:

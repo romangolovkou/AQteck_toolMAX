@@ -475,6 +475,18 @@ class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
         self.setText(str(value))
 
 
+class AqBitLineEdit(AQ_TreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+        self.setReadOnly(True)
+
+    def mousePressEvent(self, event):
+        # Меняем значение при каждом клике мышью
+        current_value = int(self.text())
+        new_value = 1 if current_value == 0 else 0
+        self.setText(str(new_value))
+
+
 class AQ_SignedToFloatTreeLineEdit(AQ_FloatTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)

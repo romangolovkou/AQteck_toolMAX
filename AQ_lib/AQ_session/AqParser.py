@@ -88,7 +88,8 @@ def parse_config_csv(config_csv):
                     param_attributes['unit'] = fields[9]
                     parts = fields[6].split(' ')
                     param_type = parts[0]
-                    if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusStringParamItem':
+                    if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusStringParamItem' or \
+                            param_type == 'AqModbusDiscretParamItem':
                         param_size = int(parts[1])
                     else:
                         param_size = int(parts[1]) // 8

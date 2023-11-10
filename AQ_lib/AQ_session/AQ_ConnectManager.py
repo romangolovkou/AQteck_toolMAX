@@ -105,23 +105,23 @@ class AQ_ConnectManager(QObject):
         request()
 
 
-class AQ_Modbus___Connect():
-    def __init__(self):
-        self.param_request_stack = []
-        self.file_request_stack = []
-        self.core_cv = threading.Condition()
-
-    def createParamRequest(self, func, start, count, data):
-        self.param_request_stack.append({'func': func, 'start': start,
-                                         'count': count, 'data': data})
-        with self.core_cv:
-            self.core_cv.notify()
-
-    def createFileRequest(self, func, file_num, record_num, record_len, data):
-        self.file_request_stack.append({'func': func, 'file_num': file_num,
-                                        'record_num': record_num, 'record_len': record_len, 'data': data})
-        with self.core_cv:
-            self.core_cv.notify()
+# class AQ_Modbus___Connect():
+#     def __init__(self):
+#         self.param_request_stack = []
+#         self.file_request_stack = []
+#         self.core_cv = threading.Condition()
+#
+#     def createParamRequest(self, func, start, count, data):
+#         self.param_request_stack.append({'func': func, 'start': start,
+#                                          'count': count, 'data': data})
+#         with self.core_cv:
+#             self.core_cv.notify()
+#
+#     def createFileRequest(self, func, file_num, record_num, record_len, data):
+#         self.file_request_stack.append({'func': func, 'file_num': file_num,
+#                                         'record_num': record_num, 'record_len': record_len, 'data': data})
+#         with self.core_cv:
+#             self.core_cv.notify()
 
 
 

@@ -2,7 +2,7 @@ import struct
 
 from AQ_CustomTreeItems import AQ_UnsignedParamItem, AQ_ModbusItem, AQ_EnumParamItem, AQ_SignedParamItem, \
     AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem, AQ_SignedToFloatParamItem, AQ_UnsignedToFloatParamItem, \
-    AQ_FloatEnumParamItem
+    AQ_FloatEnumParamItem, AQ_BitParamItem
 from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_EnumROnlyTreeLineEdit
 from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 
@@ -224,3 +224,25 @@ class AqModbusFloatEnumParamItem(AQ_FloatEnumParamItem, AqModbusEnumParamItem):
         super().__init__(param_attributes)
         # AqModbusEnumParamItem.__init__(param_attributes)
         # AQ_FloatEnumParamItem.__init__(param_attributes)
+
+
+class AqModbusDiscretParamItem(AQ_BitParamItem, AQ_ModbusItem):
+    def __init__(self, param_attributes):
+        param_attributes['param_size'] = 1
+        super().__init__(param_attributes)
+        # AqModbusEnumParamItem.__init__(param_attributes)
+        # AQ_FloatEnumParamItem.__init__(param_attributes)
+
+    def pack(self):
+        if self.value == 1:
+            data = True
+        else:
+            data = False
+        return data
+
+    def unpack(self, data):
+        if data.bits[0] is True:
+            param_value = 1
+        else:
+            param_value = 0
+        return param_value
