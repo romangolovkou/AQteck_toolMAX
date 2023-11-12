@@ -223,11 +223,11 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                         enum_max_lim = max_lim_from_bits
                         param_attributes['max_limit'] = enum_max_lim
 
+                    enum_str_dict = {}
                     for i in range(enum_max_lim + 1):
-                        enum_str = string_array[string_num + i]
-                        enum_strings.append(enum_str)
+                        enum_str_dict[i] = string_array[string_num + i]
 
-                    param_attributes['enum_strings'] = enum_strings
+                    param_attributes['enum_strings'] = enum_str_dict
 
                 # Додаємо до словника параметрів строку з одиницею виміру
                 if not param_attributes.get('type', '') == 'enum' and \

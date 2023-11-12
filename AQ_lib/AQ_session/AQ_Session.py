@@ -105,7 +105,8 @@ class AQ_CurrentSession(QObject):
 
     def delete_device(self, device):
         if device is not None:
-            device.connect.close()
+            # TODO: delete device object and do deinit inside
+            device._connect.close()
             index_to_remove = self.devices.index(device)
             removed_element = self.devices.pop(index_to_remove)
             if len(self.devices) == 0:
