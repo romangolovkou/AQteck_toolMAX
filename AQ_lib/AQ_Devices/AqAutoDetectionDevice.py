@@ -1,6 +1,3 @@
-import struct
-
-from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AqBaseDevice import AqBaseDevice
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
