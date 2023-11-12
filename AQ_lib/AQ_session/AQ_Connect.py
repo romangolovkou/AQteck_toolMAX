@@ -63,7 +63,22 @@ class AQ_Modbus_Connect(AQ_connect):
     def close(self):
         self.client.close()
 
-    def createParamRequest(self, request_stack):
+    def createParamRequest(self, method, stack):
+        request_stack = list()
+        for i in range(len(stack)):
+            request = dict()
+            if method == 'read':
+                request['method'] = self.read_param
+            elif method == 'write':
+                request['method'] = self.write_param
+            else:
+                raise Exception('AqConnectError: unknown stack name')
+
+            request['item'] = stack[i]
+
+            # Формируем запрос
+            request_stack.append(request)
+
         self.param_request_stack = request_stack
         with self.core_cv:
             self.core_cv.notify()
@@ -77,65 +92,78 @@ class AQ_Modbus_Connect(AQ_connect):
     def proceed_request(self, request):
         function = request.get('method', None)
 
-        if function.__name__ == 'read_param':
-            func = request.get('func', None)
-            start = request.get('start', None)
-            count = request.get('count', None)
-            callback = request.get('callback', None)
-            if func is not None and start is not None \
-                    and count is not None and callback is not None:
-                function(func, start, count, callback)
-        elif function.__name__ == 'write_param':
-            func = request.get('func', None)
-            start = request.get('start', None)
-            data = request.get('data', None)
-            callback = request.get('callback', None)
-            if func is not None and start is not None \
-                    and data is not None:
-                function(func, start, data, callback)
-
-    def read_param(self, func, start, count, callback):
-        if func == 3:
-            result = self.client.read_holding_registers(start, count, self.slave_id)
-        elif func == 2:
-            result = self.client.read_discrete_inputs(start, 1, self.slave_id)
-        elif func == 1:
-            result = self.client.read_coils(start, 1, self.slave_id)
+        if function is not None:
+        # if function.__name__ == 'read_param':
+            function(request.get('item', None))
+        # elif function.__name__ == 'write_param':
+        #     function(request.get('item', None))
         else:
-            return 'modbus_error'
+            raise Exception('AqConnectError: unknown "method"')
 
-        if isinstance(result, ModbusIOException):
-            # return 'modbus_error'
-            callback(None, True, 'modbus_error')
-        else:
-            callback(result)
+    def read_param(self, item):
+        if item is not None:
+            param_attributes = item.get_param_attributes()
 
-    def write_param(self, func, start, data, callback):
-        try:
-            result = None
-            if func == 16:
-                result = self.client.write_registers(start, data, self.slave_id)
-            elif func == 5:
-                # Запись одного дискретного выхода (бита)
-                result = self.client.write_coil(start, data, self.slave_id)
-            elif func == 6:
-                if start == 100:
-                    # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
-                    result = self.client.write_register(start, data, 0)
-                    if not isinstance(result, ModbusIOException):
-                        self.slave_id = data
+            param_size = param_attributes.get('param_size', '')
+            modbus_reg = param_attributes.get('modbus_reg', '')
+            func = param_attributes.get('read_func', '')
+
+            if func != '' and param_size != '' and modbus_reg != '':
+                byte_size = param_size
+                if byte_size < 2:
+                    count = 1
                 else:
-                    # Запись одного регистра
-                    result = self.client.write_register(start, data[0], self.slave_id)
+                    count = byte_size // 2
+            else:
+                raise Exception('AqConnectError: in {} attributes "func"\
+                                             or "param_size" or "modbus_reg" not exist'.format(item.__name__))
+            if func == 3:
+                result = self.client.read_holding_registers(modbus_reg, count, self.slave_id)
+            elif func == 2:
+                result = self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
+            elif func == 1:
+                result = self.client.read_coils(modbus_reg, 1, self.slave_id)
+            else:
+                return 'modbus_error'
 
             if isinstance(result, ModbusIOException):
-                callback(False, 'modbus_error')
+                # return 'modbus_error'
+                item.data_from_network(None, True, 'modbus_error')
             else:
-                callback(True)
+                item.data_from_network(result)
 
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            raise
+    def write_param(self, item):
+        if item is not None:
+            param_attributes = item.get_param_attributes()
+
+            modbus_reg = param_attributes.get('modbus_reg', '')
+            func = param_attributes.get('write_func', '')
+            data = item.data_for_network()
+            try:
+                result = None
+                if func == 16:
+                    result = self.client.write_registers(modbus_reg, data, self.slave_id)
+                elif func == 5:
+                    # Запись одного дискретного выхода (бита)
+                    result = self.client.write_coil(modbus_reg, data, self.slave_id)
+                elif func == 6:
+                    if modbus_reg == 100:
+                        # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
+                        result = self.client.write_register(modbus_reg, data[0], 0)
+                        if not isinstance(result, ModbusIOException):
+                            self.slave_id = data
+                    else:
+                        # Запись одного регистра
+                        result = self.client.write_register(modbus_reg, data[0], self.slave_id)
+
+                if isinstance(result, ModbusIOException):
+                    item.confirm_writing(False, 'modbus_error')
+                else:
+                    item.confirm_writing(True)
+
+            except Exception as e:
+                print(f"Error occurred: {str(e)}")
+                raise
 
 
 class AQ_COM_connect(AQ_connect):

@@ -174,6 +174,13 @@ class AqEnumParamItem(AqParamItem):
         if self.param_size is None or param_attributes.get('enum_strings', None) is None:
             raise Exception('AQ_EnumParamItemError: "param_size" or "enum_strings" is not exist')
 
+        # Перетворюємо розмір з бітів на байти
+        byte_count = self.param_size // 8
+        if self.param_size % 8 != 0:
+            byte_count += 1
+        self.param_size = byte_count
+        param_attributes['param_size'] = self.param_size
+
         if param_attributes.get('min_limit', None) is None:
             param_attributes['min_limit'] = None
         if param_attributes.get('max_limit', None) is None:

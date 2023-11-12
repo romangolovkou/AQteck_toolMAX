@@ -476,7 +476,7 @@ class AQ_Device110China(AQ_Device):
 
             self.request_count.append(len(self.stack_to_read))
 
-            self.connect.createParamRequest(self.stack_to_read)
+            self.connect.createParamRequest('read', self.stack_to_read)
 
     def read_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -495,35 +495,7 @@ class AQ_Device110China(AQ_Device):
             self.read_parameter(item)
 
     def read_parameter(self, item):
-        param_attributes = item.get_param_attributes()
-
-        param_type = param_attributes.get('type', '')
-        param_size = param_attributes.get('param_size', '')
-        modbus_reg = param_attributes.get('modbus_reg', '')
-        read_func = param_attributes.get('read_func', '')
-
-        if param_type != '' and param_size != '' and modbus_reg != '':
-            if param_type == 'AqModbusEnumParamItem':
-                if param_size > 16:
-                    reg_count = 2
-                else:
-                    reg_count = 1
-            else:
-                byte_size = param_size
-                if byte_size < 2:
-                    reg_count = 1
-                else:
-                    reg_count = byte_size // 2
-            # Формируем запрос
-            self.stack_to_read.append({'method': self.connect.read_param, 'func': read_func, 'start': modbus_reg,
-                                         'count': reg_count, 'callback': item.data_from_network})
-
-        # if self.read_error_flag is True:
-        #     self.read_error_flag = False
-        #     self.event_manager.emit_event('param_read_error')
-        #     return 'read_err'
-        #
-        # return 'ok'
+        self.stack_to_read.append(item)
 
     def write_parameters(self, items=None):
         if len(self.request_count) == 0:
@@ -537,11 +509,7 @@ class AQ_Device110China(AQ_Device):
 
             self.request_count.append(len(self.stack_to_write))
 
-            self.connect.createParamRequest(self.stack_to_write)
-
-        # if len(self.update_param_stack) > 0:
-        #     self.event_manager.emit_event('current_device_data_updated', self, self.update_param_stack)
-        #     self.update_param_stack.clear()
+            self.connect.createParamRequest('write', self.stack_to_write)
 
     def write_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -562,14 +530,13 @@ class AQ_Device110China(AQ_Device):
     def write_parameter(self, item):
         # if item in self.changed_param_stack:
         if item.get_status() == 'changed':
-            param_attributes = item.get_param_attributes()
+        #     param_attributes = item.get_param_attributes()
+        #
+        #     modbus_reg = param_attributes.get('modbus_reg', '')
+        #     write_func = param_attributes.get('write_func', '')
+        #     data = item.data_for_network()
 
-            modbus_reg = param_attributes.get('modbus_reg', '')
-            write_func = param_attributes.get('write_func', '')
-            data = item.data_for_network()
-
-            self.stack_to_write.append({'method': self.connect.write_param, 'func': write_func, 'start': modbus_reg,
-                                       'data': data, 'callback': item.confirm_writing})
+            self.stack_to_write.append(item)
 
         # if self.write_error_flag is True:
         #     self.write_error_flag = False
