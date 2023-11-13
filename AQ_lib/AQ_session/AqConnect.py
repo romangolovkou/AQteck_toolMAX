@@ -25,7 +25,7 @@ class AqConnect(QObject):
     def read_param(self, item):
         pass
 
-    def write_param(self, func, start, data, callback=None):
+    def write_param(self, item):
         pass
 
     @abstractmethod
@@ -183,32 +183,39 @@ class AqModbusConnect(AqConnect):
             else:
                 item.data_from_network(result)
 
-    def write_param(self, func, start, data, callback=None):
-        try:
-            result = None
-            if func == 16:
-                result = self.client.write_registers(start, data, self.slave_id)
-            elif func == 5:
-                # Запись одного дискретного выхода (бита)
-                result = self.client.write_coil(start, data, self.slave_id)
-            elif func == 6:
-                if start == 100:
-                    # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
-                    result = self.client.write_register(start, data, 0)
-                    if not isinstance(result, ModbusIOException):
-                        self.slave_id = data
+    def write_param(self, item):
+        if item is not None:
+            param_attributes = item.get_param_attributes()
+
+            modbus_reg = param_attributes.get('modbus_reg', '')
+            func = param_attributes.get('write_func', '')
+            data = item.data_for_network()
+            try:
+                result = None
+                if func == 16:
+                    result = self.client.write_registers(modbus_reg, data, self.slave_id)
+                elif func == 5:
+                    # Запись одного дискретного выхода (бита)
+                    result = self.client.write_coil(modbus_reg, data, self.slave_id)
+                elif func == 6:
+                    # TODO: перенести костыль в функцию в расслыку широковещательного запроса
+                    if modbus_reg == 100:
+                        # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
+                        result = self.client.write_register(modbus_reg, data, 0)
+                        if not isinstance(result, ModbusIOException):
+                            self.slave_id = data
+                    else:
+                        # Запись одного регистра
+                        result = self.client.write_register(modbus_reg, data, self.slave_id)
+
+                if isinstance(result, ModbusIOException):
+                    item.confirm_writing(False, 'modbus_error')
                 else:
-                    # Запись одного регистра
-                    result = self.client.write_register(start, data, self.slave_id)
+                    item.confirm_writing(True)
 
-            if isinstance(result, ModbusIOException):
-                callback(False, 'modbus_error')
-            else:
-                callback(True)
-
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            raise
+            except Exception as e:
+                print(f"Error occurred: {str(e)}")
+                raise
 
     def read_file_record(self, file_number, record_number, record_length):
         # Создание экземпляра структуры ReadFileRecordRequest

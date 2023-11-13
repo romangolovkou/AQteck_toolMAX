@@ -223,14 +223,13 @@ class AqAutoDetectionDevice(AqBaseDevice):
     # TODO: refactor this huge function
     def write_parameter(self, item):
         if item.get_status() == 'changed':
-            param_attributes = item.get_param_attributes()
+            # param_attributes = item.get_param_attributes()
+            #
+            # modbus_reg = param_attributes.get('modbus_reg', '')
+            # write_func = param_attributes.get('write_func', '')
+            # data = item.data_for_network()
 
-            modbus_reg = param_attributes.get('modbus_reg', '')
-            write_func = param_attributes.get('write_func', '')
-            data = item.data_for_network()
-
-            self._stack_to_write.append({'method': self._connect.write_param, 'func': 16, 'start': modbus_reg,
-                                        'data': data, 'callback': item.confirm_writing})
+            self._stack_to_write.append(item)
 
     def get_configuration(self) -> AqDeviceConfig:
         config = AqDeviceConfig()
