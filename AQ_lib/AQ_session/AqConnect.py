@@ -19,10 +19,10 @@ class AqConnect(QObject):
     def close(self):
         pass
 
-    def create_param_request(self, request_stack):
+    def create_param_request(self, method, stack):
         pass
 
-    def read_param(self, func, start, count, callback=None):
+    def read_param(self, item):
         pass
 
     def write_param(self, func, start, data, callback=None):
@@ -81,7 +81,7 @@ class AqModbusConnect(AqConnect):
             Exception('Помилка. Невідомі налаштування коннекту')
 
     def address_string(self):
-        if type(self.connect_settings).__name__ == 'AQ_IP_Connect_settings':
+        if type(self.connect_settings).__name__ == 'AqIpConnectSettings':
             return self.connect_settings.addr
         else:
             return str(self.slave_id) + ' (' + self.connect_settings.addr + ')'
@@ -92,10 +92,28 @@ class AqModbusConnect(AqConnect):
     def close(self):
         self.client.close()
 
-    def create_param_request(self, request_stack):
+    def create_param_request(self, method, stack):
+        request_stack = list()
+        for i in range(len(stack)):
+            request = dict()
+            if method == 'read':
+                request['method'] = self.read_param
+            elif method == 'write':
+                request['method'] = self.write_param
+            else:
+                raise Exception('AqConnectError: unknown stack name')
+
+            request['item'] = stack[i]
+
+            # Формируем запрос
+            request_stack.append(request)
+
         self.param_request_stack = request_stack
         with self.core_cv:
             self.core_cv.notify()
+        # self.param_request_stack = request_stack
+        # with self.core_cv:
+        #     self.core_cv.notify()
 
     def createFileRequest(self, func, file_num, record_num, record_len, data):
         self.file_request_stack.append({'func': func, 'file_num': file_num,
@@ -104,46 +122,66 @@ class AqModbusConnect(AqConnect):
             self.core_cv.notify()
 
     def proceed_request(self, request):
+        # function = request.get('method', None)
+        #
+        # if function.__name__ == 'read_param':
+        #     func = request.get('func', None)
+        #     start = request.get('start', None)
+        #     count = request.get('count', None)
+        #     callback = request.get('callback', None)
+        #     if func is not None and start is not None \
+        #             and count is not None and callback is not None:
+        #         function(func, start, count, callback)
+        # elif function.__name__ == 'write_param':
+        #     func = request.get('func', None)
+        #     start = request.get('start', None)
+        #     data = request.get('data', None)
+        #     callback = request.get('callback', None)
+        #     if func is not None and start is not None \
+        #             and data is not None:
+        #         function(func, start, data, callback)
         function = request.get('method', None)
 
-        if function.__name__ == 'read_param':
-            func = request.get('func', None)
-            start = request.get('start', None)
-            count = request.get('count', None)
-            callback = request.get('callback', None)
-            if func is not None and start is not None \
-                    and count is not None and callback is not None:
-                function(func, start, count, callback)
-        elif function.__name__ == 'write_param':
-            func = request.get('func', None)
-            start = request.get('start', None)
-            data = request.get('data', None)
-            callback = request.get('callback', None)
-            if func is not None and start is not None \
-                    and data is not None:
-                function(func, start, data, callback)
-
-    def read_param(self, func, start, count, callback=None):
-        if func == 3:
-            result = self.client.read_holding_registers(start, count, self.slave_id)
-        elif func == 2:
-            result = self.client.read_discrete_inputs(start, 1, self.slave_id)
-        elif func == 1:
-            result = self.client.read_coils(start, 1, self.slave_id)
+        if function is not None:
+            # if function.__name__ == 'read_param':
+            function(request.get('item', None))
+        # elif function.__name__ == 'write_param':
+        #     function(request.get('item', None))
         else:
-            return 'modbus_error'
+            raise Exception('AqConnectError: unknown "method"')
 
-        if callback is not None:
+    def read_param(self, item):
+        if item is not None:
+            param_attributes = item.get_param_attributes()
+
+            param_size = param_attributes.get('param_size', '')
+            modbus_reg = param_attributes.get('modbus_reg', '')
+            func = param_attributes.get('read_func', '')
+
+            if func != '' and param_size != '' and modbus_reg != '':
+                byte_size = param_size
+                if byte_size < 2:
+                    count = 1
+                else:
+                    count = byte_size // 2
+            else:
+                raise Exception('AqConnectError: in {} attributes "func"\
+                                             or "param_size" or "modbus_reg" not exist'.format(item.__name__))
+
+            if func == 3:
+                result = self.client.read_holding_registers(modbus_reg, count, self.slave_id)
+            elif func == 2:
+                result = self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
+            elif func == 1:
+                result = self.client.read_coils(modbus_reg, 1, self.slave_id)
+            else:
+                return 'modbus_error'
+
             if isinstance(result, ModbusIOException):
                 # return 'modbus_error'
-                callback(None, True, 'modbus_error')
+                item.data_from_network(None, True, 'modbus_error')
             else:
-                callback(result)
-        else:
-            if isinstance(result, ModbusIOException):
-                return 'modbus_error'
-            else:
-                return result
+                item.data_from_network(result)
 
     def write_param(self, func, start, data, callback=None):
         try:

@@ -47,8 +47,8 @@ class AQ_Device110China(AQ_Device):
         self.network_settings = network_settings
         # self.changed_param_stack = []
         self.update_param_stack = []
-        self.stack_to_read = []
-        self.stack_to_write = []
+        self.stack_to_read = list()
+        self.stack_to_write = list()
         self.read_error_flag = False
         self.write_error_flag = False
         self.connect = connect

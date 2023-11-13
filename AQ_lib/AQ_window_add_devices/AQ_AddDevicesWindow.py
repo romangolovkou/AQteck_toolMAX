@@ -12,7 +12,7 @@ from AQ_Devices.AQ_Device import AQ_Device
 from AQ_Devices.AQ_Device_110china import AQ_Device110China
 from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
 from AqAutoDetectionDevice import AqAutoDetectionDevice
-from AqDY500 import AqDY500
+# from AqDY500 import AqDY500
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):

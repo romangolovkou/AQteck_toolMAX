@@ -5,7 +5,7 @@ from pymodbus.client import serial
 import serial.tools.list_ports
 
 from AqConnect import AqConnect
-from AQ_CustomTreeItems import AQ_ParamItem
+from AQ_CustomTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
 from AQ_IsValidIpFunc import is_valid_ip
 from AQ_TreeViewItemModel import AQ_TreeItemModel
@@ -98,13 +98,13 @@ class AqBaseDevice(ABC):
                     child_item = root.child(row)
                     self.__read_item(child_item)
             else:
-                if isinstance(items, AQ_ParamItem):
+                if isinstance(items, AqParamItem):
                     items = [items]
                 for i in range(len(items)):
                     self.__read_item(items[i])
 
             self._request_count.append(len(self._stack_to_read))
-            self._connect.create_param_request(self._stack_to_read)
+            self._connect.create_param_request('read', self._stack_to_read)
 
     def write_parameters(self, items=None):
         if len(self._request_count) == 0:
@@ -114,13 +114,13 @@ class AqBaseDevice(ABC):
                     child_item = root.child(row)
                     self.__write_item(child_item)
             else:
-                if isinstance(items, AQ_ParamItem):
+                if isinstance(items, AqParamItem):
                     items = list(items)
                 for i in range(len(items)):
                     self.__write_item(items[i])
 
             self._request_count.append(len(self._stack_to_write))
-            self._connect.create_param_request(self._stack_to_write)
+            self._connect.create_param_request('write', self._stack_to_write)
 
     @abstractmethod
     def read_parameter(self, item):

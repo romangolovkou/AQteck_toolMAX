@@ -1,3 +1,4 @@
+from AqAutoDetectionItems import AqAutoDetectStringParamItem
 from AqBaseDevice import AqBaseDevice
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
@@ -30,6 +31,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'default_prg':  [0xFFE0, 0, 248]  # file_size will be changed later in code
     }
 
+    system_params_dict = dict()
+
     # Add to init all what we need
     def __init__(self, event_manager, connect: AqModbusConnect):
         super().__init__(event_manager, connect)
@@ -37,6 +40,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._connect = connect
 
     def init_device(self) -> bool:
+        self._create_system_params()
         self._info['name'] = self.__read_string('name')
         self._info['version'] = self.__read_string('version')
         self._info['serial_num'] = self.__read_string('serial_num')
@@ -67,6 +71,22 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._status = 'ok'
         return True
 
+    def _create_system_params(self):
+        # Створюємо строкові системні ітеми
+        keys_list = list(self._system_string.keys())
+        for i in range(len(keys_list)):
+            param_attributes = dict()
+            param_attributes['name'] = keys_list[i]
+            param_attributes['modbus_reg'] = self._system_string[keys_list[i]][0]
+            param_attributes['param_size'] = 2*self._system_string[keys_list[i]][1]
+            param_attributes['read_func'] = self._system_string[keys_list[i]][2]
+            param_attributes['R_Only'] = 1
+            param_attributes['W_Only'] = 0
+            self.system_params_dict[keys_list[i]] = AqAutoDetectStringParamItem(param_attributes)
+
+
+
+
     def __parse_default_prg(self):
         try:
             containers_count = get_containers_count(self._default_prg)
@@ -81,22 +101,21 @@ class AqAutoDetectionDevice(AqBaseDevice):
     def __read_string(self, name):
         try:
             # Выполняем запрос
-            response = self._connect.read_param(self._system_string[name][2],
-                                              self._system_string[name][0],
-                                              self._system_string[name][1])
+            response = self._connect.read_param(self.system_params_dict[name])
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             self._status = 'connect_err'
             return None
 
-        # Конвертируем значения регистров в строку
-        hex_string = ''.join(format(value, '04X') for value in response.registers)
-        # Конвертируем строку в массив байт
-        byte_array = bytes.fromhex(hex_string)
-        byte_array = swap_bytes_at_registers(byte_array, self._system_string[name][1])
-        # Расшифровуем в строку
-        text = byte_array.decode('ANSI')
-        result_str = remove_empty_bytes(text)
+        # # Конвертируем значения регистров в строку
+        # hex_string = ''.join(format(value, '04X') for value in response.registers)
+        # # Конвертируем строку в массив байт
+        # byte_array = bytes.fromhex(hex_string)
+        # byte_array = swap_bytes_at_registers(byte_array, self._system_string[name][1])
+        # # Расшифровуем в строку
+        # text = byte_array.decode('ANSI')
+        # result_str = remove_empty_bytes(text)
+        result_str = self.system_params_dict[name].value
 
         return result_str
 
@@ -176,29 +195,30 @@ class AqAutoDetectionDevice(AqBaseDevice):
     # TODO: wait until we will have good items and refactor this
     def read_parameter(self, item):
         """Read parameter from device"""
-        param_attributes = item.get_param_attributes()
-
-        param_type = param_attributes.get('type', '')
-        param_size = param_attributes.get('param_size', '')
-        modbus_reg = param_attributes.get('modbus_reg', '')
-
-        if param_type != '' and param_size != '' and modbus_reg != '':
-            if param_type == 'enum':
-                if param_size > 16:
-                    reg_count = 2
-                    byte_size = 4
-                else:
-                    reg_count = 1
-                    byte_size = 1
-            else:
-                byte_size = param_size
-                if byte_size < 2:
-                    reg_count = 1
-                else:
-                    reg_count = byte_size // 2
-            # Формируем запрос
-            self._stack_to_read.append({'method': self._connect.read_param, 'func': 3, 'start': modbus_reg,
-                                       'count': reg_count, 'callback': item.data_from_network})
+        self._stack_to_read.append(item)
+        # param_attributes = item.get_param_attributes()
+        #
+        # param_type = param_attributes.get('type', '')
+        # param_size = param_attributes.get('param_size', '')
+        # modbus_reg = param_attributes.get('modbus_reg', '')
+        #
+        # if param_type != '' and param_size != '' and modbus_reg != '':
+        #     if param_type == 'enum':
+        #         if param_size > 16:
+        #             reg_count = 2
+        #             byte_size = 4
+        #         else:
+        #             reg_count = 1
+        #             byte_size = 1
+        #     else:
+        #         byte_size = param_size
+        #         if byte_size < 2:
+        #             reg_count = 1
+        #         else:
+        #             reg_count = byte_size // 2
+        #     # Формируем запрос
+        #     self._stack_to_read.append({'method': self._connect.read_param, 'func': 3, 'start': modbus_reg,
+        #                                'count': reg_count, 'callback': item.data_from_network})
 
     # TODO: refactor this huge function
     def write_parameter(self, item):

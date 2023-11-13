@@ -4,6 +4,7 @@ from datetime import datetime
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_CustomTreeItems import *
+from AqAutoDetectionItems import *
 from AqAutoDetectionPacker import AqAutoDetectionDevicePacker
 
 
@@ -153,8 +154,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
             #     continue
             # Создание элемента каталога
             # current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
-            current_catalog = AQ_CatalogItem(catalog_attributes.get('name', 'err_name'))
-            current_catalog.setData(catalog_attributes, Qt.UserRole)
+            current_catalog = AqCatalogItem(catalog_attributes)
+            # current_catalog.setData(catalog_attributes, Qt.UserRole)
             current_catalog_levels.append(current_catalog)
             level += 1
 
@@ -237,12 +238,14 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                         unit_str = string_array[string_num]
                         param_attributes['unit'] = unit_str
 
-                parameter_name = param_attributes.get('name', 'err_name')
+                # parameter_name = param_attributes.get('name', 'err_name')
                 # current_parameter = QStandardItem(parameter_name)
-                param_type = param_attributes.get('type', '')
-                current_parameter = get_item_by_type(param_attributes.get('type', ''), parameter_name)
-                check_min_max_limit(param_attributes)
-                current_parameter.setData(param_attributes, Qt.UserRole)
+                # param_type = param_attributes.get('type', '')
+                param_attributes['read_func'] = 3
+                param_attributes['write_func'] = 16
+                current_parameter = get_item_by_type(param_attributes)
+                # check_min_max_limit(param_attributes)
+                # current_parameter.setData(param_attributes, Qt.UserRole)
                 current_parameter.setFlags(current_parameter.flags() & ~Qt.ItemIsEditable)
 
                 # name та cat_name змінні для зручної відладки, у паргсінгу участі не приймають
@@ -512,107 +515,102 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
 packer = AqAutoDetectionDevicePacker()
 
 
-def get_item_by_type(type, name):
-    if type == 'enum':
-        item = AQ_EnumParamItem(name, packer)
-    elif type == 'unsigned':
-        item = AQ_UnsignedParamItem(name, packer)
-    elif type == 'signed':
-        item = AQ_SignedParamItem(name, packer)
-    elif type == 'float':
-        item = AQ_FloatParamItem(name, packer)
-    elif type == 'string':
-        item = AQ_StringParamItem(name, packer)
-    elif type == 'date_time':
-        item = AQ_DateTimeParamItem(name, packer)
-    elif type == 'signed_to_float':
-        item = AQ_SignedToFloatParamItem(name, packer)
-    elif type == 'unsigned_to_float':
-        item = AQ_UnsignedToFloatParamItem(name, packer)
-    elif type == 'float_enum':
-        item = AQ_FloatEnumParamItem(name, packer)
+def get_item_by_type(param_attributes):
+    param_type = param_attributes.get('type', '')
+    if param_type == 'enum':
+        item = AqAutoDetectEnumParamItem(param_attributes)
+    elif param_type == 'unsigned':
+        item = AqAutoDetectUnsignedParamItem(param_attributes)
+    elif param_type == 'signed':
+        item = AqAutoDetectSignedParamItem(param_attributes)
+    elif param_type == 'float':
+        item = AqAutoDetectFloatParamItem(param_attributes)
+    elif param_type == 'string':
+        item = AqAutoDetectStringParamItem(param_attributes)
+    elif param_type == 'date_time':
+        item = AqAutoDetectDateTimeParamItem(param_attributes)
     else:
-        item = AQ_ParamItem(name, packer)
+        item = AqParamItem(param_attributes)
 
     return item
 
 
-def check_min_max_limit(param_attributes):
-    if param_attributes.get('min_limit', '') == '':
-        set_standard_min_limit(param_attributes)
-    if param_attributes.get('max_limit', '') == '':
-        set_standard_max_limit(param_attributes)
-
-
-def set_standard_min_limit(param_attributes):
-    param_type = param_attributes.get('type', '')
-    size = param_attributes.get('param_size', 0)
-    cur_par_min = None
-    if param_type == 'float':
-        if size == 4:
-            cur_par_min = float('-3.402283E+38')
-        elif size == 8:
-            cur_par_min = float('-1.7976931348623E+308')
-    elif param_type == 'signed':
-        if size == 1:
-            cur_par_min = int('-127')
-        elif size == 2:
-            cur_par_min = int('-32768')
-        elif size == 4:
-            cur_par_min = int('-2147483648')
-        elif size == 8:
-            cur_par_min = int('-9223372036854775808')
-    elif param_type == 'unsigned':
-        if param_attributes.get('visual_type', '') == 'ip_format':
-            cur_par_min = None
-        else:
-            cur_par_min = int('0')
-    elif param_type == 'date_time':
-        cur_par_min = 0  # '01.01.2000 0:00:00' дата від якої у нас йде відлік часу у секундах
-    else:
-        cur_par_min = None
-    # Якщо min_limit у параметра немає, додаємо розрахунковий і у сам параметр
-    param_attributes['min_limit'] = cur_par_min
-
-
-def set_standard_max_limit(param_attributes):
-    param_type = param_attributes.get('type', '')
-    size = param_attributes.get('param_size', 0)
-    cur_par_max = None
-    if param_type == 'float':
-        if size == 4:
-            cur_par_max = float('3.402283E+38')
-        elif size == 8:
-            cur_par_max = float('1.7976931348623E+308')
-    elif param_type == 'signed':
-        if size == 1:
-            cur_par_max = int('128')
-        elif size == 2:
-            cur_par_max = int('32767')
-        elif size == 4:
-            cur_par_max = int('2147483647')
-        elif size == 8:
-            cur_par_max = int('9223372036854775807')
-    elif param_type == 'unsigned':
-        if param_attributes.get('visual_type', '') == 'ip_format':
-            cur_par_max = None
-        elif size == 1:
-            cur_par_max = int('255')
-        elif size == 2:
-            cur_par_max = int('65535')
-        elif size == 4:
-            cur_par_max = int('4294967295')
-        elif size == 6:  # MAC address
-            cur_par_max = 'FF:FF:FF:FF:FF:FF'
-        elif size == 8:
-            cur_par_max = int('18446744073709551615')
-    elif param_type == 'date_time':
-        max_limit_date = datetime.strptime('07.02.2136 6:28:15', '%d.%m.%Y %H:%M:%S')
-        # Начальный момент времени (2000-01-01 00:00:00)
-        min_limit_date = datetime(2000, 1, 1)
-        max_limit_seconds = (max_limit_date - min_limit_date).total_seconds()
-        cur_par_max = max_limit_seconds
-    else:
-        cur_par_max = None
-    # Якщо max_limit у параметра немає, додаємо розрахунковий і у сам параметр
-    param_attributes['max_limit'] = cur_par_max
+# def check_min_max_limit(param_attributes):
+#     if param_attributes.get('min_limit', '') == '':
+#         set_standard_min_limit(param_attributes)
+#     if param_attributes.get('max_limit', '') == '':
+#         set_standard_max_limit(param_attributes)
+#
+#
+# def set_standard_min_limit(param_attributes):
+#     param_type = param_attributes.get('type', '')
+#     size = param_attributes.get('param_size', 0)
+#     cur_par_min = None
+#     if param_type == 'float':
+#         if size == 4:
+#             cur_par_min = float('-3.402283E+38')
+#         elif size == 8:
+#             cur_par_min = float('-1.7976931348623E+308')
+#     elif param_type == 'signed':
+#         if size == 1:
+#             cur_par_min = int('-127')
+#         elif size == 2:
+#             cur_par_min = int('-32768')
+#         elif size == 4:
+#             cur_par_min = int('-2147483648')
+#         elif size == 8:
+#             cur_par_min = int('-9223372036854775808')
+#     elif param_type == 'unsigned':
+#         if param_attributes.get('visual_type', '') == 'ip_format':
+#             cur_par_min = None
+#         else:
+#             cur_par_min = int('0')
+#     elif param_type == 'date_time':
+#         cur_par_min = 0  # '01.01.2000 0:00:00' дата від якої у нас йде відлік часу у секундах
+#     else:
+#         cur_par_min = None
+#     # Якщо min_limit у параметра немає, додаємо розрахунковий і у сам параметр
+#     param_attributes['min_limit'] = cur_par_min
+#
+#
+# def set_standard_max_limit(param_attributes):
+#     param_type = param_attributes.get('type', '')
+#     size = param_attributes.get('param_size', 0)
+#     cur_par_max = None
+#     if param_type == 'float':
+#         if size == 4:
+#             cur_par_max = float('3.402283E+38')
+#         elif size == 8:
+#             cur_par_max = float('1.7976931348623E+308')
+#     elif param_type == 'signed':
+#         if size == 1:
+#             cur_par_max = int('128')
+#         elif size == 2:
+#             cur_par_max = int('32767')
+#         elif size == 4:
+#             cur_par_max = int('2147483647')
+#         elif size == 8:
+#             cur_par_max = int('9223372036854775807')
+#     elif param_type == 'unsigned':
+#         if param_attributes.get('visual_type', '') == 'ip_format':
+#             cur_par_max = None
+#         elif size == 1:
+#             cur_par_max = int('255')
+#         elif size == 2:
+#             cur_par_max = int('65535')
+#         elif size == 4:
+#             cur_par_max = int('4294967295')
+#         elif size == 6:  # MAC address
+#             cur_par_max = 'FF:FF:FF:FF:FF:FF'
+#         elif size == 8:
+#             cur_par_max = int('18446744073709551615')
+#     elif param_type == 'date_time':
+#         max_limit_date = datetime.strptime('07.02.2136 6:28:15', '%d.%m.%Y %H:%M:%S')
+#         # Начальный момент времени (2000-01-01 00:00:00)
+#         min_limit_date = datetime(2000, 1, 1)
+#         max_limit_seconds = (max_limit_date - min_limit_date).total_seconds()
+#         cur_par_max = max_limit_seconds
+#     else:
+#         cur_par_max = None
+#     # Якщо max_limit у параметра немає, додаємо розрахунковий і у сам параметр
+#     param_attributes['max_limit'] = cur_par_max
