@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
 
-from AQ_CustomTreeItems import AQ_ParamManagerItem
+from AQ_CustomTreeItems import AqParamManagerItem
 from AQ_WatchListTableView import AQ_WatchListTableView
 from AQ_WatchListTableViewItemModel import AQ_WatchListTableViewItemModel
 
@@ -38,7 +38,7 @@ class AQ_WatchListManagerFrame(QFrame):
         device = model.device
         device_data = device.get_device_data()
 
-        param_item = AQ_WatchParamManagerItem(item.get_sourse_item(), device, model)
+        param_item = Aq_WatchParamManagerItem(item.get_sourse_item(), device, model)
 
         value_item = QStandardItem()
         device_item = QStandardItem()
@@ -66,7 +66,7 @@ class AQ_WatchListLayout(QVBoxLayout):
         self.addWidget(self.watch_table_view)
 
 
-class AQ_WatchParamManagerItem(AQ_ParamManagerItem):
+class Aq_WatchParamManagerItem(AqParamManagerItem):
     def __init__(self, sourse_item, device, tree_view_model=None):
         param_attributes = sourse_item.data(Qt.UserRole)
         super().__init__(sourse_item)

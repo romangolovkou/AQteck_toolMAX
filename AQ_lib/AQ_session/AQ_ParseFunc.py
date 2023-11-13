@@ -5,9 +5,9 @@ from datetime import datetime
 from PySide6.QtCore import Qt
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem, AQ_EnumParamItem, AQ_UnsignedParamItem, \
-    AQ_SignedParamItem, AQ_FloatParamItem, AQ_StringParamItem, AQ_DateTimeParamItem, AQ_SignedToFloatParamItem, \
-    AQ_UnsignedToFloatParamItem, AQ_FloatEnumParamItem
+from AQ_CustomTreeItems import AqParamItem, AqCatalogItem, AqEnumParamItem, AqUnsignedParamItem, \
+    AqSignedParamItem, AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, \
+    AqUnsignedToFloatParamItem, AqFloatEnumParamItem
 
 # TODO: delete this file
 # Use AqModbusTips and AqAutoDetectionLibrary instead
@@ -210,7 +210,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
             #     continue
             # Создание элемента каталога
             # current_catalog = QStandardItem(catalog_attributes.get('name', 'err_name'))
-            current_catalog = AQ_CatalogItem(catalog_attributes.get('name', 'err_name'))
+            current_catalog = AqCatalogItem(catalog_attributes.get('name', 'err_name'))
             current_catalog.setData(catalog_attributes, Qt.UserRole)
             current_catalog_levels.append(current_catalog)
             level += 1
@@ -569,25 +569,25 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
 
 def get_item_by_type(type, name, packer=None):
     if type == 'enum':
-        item = AQ_EnumParamItem(name, packer)
+        item = AqEnumParamItem(name, packer)
     elif type == 'unsigned':
-        item = AQ_UnsignedParamItem(name, packer)
+        item = AqUnsignedParamItem(name, packer)
     elif type == 'signed':
-        item = AQ_SignedParamItem(name, packer)
+        item = AqSignedParamItem(name, packer)
     elif type == 'float':
-        item = AQ_FloatParamItem(name, packer)
+        item = AqFloatParamItem(name, packer)
     elif type == 'string':
-        item = AQ_StringParamItem(name, packer)
+        item = AqStringParamItem(name, packer)
     elif type == 'date_time':
-        item = AQ_DateTimeParamItem(name, packer)
+        item = AqDateTimeParamItem(name, packer)
     elif type == 'signed_to_float':
-        item = AQ_SignedToFloatParamItem(name, packer)
+        item = AqSignedToFloatParamItem(name, packer)
     elif type == 'unsigned_to_float':
-        item = AQ_UnsignedToFloatParamItem(name, packer)
+        item = AqUnsignedToFloatParamItem(name, packer)
     elif type == 'float_enum':
-        item = AQ_FloatEnumParamItem(name, packer)
+        item = AqFloatEnumParamItem(name, packer)
     else:
-        item = AQ_ParamItem(name, packer)
+        item = AqParamItem(name, packer)
 
     return item
 

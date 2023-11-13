@@ -1,55 +1,28 @@
+from datetime import datetime
+
 from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
 from PySide6.QtGui import QStandardItem
 
-from AQ_ParamsDelegateEditors import AQ_EnumTreeComboBox, AQ_UintTreeLineEdit, AQ_IntTreeLineEdit, \
-    AQ_FloatTreeLineEdit, AQ_IpTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_EnumROnlyTreeLineEdit, \
-    AQ_SignedToFloatTreeLineEdit, AQ_FloatEnumROnlyTreeLineEdit, AQ_FloatEnumTreeComboBox
+from AQ_ParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
+    AqFloatTreeLineEdit, AQ_IpTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AqEnumROnlyTreeLineEdit, \
+    AqSignedToFloatTreeLineEdit, AqFloatEnumROnlyTreeLineEdit, AqFloatEnumTreeComboBox, AqBitLineEdit
 
 
-class BaseItem:
-    def __init__(self):
-        super().__init__()
-        self._value = None
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, data):
-        print('I was setted with ', data)
-        self._value = data
-
-
-class ModbusItem(BaseItem):
-    def __init__(self, packer=None):
-        super().__init__()
-        self.my_protocol = "Modbus"
-        self._packer = packer
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, data):
-        if self._packer:
-            _value = self._packer.unpack()
-        else:
-            _value = data
-
-        print('I was setted with ', data,)
-
-
-class AQ_ParamItem(QStandardItem):
-    def __init__(self, name, packer=None):
+class AqParamItem(QStandardItem):
+    def __init__(self, param_attributes):
+        name = param_attributes.get('name', None)
+        R_Only = param_attributes.get('R_Only', None)
+        W_Only = param_attributes.get('W_Only', None)
+        if name is None or R_Only is None or W_Only is None:
+            raise Exception('AQ_ParamItemError: "name" is not exist')
         super().__init__(name)
-        self.packer = packer
         self._value = None
         self.value_in_device = None
         self.editor = None
         self.synchro_flag = False
         self.param_status = None
         self.local_event_manager = None
+        self.setData(param_attributes, Qt.UserRole)
 
     @property
     def value(self):
@@ -109,19 +82,19 @@ class AQ_ParamItem(QStandardItem):
         if is_error:
             self.set_error_flag(message)
         else:
-            if self.packer:
-                new_value = self.packer.unpack(self, new_value)
+            new_value = self.unpack(new_value)
             self.validate(new_value)
             self._value = new_value
             self.synchronized = True
 
     def data_for_network(self):
-        if self.packer:
-            value = self.packer.pack(self, self._value)
-        else:
-            value = self._value
+        return self.pack()
 
-        return value
+    def pack(self):
+        return self._value
+
+    def unpack(self, data):
+        return data
 
     def validate(self, new_value):
         param_attributes = self.data(Qt.UserRole)
@@ -166,17 +139,64 @@ class AQ_ParamItem(QStandardItem):
         return 1
 
 
-class AQ_CatalogItem(AQ_ParamItem):
-    def __init__(self, name):
-        super().__init__(name)
+class AqModbusItem(AqParamItem):
+    def __init__(self, param_attributes):
+
+        modbus_reg = param_attributes.get('modbus_reg', None)
+        param_size = param_attributes.get('param_size', None)
+        if param_size is None or modbus_reg is None:
+            raise Exception('ModbusItemError: "modbus_reg" or "param_size" not exist')
+        # TODO: Переделать c размера в байхтах на колличество регистров
+        read_func = param_attributes.get('read_func', None)
+        if read_func is None:
+            raise Exception('ModbusItemError: "read_func" is not exist')
+
+        if not (param_attributes.get('R_Only', None) == 1 and
+                param_attributes.get('W_Only', None) == 0):
+            write_func = param_attributes.get('write_func', None)
+            if write_func is None:
+                raise Exception('"write_func" is not exist')
+
+        param_attributes['protocol'] = 'modbus'
+
+        super().__init__(param_attributes)
+
+        self.setData(param_attributes, Qt.UserRole)
 
 
-class AQ_EnumParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+class AqCatalogItem(AqParamItem):
+    def __init__(self, param_attributes):
+        is_catalog = param_attributes.get('is_catalog', None)
+        if is_catalog is None:
+            raise Exception('AQ_CatalogItemError: "is_catalog" is not exist')
+        param_attributes['R_Only'] = 0
+        param_attributes['W_Only'] = 0
+        super().__init__(param_attributes)
+
+
+class AqEnumParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None or param_attributes.get('enum_strings', None) is None:
+            raise Exception('AQ_EnumParamItemError: "param_size" or "enum_strings" is not exist')
+
+        # Перетворюємо розмір з бітів на байти
+        byte_count = self.param_size // 8
+        if self.param_size % 8 != 0:
+            byte_count += 1
+        self.param_size = byte_count
+        param_attributes['param_size'] = self.param_size
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor_RW = AQ_EnumTreeComboBox
-        self.editor_R_Only = AQ_EnumROnlyTreeLineEdit
+        self.editor_RW = AqEnumTreeComboBox
+        self.editor_R_Only = AqEnumROnlyTreeLineEdit
 
     def get_editor(self):
         param_attributes = self.data(Qt.UserRole)
@@ -187,73 +207,222 @@ class AQ_EnumParamItem(AQ_ParamItem):
         return self.editor_RW
 
 
-class AQ_UnsignedParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+class AqUnsignedParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_UnsignedParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = 0
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = self.get_standart_max_limit(self.param_size)
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = param_attributes.get('min_limit', 0)
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor_uint = AQ_UintTreeLineEdit
-        self.editor_ip = AQ_IpTreeLineEdit
+        self.editor = AqUintTreeLineEdit
+
+
+    def get_standart_max_limit(self, param_size):
+        if param_size == 1:
+            return int('255')
+        elif param_size == 2:
+            return int('65535')
+        elif param_size == 4:
+            return int('4294967295')
+        elif param_size == 8:
+            return int('18446744073709551615')
+
+
+class AqSignedParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_SignedParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = self.get_standart_min_limit(self.param_size)
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = self.get_standart_max_limit(self.param_size)
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AqIntTreeLineEdit
+
+    def get_standart_min_limit(self, param_size):
+        if param_size == 1:
+            return int('-127')
+        elif param_size == 2:
+            return int('-32768')
+        elif param_size == 4:
+            return int('-2147483648')
+        elif param_size == 8:
+            return int('-9223372036854775808')
+
+    def get_standart_max_limit(self, param_size):
+        if param_size == 1:
+            return int('128')
+        elif param_size == 2:
+            return int('32767')
+        elif param_size == 4:
+            return int('2147483647')
+        elif param_size == 8:
+            return int('9223372036854775807')
+
+
+class AqFloatParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_FloatParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = self.get_standart_min_limit(self.param_size)
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = self.get_standart_max_limit(self.param_size)
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0.0
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AqFloatTreeLineEdit
+
+    def get_standart_min_limit(self, param_size):
+        if param_size == 4:
+            return float('-3.402283E+38')
+        elif param_size == 8:
+            return float('-1.7976931348623E+308')
+
+    def get_standart_max_limit(self, param_size):
+        if param_size == 4:
+            return float('3.402283E+38')
+        elif param_size == 8:
+            return float('1.7976931348623E+308')
+
+
+class AqStringParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_StringParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = ''
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AqStringTreeLineEdit
+
+
+class AqDateTimeParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_DateTimeParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = self.get_standart_min_limit()
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = self.get_standart_max_limit()
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AqDateTimeLineEdit
+
+    def get_standart_min_limit(self):
+        return 0  #'01.01.2000 0:00:00' дата від якої у нас йде відлік часу у секундах
+
+
+    def get_standart_max_limit(self):
+        max_limit_date = datetime.strptime('07.02.2136 6:28:15', '%d.%m.%Y %H:%M:%S')
+        # Начальный момент времени (2000-01-01 00:00:00)
+        min_limit_date = datetime(2000, 1, 1)
+        max_limit_seconds = (max_limit_date - min_limit_date).total_seconds()
+        return max_limit_seconds
+
+
+class AqBitParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_BitParamItemError: "param_size" is not exist')
+
+        param_attributes['min_limit'] = 0
+        param_attributes['max_limit'] = 1
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor_RW = AqBitLineEdit
+        self.editor_R_Only = AqUintTreeLineEdit
 
     def get_editor(self):
         param_attributes = self.data(Qt.UserRole)
         if param_attributes is not None:
-            if param_attributes.get('visual_type', '') == 'ip_format':
-                return self.editor_ip
+            if (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
+                return self.editor_R_Only
 
-        return self.editor_uint
+        return self.editor_RW
 
 
-class AQ_SignedParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+class AqSignedToFloatParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None or param_attributes.get('multiply', None) is None:
+            raise Exception('AQ_SignedToFloatParamItemError: "param_size" or "multiply" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor = AQ_IntTreeLineEdit
+        self.editor = AqSignedToFloatTreeLineEdit
 
 
-class AQ_FloatParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+class AqUnsignedToFloatParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None or param_attributes.get('multiply', None) is None:
+            raise Exception('AQ_UnsignedToFloatParamItemError: "param_size" or "multiply" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor = AQ_FloatTreeLineEdit
+        self.editor = AqSignedToFloatTreeLineEdit
 
 
-class AQ_StringParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
+class AqFloatEnumParamItem(AqEnumParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None or param_attributes.get('enum_strings', None) is None:
+            raise Exception('AQ_FloatEnumParamItemError: "param_size" or "enum_strings" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor = AQ_StringTreeLineEdit
+        self.editor_RW = AqFloatEnumTreeComboBox
+        self.editor_R_Only = AqFloatEnumROnlyTreeLineEdit
 
 
-class AQ_DateTimeParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
-        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor = AQ_DateTimeLineEdit
-
-
-class AQ_SignedToFloatParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
-        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor = AQ_SignedToFloatTreeLineEdit
-
-
-class AQ_UnsignedToFloatParamItem(AQ_ParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
-        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor = AQ_SignedToFloatTreeLineEdit
-
-
-class AQ_FloatEnumParamItem(AQ_EnumParamItem):
-    def __init__(self, name, packer):
-        super().__init__(name, packer)
-        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
-        self.editor_RW = AQ_FloatEnumTreeComboBox
-        self.editor_R_Only = AQ_FloatEnumROnlyTreeLineEdit
-
-
-class AQ_ParamManagerItem(QStandardItem):
+class AqParamManagerItem(QStandardItem):
     def __init__(self, sourse_item):
         param_attributes = sourse_item.data(Qt.UserRole)
         super().__init__(param_attributes.get('name', 'err_name'))

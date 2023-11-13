@@ -6,7 +6,7 @@ from PySide6.QtCore import QObject
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AQ_CustomTreeItems import AQ_ParamItem
+from AQ_CustomTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_IsValidIpFunc import is_valid_ip
@@ -29,18 +29,15 @@ class AQ_Device(QObject):
         self.event_manager = event_manager
         self.local_event_manager = AQ_EventManager()
         self.device_name = None
-        self.changed_param_stack = []
-        self.update_param_stack = []
-        self.device_tree = None
-        self.params_list = []
-
-
         self.serial_number = None
         self.version = None
         self.address = None
+        self.device_tree = None
+        self.params_list = []
         self.password = None
-        self.address_tuple = address_tuple
-
+        self.network_settings = address_tuple
+        self.changed_param_stack = []
+        self.update_param_stack = []
         self.client = self.create_client(address_tuple)
         self.client.open()
         self.device_data = self._read_device_data()
@@ -307,7 +304,7 @@ class AQ_Device(QObject):
     def read_parameters(self, items=None):
         if items is None:
             self.read_all_parameters()
-        elif isinstance(items, AQ_ParamItem):
+        elif isinstance(items, AqParamItem):
             self.__read_item(items)
         elif isinstance(items, list):
             for i in range(len(items)):
@@ -435,7 +432,7 @@ class AQ_Device(QObject):
     def write_parameters(self, items=None):
         if items is None:
             self.write_all_parameters()
-        elif isinstance(items, AQ_ParamItem):
+        elif isinstance(items, AqParamItem):
             self.write_item(items)
         elif isinstance(items, list):
             for i in range(len(items)):

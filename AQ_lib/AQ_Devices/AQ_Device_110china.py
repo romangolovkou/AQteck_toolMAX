@@ -1,3 +1,4 @@
+import asyncio
 import csv
 import socket
 import struct
@@ -10,7 +11,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AQ_CustomTreeItems import AQ_ParamItem, AQ_CatalogItem
+from AQ_CustomTreeItems import AqParamItem, AqCatalogItem
 from AQ_Device import AQ_Device
 from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
@@ -19,6 +20,7 @@ from AqConnect import AqModbusConnect, AqComConnectSettings, AqIpConnectSettings
 from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
     get_storage_container, parse_tree, reverse_modbus_registers, get_item_by_type
 from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
+from AqParser import parse_config
 
 
 class AQ_Device_Config:
@@ -45,6 +47,8 @@ class AQ_Device110China(AQ_Device):
         self.network_settings = network_settings
         # self.changed_param_stack = []
         self.update_param_stack = []
+        self.stack_to_read = []
+        self.stack_to_write = []
         self.read_error_flag = False
         self.write_error_flag = False
         self.connect = connect
@@ -58,7 +62,8 @@ class AQ_Device110China(AQ_Device):
         if self.device_data != 'connect_err':
             device_config = self.device_data.get('device_config')
             if device_config != 'decrypt_err':
-                self.device_tree = self.parse_device_config(device_config)
+                # self.device_tree = self.parse_device_config(device_config)
+                self.device_tree = parse_config(device_config)
                 if self.device_tree != 'parsing_err' and self.device_tree is not None \
                         and isinstance(self.device_tree, AQ_TreeItemModel):
                     self.device_tree.set_device(self)
@@ -355,7 +360,7 @@ class AQ_Device110China(AQ_Device):
             # створюємо список з каталог-ітемами
             catalogs = []
             for i in range(len(sorted_list)):
-                catalog_item = AQ_CatalogItem(sorted_list[i])
+                catalog_item = AqCatalogItem(sorted_list[i])
                 param_attributes = {}
                 param_attributes['name'] = sorted_list[i]
                 param_attributes['is_catalog'] = 1
@@ -460,7 +465,7 @@ class AQ_Device110China(AQ_Device):
         if len(self.request_count) == 0:
             if items is None:
                 self.read_all_parameters()
-            elif isinstance(items, AQ_ParamItem):
+            elif isinstance(items, AqParamItem):
                 self.read_item(items)
             elif isinstance(items, list):
                 for i in range(len(items)):
@@ -468,7 +473,7 @@ class AQ_Device110China(AQ_Device):
 
             self.request_count.append(len(self.stack_to_read))
 
-            self.connect.create_param_request(self.stack_to_read)
+            self.connect.createParamRequest('read', self.stack_to_read)
 
     def read_all_parameters(self):
         root = self.device_tree.invisibleRootItem()
@@ -487,30 +492,7 @@ class AQ_Device110China(AQ_Device):
             self.read_parameter(item)
 
     def read_parameter(self, item):
-        param_attributes = item.get_param_attributes()
-
-        param_type = param_attributes.get('type', '')
-        param_size = param_attributes.get('param_size', '')
-        modbus_reg = param_attributes.get('modbus_reg', '')
-        read_func = param_attributes.get('read_func', '')
-
-        if param_type != '' and param_size != '' and modbus_reg != '':
-            if param_type == 'enum':
-                if param_size > 16:
-                    reg_count = 2
-                    byte_size = 4
-                else:
-                    reg_count = 1
-                    byte_size = 1
-            else:
-                byte_size = param_size
-                if byte_size < 2:
-                    reg_count = 1
-                else:
-                    reg_count = byte_size // 2
-            # Формируем запрос
-            self.stack_to_read.append({'method': self.connect.read_param, 'func': read_func, 'start': modbus_reg,
-                                       'count': reg_count, 'callback': item.data_from_network})
+        self.stack_to_read.append(item)
 
     def write_parameters(self, items=None):
         if len(self.request_count) == 0:
@@ -526,7 +508,7 @@ class AQ_Device110China(AQ_Device):
                     self.write_item(items[i])
 
             self.request_count.append(len(self.stack_to_write))
-            self.connect.create_param_request(self.stack_to_write)
+            self.connect.create_param_request('write', self.stack_to_write)
 
     def write_item(self, item):
         param_attributes = item.get_param_attributes()
@@ -541,14 +523,13 @@ class AQ_Device110China(AQ_Device):
     def write_parameter(self, item):
         # if item in self.changed_param_stack:
         if item.get_status() == 'changed':
-            param_attributes = item.get_param_attributes()
+        #     param_attributes = item.get_param_attributes()
+        #
+        #     modbus_reg = param_attributes.get('modbus_reg', '')
+        #     write_func = param_attributes.get('write_func', '')
+        #     data = item.data_for_network()
 
-            modbus_reg = param_attributes.get('modbus_reg', '')
-            write_func = param_attributes.get('write_func', '')
-            data = item.data_for_network()
-
-            self.stack_to_write.append({'method': self.connect.write_param, 'func': write_func, 'start': modbus_reg,
-                                        'data': data, 'callback': item.confirm_writing})
+            self.stack_to_write.append(item)
 
         # if self.write_error_flag is True:
         #     self.write_error_flag = False
@@ -666,7 +647,7 @@ class AQ_Device_110chinaPacker:
                     registers = [struct.unpack('H', text_bytes[i:i + 2])[0] for i in range(0, len(text_bytes), 2)]
                 elif param_type == 'enum':
                     # костиль для enum з розміром два регістра
-                    if param_size == 4:
+                    if param_size >= 16:
                         packed_data = struct.pack('I', value)
                         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
                     else:
