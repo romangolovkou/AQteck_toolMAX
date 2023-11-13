@@ -3,7 +3,7 @@ import struct
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
-from AQ_ParamsDelegateEditors import AqUintTreeLineEdit, AqEnumROnlyTreeLineEdit, AQ_IpTreeLineEdit, \
+from AQ_ParamsDelegateEditors import AqUintTreeLineEdit, AqEnumROnlyTreeLineEdit, AqIpTreeLineEdit, \
     AqIntTreeLineEdit, AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AQ_TreeLineEdit
 
 
@@ -59,7 +59,7 @@ class AQ_DeviceInfoTableView(QTableView):
             editor = AqEnumROnlyTreeLineEdit
         elif param_type == 'unsigned':
             if param_attributes.get('visual_type', '') == 'ip_format':
-                editor = AQ_IpTreeLineEdit
+                editor = AqIpTreeLineEdit
             else:
                 editor = AqUintTreeLineEdit
         elif param_type == 'signed':

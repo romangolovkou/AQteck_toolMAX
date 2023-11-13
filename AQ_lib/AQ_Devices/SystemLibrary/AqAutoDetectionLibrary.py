@@ -517,7 +517,10 @@ packer = AqAutoDetectionDevicePacker()
 
 def get_item_by_type(param_attributes):
     param_type = param_attributes.get('type', '')
-    if param_type == 'enum':
+    visual_type = param_attributes.get('visual_type', '')
+    if visual_type == 'ip_format':
+        item = AqAutoDetectIpParamItem(param_attributes)
+    elif param_type == 'enum':
         item = AqAutoDetectEnumParamItem(param_attributes)
     elif param_type == 'unsigned':
         item = AqAutoDetectUnsignedParamItem(param_attributes)

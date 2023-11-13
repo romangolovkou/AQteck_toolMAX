@@ -2,7 +2,7 @@ import struct
 
 from AQ_CustomTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, AqUnsignedToFloatParamItem, \
-    AqFloatEnumParamItem, AqBitParamItem
+    AqFloatEnumParamItem, AqBitParamItem, AqIpParamItem
 from AQ_ParamsDelegateEditors import AqEnumTreeComboBox, AqEnumROnlyTreeLineEdit
 from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 
@@ -207,6 +207,35 @@ class AqAutoDetectDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
 
         byte_array = reverse_modbus_registers(byte_array)
         param_value = struct.unpack('>I', byte_array)[0]
+
+        return param_value
+
+
+class AqAutoDetectIpParamItem(AqIpParamItem, AqModbusItem):
+    def __init__(self, param_attributes):
+        super().__init__(param_attributes)
+        # AQ_ModbusItem.__init__(param_attributes)
+        # AQ_UnsignedParamItem.__init__(param_attributes)
+
+    def pack(self):
+        if self.param_size == 4:
+            packed_data = struct.pack('I', self.value)
+        else:
+            raise Exception('AqAutoDetectIpParamItemError: param size is incorrect')
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
+
+    def unpack(self, data):
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in data.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+        if self.param_size == 4:
+            byte_array = reverse_modbus_registers(byte_array)
+            param_value = struct.unpack('>I', byte_array)[0]
+        else:
+            raise Exception('AqAutoDetectIpParamItemError: param size is incorrect')
 
         return param_value
 

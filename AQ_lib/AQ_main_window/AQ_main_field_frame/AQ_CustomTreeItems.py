@@ -4,8 +4,8 @@ from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
 from PySide6.QtGui import QStandardItem
 
 from AQ_ParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
-    AqFloatTreeLineEdit, AQ_IpTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AqEnumROnlyTreeLineEdit, \
-    AqSignedToFloatTreeLineEdit, AqFloatEnumROnlyTreeLineEdit, AqFloatEnumTreeComboBox, AqBitLineEdit
+    AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AqEnumROnlyTreeLineEdit, \
+    AqSignedToFloatTreeLineEdit, AqFloatEnumROnlyTreeLineEdit, AqFloatEnumTreeComboBox, AqBitLineEdit, AqIpTreeLineEdit
 
 
 class AqParamItem(QStandardItem):
@@ -344,6 +344,23 @@ class AqDateTimeParamItem(AqParamItem):
         min_limit_date = datetime(2000, 1, 1)
         max_limit_seconds = (max_limit_date - min_limit_date).total_seconds()
         return max_limit_seconds
+
+
+class AqIpParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_UnsignedParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('min_limit', None) is None:
+            param_attributes['min_limit'] = None
+        if param_attributes.get('max_limit', None) is None:
+            param_attributes['max_limit'] = None
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = ''
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AqIpTreeLineEdit
 
 
 class AqBitParamItem(AqParamItem):

@@ -168,7 +168,7 @@ class AqUintTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
+class AqIpTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.min_limit = 0
