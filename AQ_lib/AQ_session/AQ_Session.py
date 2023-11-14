@@ -133,7 +133,7 @@ class AQ_CurrentSession(QObject):
         f = io.BytesIO()
         p = pickle.Pickler(f)
 
-        config = device.getConfiguration()
+        config = device.get_configuration()
         p.dump(config)
 
         dialog = QFileDialog()
@@ -176,7 +176,7 @@ class AQ_CurrentSession(QObject):
 
 
             if loadConf != None:
-                device.load_config(loadConf)
+                device.set_configuration(loadConf)
                 print('Loaded')
             else:
                 print('Load failed')

@@ -241,7 +241,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return config
 
     def set_configuration(self, config: AqDeviceConfig):
-        if  self.info('name') != config.device_name:
+        if self.info('name') != config.device_name:
             return NotImplementedError
             #TODO: need generate custom exception or generate event to display error message
 
@@ -253,4 +253,5 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     devParam.value = cfgParam['value']
         #TODO: optimize this algorithm
 
-        self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        # self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        self._event_manager.emit_event('current_device_data_updated', self)
