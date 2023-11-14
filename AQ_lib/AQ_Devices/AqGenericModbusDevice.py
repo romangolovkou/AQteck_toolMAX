@@ -127,4 +127,4 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     devParam.value = cfgParam['value']
         # TODO: optimize this algorithm
 
-        self.event_manager.emit_event('current_device_data_updated', self, self.changed_param_stack)
+        self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)

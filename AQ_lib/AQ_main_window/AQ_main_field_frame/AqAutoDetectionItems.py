@@ -106,6 +106,8 @@ class AqAutoDetectSignedParamItem(AqSignedParamItem, AqModbusItem):
             raise Exception('AQ_ModbusSignedParamItemError: param size is incorrect')
         # Разбиваем упакованные данные на 16-битные значения (2 байта)
         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
+
     def unpack(self, data):
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in data.registers)
@@ -150,7 +152,7 @@ class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
 
         reg_count = self.param_size // 2
         byte_array = swap_modbus_bytes(byte_array, reg_count)
-        param_value = struct.unpack('>f', byte_array)[0]
+        param_value = struct.unpack('f', byte_array)[0]
         param_value = round(param_value, 7)
 
         return param_value

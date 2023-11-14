@@ -512,9 +512,6 @@ def get_float_signed_unsigned_by_size(param_descr, pos, size, param_type):
     return value
 
 
-packer = AqAutoDetectionDevicePacker()
-
-
 def get_item_by_type(param_attributes):
     param_type = param_attributes.get('type', '')
     visual_type = param_attributes.get('visual_type', '')

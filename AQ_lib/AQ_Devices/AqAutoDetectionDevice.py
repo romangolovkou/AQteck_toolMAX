@@ -84,9 +84,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
             param_attributes['W_Only'] = 0
             self.system_params_dict[keys_list[i]] = AqAutoDetectStringParamItem(param_attributes)
 
-
-
-
     def __parse_default_prg(self):
         try:
             containers_count = get_containers_count(self._default_prg)
@@ -256,4 +253,4 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     devParam.value = cfgParam['value']
         #TODO: optimize this algorithm
 
-        self.event_manager.emit_event('current_device_data_updated', self, self.changed_param_stack)
+        self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
