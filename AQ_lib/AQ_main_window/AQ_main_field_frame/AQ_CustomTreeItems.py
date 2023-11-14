@@ -350,7 +350,7 @@ class AqIpParamItem(AqParamItem):
     def __init__(self, param_attributes):
         self.param_size = param_attributes.get('param_size', None)
         if self.param_size is None:
-            raise Exception('AQ_UnsignedParamItemError: "param_size" is not exist')
+            raise Exception('AqIpParamItemError: "param_size" is not exist')
 
         if param_attributes.get('min_limit', None) is None:
             param_attributes['min_limit'] = None
@@ -361,6 +361,17 @@ class AqIpParamItem(AqParamItem):
         super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor = AqIpTreeLineEdit
+
+
+class AqMACParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AqMACParamItemError: "param_size" is not exist')
+
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor = AqUintTreeLineEdit
 
 
 class AqBitParamItem(AqParamItem):

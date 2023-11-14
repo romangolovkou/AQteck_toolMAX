@@ -164,7 +164,6 @@ class AqUintTreeLineEdit(AQ_TreeLineEdit):
                         self.red_blink_timer.start()
                         show_err_label(self)
 
-
             super().keyPressEvent(event)
 
 

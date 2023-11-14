@@ -517,6 +517,8 @@ def get_item_by_type(param_attributes):
     visual_type = param_attributes.get('visual_type', '')
     if visual_type == 'ip_format':
         item = AqAutoDetectIpParamItem(param_attributes)
+    elif visual_type == 'hex':
+        item = AqAutoDetectMACParamItem(param_attributes)
     elif param_type == 'enum':
         item = AqAutoDetectEnumParamItem(param_attributes)
     elif param_type == 'unsigned':
