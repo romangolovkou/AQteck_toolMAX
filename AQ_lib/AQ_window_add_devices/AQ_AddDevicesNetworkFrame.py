@@ -201,6 +201,10 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
             self.ip_line_edit.setVisible(True)
             self.slave_id_line_edit_label.setVisible(False)
             self.slave_id_line_edit.setVisible(False)
+            self.parity_combo_box_label.setVisible(False)
+            self.parity_combo_box.setVisible(False)
+            self.stopbits_combo_box_label.setVisible(False)
+            self.stopbits_combo_box.setVisible(False)
         else:
             self.boudrate_combo_box_label.setVisible(True)
             self.boudrate_combo_box.setVisible(True)
@@ -208,6 +212,10 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
             self.ip_line_edit.setVisible(False)
             self.slave_id_line_edit_label.setVisible(True)
             self.slave_id_line_edit.setVisible(True)
+            self.parity_combo_box_label.setVisible(True)
+            self.parity_combo_box.setVisible(True)
+            self.stopbits_combo_box_label.setVisible(True)
+            self.stopbits_combo_box.setVisible(True)
 
     def get_network_settings_list(self):
         network_settings_list = []
