@@ -4,7 +4,7 @@ from AqDeviceConfig import AqDeviceConfig
 from AqModbusTips import swap_bytes_at_registers, remove_empty_bytes
 
 
-class AqAutoDetectionDevice(AqBaseDevice):
+class AqGenericModbusDevice(AqBaseDevice):
     # Format: 'param_name': {start_reg, count, func}
     _system_string = {
         #     TODO: Fill from device_description class
@@ -12,7 +12,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     _system_param = {}
 
     # Add to init all what we need
-    def __init__(self, event_manager, connect: AqModbusConnect):
+    def __init__(self, event_manager, connect: AqModbusConnect, network_settings):
         super().__init__(event_manager, connect)
         self._connect = connect
 

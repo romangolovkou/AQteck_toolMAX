@@ -12,6 +12,10 @@ from AQ_Devices.AQ_Device import AQ_Device
 from AQ_Devices.AQ_Device_110china import AQ_Device110China
 from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
 from AqAutoDetectionDevice import AqAutoDetectionDevice
+from AqGenericModbusLibrary import read_configuration_file
+from AqGenericModbusDevice import AqGenericModbusDevice
+
+
 # from AqDY500 import AqDY500
 
 
@@ -122,15 +126,23 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         return finded_devices_list
 
     def get_device_by_settings(self, event_manager, connect, network_settings):
-        if network_settings.get('device', None) == 'МВ110-24_1ТД.csv':
+        dev_name = network_settings.get('device', None)
+        if dev_name == 'МВ110-24_1ТД.csv':
             device = AQ_DeviceDY500(event_manager, connect, network_settings)
-        elif network_settings.get('device', None) == 'МВ110-24_8А.csv' or\
-                network_settings.get('device', None) == 'МВ110-24_8АС.csv' or\
-                network_settings.get('device', None) == 'МВ110-24_16Д.csv' or\
-                network_settings.get('device', None) == 'МК110-24_8Д_4Р.csv' or\
-                network_settings.get('device', None) == 'МУ110-24_3У.csv' or\
-                network_settings.get('device', None) == 'МУ110-24_8Р.csv':
-            device = AQ_Device110China(event_manager, connect, network_settings)
+        elif dev_name == 'МВ110-24_8А.csv' or\
+                dev_name == 'МВ110-24_8АС.csv' or\
+                dev_name == 'МВ110-24_16Д.csv' or\
+                dev_name == 'МК110-24_8Д_4Р.csv' or\
+                dev_name == 'МУ110-24_3У.csv' or\
+                dev_name == 'МУ110-24_8Р.csv':
+            configuration = read_configuration_file(dev_name)
+            class_name = configuration.get('device_descr').get('Type')
+            # device = AQ_Device110China(event_manager, connect, network_settings)
+            try:
+                device = globals()[str(class_name)](event_manager, connect, network_settings)
+            except Exception as e:
+                print(f"Error occurred: {str(e)}")
+                raise Exception(e)
         elif network_settings.get('device', None) == "AqAutoDetectionDevice":
             device = AqAutoDetectionDevice(event_manager, connect)
         else:
