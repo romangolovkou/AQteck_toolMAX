@@ -102,9 +102,9 @@ class AqModbusEnumParamItem(AqEnumParamItem, AqModbusItem):
         hex_string = ''.join(format(value, '04X') for value in data.registers)
         # Конвертируем строку в массив байт
         byte_array = bytes.fromhex(hex_string)
-        if self.param_size == 2:
+        if self.param_size == 4:
             param_value = struct.unpack('>I', byte_array)[0]
-        elif self.param_size == 1:
+        elif self.param_size == 2:
             param_value = struct.unpack('>H', byte_array)[0]
         else:
             raise Exception('AqModbusEnumParamItemError: "param_size" is incorrect')
