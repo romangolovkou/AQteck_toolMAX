@@ -139,7 +139,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
             class_name = configuration.get('device_descr').get('Type')
             # device = AQ_Device110China(event_manager, connect, network_settings)
             try:
-                device = globals()[str(class_name)](event_manager, connect, network_settings)
+                device = globals()[str(class_name)](event_manager, connect, configuration)
             except Exception as e:
                 print(f"Error occurred: {str(e)}")
                 raise Exception(e)

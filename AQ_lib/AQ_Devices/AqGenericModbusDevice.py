@@ -12,17 +12,18 @@ class AqGenericModbusDevice(AqBaseDevice):
     _system_param = {}
 
     # Add to init all what we need
-    def __init__(self, event_manager, connect: AqModbusConnect, network_settings):
+    def __init__(self, event_manager, connect: AqModbusConnect, configuration):
+        self._configuration = configuration
         super().__init__(event_manager, connect)
         self._connect = connect
 
     def init_device(self) -> bool:
-        self._info['name'] = self.__read_string('name')
-        self._info['version'] = self.__read_string('version')
-        self._info['serial_num'] = self.__read_string('serial_num')
-        self._info['password'] = None
+        self._info['name'] = self._configuration.get('device_descr').get('Name')
+        # self._info['version'] = self.__read_string('version')
+        # self._info['serial_num'] = self.__read_string('serial_num')
+        # self._info['password'] = None
 
-        self._device_tree = None
+        self._device_tree = self._configuration.get('params_tree')
         if self._device_tree == 'parsing_err' or \
                 self._device_tree is None:
             self._status = 'error'

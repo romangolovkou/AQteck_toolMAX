@@ -184,7 +184,7 @@ class AqEnumParamItem(AqParamItem):
         byte_count = self.param_size // 8
         if self.param_size % 8 != 0:
             byte_count += 1
-        self.param_size = 2 if byte_count < 3 else 4
+        # self.param_size = 2 if byte_count < 3 else 4
         param_attributes['param_size'] = self.param_size
 
         if param_attributes.get('min_limit', None) is None:
