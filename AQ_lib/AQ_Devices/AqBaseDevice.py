@@ -124,15 +124,23 @@ class AqBaseDevice(ABC):
             self._connect.create_param_request('write', self._stack_to_write)
             self._stack_to_write.clear()
 
-    @abstractmethod
+    # @abstractmethod
+    # def read_parameter(self, item):
+    #     """Read parameter from device"""
+    #     return NotImplementedError
+
     def read_parameter(self, item):
         """Read parameter from device"""
-        return NotImplementedError
+        self._stack_to_read.append(item)
 
-    @abstractmethod
+    # @abstractmethod
+    # def write_parameter(self, item):
+    #     """Read parameter from device"""
+    #     return NotImplementedError
+
     def write_parameter(self, item):
-        """Read parameter from device"""
-        return NotImplementedError
+        if item.get_status() == 'changed':
+            self._stack_to_write.append(item)
 
     def reboot(self):
         """

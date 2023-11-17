@@ -1,9 +1,7 @@
 import struct
 
 from AQ_CustomTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
-    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, AqUnsignedToFloatParamItem, \
-    AqFloatEnumParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem
-from AQ_ParamsDelegateEditors import AqEnumTreeComboBox, AqEnumROnlyTreeLineEdit
+    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem
 from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers
 
@@ -14,8 +12,6 @@ from AqModbusTips import reverse_registers
 class AqAutoDetectEnumParamItem(AqEnumParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_EnumParamItem.__init__(param_attributes)
 
     def pack(self):
         # костиль для enum з розміром два регістра
@@ -49,8 +45,6 @@ class AqAutoDetectEnumParamItem(AqEnumParamItem, AqModbusItem):
 class AqAutoDetectUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_UnsignedParamItem.__init__(param_attributes)
 
     def pack(self):
         if self.param_size == 1:
@@ -91,8 +85,6 @@ class AqAutoDetectUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
 class AqAutoDetectSignedParamItem(AqSignedParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_SignedParamItem.__init__(param_attributes)
 
     def pack(self):
         if self.param_size == 1:
@@ -130,8 +122,6 @@ class AqAutoDetectSignedParamItem(AqSignedParamItem, AqModbusItem):
 class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_FloatParamItem.__init__(param_attributes)
 
     def pack(self):
         if self.param_size == 4:
@@ -162,8 +152,6 @@ class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
 class AqAutoDetectStringParamItem(AqStringParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_StringParamItem.__init__(param_attributes)
 
     def pack(self):
         text_bytes = self.value.encode('ANSI')
@@ -193,8 +181,6 @@ class AqAutoDetectDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
     def __init__(self, param_attributes):
 
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_DateTimeParamItem.__init__(param_attributes)
 
     def pack(self):
         packed_data = struct.pack('I', self.value)
@@ -217,8 +203,6 @@ class AqAutoDetectDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
 class AqAutoDetectIpParamItem(AqIpParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_UnsignedParamItem.__init__(param_attributes)
 
     def pack(self):
         if self.param_size == 4:
@@ -245,8 +229,6 @@ class AqAutoDetectIpParamItem(AqIpParamItem, AqModbusItem):
 class AqAutoDetectMACParamItem(AqMACParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
-        # AQ_ModbusItem.__init__(param_attributes)
-        # AQ_UnsignedParamItem.__init__(param_attributes)
 
     def pack(self):
         if self.param_size == 6:  # MAC address
@@ -272,35 +254,10 @@ class AqAutoDetectMACParamItem(AqMACParamItem, AqModbusItem):
         return param_value
 
 
-
-
-# class AqAutoDetectSignedToFloatParamItem(AqSignedToFloatParamItem, AqAutoDetectSignedParamItem):
-#     def __init__(self, param_attributes):
-#         super().__init__(param_attributes)
-#         # AqAutoDetectSignedParamItem.__init__(param_attributes)
-#         # AQ_SignedToFloatParamItem.__init__(param_attributes)
-#
-#
-# class AqAutoDetectUnsignedToFloatParamItem(AqUnsignedToFloatParamItem, AqAutoDetectUnsignedParamItem):
-#     def __init__(self, param_attributes):
-#         super().__init__(param_attributes)
-#         # AqAutoDetectUnsignedParamItem.__init__(param_attributes)
-#         # AQ_UnsignedToFloatParamItem.__init__(param_attributes)
-#
-#
-# class AqAutoDetectFloatEnumParamItem(AqFloatEnumParamItem, AqAutoDetectEnumParamItem):
-#     def __init__(self, param_attributes):
-#         super().__init__(param_attributes)
-#         # AqAutoDetectEnumParamItem.__init__(param_attributes)
-#         # AQ_FloatEnumParamItem.__init__(param_attributes)
-
-
 class AqAutoDetectDiscretParamItem(AqBitParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         param_attributes['param_size'] = 1
         super().__init__(param_attributes)
-        # AqAutoDetectEnumParamItem.__init__(param_attributes)
-        # AQ_FloatEnumParamItem.__init__(param_attributes)
 
     def pack(self):
         if self.value == 1:

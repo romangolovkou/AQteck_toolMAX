@@ -9,14 +9,10 @@ from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label, AQ_have_error_widget
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
 from AQ_Devices.AQ_Device import AQ_Device
-from AQ_Devices.AQ_Device_110china import AQ_Device110China
 from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
 from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqGenericModbusLibrary import read_configuration_file
 from AqGenericModbusDevice import AqGenericModbusDevice
-
-
-# from AqDY500 import AqDY500
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -136,8 +132,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
                 dev_name == 'МУ110-24_3У.csv' or\
                 dev_name == 'МУ110-24_8Р.csv':
             configuration = read_configuration_file(dev_name)
-            class_name = configuration.get('device_descr').get('Type')
-            # device = AQ_Device110China(event_manager, connect, network_settings)
+            class_name = configuration.dev_descr_dict.get('Type')
             try:
                 device = globals()[str(class_name)](event_manager, connect, configuration)
             except Exception as e:
@@ -146,7 +141,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         elif network_settings.get('device', None) == "AqAutoDetectionDevice":
             device = AqAutoDetectionDevice(event_manager, connect)
         else:
-            device = AQ_Device(event_manager, network_settings)
+            raise Exception('AqAddDeviceWindowError: Unknown device type')
 
         return device
 

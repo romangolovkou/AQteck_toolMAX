@@ -1,8 +1,15 @@
 import csv
+from dataclasses import dataclass
 
 from AQ_CustomTreeItems import AqCatalogItem
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AqParser import parse_parameter
+
+@dataclass
+class AqModbusGenericConfiguration:
+    dev_descr_dict: dict
+    system_params: list
+    params_tree: AQ_TreeItemModel
 
 
 def read_configuration_file(conf_filename):
@@ -18,7 +25,12 @@ def read_configuration_file(conf_filename):
     system_params = get_systems_params(data)
     params_tree = get_params_tree(data)
 
-    return {'device_descr': dev_descr_dict, 'system_params': system_params, 'params_tree': params_tree}
+    if dev_descr_dict.get('Name') is None or \
+            dev_descr_dict.get('Type') is None or \
+            not isinstance(params_tree, AQ_TreeItemModel):
+        raise Exception('AqGenericModbusError: Configuration can`t read. "Name" or "Type" or "params_tree" not exist')
+
+    return AqModbusGenericConfiguration(dev_descr_dict, system_params, params_tree)
 
 
 def get_device_descr(data: list):

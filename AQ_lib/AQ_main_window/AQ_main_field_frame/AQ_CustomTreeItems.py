@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
 from PySide6.QtGui import QStandardItem
@@ -115,9 +116,16 @@ class AqParamItem(QStandardItem):
         self.param_status = 'ok'
         return True
 
-    # def synchro_last_value_and_value(self):
-    #     self.value_in_device = self._value
-    #     self.param_status = 'ok'
+    def set_default_value(self):
+        param_attributes = self.data(Qt.UserRole)
+        default_value = param_attributes.get('def_value', None)
+        if default_value is None:
+            self.value = self._get_standart_def_value()
+        else:
+            self.value = default_value
+
+    def _get_standart_def_value(self) -> Any:
+        return 0
 
     def get_param_attributes(self):
         param_attributes = self.data(Qt.UserRole)
@@ -131,12 +139,6 @@ class AqParamItem(QStandardItem):
 
     def set_local_event_manager(self, local_event_manager):
         self.local_event_manager = local_event_manager
-
-    def fromNetworkData(self):
-        pass
-
-    def toNetwork(self):
-        return 1
 
 
 class AqModbusItem(AqParamItem):

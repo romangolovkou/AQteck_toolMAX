@@ -189,45 +189,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
         # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
         return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
 
-    # TODO: wait until we will have good items and refactor this
-    def read_parameter(self, item):
-        """Read parameter from device"""
-        self._stack_to_read.append(item)
-        # param_attributes = item.get_param_attributes()
-        #
-        # param_type = param_attributes.get('type', '')
-        # param_size = param_attributes.get('param_size', '')
-        # modbus_reg = param_attributes.get('modbus_reg', '')
-        #
-        # if param_type != '' and param_size != '' and modbus_reg != '':
-        #     if param_type == 'enum':
-        #         if param_size > 16:
-        #             reg_count = 2
-        #             byte_size = 4
-        #         else:
-        #             reg_count = 1
-        #             byte_size = 1
-        #     else:
-        #         byte_size = param_size
-        #         if byte_size < 2:
-        #             reg_count = 1
-        #         else:
-        #             reg_count = byte_size // 2
-        #     # Формируем запрос
-        #     self._stack_to_read.append({'method': self._connect.read_param, 'func': 3, 'start': modbus_reg,
-        #                                'count': reg_count, 'callback': item.data_from_network})
-
-    # TODO: refactor this huge function
-    def write_parameter(self, item):
-        if item.get_status() == 'changed':
-            # param_attributes = item.get_param_attributes()
-            #
-            # modbus_reg = param_attributes.get('modbus_reg', '')
-            # write_func = param_attributes.get('write_func', '')
-            # data = item.data_for_network()
-
-            self._stack_to_write.append(item)
-
     def get_configuration(self) -> AqDeviceConfig:
         config = AqDeviceConfig()
         config.device_name = self.info('name')
