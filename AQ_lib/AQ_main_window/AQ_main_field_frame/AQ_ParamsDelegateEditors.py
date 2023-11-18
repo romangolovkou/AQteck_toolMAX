@@ -41,7 +41,10 @@ class AQ_TreeLineEdit(QLineEdit):
         self.save_new_value = handler
 
     def set_value(self, value):
-        self.setText(str(value))
+        if value is None:
+            self.setText('')
+        else:
+            self.setText(str(value))
 
     def err_blink(self):
         if self.anim_cnt < 34:

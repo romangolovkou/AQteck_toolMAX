@@ -77,6 +77,7 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
                 if checkbox_item.checkState() == Qt.Checked:
                     self.selected_devices_list.append(self.all_finded_devices[i])
 
+
         self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
         self.all_finded_devices.clear()
         self.selected_devices_list.clear()

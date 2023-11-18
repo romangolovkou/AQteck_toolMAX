@@ -81,13 +81,6 @@ class AQ_ConnectManager(QObject):
     async def proceedParamRequest(self, connect):
         for i in range(len(connect.param_request_stack)):
             request = connect.param_request_stack.pop()
-            # function = request.get('method', None)
-            # func = request.get('func', None)
-            # start = request.get('start', None)
-            # count = request.get('count', None)
-            # callback = request.get('callback', None)
-            # if func is not None and start is not None\
-            #         and count is not None and callback is not None:
             connect.proceed_request(request)
 
     async def proceedFileRequest(self, req_data):

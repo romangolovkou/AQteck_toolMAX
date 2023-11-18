@@ -54,7 +54,7 @@ def get_device_descr(data: list):
         config_string = data[i]
         # Разделение записи на поля по символу ';'
         fields = config_string.split(';')
-        # єлемент з індексом 0 - ключ, єлемент з індексом 1 - значення
+        # єлемент з індексом 0 - ключ, єлемент з індексом 1 - значення-
         dev_descr_dict[fields[0]] = fields[1]
 
     return dev_descr_dict
