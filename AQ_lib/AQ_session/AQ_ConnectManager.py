@@ -5,7 +5,7 @@ from PySide6.QtCore import QThread, Signal, QObject
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AqConnect import AqIpConnectSettings, AqComConnectSettings, AqModbusConnect
+from AqConnect import AqIpConnectSettings, AqComConnectSettings, AqModbusConnect, AqOfflineConnect
 from AQ_IsValidIpFunc import is_valid_ip
 
 
@@ -24,18 +24,23 @@ class AQ_ConnectManager(QObject):
         self.core_thread.start()
 
     def create_connect(self, network_settings, callback_dict):
-        connect_settings = self.get_connect_settings(network_settings)
-        if connect_settings is not None:
-            try:
-                connect = AqModbusConnect(connect_settings, network_settings.get('address', 1), self.core_cv)
-                if connect.open():
-                    connect.close()
-                    self.connect_list.append(connect)
-                    callback_dict['connect'] = connect
-                else:
-                    callback_dict['connect'] = 'connect_error'
-            except Exception as e:
-                print(str(e))
+        if network_settings.get('interface') == 'Offline':
+            connect = AqOfflineConnect(self.core_cv)
+            callback_dict['connect'] = connect
+            self.connect_list.append(connect)
+        else:
+            connect_settings = self.get_connect_settings(network_settings)
+            if connect_settings is not None:
+                try:
+                    connect = AqModbusConnect(connect_settings, network_settings.get('address', 1), self.core_cv)
+                    if connect.open():
+                        connect.close()
+                        self.connect_list.append(connect)
+                        callback_dict['connect'] = connect
+                    else:
+                        callback_dict['connect'] = 'connect_error'
+                except Exception as e:
+                    print(str(e))
 
     def get_connect_settings(self, network_settings):
         if network_settings.get('ip', False):
@@ -87,35 +92,3 @@ class AQ_ConnectManager(QObject):
         data_storage = req_data['data']
         time.sleep(random.uniform(0.1, 2.0))
         data_storage = random.randint(50, 100)
-
-    # def add_request(self, request):
-    #     self.request_stack.append(request)
-    #     with self.core_cv:
-    #         self.core_cv.notify()
-
-    def wrapper_call(self, request):
-        request()
-
-
-# class AQ_Modbus___Connect():
-#     def __init__(self):
-#         self.param_request_stack = []
-#         self.file_request_stack = []
-#         self.core_cv = threading.Condition()
-#
-#     def createParamRequest(self, func, start, count, data):
-#         self.param_request_stack.append({'func': func, 'start': start,
-#                                          'count': count, 'data': data})
-#         with self.core_cv:
-#             self.core_cv.notify()
-#
-#     def createFileRequest(self, func, file_num, record_num, record_len, data):
-#         self.file_request_stack.append({'func': func, 'file_num': file_num,
-#                                         'record_num': record_num, 'record_len': record_len, 'data': data})
-#         with self.core_cv:
-#             self.core_cv.notify()
-
-
-
-
-

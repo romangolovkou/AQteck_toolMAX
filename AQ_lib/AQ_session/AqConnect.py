@@ -207,3 +207,79 @@ class AqModbusConnect(AqConnect):
         result = self.client.read_file_record(self.slave_id, [request])
 
         return result
+
+
+class AqOfflineConnect(AqConnect):
+    def __init__(self, core_cv):
+        super().__init__()
+        self.core_cv = core_cv
+        self.param_request_stack = []
+        self.file_request_stack = []
+
+    def address_string(self):
+        return 'Offline'
+
+    def open(self):
+        # return self.client.connect()
+        return True
+
+    def close(self):
+        # self.client.close()
+        return True
+
+    def create_param_request(self, method, stack):
+        request_stack = list()
+        for i in range(len(stack)):
+            request = dict()
+            if method == 'read':
+                request['method'] = self.read_param
+            elif method == 'write':
+                request['method'] = self.write_param
+            else:
+                raise Exception('AqConnectError: unknown stack name')
+
+            request['item'] = stack[i]
+
+            # Формируем запрос
+            request_stack.append(request)
+
+        self.param_request_stack = request_stack
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def createFileRequest(self, func, file_num, record_num, record_len, data):
+        self.file_request_stack.append({'func': func, 'file_num': file_num,
+                                        'record_num': record_num, 'record_len': record_len, 'data': data})
+        with self.core_cv:
+            self.core_cv.notify()
+
+    def proceed_request(self, request):
+        function = request.get('method', None)
+
+        if function is not None:
+            function(request.get('item', None))
+        else:
+            raise Exception('AqConnectError: unknown "method"')
+
+    def read_param(self, item):
+        if item is not None:
+            if item.value_in_device is None:
+                item.set_default_value()
+
+            item.value = item.value_in_device
+            item.synchronized = True
+
+    def write_param(self, item):
+        if item is not None:
+            item.confirm_writing(True)
+
+    def read_file_record(self, file_number, record_number, record_length):
+        # Создание экземпляра структуры ReadFileRecordRequest
+        request = ReadFileRecordRequest(self.slave_id)
+        # Установка значений полей структуры
+        request.file_number = file_number
+        request.record_number = record_number
+        request.record_length = record_length
+        result = self.client.read_file_record(self.slave_id, [request])
+
+        return result

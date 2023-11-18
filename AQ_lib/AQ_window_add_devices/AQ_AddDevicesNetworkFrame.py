@@ -82,6 +82,8 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         for port in self.com_ports:
             self.interface_combo_box.addItem(port.description)
         self.serial = None
+        # Додавання опції Offline
+        self.interface_combo_box.addItem("Offline")
         # Связываем сигнал activated с обработчиком handle_combobox_selection
         self.interface_combo_box.activated.connect(self.change_view_by_combobox_selection)
         # Встановлюємо попередне обране значення, якщо воно існує
