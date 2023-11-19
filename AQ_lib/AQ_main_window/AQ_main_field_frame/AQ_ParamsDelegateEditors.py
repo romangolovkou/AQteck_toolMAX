@@ -103,10 +103,10 @@ class AqEnumTreeComboBox(QComboBox):
 class AqEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
-        self.enum_strings = param_attributes.get('enum_strings', '')
+        self.enum_str_dict = param_attributes.get('enum_strings', '')
 
     def set_value(self, value):
-        self.setText(self.enum_strings[value])
+        self.setText(self.enum_str_dict.get(value, ''))
 
 
 class AqUintTreeLineEdit(AQ_TreeLineEdit):
@@ -537,7 +537,7 @@ class AqFloatEnumTreeComboBox(AqEnumTreeComboBox):
         self.setCurrentText(string)
 
 
-class AqFloatEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
+class AqFloatEnumROnlyTreeLineEdit(AqEnumROnlyTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -545,7 +545,7 @@ class AqFloatEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
         value = int(value)
         value = '0b' + str(value)
         value = int(value, 2)
-        self.setText(self.enum_strings[value])
+        self.setText(self.enum_str_dict.get(value, ''))
 
 
 class AQ_EditorErrorLabel(AQ_Label):

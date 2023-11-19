@@ -124,14 +124,15 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
 
     def get_device_by_settings(self, event_manager, connect, network_settings):
         dev_name = network_settings.get('device', None)
-        if dev_name == 'МВ110-24_1ТД.csv':
-            device = AQ_DeviceDY500(event_manager, connect, network_settings)
-        elif dev_name == 'МВ110-24_8А.csv' or\
+        # if dev_name == 'МВ110-24_1ТД.csv':
+        #     device = AQ_DeviceDY500(event_manager, connect, network_settings)
+        if dev_name == 'МВ110-24_8А.csv' or\
                 dev_name == 'МВ110-24_8АС.csv' or\
                 dev_name == 'МВ110-24_16Д.csv' or\
                 dev_name == 'МК110-24_8Д_4Р.csv' or\
                 dev_name == 'МУ110-24_3У.csv' or\
-                dev_name == 'МУ110-24_8Р.csv':
+                dev_name == 'МУ110-24_8Р.csv' or \
+                dev_name == 'МВ110-24_1ТД.csv':
             configuration = read_configuration_file(dev_name)
             class_name = configuration.dev_descr_dict.get('Type')
             try:
