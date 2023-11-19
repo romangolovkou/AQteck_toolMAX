@@ -85,7 +85,7 @@ def parse_parameter(config_string: str):
                 param_attributes['def_value'] = int(attributes[10])
 
         if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusFloatEnumParamItem':
-            enum_strings = attributes[11].split('/')
+            enum_strings = attributes[11][1:].split('/')
 
             enum_str_dict = {}
             for row in range(len(enum_strings)):
@@ -97,7 +97,7 @@ def parse_parameter(config_string: str):
         if param_type == 'AqModbusSignedToFloatParamItem' or \
                 param_type == 'AqModbusUnsignedToFloatParamItem':
             if attributes[11] != '':
-                enum_strings = attributes[11].split('/')
+                enum_strings = attributes[11][1:].split('/')
 
                 enum_str_dict = {}
                 for row in range(len(enum_strings)):
