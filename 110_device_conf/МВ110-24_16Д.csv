@@ -1,5 +1,11 @@
-МВ110-24.16Д;;;;;;;;;;;
+!Device_descr_area;;;;;;;;;;;
+Name;МВ110-24.16Д;;;;;;;;;;
+Type;AqGenericModbusDevice;;;;;;;;;;
+!/Device_descr_area;;;;;;;;;;;
+!System_params;;;;;;;;;;;
+!/System_params;;;;;;;;;;;
 Имя парметра;Каталог;Номер регистра/бита;Кол-во регистров/битов;Функция чтения;Функция записи;Тип данных;Минимальное значение;Максимальное значение;Ед. Изм;Значение по умолчанию;строки (только для enum)
+!Param_descr_area;;;;;;;;;;;
 DI 1;Discrete Inputs;0;1;2;-;AqModbusDiscretParamItem 1;0;1;;;
 DI 2;Discrete Inputs;1;1;2;-;AqModbusDiscretParamItem 1;0;1;;;
 DI 3;Discrete Inputs;2;1;2;-;AqModbusDiscretParamItem 1;0;1;;;
@@ -18,3 +24,4 @@ DI 15;Discrete Inputs;14;1;2;-;AqModbusDiscretParamItem 1;0;1;;;
 DI 16;Discrete Inputs;15;1;2;-;AqModbusDiscretParamItem 1;0;1;;;
 Slave address;Communication settings;100;1;3;6;AqModbusUnsignedParamItem 8;1;255;;1;
 Communication setting;Communication settings;101;1;3;6;AqModbusEnumParamItem 4;1;8;;2;1=4800. None. 8. 1/2=9600. None. 8. 1/3=19200. None. 8. 1/4=38400. None. 8. 1/5=4800. Even. 8. 1/6=9600. Even. 8. 1/7=19200. Even. 8. 1/8=38400. Even. 8. 1
+!/Param_descr_area;;;;;;;;;;;
