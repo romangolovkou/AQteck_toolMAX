@@ -120,9 +120,18 @@ class AqParamItem(QStandardItem):
         param_attributes = self.data(Qt.UserRole)
         default_value = param_attributes.get('def_value', None)
         if default_value is None:
-            self.value = self._get_standart_def_value()
-        else:
-            self.value = default_value
+            default_value = self._get_standart_def_value()
+
+        min_limit = param_attributes.get('min_limit', None)
+        if min_limit is not None:
+            if default_value < min_limit:
+                default_value = min_limit
+        max_limit = param_attributes.get('max_limit', None)
+        if max_limit is not None:
+            if default_value > max_limit:
+                default_value = max_limit
+
+        self.value = default_value
 
     def _get_standart_def_value(self) -> Any:
         return 0
