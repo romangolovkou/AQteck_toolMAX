@@ -81,15 +81,15 @@ class AQ_DialogSetSlaveId(AQ_SimplifiedDialog):
     #     self.selected_devices_list.clear()
     #     self.close()
 
-    def on_find_button_clicked(self):
-        pass
-        # self.rotating_gears.start()
-        # # Запускаем функцию connect_to_device в отдельном потоке
-        # self.connect_thread = ConnectDeviceThread(self)
-        # self.connect_thread.finished.connect(self.on_connect_thread_finished)
-        # self.connect_thread.error.connect(self.on_connect_thread_error)
-        # self.connect_thread.result_signal.connect(self.connect_finished)
-        # self.connect_thread.start()
+    # def on_find_button_clicked(self):
+    #     pass
+    #     # self.rotating_gears.start()
+    #     # Запускаем функцию connect_to_device в отдельном потоке
+    #     self.connect_thread = ConnectDeviceThread(self)
+    #     self.connect_thread.finished.connect(self.on_connect_thread_finished)
+    #     self.connect_thread.error.connect(self.on_connect_thread_error)
+    #     self.connect_thread.result_signal.connect(self.connect_finished)
+    #     self.connect_thread.start()
 
     # def on_connect_thread_finished(self):
     #     self.rotating_gears.stop()
