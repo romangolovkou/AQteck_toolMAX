@@ -26,6 +26,21 @@ class AqGenericModbusDevice(AqBaseDevice):
             self._status = 'error'
             return False
 
+        # Вичтення рандомного параметру. Перевірка зв'язку
+        rand_item = self._device_tree.invisibleRootItem()
+        child_item = rand_item
+        while rand_item is not None:
+            rand_item = rand_item.child(0)
+            if rand_item is not None:
+                child_item = rand_item
+
+        self._connect.read_param(child_item)
+        if child_item.get_status() != 'ok':
+            self._status = 'error'
+            return False
+
+
+
         # TODO: describe rules to chache which functions are supported
         # into AutoDetectionDevice
         # later should be json file inside device with definitions
