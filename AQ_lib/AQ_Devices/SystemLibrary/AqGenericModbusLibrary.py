@@ -105,21 +105,19 @@ def get_params_tree(data: list):
             raise Exception('AqGenericModbusError: Configuration can`t read. Can`t find "System_params" in file')
 
         # Створюємо список імен каталогів
-        catalogs_name_set = set()
+        catalogs_name_list = list()
         for i in range(start + 1, end):
             config_string = data[i]
             # Разделение записи на поля по символу ';'
             fields = config_string.split(';')
-            catalogs_name_set.add(fields[1])
-
-        # Сортировка элементов сета в алфавитном порядке
-        sorted_list = sorted(catalogs_name_set)
+            if fields[1] not in catalogs_name_list:
+                catalogs_name_list.append(fields[1])
 
         # створюємо список з каталог-ітемами
         catalogs = []
-        for i in range(len(sorted_list)):
+        for i in range(len(catalogs_name_list)):
             param_attributes = dict()
-            param_attributes['name'] = sorted_list[i]
+            param_attributes['name'] = catalogs_name_list[i]
             param_attributes['is_catalog'] = 1
             catalog_item = AqCatalogItem(param_attributes)
             catalogs.append(catalog_item)

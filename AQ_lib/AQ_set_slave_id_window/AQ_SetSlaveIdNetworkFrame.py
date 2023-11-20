@@ -74,6 +74,8 @@ class AQ_SetSlaveIdNetworkSettingsLayout(QVBoxLayout):
         self.device_combo_box.setObjectName(self.parent.objectName() + "_" + "device_combo_box")
         # Получаем список файлов в указанной директории
         files = [f for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
+        # Видаляємо DY500, він не підтримує такий запис слейв айді.
+        files.remove('МВ110-24_1ТД.csv')
 
         # Добавляем имена файлов в комбобокс
         self.device_combo_box.addItems(files)

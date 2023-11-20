@@ -2,7 +2,6 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QFont, QPalette, QColor
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
 
-from AQ_Devices import AQ_Device
 from AQ_CustomWindowTemplates import AQ_Label
 from AqBaseDevice import AqBaseDevice
 
