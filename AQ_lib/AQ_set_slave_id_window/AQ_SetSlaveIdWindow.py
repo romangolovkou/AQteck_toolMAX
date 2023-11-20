@@ -4,9 +4,9 @@ from PySide6.QtWidgets import QWidget, QFrame, QLabel
 
 from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
-from AQ_Devices.AQ_Device import AQ_Device
-from AQ_Devices.AQ_Device_110china import AQ_Device110China
-from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
+from AQ_Device import AQ_Device
+from AQ_Device_110china import AQ_Device110China
+from AQ_Device_DY500 import AQ_DeviceDY500
 from AQ_SetSlaveIdNetworkFrame import AQ_SetSlaveIdNetworkSettingsFrame
 
 

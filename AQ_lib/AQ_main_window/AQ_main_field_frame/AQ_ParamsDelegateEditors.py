@@ -69,6 +69,8 @@ class AqEnumTreeComboBox(QComboBox):
         self.parent = parent
         self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
+        # Отключение обработчика события колеса мыши
+        self.wheelEvent = lambda event: event.ignore()
         self.save_new_value = None
         self.enum_str_dict = param_attributes.get('enum_strings', '')
         enum_strings = self.enum_str_dict.values()

@@ -7,8 +7,9 @@ from pymodbus.client import serial
 import serial.tools.list_ports
 
 from AQ_ConnectManager import AQ_ConnectManager
-from AQ_Devices import AQ_Device
+# from AQ_Devices import AQ_Device
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
+from AqBaseDevice import AqBaseDevice
 from AqConnect import AqModbusConnect
 from AQ_ParamListWindow import AQ_DialogParamList
 from AQ_DeviceInfoWindow import AQ_DialogDeviceInfo
@@ -127,7 +128,7 @@ class AQ_CurrentSession(QObject):
 
         self.event_manager.emit_event('add_item_to_watch_list', item, model)
 
-    def save_device_config(self, device: AQ_Device):
+    def save_device_config(self, device: AqBaseDevice):
         fname = None
 
         f = io.BytesIO()
@@ -151,7 +152,7 @@ class AQ_CurrentSession(QObject):
 
             print('I wrote some shit')
 
-    def load_device_config(self, device: AQ_Device):
+    def load_device_config(self, device: AqBaseDevice):
         loadConf = None
         fname = None
 

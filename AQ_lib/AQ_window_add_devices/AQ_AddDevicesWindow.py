@@ -8,8 +8,7 @@ from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
 from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label, AQ_have_error_widget
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
-from AQ_Devices.AQ_Device import AQ_Device
-from AQ_Devices.AQ_Device_DY500 import AQ_DeviceDY500
+from AQ_Device_DY500 import AQ_DeviceDY500
 from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqGenericModbusLibrary import read_configuration_file
 from AqGenericModbusDevice import AqGenericModbusDevice
