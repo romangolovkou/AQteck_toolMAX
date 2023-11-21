@@ -1,0 +1,62 @@
+# -*- mode: python ; coding: utf-8 -*-
+
+
+a = Analysis(
+    ['main.py'],
+    pathex=['.', 'AQ_lib/AQ_main_window/',
+                'AQ_lib/AQ_main_window/AQ_main_field_frame',
+                'AQ_lib/AQ_main_window/AQ_main_window_frame',
+                'AQ_lib/AQ_device_info_window',
+                'AQ_lib/AQ_Devices',
+                'AQ_lib/AQ_Devices/DeviceModels',
+                'AQ_lib/AQ_Devices/SystemLibrary',
+                'AQ_lib/AQ_other',
+                'AQ_lib/AQ_param_list_window',
+                'AQ_lib/AQ_session',
+                'AQ_lib/AQ_watch_list_window',
+                'AQ_lib/AQ_window_add_devices',
+                'AQ_lib/AQ_set_slave_id_window',
+                'AQ_lib/AQ_window_templates'],
+    binaries=[],
+    datas=[('Icons', 'Icons'), ('110_device_conf', '110_device_conf')],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    icon='Icons/AQico_silver.ico',
+    noarchive=False,
+)
+pyz = PYZ(a.pure)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.zipfiles,
+    [],
+    exclude_binaries=True,
+    name='AQteckModules',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    proto_csrf=False,
+    console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon='Icons/AQico_silver.ico',
+)
+coll = COLLECT(
+    exe,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='AQteckModules',
+)

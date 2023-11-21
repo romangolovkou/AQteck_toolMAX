@@ -1,10 +1,10 @@
-from PySide6.QtCore import QRect
+from PySide6.QtCore import QRect, QTimer
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLabel
 
 from AQ_LeftWidgetPanel import AQ_left_widget_panel_frame
 from AQ_TreeViewManagerFrame import AQ_TreeViewFrame
-from AQ_CustomWindowTemplates import AQ_ReducedMainFieldFrame
+from AQ_CustomWindowTemplates import AQ_ReducedMainFieldFrame, AQ_have_error_widget
 
 
 class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
@@ -13,6 +13,10 @@ class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
         self.event_manager = event_manager
         self.event_manager.register_event_handler('set_active_device', self.show_hide_main_pic)
         self.event_manager.register_event_handler('no_devices', self.show_hide_main_pic)
+        self.event_manager.register_event_handler('param_read_error', self.show_read_error_label)
+        self.event_manager.register_event_handler('param_write_error', self.show_write_error_label)
+        self.event_manager.register_event_handler('load_cfg_error', self.show_load_cfg_error_label)
+        self.event_manager.register_event_handler('parsing_cfg_error', self.show_parsing_cfg_error_label)
 
         self.setGeometry(QRect(0, (shift_y + 2), parent.width(), parent.height() - (shift_y + 2)))
 
@@ -52,3 +56,43 @@ class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
         self.tree_view_frame.resize(self.width() - self.left_panel.width() - 1, self.height())
 
         event.accept()
+
+    def show_read_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.read_err_widget = AQ_have_error_widget("<html>Failed to read value.<br>One or more parameters<br>\
+                                                        can't be read<html>", self.parent)
+        self.read_err_widget.move(self.width() // 2 - self.read_err_widget.width() // 2,
+                                  self.height() // 3 - self.read_err_widget.height() // 2)
+        self.read_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.read_err_widget.deleteLater)
+
+    def show_write_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.write_err_widget = AQ_have_error_widget("<html>Failed to write value.<br>One or more parameters<br>\
+                                                        can't be write<html>", self.parent)
+        self.write_err_widget.move(self.width() // 2 - self.write_err_widget.width() // 2,
+                                   self.height() // 3 - self.write_err_widget.height() // 2)
+        self.write_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.write_err_widget.deleteLater)
+
+    def show_load_cfg_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.load_cfg_err_widget = AQ_have_error_widget("<html>Can`t load configuration.<br>You try load configuration<br>\
+                                                        from another device.<html>", self.parent)
+        self.load_cfg_err_widget.move(self.width() // 2 - self.load_cfg_err_widget.width() // 2,
+                                  self.height() // 3 - self.load_cfg_err_widget.height() // 2)
+        self.load_cfg_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.load_cfg_err_widget.deleteLater)
+
+    def show_parsing_cfg_error_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+        self.parsing_cfg_err_widget = AQ_have_error_widget("<html>Can`t load configuration.<br>The file is damaged<html>",
+                                                        self.parent)
+        self.parsing_cfg_err_widget.move(self.width() // 2 - self.parsing_cfg_err_widget.width() // 2,
+                                      self.height() // 3 - self.parsing_cfg_err_widget.height() // 2)
+        self.parsing_cfg_err_widget.show()
+        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+        QTimer.singleShot(4000, self.parsing_cfg_err_widget.deleteLater)

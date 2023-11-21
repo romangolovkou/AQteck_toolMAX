@@ -1,0 +1,98 @@
+!Device_descr_area;;;;;;;;;;;;
+Name;МВ110-24.8АС;;;;;;;;;;;
+Type;AqGenericModbusDevice;;;;;;;;;;;
+!/Device_descr_area;;;;;;;;;;;;
+!System_params;;;;;;;;;;;;
+!/System_params;;;;;;;;;;;;
+Имя парметра;Каталог;Номер регистра/бита;Кол-во регистров/битов;Функция чтения;Функция записи;Тип данных;Минимальное значение;Максимальное значение;Ед. Изм;Значение по умолчанию;строки (только для enum и xtype_to_float);Множитель (только для xtype_to_float)
+!Param_descr_area;;;;;;;;;;;;
+Slave address;Communication settings;30;1;3;6;AqModbusUnsignedParamItem 8;1;255;;1;;
+Boudrate;Communication settings;31;1;3;6;AqModbusEnumParamItem 4;0;11;;5;_0=300/1=600/2=1200/3=2400/4=4800/5=9600/6=19200/7=38400/8=43000/9=56000/10=57600/11=115200;
+Parity;Communication settings;35;1;3;6;AqModbusEnumParamItem 2;0;2;;0;_0=None/1=Even/2=Odd;
+Stop bit;Communication settings;34;1;3;6;AqModbusEnumParamItem 2;0;2;;0;_0=1/1=1.5/2=2;
+Device ID;Device ID;33;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Value;AI 1;40;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 1;60;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 1;80;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 1;AI 1;200;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 2;41;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 2;61;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 2;81;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 2;AI 2;201;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 3;42;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 3;62;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 3;82;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 3;AI 3;202;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 4;43;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 4;63;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 4;83;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 4;AI 4;203;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 5;44;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 5;64;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 5;84;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 5;AI 5;204;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 6;45;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 6;65;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 6;85;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 6;AI 6;205;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 7;46;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 7;66;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 7;86;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 7;AI 7;206;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 8;47;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 8;67;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 8;87;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 8;AI 8;207;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 9;48;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 9;68;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 9;88;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 9;AI 9;208;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 10;49;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 10;69;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 10;89;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 10;AI 10;209;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 11;50;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 11;70;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 11;90;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 11;AI 11;210;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Value;AI 12;51;1;3;-;AqModbusSignedToFloatParamItem 16;;;;;_-2048=Обрыв датчика или КЗ;0.1
+Max. Value;AI 12;71;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Min. Value;AI 12;91;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Тип каналу 12;AI 12;211;1;3;6;AqModbusEnumParamItem 7;;;;;_64=0-20mA/66=4-20mA/42=0-5V/44=1-5V/45=0-10V/47=2-10V;
+Значення AD 1;Значення Ads;0;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 2;Значення Ads;1;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 3;Значення Ads;2;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 4;Значення Ads;3;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 5;Значення Ads;4;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 6;Значення Ads;5;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 7;Значення Ads;6;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 8;Значення Ads;7;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 9;Значення Ads;8;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 10;Значення Ads;9;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 11;Значення Ads;10;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Значення AD 12;Значення Ads;11;1;3;-;AqModbusUnsignedParamItem 16;;;;;;
+Швидкість конвертації 1;Швидкість конвертації;600;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 2;Швидкість конвертації;601;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 3;Швидкість конвертації;602;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 4;Швидкість конвертації;603;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 5;Швидкість конвертації;604;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 6;Швидкість конвертації;605;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 7;Швидкість конвертації;606;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 8;Швидкість конвертації;607;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 9;Швидкість конвертації;608;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 10;Швидкість конвертації;609;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 11;Швидкість конвертації;610;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Швидкість конвертації 12;Швидкість конвертації;611;1;3;6;AqModbusUnsignedParamItem 8;;;;;;
+Калібровка каналу 1;Калібровка каналів;380;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 2;Калібровка каналів;381;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 3;Калібровка каналів;382;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 4;Калібровка каналів;383;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 5;Калібровка каналів;384;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 6;Калібровка каналів;385;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 7;Калібровка каналів;386;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 8;Калібровка каналів;387;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 9;Калібровка каналів;388;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 10;Калібровка каналів;389;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 11;Калібровка каналів;390;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+Калібровка каналу 12;Калібровка каналів;391;1;3;6;AqModbusSignedToFloatParamItem 16;;;;;;0.1
+!/Param_descr_area;;;;;;;;;;;;

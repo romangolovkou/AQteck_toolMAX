@@ -5,8 +5,9 @@ from PySide6.QtGui import QStandardItem
 from PySide6.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
-from AQ_CustomTreeItems import AQ_ParamManagerItem
+from AQ_CustomTreeItems import AqParamManagerItem
 from AQ_TreeView import AQ_TreeView
+from AqBaseDevice import AqBaseDevice
 
 
 class AQ_TreeViewFrame(QFrame):
@@ -41,11 +42,11 @@ class AQ_TreeViewManager(QStackedWidget):
             device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
             tree_view.setModel(device_view_tree_model)
             self.devices_views[new_devices_list[i]] = tree_view
-            # self.update_device_values(new_devices_list[i])
+            self.update_device_values(new_devices_list[i])
             self.addWidget(tree_view)
             self.show()
 
-    def set_active_device_tree(self, device):
+    def set_active_device_tree(self, device: AqBaseDevice):
         if device is not None:
             # try:
             widget = self.devices_views.get(device, None)
@@ -59,25 +60,24 @@ class AQ_TreeViewManager(QStackedWidget):
             #     # Устанавливаем задержку в 50 м.сек и затем повторяем
             #     QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
 
-    def delete_device_view(self, device):
+    def delete_device_view(self, device: AqBaseDevice):
         tree_view = self.devices_views.get(device, None)
         if tree_view is not None:
             self.removeWidget(tree_view)
             tree_view.deleteLater()
 
-    def update_device_values(self, device):
+    def update_device_values(self, device: AqBaseDevice):
         tree_view = self.devices_views.get(device, None)
         if tree_view is not None:
             tree_view.model().update_params_values(device)
 
-    def update_device_param_statuses(self, device):
+    def update_device_param_statuses(self, device: AqBaseDevice):
         tree_view = self.devices_views.get(device, None)
         if tree_view is not None:
             tree_view.model().update_all_params_statuses()
 
-    def create_device_tree_for_view(self, device):
-        device_data = device.get_device_data()
-        device_tree = device_data.get('device_tree', None)
+    def create_device_tree_for_view(self, device: AqBaseDevice):
+        device_tree = device.device_tree
         if device_tree is not None:
             tree_model_for_view = AQ_TreeViewItemModel(device, self.event_manager)
             tree_model_for_view.setColumnCount(6)
@@ -96,7 +96,7 @@ class AQ_TreeViewManager(QStackedWidget):
                 if parameter_attributes is not None:
                     if parameter_attributes.get('is_catalog', 0) == 1:
                         name = parameter_attributes.get('name', 'err_name')
-                        catalog = AQ_ParamManagerItem(child_item)
+                        catalog = AqParamManagerItem(child_item)
                         catalog.setData(parameter_attributes, Qt.UserRole)
                         catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
                         self.traverse_items_create_new_tree_for_view(child_item, catalog)
@@ -108,7 +108,7 @@ class AQ_TreeViewManager(QStackedWidget):
         parameter_attributes = item.data(Qt.UserRole)
         name = parameter_attributes.get('name', 'err_name')
 
-        parameter_item = AQ_ParamManagerItem(item)
+        parameter_item = AqParamManagerItem(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
         value_item = QStandardItem()
         min_limit_item = self.get_min_limit_item(parameter_attributes)

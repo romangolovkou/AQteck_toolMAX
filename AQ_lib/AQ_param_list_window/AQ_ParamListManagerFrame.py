@@ -3,8 +3,9 @@ import os
 
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit
 
+from AQ_Device import AQ_Device
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView, AQ_ParamListInfoTableView
 from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
@@ -43,7 +44,7 @@ class AQ_ParamListManagerFrame(QFrame):
         self.param_list_layout = AQ_ParamListLayout(self.device, self.param_list_table_model,
                                                     self.info_bar_table_model, self.event_manager, self)
 
-    def create_param_list_for_view(self, device):
+    def create_param_list_for_view(self, device: AQ_Device):
         device_data = device.get_device_data()
         device_tree = device_data.get('device_tree', None)
         if device_tree is not None:

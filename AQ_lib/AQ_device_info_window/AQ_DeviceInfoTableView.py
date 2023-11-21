@@ -3,8 +3,8 @@ import struct
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
-from AQ_ParamsDelegateEditors import AQ_UintTreeLineEdit, AQ_EnumROnlyTreeLineEdit, AQ_IpTreeLineEdit, \
-    AQ_IntTreeLineEdit, AQ_FloatTreeLineEdit, AQ_StringTreeLineEdit, AQ_DateTimeLineEdit, AQ_TreeLineEdit
+from AQ_ParamsDelegateEditors import AqUintTreeLineEdit, AqEnumROnlyTreeLineEdit, AqIpTreeLineEdit, \
+    AqIntTreeLineEdit, AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AQ_TreeLineEdit
 
 
 class AQ_DeviceInfoTableView(QTableView):
@@ -56,20 +56,20 @@ class AQ_DeviceInfoTableView(QTableView):
     def get_editor_by_type(self, param_attributes):
         param_type = param_attributes.get('type', '')
         if param_type == 'enum':
-            editor = AQ_EnumROnlyTreeLineEdit
+            editor = AqEnumROnlyTreeLineEdit
         elif param_type == 'unsigned':
             if param_attributes.get('visual_type', '') == 'ip_format':
-                editor = AQ_IpTreeLineEdit
+                editor = AqIpTreeLineEdit
             else:
-                editor = AQ_UintTreeLineEdit
+                editor = AqUintTreeLineEdit
         elif param_type == 'signed':
-            editor = AQ_IntTreeLineEdit
+            editor = AqIntTreeLineEdit
         elif param_type == 'float':
-            editor = AQ_FloatTreeLineEdit
+            editor = AqFloatTreeLineEdit
         elif param_type == 'string':
-            editor = AQ_StringTreeLineEdit
+            editor = AqStringTreeLineEdit
         elif param_type == 'date_time':
-            editor = AQ_DateTimeLineEdit
+            editor = AqDateTimeLineEdit
         else:
             editor = AQ_TreeLineEdit
 

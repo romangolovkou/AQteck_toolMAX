@@ -220,7 +220,6 @@ class AQ_SimplifiedDialog(QDialog):
         self.bottom_border.setGeometry(self.width() - 1, 0, 1, self.height())
         event.accept()
 
-
 class AQ_FullDialog(AQ_SimplifiedDialog):
     def __init__(self, event_manager, window_name='default'):
         super().__init__(event_manager, window_name)

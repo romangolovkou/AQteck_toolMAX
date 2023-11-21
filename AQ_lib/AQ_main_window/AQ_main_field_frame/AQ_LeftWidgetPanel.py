@@ -3,6 +3,7 @@ from PySide6.QtGui import QPixmap, QFont, QPalette, QColor
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget, QLabel, QMenu
 
 from AQ_CustomWindowTemplates import AQ_Label
+from AqBaseDevice import AqBaseDevice
 
 
 class AQ_left_widget_panel_frame(QFrame):
@@ -43,14 +44,11 @@ class AQ_left_widget_panel_frame(QFrame):
                     print(f"Error occurred: {str(e)}")
                     print(f"Немає жодного пристрою")
 
-
-
-
 class AQ_left_device_widget(QWidget):
-    def __init__(self, device, event_manager, parent=None):
+    def __init__(self, device: AqBaseDevice, event_manager, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.device = device
+        self.device: AqBaseDevice = device
         self.event_manager = event_manager
         self.is_active_now = 1
         self.setFixedHeight(70)
@@ -69,19 +67,20 @@ class AQ_left_device_widget(QWidget):
         self.ico_label.setStyleSheet("background-color: transparent;")
         self.ico_label.show()
         # Наповпнюємо віджет текстовими мітками
-        device_data = self.device.get_device_data()
-        name = device_data.get('device_name', 'err_name')
+        name = self.device.info('name')
         self.name_label = AQ_Label(name, self)
         font = QFont("Segoe UI", 14)
         self.name_label.setFont(font)
         self.name_label.move(50, 5)
         self.name_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;")
-        address = device_data.get('address', 'err_address')
-        self.address_label = AQ_Label('address:' + address, self)
+        connect_str = 'Address: ' + device.info('address')
+        # end refactor zone
+        self.address_label = AQ_Label(connect_str, self)
         self.address_label.move(50, 27)
         self.address_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
-        serial = device_data.get('serial_number', 'err_serial_number')
-        self.serial_label = AQ_Label('S/N' + serial, self)
+        serial = device.info('serial_num')
+        sn_str = 'S/N: ' + serial if serial else 'No S/N'
+        self.serial_label = AQ_Label(sn_str, self)
         self.serial_label.move(50, 47)
         self.serial_label.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent")
 
@@ -151,10 +150,14 @@ class AQ_left_device_widget(QWidget):
         action_read = context_menu.addAction("Read parameters")
         action_write = context_menu.addAction("Write parameters")
         action_delete = context_menu.addAction("Delete device")
+        action_save_config = context_menu.addAction("Save configuration")
+        action_load_config = context_menu.addAction("Load configuration")
         # Подключаем обработчик события выбора действия
         action_read.triggered.connect(lambda: self.device.read_parameters())
         action_write.triggered.connect(lambda: self.device.write_parameters())
         action_delete.triggered.connect(lambda: self.event_manager.emit_event('delete_device', self.device))
+        action_save_config.triggered.connect(lambda: self.event_manager.emit_event('save_device_configuration', self.device))
+        action_load_config.triggered.connect(lambda: self.event_manager.emit_event('load_device_configuration', self.device))
         # if self.traverse_items_R_Only_catalog_check(item) > 0:
         #     action_write = context_menu.addAction("Write parameters")
         #     have_error = self.travers_have_error_check(index)

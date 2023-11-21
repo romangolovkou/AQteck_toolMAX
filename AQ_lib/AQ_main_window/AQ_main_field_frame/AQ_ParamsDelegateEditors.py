@@ -41,7 +41,10 @@ class AQ_TreeLineEdit(QLineEdit):
         self.save_new_value = handler
 
     def set_value(self, value):
-        self.setText(str(value))
+        if value is None:
+            self.setText('')
+        else:
+            self.setText(str(value))
 
     def err_blink(self):
         if self.anim_cnt < 34:
@@ -60,14 +63,18 @@ class AQ_TreeLineEdit(QLineEdit):
             self.red_blink_timer.stop()
 
 
-class AQ_EnumTreeComboBox(QComboBox):
+class AqEnumTreeComboBox(QComboBox):
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
+        # Отключение обработчика события колеса мыши
+        self.wheelEvent = lambda event: event.ignore()
         self.save_new_value = None
-        enum_strings = param_attributes.get('enum_strings', '')
+        self.enum_str_dict = param_attributes.get('enum_strings', '')
+        enum_strings = self.enum_str_dict.values()
+        enum_strings = list(enum_strings)
         for i in range(len(enum_strings)):
             enum_str = enum_strings[i]
             self.addItem(enum_str)
@@ -76,25 +83,35 @@ class AQ_EnumTreeComboBox(QComboBox):
 
     def updateIndex(self, index):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        self.save_new_value(index)
+        string = self.itemText(index)
+        key = self.get_key_by_value(self.enum_str_dict, string)
+        self.save_new_value(key)
 
     def set_new_value_handler(self, handler):
         self.save_new_value = handler
 
     def set_value(self, value):
-        self.setCurrentIndex(value)
+        string = self.enum_str_dict.get(value, '')
+        self.setCurrentText(string)
+        # self.setCurrentIndex(value)
+
+    def get_key_by_value(self, dictionary, value):
+        for key, val in dictionary.items():
+            if val == value:
+                return key
+        return None  # Возвращаем None, если объект не найден
 
 
-class AQ_EnumROnlyTreeLineEdit(AQ_TreeLineEdit):
+class AqEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
-        self.enum_strings = param_attributes.get('enum_strings', '')
+        self.enum_str_dict = param_attributes.get('enum_strings', '')
 
     def set_value(self, value):
-        self.setText(self.enum_strings[value])
+        self.setText(self.enum_str_dict.get(value, ''))
 
 
-class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
+class AqUintTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.visual_type = param_attributes.get('visual_type', '')
@@ -152,11 +169,10 @@ class AQ_UintTreeLineEdit(AQ_TreeLineEdit):
                         self.red_blink_timer.start()
                         show_err_label(self)
 
-
             super().keyPressEvent(event)
 
 
-class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
+class AqIpTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.min_limit = 0
@@ -277,7 +293,7 @@ class AQ_IpTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
+class AqIntTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -356,7 +372,7 @@ class AQ_IntTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
+class AqFloatTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -438,7 +454,7 @@ class AQ_FloatTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
+class AqStringTreeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -447,7 +463,7 @@ class AQ_StringTreeLineEdit(AQ_TreeLineEdit):
         self.save_new_value(text)
 
 
-class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
+class AqDateTimeLineEdit(AQ_TreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -461,6 +477,77 @@ class AQ_DateTimeLineEdit(AQ_TreeLineEdit):
         datetime_obj = datetime.datetime.fromtimestamp(value)
         value = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
         self.setText(str(value))
+
+
+class AqBitLineEdit(AQ_TreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+        self.setReadOnly(True)
+
+    def mousePressEvent(self, event):
+        # Меняем значение при каждом клике мышью
+        current_value = int(self.text())
+        new_value = 1 if current_value == 0 else 0
+        self.setText(str(new_value))
+
+
+class AqSignedToFloatTreeLineEdit(AqFloatTreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+        self.enum_str_dict = param_attributes.get('enum_strings', None)
+        self.multiply = param_attributes.get('multiply', None)
+
+    def set_value(self, value):
+        if self.enum_str_dict is not None:
+            err_code = self.enum_str_dict.get(value, None)
+        else:
+            err_code = None
+
+        if err_code is not None:
+            self.setText(str(err_code))
+        else:
+            value_in_float = value * self.multiply
+            self.setText(str(value_in_float))
+
+    def line_edit_changed_update_value(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        if text != '' and text != '-':
+            value = float(text)/self.multiply
+            value = int(value)
+        else:
+            value = None
+        self.save_new_value(value)
+
+
+class AqFloatEnumTreeComboBox(AqEnumTreeComboBox):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+
+    def updateIndex(self, index):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        string = self.itemText(index)
+        key = self.get_key_by_value(self.enum_str_dict, string)
+        value = bin(key)[2:]
+        value = float(value)
+        self.save_new_value(value)
+
+    def set_value(self, value):
+        value = int(value)
+        value = '0b' + str(value)
+        value = int(value, 2)
+        string = self.enum_str_dict.get(value, '')
+        self.setCurrentText(string)
+
+
+class AqFloatEnumROnlyTreeLineEdit(AqEnumROnlyTreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+
+    def set_value(self, value):
+        value = int(value)
+        value = '0b' + str(value)
+        value = int(value, 2)
+        self.setText(self.enum_str_dict.get(value, ''))
 
 
 class AQ_EditorErrorLabel(AQ_Label):
