@@ -1,10 +1,4 @@
-from PySide6.QtCore import Qt
-
-from AQ_CustomTreeItems import AqCatalogItem
 from AQ_ParseFunc import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
-from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_ModbusGenericItems import *
-from AqDY500Items import *
 
 
 def parse_config(configuration, conf_type=None):
