@@ -527,14 +527,14 @@ class AqFloatEnumTreeComboBox(AqEnumTreeComboBox):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         string = self.itemText(index)
         key = self.get_key_by_value(self.enum_str_dict, string)
-        value = bin(key)[2:]
-        value = float(value)
+        # value = bin(key)[2:]
+        value = float(key)
         self.save_new_value(value)
 
     def set_value(self, value):
         value = int(value)
-        value = '0b' + str(value)
-        value = int(value, 2)
+        # value = '0b' + str(value)
+        # value = int(value, 2)
         string = self.enum_str_dict.get(value, '')
         self.setCurrentText(string)
 

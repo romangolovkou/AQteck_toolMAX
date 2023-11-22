@@ -11,10 +11,10 @@ class AqDY500EnumParamItem(AqModbusEnumParamItem):
 
     def pack(self):
         # костиль для enum з розміром два регістра
-        if self.param_size == 2:
-            packed_data = struct.pack('I', self.value)
-            registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-        elif self.param_size == 1:
+        if self.param_size == 4:
+            packed_data = struct.pack('>I', self.value)
+            registers = [struct.unpack('>H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        elif self.param_size == 2:
             packed_data = struct.pack('H', self.value)
             registers = struct.unpack('H', packed_data)
         else:
@@ -43,17 +43,17 @@ class AqDY500UnsignedParamItem(AqModbusUnsignedParamItem):
 
     def pack(self):
         if self.param_size == 1:
-            packed_data = struct.pack('H', self.value)
+            packed_data = struct.pack('>H', self.value)
         elif self.param_size == 2:
-            packed_data = struct.pack('H', self.value)
+            packed_data = struct.pack('>H', self.value)
         elif self.param_size == 4:
-            packed_data = struct.pack('I', self.value)
+            packed_data = struct.pack('>I', self.value)
         elif self.param_size == 8:
-            packed_data = struct.pack('Q', self.value)
+            packed_data = struct.pack('>Q', self.value)
         else:
             raise Exception('AQ_ModbusUnsignedParamItemError: param size is incorrect')
         # Разбиваем упакованные данные на 16-битные значения (2 байта)
-        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        registers = [struct.unpack('>H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
         return registers
 
     def unpack(self, data):
@@ -82,8 +82,8 @@ class AqDY500FloatParamItem(AqModbusFloatParamItem):
 
     def pack(self):
         if self.param_size == 4:
-            floats = struct.pack('f', self.value)
-            registers = struct.unpack('HH', floats)  # Возвращает два short int значения
+            floats = struct.pack('>f', self.value)
+            registers = struct.unpack('>HH', floats)  # Возвращает два short int значения
         elif self.param_size == 8:
             floats_doubble = struct.pack('d', self.value)
             registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
@@ -112,8 +112,8 @@ class AqDY500FloatEnumParamItem(AqModbusFloatEnumParamItem):
 
     def pack(self):
         if self.param_size == 4:
-            floats = struct.pack('f', self.value)
-            registers = struct.unpack('HH', floats)  # Возвращает два short int значения
+            floats = struct.pack('>f', self.value)
+            registers = struct.unpack('>HH', floats)  # Возвращает два short int значения
         elif self.param_size == 8:
             floats_doubble = struct.pack('d', self.value)
             registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
