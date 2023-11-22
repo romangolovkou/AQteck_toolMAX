@@ -1,4 +1,6 @@
 from AQ_ParseFunc import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
+from AqDY500Items import *
+from AQ_ModbusGenericItems import *
 
 
 def parse_config(configuration, conf_type=None):
