@@ -4,6 +4,7 @@ from AQ_CustomTreeItems import AqCatalogItem
 from AQ_ParseFunc import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AQ_ModbusGenericItems import *
+from AqDY500Items import *
 
 
 def parse_config(configuration, conf_type=None):
@@ -71,7 +72,9 @@ def parse_parameter(config_string: str):
         parts = attributes[6].split(' ')
         param_type = parts[0]
         if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusStringParamItem' or \
-                param_type == 'AqModbusDiscretParamItem':
+                param_type == 'AqModbusDiscretParamItem' or param_type == 'AqDY500EnumParamItem' or \
+                param_type == 'AqDY500StringParamItem' or param_type == 'AqDY500DiscretParamItem' or \
+                param_type == 'AqDY500FloatEnumParamItem':
             param_size = int(parts[1])
         else:
             param_size = int(parts[1]) // 8
@@ -79,12 +82,13 @@ def parse_parameter(config_string: str):
         param_attributes['param_size'] = param_size
 
         if attributes[10] != '' and attributes[10] != '-':
-            if param_type == 'AqModbusFloatParamItem':
+            if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
                 param_attributes['def_value'] = float(attributes[10])
             else:
                 param_attributes['def_value'] = int(attributes[10])
 
-        if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusFloatEnumParamItem':
+        if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusFloatEnumParamItem' or \
+                param_type == 'AqDY500EnumParamItem' or param_type == 'AqDY500FloatEnumParamItem':
             enum_strings = attributes[11][1:].split('/')
 
             enum_str_dict = {}
@@ -95,7 +99,9 @@ def parse_parameter(config_string: str):
             param_attributes['enum_strings'] = enum_str_dict
 
         if param_type == 'AqModbusSignedToFloatParamItem' or \
-                param_type == 'AqModbusUnsignedToFloatParamItem':
+                param_type == 'AqModbusUnsignedToFloatParamItem' or \
+                param_type == 'AqDY500SignedToFloatParamItem' or \
+                param_type == 'AqDY500UnsignedToFloatParamItem':
             if attributes[11] != '':
                 enum_strings = attributes[11][1:].split('/')
 

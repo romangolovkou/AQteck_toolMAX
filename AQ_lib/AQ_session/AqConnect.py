@@ -174,11 +174,15 @@ class AqModbusConnect(AqConnect):
                     # Запись одного дискретного выхода (бита)
                     result = self.client.write_coil(modbus_reg, data, self.slave_id)
                 elif func == 6:
+
+                    if item.param_size < 2:
+                        data = data[0]
+                    else:
+                        low_byte = data[0]
+                        high_byte = data[1]
+                        # Восстановление 16-битного числа
+                        data = (high_byte << 8) | low_byte
                     # TODO: перенести костыль в функцию в расслыку широковещательного запроса
-                    low_byte = data[1]
-                    high_byte = data[0]
-                    # Восстановление 16-битного числа
-                    data = (high_byte << 8) | low_byte
                     if modbus_reg == 100:
                         # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
                         result = self.client.write_register(modbus_reg, data, 0)
