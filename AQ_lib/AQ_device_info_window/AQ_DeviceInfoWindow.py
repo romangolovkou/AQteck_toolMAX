@@ -1,5 +1,5 @@
-from PySide6.QtGui import QGuiApplication
-from PySide6.QtWidgets import QApplication
+from PySide2.QtGui import QGuiApplication
+from PySide2.QtWidgets import QApplication
 
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
 from AQ_DeviceInfoManagerFrame import AQ_DeviceInfoManagerFrame

@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
+from PySide2.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
 
 class AQ_ParamListTableView(QTableView):

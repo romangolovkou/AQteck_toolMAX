@@ -1,7 +1,7 @@
 import struct
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
 from AQ_ParamsDelegateEditors import AqUintTreeLineEdit, AqEnumROnlyTreeLineEdit, AqIpTreeLineEdit, \
     AqIntTreeLineEdit, AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AQ_TreeLineEdit

@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Any
 
-from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
-from PySide6.QtGui import QStandardItem
+from PySide2.QtCore import Qt, QModelIndex, QObject, Signal
+from PySide2.QtGui import QStandardItem
 
 from AQ_ParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
     AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AqEnumROnlyTreeLineEdit, \

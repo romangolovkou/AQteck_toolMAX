@@ -1,6 +1,6 @@
-from PySide6.QtCore import QRect, QTimer
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QLabel
+from PySide2.QtCore import QRect, QTimer
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QLabel
 
 from AQ_LeftWidgetPanel import AQ_left_widget_panel_frame
 from AQ_TreeViewManagerFrame import AQ_TreeViewFrame

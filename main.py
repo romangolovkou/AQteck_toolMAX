@@ -1,7 +1,7 @@
 import sys
 import time
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QApplication, QSplashScreen
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QApplication, QSplashScreen
 from AQ_MainWindow import AQ_MainWindow
 
 
@@ -18,5 +18,5 @@ if __name__ == '__main__':
     # window.showMaximized()
     window.show()
     splash.close()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
 

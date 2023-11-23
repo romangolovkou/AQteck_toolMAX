@@ -1,6 +1,6 @@
-from PySide6.QtCore import Qt, QPropertyAnimation, QRect, QTimer
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QWidget
+from PySide2.QtCore import Qt, QPropertyAnimation, QRect, QTimer
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import QWidget
 
 from AQ_CustomWindowTemplates import AQ_Label
 

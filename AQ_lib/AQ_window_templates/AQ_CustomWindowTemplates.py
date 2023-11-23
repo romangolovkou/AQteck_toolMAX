@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
-from PySide6.QtCore import Qt, QTimer, QRect, QSize
-from PySide6.QtGui import QIcon, QFont, QPainter, QColor, QPen
+from PySide2.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
+from PySide2.QtCore import Qt, QTimer, QRect, QSize
+from PySide2.QtGui import QIcon, QFont, QPainter, QColor, QPen
 from AQ_MouseEventFunc import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 from functools import partial
 

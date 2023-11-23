@@ -1,7 +1,7 @@
 import os
-from PySide6.QtGui import QFont
-from PySide6.QtCore import Qt, QSettings
-from PySide6.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
+from PySide2.QtGui import QFont
+from PySide2.QtCore import Qt, QSettings
+from PySide2.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
 from AQ_CustomWindowTemplates import AQ_ComboBox, AQ_Label, AQ_IpLineEdit, AQ_SlaveIdLineEdit
 import serial.tools.list_ports
 from AQ_IsValidIpFunc import is_valid_ip
@@ -63,7 +63,7 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
         self.device_combo_box.setObjectName(self.parent.objectName() + "_" + "device_combo_box")
         # Получаем список файлов в указанной директории
         files = [f for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
-        files.append("AqAutoDetectionDevice")
+        # files.append("AqAutoDetectionDevice")
         # Добавляем имена файлов в комбобокс
         self.device_combo_box.addItems(files)
         if self.auto_load_settings is not None:
@@ -75,7 +75,7 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
     # Создание комбо-бокса інтерфейсу
         self.interface_combo_box = AQ_ComboBox()
         self.interface_combo_box.setObjectName(self.parent.objectName() + "_" + "interface_combo_box")
-        self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
+        # self.interface_combo_box.addItem("Ethernet")  # Добавление опции "Ethernet"
         # Получаем список доступных COM-портов
         self.com_ports = serial.tools.list_ports.comports()
         # Заполняем выпадающий список COM-портами

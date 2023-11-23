@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from PySide6.QtCore import QObject
+from PySide2.QtCore import QObject
 from pymodbus.client import ModbusTcpClient, ModbusSerialClient
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest

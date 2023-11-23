@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
-from PySide6.QtGui import QIcon
-from PySide6.QtCore import Qt
+from PySide2.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
+from PySide2.QtGui import QIcon
+from PySide2.QtCore import Qt
 from AQ_ToolbarButton import AQ_ToolButton
 
 PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'

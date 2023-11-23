@@ -1,7 +1,7 @@
 import asyncio
 import threading
 import time
-from PySide6.QtCore import QThread, Signal, QObject
+from PySide2.QtCore import QThread, Signal, QObject
 from pymodbus.client import serial
 import serial.tools.list_ports
 

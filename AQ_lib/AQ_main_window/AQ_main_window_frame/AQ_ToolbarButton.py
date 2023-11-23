@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QPushButton, QToolButton, QFrame
-from PySide6.QtCore import Qt, QTimer, QRect, QSize
-from PySide6.QtGui import QIcon, QPalette, QPixmap, QFont
+from PySide2.QtWidgets import QPushButton, QToolButton, QFrame
+from PySide2.QtCore import Qt, QTimer, QRect, QSize
+from PySide2.QtGui import QIcon, QPalette, QPixmap, QFont
 
 
 class AQ_ToolButton(QToolButton):

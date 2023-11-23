@@ -5,9 +5,9 @@ import struct
 import threading
 
 from Crypto.Cipher import DES
-from PySide6.QtCore import QObject, Qt
-from PySide6.QtGui import QFont, QGuiApplication
-from PySide6.QtWidgets import QWidget, QFrame, QLabel
+from PySide2.QtCore import QObject, Qt
+from PySide2.QtGui import QFont, QGuiApplication
+from PySide2.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial
 import serial.tools.list_ports
 

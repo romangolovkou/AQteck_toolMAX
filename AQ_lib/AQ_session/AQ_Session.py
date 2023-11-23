@@ -1,8 +1,8 @@
-from PySide6.QtCore import QCoreApplication
-from PySide6.QtWidgets import QFileDialog
-from PySide6.QtCore import QObject, Qt
-from PySide6.QtGui import QGuiApplication, QFont
-from PySide6.QtWidgets import QWidget, QFrame, QLabel
+from PySide2.QtCore import QCoreApplication
+from PySide2.QtWidgets import QFileDialog
+from PySide2.QtCore import QObject, Qt
+from PySide2.QtGui import QGuiApplication, QFont
+from PySide2.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial, ModbusSerialClient
 import serial.tools.list_ports
 from pymodbus.exceptions import ModbusIOException
@@ -50,17 +50,17 @@ class AQ_CurrentSession(QObject):
 
     def open_AddDevices(self):
         AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
-        AddDevices_window.exec()
+        AddDevices_window.exec_()
 
     def open_ParameterList(self):
         if self.cur_active_device is not None:
             ParameterList_window = AQ_DialogParamList(self.cur_active_device, self.event_manager, self.parent)
-            ParameterList_window.exec()
+            ParameterList_window.exec_()
 
     def open_DeviceInfo(self):
         if self.cur_active_device is not None:
             device_info_window = AQ_DialogDeviceInfo(self.cur_active_device, self.event_manager, self.parent)
-            device_info_window.exec()
+            device_info_window.exec_()
 
     def open_WatchList(self):
         self.watch_list_window = AQ_DialogWatchList(self.event_manager, self.parent)

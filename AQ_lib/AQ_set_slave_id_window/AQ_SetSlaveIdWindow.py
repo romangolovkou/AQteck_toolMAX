@@ -1,6 +1,6 @@
-from PySide6.QtCore import QTimer
-from PySide6.QtGui import QGuiApplication, QFont
-from PySide6.QtWidgets import QWidget, QFrame, QLabel
+from PySide2.QtCore import QTimer
+from PySide2.QtGui import QGuiApplication, QFont
+from PySide2.QtWidgets import QWidget, QFrame, QLabel
 
 from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog

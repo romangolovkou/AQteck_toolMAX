@@ -1,6 +1,6 @@
-from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtGui import QGuiApplication
-from PySide6.QtWidgets import QCheckBox
+from PySide2.QtCore import Qt, QThread, Signal
+from PySide2.QtGui import QGuiApplication
+from PySide2.QtWidgets import QCheckBox
 
 from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_AddDevicesAddButton import AQ_addButton

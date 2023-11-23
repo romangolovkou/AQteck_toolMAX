@@ -1,5 +1,5 @@
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QPushButton
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import QPushButton
 
 
 class AQ_addButton(QPushButton):
