@@ -11,8 +11,8 @@ Boudrate;Communication settings;40050;2;3;16;AqDY500EnumParamItem 32;0;7;;4;_0=1
 Weight value;Values;40100;2;3;-;AqDY500FloatParamItem 32;;;;;;
 AD code value;Values;40002;2;3;-;AqDY500UnsignedParamItem 32;;;;;;
 DA code value;Values;40004;2;3;-;AqDY500UnsignedParamItem 32;;;;;;
-System Status;Settings;40106;2;3;-;AqDY500UnsignedParamItem 32;0;11;;;_1=Stability/0=Instability/3=Empty load;
-Multifunction register;Settings;40008;2;3;16;AqDY500UnsignedParamItem 32;0;11;;;_0=Zero/2=Validation numerical calibration/3=Confirm the weight calibration;
+System Status;Settings;40106;2;3;-;AqDY500EnumParamItem 32;;;;35;_33=Stability/32=Instability/35=Empty load;
+Multifunction register;Settings;40008;2;3;16;AqDY500FloatParamItem 32;0;11;;;_0=Zero/2=Validation numerical calibration/3=Confirm the weight calibration;
 Caliated weight;Settings;40110;2;3;16;AqDY500FloatParamItem 32;0;999999;;;;
 Power up zero clearence range;Settings;40120;2;3;16;AqDY500FloatParamItem 32;0;10000;;;;
 Stability determination range;Settings;40122;2;3;16;AqDY500FloatParamItem 32;0;100;;;;
