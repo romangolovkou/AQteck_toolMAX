@@ -7,6 +7,7 @@ from pymodbus.client import serial, ModbusSerialClient
 import serial.tools.list_ports
 from pymodbus.exceptions import ModbusIOException
 
+import AqUiWorker
 from AQ_ConnectManager import AQ_ConnectManager
 # from AQ_Devices import AQ_Device
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
@@ -59,8 +60,11 @@ class AQ_CurrentSession(QObject):
 
     def open_DeviceInfo(self):
         if self.cur_active_device is not None:
-            device_info_window = AQ_DialogDeviceInfo(self.cur_active_device, self.event_manager, self.parent)
-            device_info_window.exec()
+            AqUiWorker.show_device_info_window(self.cur_active_device.device_info_model)
+            # device_info_window = AQ_DialogDeviceInfo(self.cur_active_device, self.event_manager, self.parent)
+            # device_info_window.exec()
+        else:
+            AqUiWorker.show_device_info_window(None)
 
     def open_WatchList(self):
         self.watch_list_window = AQ_DialogWatchList(self.event_manager, self.parent)

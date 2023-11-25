@@ -29,8 +29,8 @@ class AQ_ToolbarLayout(QHBoxLayout):
     #     self.firmware_group = AQ_firmware_group(event_manager, self.parent)
     #     self.groups.append(self.firmware_group)
     # Группа 4
-    #     self.other_group = AQ_other_group(event_manager, self.parent)
-    #     self.groups.append(self.other_group)
+        self.other_group = AQ_other_group(event_manager, self.parent)
+        self.groups.append(self.other_group)
 
     # Створюємо додані группи
         self.create_toolbar_groups()
