@@ -20,7 +20,7 @@
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_Devices/SystemLibrary" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.11 (AQteck_toolMAX)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
