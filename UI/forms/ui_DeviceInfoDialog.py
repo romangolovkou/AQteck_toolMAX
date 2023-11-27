@@ -39,17 +39,17 @@ class Ui_DeviceInfoDialog(object):
 "	color: #fff;\n"
 "}\n"
 "\n"
-"#DeviceInfoDialog, #mainFrame {\n"
+"#mainFrame {\n"
 "	background-color: #2c313c;\n"
 "}\n"
 "\n"
-"#frame_2 {\n"
+"#windowNameFrame {\n"
 "	border-top-left-radius: 10px;\n"
 "	background-color: #2F4858;\n"
 "	border: none;\n"
 "}\n"
 "\n"
-" #frame{\n"
+" #btnFrame {\n"
 "	border-top-right-radius: 10px;\n"
 "	background-color: #2c313c;\n"
 "	border: none;\n"
@@ -86,47 +86,47 @@ class Ui_DeviceInfoDialog(object):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.frame_2 = QFrame(self.toolboxFrame)
-        self.frame_2.setObjectName(u"frame_2")
+        self.windowNameFrame = QFrame(self.toolboxFrame)
+        self.windowNameFrame.setObjectName(u"windowNameFrame")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
-        self.frame_2.setSizePolicy(sizePolicy1)
-        self.frame_2.setMaximumSize(QSize(16777215, 30))
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_3 = QHBoxLayout(self.frame_2)
+        sizePolicy1.setHeightForWidth(self.windowNameFrame.sizePolicy().hasHeightForWidth())
+        self.windowNameFrame.setSizePolicy(sizePolicy1)
+        self.windowNameFrame.setMaximumSize(QSize(16777215, 30))
+        self.windowNameFrame.setFrameShape(QFrame.StyledPanel)
+        self.windowNameFrame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_3 = QHBoxLayout(self.windowNameFrame)
         self.horizontalLayout_3.setSpacing(0)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout_3.setContentsMargins(5, 0, 5, 0)
-        self.label_3 = QLabel(self.frame_2)
-        self.label_3.setObjectName(u"label_3")
-        sizePolicy1.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy1)
-        self.label_3.setMaximumSize(QSize(16777215, 30))
+        self.windowNameLabel = QLabel(self.windowNameFrame)
+        self.windowNameLabel.setObjectName(u"windowNameLabel")
+        sizePolicy1.setHeightForWidth(self.windowNameLabel.sizePolicy().hasHeightForWidth())
+        self.windowNameLabel.setSizePolicy(sizePolicy1)
+        self.windowNameLabel.setMaximumSize(QSize(16777215, 30))
 
-        self.horizontalLayout_3.addWidget(self.label_3, 0, Qt.AlignHCenter)
+        self.horizontalLayout_3.addWidget(self.windowNameLabel, 0, Qt.AlignHCenter)
 
 
-        self.horizontalLayout.addWidget(self.frame_2)
+        self.horizontalLayout.addWidget(self.windowNameFrame)
 
-        self.frame = QFrame(self.toolboxFrame)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_2 = QHBoxLayout(self.frame)
+        self.btnFrame = QFrame(self.toolboxFrame)
+        self.btnFrame.setObjectName(u"btnFrame")
+        self.btnFrame.setFrameShape(QFrame.StyledPanel)
+        self.btnFrame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.btnFrame)
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(5, 0, 5, 0)
-        self.pushButton = QPushButton(self.frame)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setMaximumSize(QSize(50, 30))
+        self.closeBtn = QPushButton(self.btnFrame)
+        self.closeBtn.setObjectName(u"closeBtn")
+        self.closeBtn.setMaximumSize(QSize(50, 30))
 
-        self.horizontalLayout_2.addWidget(self.pushButton, 0, Qt.AlignHCenter)
+        self.horizontalLayout_2.addWidget(self.closeBtn, 0, Qt.AlignHCenter)
 
 
-        self.horizontalLayout.addWidget(self.frame, 0, Qt.AlignRight)
+        self.horizontalLayout.addWidget(self.btnFrame, 0, Qt.AlignRight)
 
 
         self.verticalLayout.addWidget(self.toolboxFrame)
@@ -144,16 +144,16 @@ class Ui_DeviceInfoDialog(object):
         self.mainFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.mainFrame)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.label = QLabel(self.mainFrame)
-        self.label.setObjectName(u"label")
+        self.giLabel = QLabel(self.mainFrame)
+        self.giLabel.setObjectName(u"giLabel")
         sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy3)
-        self.label.setMinimumSize(QSize(100, 30))
+        sizePolicy3.setHeightForWidth(self.giLabel.sizePolicy().hasHeightForWidth())
+        self.giLabel.setSizePolicy(sizePolicy3)
+        self.giLabel.setMinimumSize(QSize(100, 30))
 
-        self.verticalLayout_2.addWidget(self.label)
+        self.verticalLayout_2.addWidget(self.giLabel)
 
         self.generalInfoFrame = QFrame(self.mainFrame)
         self.generalInfoFrame.setObjectName(u"generalInfoFrame")
@@ -167,10 +167,10 @@ class Ui_DeviceInfoDialog(object):
 
         self.verticalLayout_2.addWidget(self.generalInfoFrame, 0, Qt.AlignTop)
 
-        self.label_2 = QLabel(self.mainFrame)
-        self.label_2.setObjectName(u"label_2")
+        self.oiLabel = QLabel(self.mainFrame)
+        self.oiLabel.setObjectName(u"oiLabel")
 
-        self.verticalLayout_2.addWidget(self.label_2)
+        self.verticalLayout_2.addWidget(self.oiLabel)
 
         self.verticalSpacer = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -201,9 +201,9 @@ class Ui_DeviceInfoDialog(object):
 
     def retranslateUi(self, DeviceInfoDialog):
         DeviceInfoDialog.setWindowTitle(QCoreApplication.translate("DeviceInfoDialog", u"Dialog", None))
-        self.label_3.setText(QCoreApplication.translate("DeviceInfoDialog", u"Device Information", None))
-        self.pushButton.setText(QCoreApplication.translate("DeviceInfoDialog", u"Close", None))
-        self.label.setText(QCoreApplication.translate("DeviceInfoDialog", u"General information", None))
-        self.label_2.setText(QCoreApplication.translate("DeviceInfoDialog", u"Operating information", None))
+        self.windowNameLabel.setText(QCoreApplication.translate("DeviceInfoDialog", u"Device Information", None))
+        self.closeBtn.setText(QCoreApplication.translate("DeviceInfoDialog", u"Close", None))
+        self.giLabel.setText(QCoreApplication.translate("DeviceInfoDialog", u"General information", None))
+        self.oiLabel.setText(QCoreApplication.translate("DeviceInfoDialog", u"Operating information", None))
     # retranslateUi
 
