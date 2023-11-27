@@ -1,0 +1,12 @@
+Corols for default theme:
+
+Background 1: #2c313c
+
+
+Header 1: #2F4858
+
+
+Accent 1 (border-line): #637A7B
+
+
+Selected: #A5ADA8
