@@ -25,8 +25,9 @@
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AqWindows/AqMainWindow" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/UI" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/UI/forms" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Icons" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (venv) (3)" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
