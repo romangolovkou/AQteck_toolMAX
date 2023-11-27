@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>421</width>
-    <height>230</height>
+    <width>416</width>
+    <height>134</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +32,7 @@
 	color: #fff;
 }
 
-#DeviceInfoDialog {
+#DeviceInfoDialog, #mainFrame {
 	background-color: #2c313c;
 }
 
@@ -84,7 +84,7 @@ QLabel {
     <number>0</number>
    </property>
    <item>
-    <widget class="QFrame" name="ToolboxFrame">
+    <widget class="QFrame" name="toolboxFrame">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -215,7 +215,7 @@ QLabel {
     </widget>
    </item>
    <item alignment="Qt::AlignTop">
-    <widget class="QFrame" name="Frame">
+    <widget class="QFrame" name="mainFrame">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -228,7 +228,7 @@ QLabel {
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>200</height>
+       <height>0</height>
       </size>
      </property>
      <property name="frameShape">
@@ -265,7 +265,7 @@ QLabel {
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QFormLayout" name="formLayout">
+        <layout class="QFormLayout" name="generalInfoLayout">
          <property name="horizontalSpacing">
           <number>0</number>
          </property>
@@ -284,34 +284,6 @@ QLabel {
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QLineEdit" name="lineEdit">
-           <property name="text">
-            <string>Some text here</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_2">
-           <property name="text">
-            <string>Some text here too</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLineEdit" name="lineEdit_3">
-           <property name="text">
-            <string>more text</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit_4">
-           <property name="text">
-            <string>and text</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -321,6 +293,19 @@ QLabel {
          <string>Operating information</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="QFrame" name="operatingInfoFrame">
@@ -355,52 +340,11 @@ QLabel {
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QLineEdit" name="lineEdit_5">
-           <property name="text">
-            <string>text</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_6">
-           <property name="text">
-            <string>more text</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLineEdit" name="lineEdit_7">
-           <property name="text">
-            <string>text again</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit_8">
-           <property name="text">
-            <string>and a bit more</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
      </layout>
     </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

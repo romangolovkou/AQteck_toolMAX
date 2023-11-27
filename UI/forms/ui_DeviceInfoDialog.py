@@ -24,7 +24,7 @@ class Ui_DeviceInfoDialog(object):
         if not DeviceInfoDialog.objectName():
             DeviceInfoDialog.setObjectName(u"DeviceInfoDialog")
         DeviceInfoDialog.setWindowModality(Qt.WindowModal)
-        DeviceInfoDialog.resize(420, 105)
+        DeviceInfoDialog.resize(416, 134)
         sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -39,27 +39,34 @@ class Ui_DeviceInfoDialog(object):
 "	color: #fff;\n"
 "}\n"
 "\n"
-"\n"
-"#operatingInfoFrame, #generalInfoFrame {\n"
-"	background-color: #1f232a;\n"
-"	border: none;\n"
+"#DeviceInfoDialog, #mainFrame {\n"
+"	background-color: #2c313c;\n"
 "}\n"
 "\n"
 "#frame_2 {\n"
 "	border-top-left-radius: 10px;\n"
-"	background-color: #000;\n"
+"	background-color: #2F4858;\n"
 "	border: none;\n"
 "}\n"
 "\n"
 " #frame{\n"
 "	border-top-right-radius: 10px;\n"
-"	background-color: #1f232a;\n"
+"	background-color: #2c313c;\n"
 "	border: none;\n"
+"}\n"
+"\n"
+"#generalInfoFrame, #operatingInfoFrame {\n"
+"	border-top: 1px solid;\n"
+"	border-left: 1px solid;\n"
+"	border-color: #637A7B\n"
 "}\n"
 "\n"
 "QLineEdit {\n"
 "	min-width: 200px;\n"
 "	min-height: 20 px;\n"
+"	border-right: 1px solid;\n"
+"	border-bottom: 1px solid;\n"
+"	border-color: #637A7B\n"
 "}\n"
 "\n"
 "QLabel {\n"
@@ -70,16 +77,16 @@ class Ui_DeviceInfoDialog(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.ToolboxFrame = QFrame(DeviceInfoDialog)
-        self.ToolboxFrame.setObjectName(u"ToolboxFrame")
-        self.ToolboxFrame.setMinimumSize(QSize(0, 30))
-        self.ToolboxFrame.setFrameShape(QFrame.StyledPanel)
-        self.ToolboxFrame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout = QHBoxLayout(self.ToolboxFrame)
+        self.toolboxFrame = QFrame(DeviceInfoDialog)
+        self.toolboxFrame.setObjectName(u"toolboxFrame")
+        self.toolboxFrame.setMinimumSize(QSize(0, 30))
+        self.toolboxFrame.setFrameShape(QFrame.StyledPanel)
+        self.toolboxFrame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout = QHBoxLayout(self.toolboxFrame)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.frame_2 = QFrame(self.ToolboxFrame)
+        self.frame_2 = QFrame(self.toolboxFrame)
         self.frame_2.setObjectName(u"frame_2")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -104,7 +111,7 @@ class Ui_DeviceInfoDialog(object):
 
         self.horizontalLayout.addWidget(self.frame_2)
 
-        self.frame = QFrame(self.ToolboxFrame)
+        self.frame = QFrame(self.toolboxFrame)
         self.frame.setObjectName(u"frame")
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
@@ -122,25 +129,22 @@ class Ui_DeviceInfoDialog(object):
         self.horizontalLayout.addWidget(self.frame, 0, Qt.AlignRight)
 
 
-        self.verticalLayout.addWidget(self.ToolboxFrame)
+        self.verticalLayout.addWidget(self.toolboxFrame)
 
-        self.generalInfoFrame = QFrame(DeviceInfoDialog)
-        self.generalInfoFrame.setObjectName(u"generalInfoFrame")
-        self.generalInfoFrame.setEnabled(True)
+        self.mainFrame = QFrame(DeviceInfoDialog)
+        self.mainFrame.setObjectName(u"mainFrame")
+        self.mainFrame.setEnabled(True)
         sizePolicy2 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.generalInfoFrame.sizePolicy().hasHeightForWidth())
-        self.generalInfoFrame.setSizePolicy(sizePolicy2)
-        self.generalInfoFrame.setMinimumSize(QSize(0, 20))
-        self.generalInfoFrame.setFrameShape(QFrame.StyledPanel)
-        self.generalInfoFrame.setFrameShadow(QFrame.Raised)
-        self.generalInfoLayout = QFormLayout(self.generalInfoFrame)
-        self.generalInfoLayout.setObjectName(u"generalInfoLayout")
-        self.generalInfoLayout.setHorizontalSpacing(5)
-        self.generalInfoLayout.setVerticalSpacing(5)
-        self.generalInfoLayout.setContentsMargins(5, 0, 5, 5)
-        self.label = QLabel(self.generalInfoFrame)
+        sizePolicy2.setHeightForWidth(self.mainFrame.sizePolicy().hasHeightForWidth())
+        self.mainFrame.setSizePolicy(sizePolicy2)
+        self.mainFrame.setMinimumSize(QSize(0, 0))
+        self.mainFrame.setFrameShape(QFrame.StyledPanel)
+        self.mainFrame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_2 = QVBoxLayout(self.mainFrame)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.label = QLabel(self.mainFrame)
         self.label.setObjectName(u"label")
         sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         sizePolicy3.setHorizontalStretch(0)
@@ -149,12 +153,30 @@ class Ui_DeviceInfoDialog(object):
         self.label.setSizePolicy(sizePolicy3)
         self.label.setMinimumSize(QSize(100, 30))
 
-        self.generalInfoLayout.setWidget(0, QFormLayout.SpanningRole, self.label)
+        self.verticalLayout_2.addWidget(self.label)
 
+        self.generalInfoFrame = QFrame(self.mainFrame)
+        self.generalInfoFrame.setObjectName(u"generalInfoFrame")
+        self.generalInfoFrame.setFrameShape(QFrame.StyledPanel)
+        self.generalInfoFrame.setFrameShadow(QFrame.Raised)
+        self.generalInfoLayout = QFormLayout(self.generalInfoFrame)
+        self.generalInfoLayout.setObjectName(u"generalInfoLayout")
+        self.generalInfoLayout.setHorizontalSpacing(0)
+        self.generalInfoLayout.setVerticalSpacing(0)
+        self.generalInfoLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.verticalLayout.addWidget(self.generalInfoFrame, 0, Qt.AlignTop)
+        self.verticalLayout_2.addWidget(self.generalInfoFrame, 0, Qt.AlignTop)
 
-        self.operatingInfoFrame = QFrame(DeviceInfoDialog)
+        self.label_2 = QLabel(self.mainFrame)
+        self.label_2.setObjectName(u"label_2")
+
+        self.verticalLayout_2.addWidget(self.label_2)
+
+        self.verticalSpacer = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer)
+
+        self.operatingInfoFrame = QFrame(self.mainFrame)
         self.operatingInfoFrame.setObjectName(u"operatingInfoFrame")
         sizePolicy2.setHeightForWidth(self.operatingInfoFrame.sizePolicy().hasHeightForWidth())
         self.operatingInfoFrame.setSizePolicy(sizePolicy2)
@@ -162,20 +184,14 @@ class Ui_DeviceInfoDialog(object):
         self.operatingInfoFrame.setFrameShadow(QFrame.Raised)
         self.operatingInfoLayout = QFormLayout(self.operatingInfoFrame)
         self.operatingInfoLayout.setObjectName(u"operatingInfoLayout")
-        self.operatingInfoLayout.setHorizontalSpacing(5)
-        self.operatingInfoLayout.setVerticalSpacing(5)
-        self.operatingInfoLayout.setContentsMargins(5, 0, 5, 5)
-        self.label_2 = QLabel(self.operatingInfoFrame)
-        self.label_2.setObjectName(u"label_2")
+        self.operatingInfoLayout.setHorizontalSpacing(0)
+        self.operatingInfoLayout.setVerticalSpacing(0)
+        self.operatingInfoLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.operatingInfoLayout.setWidget(0, QFormLayout.SpanningRole, self.label_2)
+        self.verticalLayout_2.addWidget(self.operatingInfoFrame, 0, Qt.AlignTop)
 
 
-        self.verticalLayout.addWidget(self.operatingInfoFrame, 0, Qt.AlignTop)
-
-        self.verticalSpacer = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer)
+        self.verticalLayout.addWidget(self.mainFrame, 0, Qt.AlignTop)
 
 
         self.retranslateUi(DeviceInfoDialog)

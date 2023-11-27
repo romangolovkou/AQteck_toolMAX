@@ -23,8 +23,8 @@ class AqDeviceInfoWidget(QDialog):
         self.generalInfoWidgets = list()
         getattr(self.ui, "pushButton").clicked.connect(lambda: self.close())
 
-        if not hasattr(self.ui, 'generalInfoFrame') or \
-                not hasattr(self.ui, 'operatingInfoFrame'):
+        if not hasattr(self.ui, 'generalInfoLayout') or \
+                not hasattr(self.ui, 'operatingInfoLayout'):
             raise Exception('AqDeviceInfoWidgetError: no frames to show info')
 
     def set_device_info_model(self, model: AqDeviceInfoModel):
@@ -64,8 +64,8 @@ class AqDeviceInfoWidget(QDialog):
             line_edit.setText("Generated string "+str(i))
             self.ui.operatingInfoLayout.setWidget(i, QFormLayout.FieldRole, line_edit)
 
-        self.ui.generalInfoFrame.adjustSize()
-        self.ui.operatingInfoFrame.adjustSize()
+        self.ui.generalInfoLayout.parent().adjustSize()
+        self.ui.operatingInfoLayout.parent().adjustSize()
         self.adjustSize()
 
 
