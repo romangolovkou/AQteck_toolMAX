@@ -1,13 +1,23 @@
-from PySide6.QtWidgets import QWidget, QFrame, QTableWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog
 
 from DeviceModels import AqDeviceParamListModel
 
 
-class AqParamListWidget(QWidget):
+class AqParamListWidget(QDialog):
     def __init__(self, _ui, dev_info: AqDeviceParamListModel = None, parent=None):
         super().__init__(parent)
         self.ui = _ui()
         self.ui.setupUi(self)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
+        self.ui.tableView.horizontalHeader().sectionResized.connect(self.customAdjustSize)
+        self.customAdjustSize()
+
+    def customAdjustSize(self, *args):
+        self.ui.tableView.adjustSize()
+        self.adjustSize()
 
 
 class AqParamListInfoFrame(QFrame):
@@ -18,8 +28,25 @@ class AqParamListInfoFrame(QFrame):
 class AqParamListTableWidget(QTableWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
     """Base item list class
     provide functionality by add data to table, set size, resize, etc"""
+
+    def adjustSize(self):
+        content_height = self.horizontalHeader().height()
+        content_width = self.verticalHeader().width()
+        for i in range(self.rowCount()):
+            content_height += self.rowHeight(i)
+
+        for i in range(self.columnCount()):
+            content_width += self.columnWidth(i)
+
+        self.setFixedSize(content_width, content_height)
+
+        self.parent().adjustSize()
+
+
+
 
 
 class AqModbusParamListTableWidget(AqParamListTableWidget):

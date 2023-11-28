@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'DeviceParamListWindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,18 +15,18 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QFrame, QHBoxLayout,
-    QHeaderView, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QTableWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QFrame,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QPushButton, QSizePolicy, QSpacerItem, QTableWidgetItem,
+    QVBoxLayout, QWidget)
 
-from AqWindows.AqParamListInfoFrame import AqParamListInfoFrame
-from AqWindows.AqParamListTable import AqParamListTable
+from AqDeviceParamWindow.AqParamListWidget import (AqParamListInfoFrame, AqParamListTableWidget)
 
 class Ui_DeviceParamListWidget(object):
     def setupUi(self, DeviceParamListWidget):
         if not DeviceParamListWidget.objectName():
             DeviceParamListWidget.setObjectName(u"DeviceParamListWidget")
-        DeviceParamListWidget.resize(938, 368)
+        DeviceParamListWidget.resize(979, 396)
         DeviceParamListWidget.setStyleSheet(u"* {\n"
 "	border: none;\n"
 "	background-color: transparent;\n"
@@ -36,14 +36,16 @@ class Ui_DeviceParamListWidget(object):
 "	color: #fff;\n"
 "}\n"
 "\n"
-"#windowNameFrame {\n"
+"#toolboxFrame {\n"
 "	border-top-left-radius: 10px;\n"
-"	background-color: #2F4858;\n"
+"	background-color: #2c313c;\n"
+"	border-top-right-radius: 10px;\n"
 "}\n"
 "\n"
-"#btnFrame {\n"
-"	border-top-right-radius: 10px;\n"
-"	background-color: #2c313c;\n"
+"#windowNameFrame {\n"
+"	border-top-left-radius: 10px;\n"
+"	border-bottom-right-radius: 10px;\n"
+"	background-color: #2F4858;\n"
 "}\n"
 "\n"
 "#mainFrame {\n"
@@ -51,7 +53,7 @@ class Ui_DeviceParamListWidget(object):
 "}\n"
 "\n"
 "#tableFrame {\n"
-"	border: 1px solid #637A7B;\n"
+"	border-left: 1px solid #637A7B;\n"
 "}\n"
 "\n"
 "QLabel {\n"
@@ -176,13 +178,18 @@ class Ui_DeviceParamListWidget(object):
 
         self.tableFrame = QFrame(self.mainFrame)
         self.tableFrame.setObjectName(u"tableFrame")
+        sizePolicy1 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.tableFrame.sizePolicy().hasHeightForWidth())
+        self.tableFrame.setSizePolicy(sizePolicy1)
         self.tableFrame.setFrameShape(QFrame.StyledPanel)
         self.tableFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.tableFrame)
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.tableView = AqParamListTable(self.tableFrame)
+        self.tableView = AqParamListTableWidget(self.tableFrame)
         if (self.tableView.columnCount() < 8):
             self.tableView.setColumnCount(8)
         __qtablewidgetitem = QTableWidgetItem()
@@ -294,27 +301,31 @@ class Ui_DeviceParamListWidget(object):
         __qtablewidgetitem52 = QTableWidgetItem()
         self.tableView.setItem(4, 7, __qtablewidgetitem52)
         self.tableView.setObjectName(u"tableView")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.tableView.sizePolicy().hasHeightForWidth())
         self.tableView.setSizePolicy(sizePolicy1)
-        self.tableView.setMinimumSize(QSize(918, 0))
+        self.tableView.setMinimumSize(QSize(0, 0))
         self.tableView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.tableView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableView.setGridStyle(Qt.SolidLine)
         self.tableView.horizontalHeader().setVisible(True)
-        self.tableView.horizontalHeader().setMinimumSectionSize(115)
-        self.tableView.horizontalHeader().setDefaultSectionSize(115)
+        self.tableView.horizontalHeader().setMinimumSectionSize(120)
+        self.tableView.horizontalHeader().setDefaultSectionSize(120)
         self.tableView.horizontalHeader().setHighlightSections(False)
         self.tableView.horizontalHeader().setProperty("showSortIndicator", True)
         self.tableView.verticalHeader().setVisible(False)
+        self.tableView.verticalHeader().setMinimumSectionSize(25)
+        self.tableView.verticalHeader().setDefaultSectionSize(25)
         self.tableView.verticalHeader().setHighlightSections(False)
 
-        self.verticalLayout_3.addWidget(self.tableView)
+        self.verticalLayout_3.addWidget(self.tableView, 0, Qt.AlignTop)
 
 
-        self.verticalLayout_4.addWidget(self.tableFrame)
+        self.verticalLayout_4.addWidget(self.tableFrame, 0, Qt.AlignTop)
+
+        self.verticalSpacer = QSpacerItem(20, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_4.addItem(self.verticalSpacer)
 
 
         self.verticalLayout.addWidget(self.mainFrame)
