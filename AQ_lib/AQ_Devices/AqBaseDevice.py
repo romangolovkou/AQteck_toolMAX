@@ -9,7 +9,8 @@ from AQ_CustomTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
 from AQ_IsValidIpFunc import is_valid_ip
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from DeviceModels import AqDeviceInfoModel, AqDeviceConfig
+from AqDeviceConfig import AqDeviceConfig
+from AqDeviceInfoModel import AqDeviceInfoModel
 
 
 class AqBaseDevice(ABC):
@@ -19,7 +20,7 @@ class AqBaseDevice(ABC):
         self._device_tree = None
         self._connect = connect
         self._params_list = list()
-        self._update_param_stack = []
+        self._update_param_stack = list()
         self._request_count = list()
         self._stack_to_read = list()
         self._stack_to_write = list()
@@ -66,6 +67,10 @@ class AqBaseDevice(ABC):
     @property
     def device_tree(self):
         return self._device_tree
+
+    @property
+    def device_info_model(self):
+        return self.get_device_info_model()
 
     def func(self, name: str):
         return self._functions[name]
@@ -169,6 +174,12 @@ class AqBaseDevice(ABC):
             Redefine function at child class if it needed
         """
         return NotImplemented
+
+    def get_device_info_model(self):
+        dev_model = AqDeviceInfoModel()
+        dev_model.add_general_info("Device name", self._info['name'])
+        dev_model.add_general_info("Version", self._info['version'])
+        return dev_model
 
     @abstractmethod
     def get_configuration(self) -> AqDeviceConfig:

@@ -1,0 +1,10 @@
+{
+    "files": [
+        "",
+        "../../UI/forms/DeviceInfoDialog.ui",
+        "../../UI/forms/DeviceParamListWindow.ui",
+        "../../UI/forms/form.ui",
+        "../../UI/resoursec.qrc",
+        "main.py"
+    ]
+}
