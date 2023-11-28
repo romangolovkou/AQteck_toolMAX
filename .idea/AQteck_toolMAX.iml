@@ -27,12 +27,9 @@
       <sourceFolder url="file://$MODULE_DIR$/UI/forms" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Icons" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/TestModules" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Custom_Widgets" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.11 (venv) (3)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-  </component>
-  <component name="PyDocumentationSettings">
-    <option name="format" value="PLAIN" />
-    <option name="myDocStringFormat" value="Plain" />
   </component>
 </module>
