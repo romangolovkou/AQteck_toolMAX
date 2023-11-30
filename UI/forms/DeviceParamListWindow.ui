@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>979</width>
-    <height>396</height>
+    <height>325</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
