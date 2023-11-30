@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>824</width>
-    <height>582</height>
+    <width>867</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -59,7 +59,7 @@ QComboBox{
 	border-radius: 4px; 
 }
 
-#findBtn {
+#findBtn, #addBtn {
 	border-left: 1px solid #9ef1d3;
 	border-top: 1px solid #9ef1d3;
 	border-bottom: 1px solid #5bb192;
@@ -84,6 +84,11 @@ border-right: 1px solid #5bb192;
 background-color: #2b2d30; 
 border-radius: 4px; 
 }
+
+#tableWidget
+QHeaderView::section { background-color: #2b2d30;}
+QTableWidget { border: none; }
+QTableWidget::item { padding-left: 3px; }
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -268,7 +273,7 @@ border-radius: 4px;
         </property>
         <property name="minimumSize">
          <size>
-          <width>300</width>
+          <width>375</width>
           <height>500</height>
          </size>
         </property>
@@ -368,6 +373,16 @@ border-radius: 4px;
                 <height>30</height>
                </size>
               </property>
+              <item>
+               <property name="text">
+                <string>Modbus</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string/>
+               </property>
+              </item>
              </widget>
             </item>
             <item>
@@ -408,6 +423,16 @@ border-radius: 4px;
                 <height>30</height>
                </size>
               </property>
+              <item>
+               <property name="text">
+                <string>AQ AutoDetection Device</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string/>
+               </property>
+              </item>
              </widget>
             </item>
             <item>
@@ -448,6 +473,16 @@ border-radius: 4px;
                 <height>30</height>
                </size>
               </property>
+              <item>
+               <property name="text">
+                <string>Ethernet</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Offline</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -869,25 +904,15 @@ border-radius: 4px;
            </layout>
           </widget>
          </item>
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
         </layout>
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="table_frame">
+       <widget class="QFrame" name="right_frame">
         <layout class="QVBoxLayout" name="verticalLayout_7">
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -901,107 +926,195 @@ border-radius: 4px;
           <number>0</number>
          </property>
          <item>
-          <widget class="AqAddDeviceTableWidget" name="tableWidget">
+          <widget class="QFrame" name="tableFrame">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>360</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="AqAddDeviceTableWidget" name="tableWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>450</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>450</height>
+               </size>
+              </property>
+              <property name="rowCount">
+               <number>1</number>
+              </property>
+              <property name="columnCount">
+               <number>4</number>
+              </property>
+              <attribute name="horizontalHeaderVisible">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderHighlightSections">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
+              <row>
+               <property name="text">
+                <string>Новая строка</string>
+               </property>
+              </row>
+              <column>
+               <property name="text">
+                <string/>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Address</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Version</string>
+               </property>
+              </column>
+              <item row="0" column="0">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checkState">
+                <enum>Unchecked</enum>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="addBtnFrame">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>3</number>
+            </property>
+            <property name="rightMargin">
+             <number>25</number>
+            </property>
+            <property name="bottomMargin">
+             <number>3</number>
+            </property>
+            <item alignment="Qt::AlignRight">
+             <widget class="QPushButton" name="addBtn">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Add device</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QWidget" name="RotatingGearsWidget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>450</height>
+             <height>150</height>
             </size>
            </property>
-           <property name="rowCount">
-            <number>1</number>
-           </property>
-           <property name="columnCount">
-            <number>4</number>
-           </property>
-           <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="horizontalHeaderStretchLastSection">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="verticalHeaderVisible">
-            <bool>false</bool>
-           </attribute>
-           <attribute name="verticalHeaderCascadingSectionResizes">
-            <bool>false</bool>
-           </attribute>
-           <attribute name="verticalHeaderHighlightSections">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="verticalHeaderStretchLastSection">
-            <bool>false</bool>
-           </attribute>
-           <row>
-            <property name="text">
-             <string>Новая строка</string>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="leftMargin">
+             <number>0</number>
             </property>
-           </row>
-           <column>
-            <property name="text">
-             <string/>
+            <property name="topMargin">
+             <number>0</number>
             </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Name</string>
+            <property name="rightMargin">
+             <number>0</number>
             </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Address</string>
+            <property name="bottomMargin">
+             <number>0</number>
             </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Version</string>
-            </property>
-           </column>
-           <item row="0" column="0">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="flags">
-             <set>ItemIsUserCheckable|ItemIsEnabled</set>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>PushButton</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QWidget" name="widget" native="true">
-           <widget class="QGraphicsView" name="graphicsView">
-            <property name="geometry">
-             <rect>
-              <x>200</x>
-              <y>0</y>
-              <width>256</width>
-              <height>192</height>
-             </rect>
-            </property>
-           </widget>
-           <widget class="QGraphicsView" name="graphicsView_2">
-            <property name="geometry">
-             <rect>
-              <x>280</x>
-              <y>0</y>
-              <width>256</width>
-              <height>192</height>
-             </rect>
-            </property>
-           </widget>
+           </layout>
           </widget>
          </item>
         </layout>

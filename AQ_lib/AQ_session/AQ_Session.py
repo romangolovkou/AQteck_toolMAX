@@ -50,8 +50,9 @@ class AQ_CurrentSession(QObject):
         self.connect_manager = AQ_ConnectManager(self.event_manager, self)
 
     def open_AddDevices(self):
-        AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
-        AddDevices_window.exec()
+        # AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
+        # AddDevices_window.exec()
+        AqUiWorker.show_add_device_window()
 
     def open_ParameterList(self):
         if self.cur_active_device is not None:
