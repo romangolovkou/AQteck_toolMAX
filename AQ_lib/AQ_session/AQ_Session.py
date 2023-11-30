@@ -56,14 +56,13 @@ class AQ_CurrentSession(QObject):
 
     def open_ParameterList(self):
         if self.cur_active_device is not None:
-            ParameterList_window = AQ_DialogParamList(self.cur_active_device, self.event_manager, self.parent)
-            ParameterList_window.exec()
+            AqUiWorker.show_device_param_list(None)
+        else:
+            AqUiWorker.show_device_param_list(None)
 
     def open_DeviceInfo(self):
         if self.cur_active_device is not None:
             AqUiWorker.show_device_info_window(self.cur_active_device.device_info_model)
-            # device_info_window = AQ_DialogDeviceInfo(self.cur_active_device, self.event_manager, self.parent)
-            # device_info_window.exec()
         else:
             AqUiWorker.show_device_info_window(None)
 
