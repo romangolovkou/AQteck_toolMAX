@@ -57,16 +57,26 @@ QComboBox{
 	border-right: 1px solid #5bb192; 
 	background-color: #2b2d30; 
 	border-radius: 4px; 
+	padding-left: 4px;
 }
 
-#findBtn, #addBtn {
-	border-left: 1px solid #9ef1d3;
-	border-top: 1px solid #9ef1d3;
-	border-bottom: 1px solid #5bb192;
-	border-right: 1px solid #5bb192;
-	background-color: #2b2d30;
-	border-radius: 4px;
+#findBtn, #addBtn
+QPushButton {
+ border-left: 1px solid #9ef1d3;
+border-top: 1px solid #9ef1d3;
+ border-bottom: 1px solid #5bb192;
+border-right: 1px solid #5bb192;
+ color: #D0D0D0;
+background-color: #2b2d30;
+ border-radius: 4px;
 }
+QPushButton:hover {
+background-color: #3c3e41;
+}
+QPushButton:pressed {
+ background-color: #429061;
+}
+
 
 #findBtn :hover {
 	background-color: #3c3e41;
@@ -167,7 +177,7 @@ QTableWidget::item { padding-left: 3px; }
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../resoursec.qrc">:/images/icons/AQico_translucent.png</pixmap>
+         <pixmap resource="../resoursec.qrc">:/images/icons/AQico_silver.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -899,6 +909,9 @@ QTableWidget::item { padding-left: 3px; }
               <property name="text">
                <string>Find device</string>
               </property>
+              <property name="autoDefault">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
            </layout>
@@ -961,7 +974,7 @@ QTableWidget::item { padding-left: 3px; }
                </size>
               </property>
               <property name="rowCount">
-               <number>1</number>
+               <number>0</number>
               </property>
               <property name="columnCount">
                <number>4</number>
@@ -984,11 +997,6 @@ QTableWidget::item { padding-left: 3px; }
               <attribute name="verticalHeaderStretchLastSection">
                <bool>false</bool>
               </attribute>
-              <row>
-               <property name="text">
-                <string>Новая строка</string>
-               </property>
-              </row>
               <column>
                <property name="text">
                 <string/>
@@ -1009,14 +1017,6 @@ QTableWidget::item { padding-left: 3px; }
                 <string>Version</string>
                </property>
               </column>
-              <item row="0" column="0">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="checkState">
-                <enum>Unchecked</enum>
-               </property>
-              </item>
              </widget>
             </item>
            </layout>
@@ -1069,6 +1069,18 @@ QTableWidget::item { padding-left: 3px; }
               <property name="text">
                <string>Add device</string>
               </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="autoDefault">
+               <bool>true</bool>
+              </property>
+              <property name="default">
+               <bool>false</bool>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
              </widget>
             </item>
            </layout>
@@ -1088,7 +1100,7 @@ QTableWidget::item { padding-left: 3px; }
           </spacer>
          </item>
          <item>
-          <widget class="QWidget" name="RotatingGearsWidget" native="true">
+          <widget class="QFrame" name="RotatingGearsFrame">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -1102,6 +1114,9 @@ QTableWidget::item { padding-left: 3px; }
             </size>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -1129,7 +1144,7 @@ QTableWidget::item { padding-left: 3px; }
   <customwidget>
    <class>AqAddDeviceTableWidget</class>
    <extends>QTableWidget</extends>
-   <header location="global">AqAddDeviceWindow.AqAddDeviceWindow.h</header>
+   <header location="global">AqAddDeviceWindow.h</header>
   </customwidget>
  </customwidgets>
  <resources>
