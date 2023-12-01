@@ -3,8 +3,6 @@ from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog
 
 from DeviceModels import AqDeviceParamListModel
 
-AqDevice
-
 
 class AqParamListWidget(QDialog):
     def __init__(self, _ui, dev_info: AqDeviceParamListModel = None, parent=None):
@@ -16,7 +14,6 @@ class AqParamListWidget(QDialog):
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
         self.ui.tableView.horizontalHeader().sectionResized.connect(self.customAdjustSize)
         self.customAdjustSize()
-        connect = ConnectManager.CreateConnect(settings)
 
     def customAdjustSize(self, *args):
         self.ui.tableView.adjustSize()

@@ -6,12 +6,11 @@ from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
 from AQ_AddDevicesAddButton import AQ_addButton
 from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
 from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
-from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label, AQ_have_error_widget
+from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
-from AQ_Device_DY500 import AQ_DeviceDY500
 from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqGenericModbusLibrary import read_configuration_file
-from AqGenericModbusDevice import AqGenericModbusDevice
+from AqConnectManager import AqConnectManager
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -108,7 +107,8 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         finded_devices_list = []
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
-            connect = self.get_connect_by_settings(network_settings_list[i])
+            connect = AqConnectManager.create_connect(network_settings_list[i])
+            # connect = self.get_connect_by_settings(network_settings_list[i])
             if connect != 'connect_error':
                 device = self.get_device_by_settings(self.event_manager, connect, network_settings_list[i])
                 device_status = device.status
@@ -146,10 +146,11 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
 
         return device
 
-    def get_connect_by_settings(self, network_settings):
-        callback_dict = dict()
-        self.event_manager.emit_event('create_new_connect', network_settings, callback_dict)
-        return callback_dict['connect']
+    # def get_connect_by_settings(self, network_settings):
+    #
+    #     callback_dict = dict()
+    #     self.event_manager.emit_event('create_new_connect', network_settings, callback_dict)
+    #     return callback_dict['connect']
 
 
     def show_connect_err_label(self):
