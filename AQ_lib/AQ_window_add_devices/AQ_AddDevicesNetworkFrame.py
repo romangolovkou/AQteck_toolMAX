@@ -222,12 +222,17 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
     def get_network_settings_list(self):
         network_settings_list = []
         selected_dev = self.device_combo_box.currentText()
+        if selected_dev == 'AqAutoDetectionDevice':
+            selected_dev_type = 'AqAutoDetectionDevice'
+        else:
+            selected_dev_type = 'AqFileDescriptionDevice'
         selected_if = self.interface_combo_box.currentText()
         if selected_if == "Ethernet":
             ip = self.ip_line_edit.text()
             network_setting = {'interface': selected_if,
                                'ip': ip,
-                               'device': selected_dev}
+                               'device': selected_dev,
+                               'device_type': selected_dev_type}
         else:
             address = int(self.slave_id_line_edit.text())
             boudrate = int(self.boudrate_combo_box.currentText())
@@ -238,7 +243,8 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
                                'device': selected_dev,
                                'boudrate': boudrate,
                                'parity': parity,
-                               'stopbits': stopbits}
+                               'stopbits': stopbits,
+                               'device_type': selected_dev_type}
 
         network_settings_list.append(network_setting)
 

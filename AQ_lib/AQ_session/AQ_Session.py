@@ -16,6 +16,7 @@ import pickle
 import io
 
 from AqConnectManager import AqConnectManager
+from AqDeviceFabrica import DeviceCreator
 
 
 class AQ_CurrentSession(QObject):
@@ -44,7 +45,8 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
     # Створюємо коннект менеджер
-        AqConnectManager.init(self.event_manager)
+        AqConnectManager.init()
+        DeviceCreator.init(self.event_manager)
 
     def open_AddDevices(self):
         AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)

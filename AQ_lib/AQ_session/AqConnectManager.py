@@ -3,11 +3,7 @@ import threading
 import time
 from random import random
 
-from pymodbus.client import serial
-import serial.tools.list_ports
-
-from AQ_IsValidIpFunc import is_valid_ip
-from AqConnect import AqOfflineConnect, AqModbusConnect, AqConnect
+from AqConnect import AqOfflineConnect, AqModbusConnect, AqConnect, AqOfflineConnectSettings
 from AqConnect import AqIpConnectSettings, AqComConnectSettings
 
 
@@ -20,8 +16,7 @@ class AqConnectManager(object):
     request_stack = []
 
     @classmethod
-    def init(cls, event_manager):
-        cls.event_manager = event_manager
+    def init(cls):
         cls.core_cv = threading.Condition()
         cls.core_thread = threading.Thread(target=cls.run)
         cls.core_thread.start()
@@ -42,53 +37,30 @@ class AqConnectManager(object):
                         await cls.proceedFileRequest(cls.connect_list[i].param_request_stack.pop())
 
     @classmethod
-    def create_connect(cls, network_settings) -> AqConnect:
+    def create_connect(cls, connect_settings, device_id=None) -> AqConnect:
         connect = None
-        if network_settings.get('interface') == 'Offline':
+        if isinstance(connect_settings, AqOfflineConnectSettings):
             connect = AqOfflineConnect(cls.core_cv)
-            cls.connect_list.append(connect)
+        elif isinstance(connect_settings, (AqIpConnectSettings, AqComConnectSettings)):
+            try:
+                if device_id is None:
+                    device_id = 1
+                connect = AqModbusConnect(connect_settings, device_id, cls.core_cv)
+                if connect.open():
+                    connect.close()
+                else:
+                    connect = None
+                    # raise Exception('AqConnectManagerError: failed to open connect')
+            except Exception as e:
+                print(str(e))
         else:
-            connect_settings = cls.get_connect_settings(network_settings)
-            if connect_settings is not None:
-                try:
-                    connect = AqModbusConnect(connect_settings, network_settings.get('address', 1), cls.core_cv)
-                    if connect.open():
-                        connect.close()
-                        cls.connect_list.append(connect)
-                    else:
-                        connect = 'connect_error'
-                except Exception as e:
-                    print(str(e))
+            print('AqConnectManagerError: unknown settings instance')
+            return None
+
+        if connect is not None:
+            cls.connect_list.append(connect)
+
         return connect
-
-    @staticmethod
-    def get_connect_settings(network_settings):
-        if network_settings.get('ip', False):
-            ip = network_settings.get('ip', None)
-            if ip is not None and is_valid_ip(ip):
-                return AqIpConnectSettings(_ip=ip)
-        elif network_settings.get('boudrate', False):
-            interface = network_settings.get('interface', None)
-            # Получаем список доступных COM-портов
-            com_ports = serial.tools.list_ports.comports()
-            for port in com_ports:
-                if port.description == interface:
-                    selected_port = port.device
-
-            boudrate = network_settings.get('boudrate', None)
-            parity = network_settings.get('parity', None)
-            stopbits = network_settings.get('stopbits', None)
-
-            if selected_port is not None and \
-                    boudrate is not None and \
-                    parity is not None and \
-                    stopbits is not None:
-                return AqComConnectSettings(_port=selected_port,
-                                            _baudrate=boudrate,
-                                            _parity=parity,
-                                            _stopbits=stopbits)
-
-        return None
 
     @staticmethod
     async def proceedParamRequest(connect):

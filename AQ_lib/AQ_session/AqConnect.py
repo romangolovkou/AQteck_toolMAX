@@ -43,6 +43,15 @@ class AqIpConnectSettings:
         return 'IP: '+ str(self.ip)
 
 
+class AqOfflineConnectSettings:
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def addr(self):
+        return 'Offline'
+
+
 class AqComConnectSettings:
     def __init__(self, _port, _baudrate, _parity, _stopbits):
         super().__init__()
@@ -66,7 +75,7 @@ class AqModbusConnect(AqConnect):
         self.param_request_stack = []
         self.file_request_stack = []
         self.timeout = 1.0
-        if type(self.connect_settings).__name__ == 'AqComConnectSettings':
+        if isinstance(self.connect_settings, AqComConnectSettings):
             self.client = ModbusSerialClient(method='rtu',
                                                     port=self.connect_settings.port,
                                                     baudrate=self.connect_settings.baudrate,
@@ -74,14 +83,14 @@ class AqModbusConnect(AqConnect):
                                                     stopbits=self.connect_settings.stopbits,
                                                     timeout=self.timeout)
             self.slave_id = slave_id
-        elif type(self.connect_settings).__name__ == 'AqIpConnectSettings':
+        elif isinstance(self.connect_settings, AqIpConnectSettings):
             self.client = ModbusTcpClient(self.connect_settings.ip)
             self.slave_id = 1
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
 
     def address_string(self):
-        if type(self.connect_settings).__name__ == 'AqIpConnectSettings':
+        if isinstance(self.connect_settings, AqIpConnectSettings):
             return self.connect_settings.addr
         else:
             return str(self.slave_id) + ' (' + self.connect_settings.addr + ')'
