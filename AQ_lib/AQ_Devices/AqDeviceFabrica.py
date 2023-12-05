@@ -1,3 +1,5 @@
+import os
+
 import serial.tools.list_ports
 
 from AQ_IsValidIpFunc import is_valid_ip
@@ -5,13 +7,45 @@ from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqConnect import AqComConnectSettings, AqOfflineConnectSettings, AqIpConnectSettings
 from AqConnectManager import AqConnectManager
 from AqGenericModbusLibrary import read_configuration_file
+PATH = '110_device_conf/'
 
 
 class DeviceCreator(object):
     event_manager = None
+    com_ports =None
     @classmethod
     def init(cls, _event_manager):
         cls.event_manager = _event_manager
+
+    @classmethod
+    def get_protocol_list(cls):
+        protocol_list = list()
+        protocol_list.append('Modbus')
+        protocol_list.append('AqAutoDetectionProtocol')
+
+        return protocol_list
+
+    @classmethod
+    def get_interface_list(cls):
+        interface_list = list()
+        interface_list.append('Offline')
+        interface_list.append('Ethernet')
+        cls.com_ports = serial.tools.list_ports.comports()
+        # Заполняем выпадающий список COM-портами
+        for port in cls.com_ports:
+            interface_list.append(port.description)
+
+        return interface_list
+
+    @classmethod
+    def get_device_list_by_protocol(cls, protocol):
+        devices = list()
+        if protocol == 'Modbus':
+            # Получаем список файлов в указанной директории
+            devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+
+        return devices
+
 
     @classmethod
     def from_param_dict(cls, param_dict):
