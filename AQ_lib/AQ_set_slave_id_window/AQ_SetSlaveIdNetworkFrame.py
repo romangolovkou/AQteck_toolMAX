@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
 from AQ_CustomWindowTemplates import AQ_ComboBox, AQ_Label, AQ_IpLineEdit, AQ_SlaveIdLineEdit
 import serial.tools.list_ports
 from AQ_IsValidIpFunc import is_valid_ip
-from AQ_SettingsFunc import save_current_text_value, save_combobox_current_state, load_last_text_value, \
+from AqSettingsFunc import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 
 
