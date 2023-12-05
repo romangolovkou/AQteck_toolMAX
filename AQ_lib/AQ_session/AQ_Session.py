@@ -44,10 +44,6 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
-    # Створюємо коннект менеджер
-        AqConnectManager.init()
-        DeviceCreator.init(self.event_manager)
-
     def open_AddDevices(self):
         AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
         AddDevices_window.exec()
