@@ -1,6 +1,6 @@
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QFileDialog
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtCore import QObject
 from PySide6.QtGui import QGuiApplication, QFont
 from PySide6.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial, ModbusSerialClient
@@ -8,17 +8,15 @@ import serial.tools.list_ports
 from pymodbus.exceptions import ModbusIOException
 
 import AqUiWorker
-from AQ_ConnectManager import AQ_ConnectManager
-# from AQ_Devices import AQ_Device
 from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AqBaseDevice import AqBaseDevice
-from AqConnect import AqModbusConnect
-from AQ_ParamListWindow import AQ_DialogParamList
-from AQ_DeviceInfoWindow import AQ_DialogDeviceInfo
 from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
 from AQ_WatchListWindow import AQ_DialogWatchList
 import pickle
 import io
+
+from AqConnectManager import AqConnectManager
+from AqDeviceFabrica import DeviceCreator
 
 
 class AQ_CurrentSession(QObject):
@@ -45,9 +43,6 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
-
-    # Створюємо коннект менеджер
-        self.connect_manager = AQ_ConnectManager(self.event_manager, self)
 
     def open_AddDevices(self):
         # AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)

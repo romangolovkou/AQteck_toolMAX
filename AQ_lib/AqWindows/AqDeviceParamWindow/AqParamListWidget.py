@@ -45,10 +45,6 @@ class AqParamListTableWidget(QTableWidget):
 
         self.parent().adjustSize()
 
-
-
-
-
 class AqModbusParamListTableWidget(AqParamListTableWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
