@@ -1,3 +1,5 @@
+import os
+
 import serial.tools.list_ports
 
 from AQ_IsValidIpFunc import is_valid_ip
@@ -5,13 +7,47 @@ from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqConnect import AqComConnectSettings, AqOfflineConnectSettings, AqIpConnectSettings
 from AqConnectManager import AqConnectManager
 from AqGenericModbusLibrary import read_configuration_file
+# імпорти нижче не видаляти, потрібні для globals()
+from AqGenericModbusDevice import AqGenericModbusDevice
+PATH = '110_device_conf/'
 
 
 class DeviceCreator(object):
     event_manager = None
+    com_ports =None
     @classmethod
     def init(cls, _event_manager):
         cls.event_manager = _event_manager
+
+    @classmethod
+    def get_protocol_list(cls):
+        protocol_list = list()
+        protocol_list.append('Modbus')
+        protocol_list.append('AqAutoDetectionProtocol')
+
+        return protocol_list
+
+    @classmethod
+    def get_interface_list(cls):
+        interface_list = list()
+        interface_list.append('Offline')
+        interface_list.append('Ethernet')
+        cls.com_ports = serial.tools.list_ports.comports()
+        # Заполняем выпадающий список COM-портами
+        for port in cls.com_ports:
+            interface_list.append(port.description)
+
+        return interface_list
+
+    @classmethod
+    def get_device_list_by_protocol(cls, protocol):
+        devices = list()
+        if protocol == 'Modbus':
+            # Получаем список файлов в указанной директории
+            devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+
+        return devices
+
 
     @classmethod
     def from_param_dict(cls, param_dict):
@@ -53,17 +89,17 @@ class DeviceCreator(object):
     @classmethod
     def __param_dict_to_connect_settings(cls, param_dict):
         # First check is offline connection as simplest
-        if param_dict.get('interface') == 'Offline':
+        if param_dict.get('interface_type') == 'Offline':
             return AqOfflineConnectSettings()
         # Then check if some Ethernet/WiFi
-        elif param_dict.get('ip', False):
+        elif param_dict.get('interface_type', False) == 'ip':
             ip = param_dict.get('ip', None)
             if ip is not None and is_valid_ip(ip):
                 return AqIpConnectSettings(_ip=ip)
             else:
                 return None
         # Then if is there some COM setttings
-        elif param_dict.get('boudrate', False):
+        elif param_dict.get('interface_type', False) == 'com':
             interface = param_dict.get('interface', None)
             # Получаем список доступных COM-портов
             com_ports = serial.tools.list_ports.comports()
