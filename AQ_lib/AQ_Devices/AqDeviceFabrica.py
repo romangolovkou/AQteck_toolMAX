@@ -61,6 +61,8 @@ class DeviceCreator(object):
             connect = AqConnectManager.create_connect(connect_settings, device_id)
             if connect is not None:
                 device = cls.__param_dict_to_device_object(param_dict, connect)
+            else:
+                raise Exception('Can`t connect to device')
 
         return device
 
@@ -97,15 +99,19 @@ class DeviceCreator(object):
             if ip is not None and is_valid_ip(ip):
                 return AqIpConnectSettings(_ip=ip)
             else:
-                return None
+                raise Exception("Invalid ip '" + str(ip) + "'")
         # Then if is there some COM setttings
         elif param_dict.get('interface_type', False) == 'com':
             interface = param_dict.get('interface', None)
+            selected_port = None
             # Получаем список доступных COM-портов
             com_ports = serial.tools.list_ports.comports()
             for port in com_ports:
-                if port.description == interface:
+                if port.description.find(interface) > -1:
                     selected_port = port.device
+
+            if selected_port is None:
+                raise Exception("Can`t find COM-port: " + str(interface))
 
             boudrate = param_dict.get('boudrate', None)
             parity = param_dict.get('parity', None)
@@ -119,5 +125,8 @@ class DeviceCreator(object):
                                             _baudrate=boudrate,
                                             _parity=parity,
                                             _stopbits=stopbits)
+            else:
+                raise Exception("Input all COM connect settings")
+
         else:
-            return None
+            raise Exception("Specify interface for connect to device")
