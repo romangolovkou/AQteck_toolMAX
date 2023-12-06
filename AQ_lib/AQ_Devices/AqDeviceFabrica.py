@@ -7,6 +7,8 @@ from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqConnect import AqComConnectSettings, AqOfflineConnectSettings, AqIpConnectSettings
 from AqConnectManager import AqConnectManager
 from AqGenericModbusLibrary import read_configuration_file
+# імпорти нижче не видаляти, потрібні для globals()
+from AqGenericModbusDevice import AqGenericModbusDevice
 PATH = '110_device_conf/'
 
 
@@ -87,17 +89,17 @@ class DeviceCreator(object):
     @classmethod
     def __param_dict_to_connect_settings(cls, param_dict):
         # First check is offline connection as simplest
-        if param_dict.get('interface') == 'Offline':
+        if param_dict.get('interface_type') == 'Offline':
             return AqOfflineConnectSettings()
         # Then check if some Ethernet/WiFi
-        elif param_dict.get('ip', False):
+        elif param_dict.get('interface_type', False) == 'ip':
             ip = param_dict.get('ip', None)
             if ip is not None and is_valid_ip(ip):
                 return AqIpConnectSettings(_ip=ip)
             else:
                 return None
         # Then if is there some COM setttings
-        elif param_dict.get('boudrate', False):
+        elif param_dict.get('interface_type', False) == 'com':
             interface = param_dict.get('interface', None)
             # Получаем список доступных COM-портов
             com_ports = serial.tools.list_ports.comports()
