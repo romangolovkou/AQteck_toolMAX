@@ -54,12 +54,29 @@
 
 #closeBtn {
 	border-top-right-radius: 10px;
+	border-right: 1px solid #D0D0D0;
 	background-color: #2c313c;
+}
+
+#icon {
+	border-top-left-radius: 10px;
+	border-left: 1px solid #D0D0D0;
+	background-color: #2F4858;
 }
 
 #title_text{
 	border-top:transparent; 
 	border-bottom: 1px solid #637A7B;
+}
+
+#connection_settings{
+	border-left: 1px solid #D0D0D0;
+	border-bottom: 1px solid #D0D0D0;
+}
+
+#right_frame{
+	border-right: 1px solid #D0D0D0;
+	border-bottom: 1px solid #D0D0D0;
 }
 
 QComboBox{
@@ -1141,29 +1158,23 @@ QTableWidget::item { padding-left: 3px; }
            </property>
           </spacer>
          </item>
-         <item>
-          <widget class="QFrame" name="RotatingGearsFrame">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>150</height>
-            </size>
+         <item alignment="Qt::AlignBottom">
+          <widget class="QFrame" name="gearsFrame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>150</height>
-            </size>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
             <property name="spacing">
              <number>0</number>
             </property>
             <property name="leftMargin">
-             <number>0</number>
+             <number>235</number>
             </property>
             <property name="topMargin">
-             <number>0</number>
+             <number>86</number>
             </property>
             <property name="rightMargin">
              <number>0</number>
@@ -1171,6 +1182,39 @@ QTableWidget::item { padding-left: 3px; }
             <property name="bottomMargin">
              <number>0</number>
             </property>
+            <item>
+             <widget class="AqRotatingGearsWidget" name="RotatingGearsWidget" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>150</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>150</height>
+               </size>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -1203,6 +1247,12 @@ QTableWidget::item { padding-left: 3px; }
    <class>AqIpLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">AqLineEditTemplates.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AqRotatingGearsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">AqAddDeviceRotatingGears.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

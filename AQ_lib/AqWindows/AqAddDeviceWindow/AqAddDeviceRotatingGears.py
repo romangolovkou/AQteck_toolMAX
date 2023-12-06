@@ -2,12 +2,12 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QGraphicsPixmapItem, QWidget, QGraphicsView, QFrame, QGraphicsScene
 
-class AQ_RotatingGearsWidget(QWidget):
+class AqRotatingGearsWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
-        self.gear_big = RotatingGear(QPixmap('Icons/gear182.png'), 40, 1)
+        self.gear_big = AqRotatingGear(QPixmap('Icons/gear182.png'), 40, 1)
         # Создаем виджет QGraphicsView и устанавливаем его для окна
         self.gear_big_view = QGraphicsView(self)
         self.gear_big_view.setStyleSheet("background: transparent;")
@@ -21,7 +21,7 @@ class AQ_RotatingGearsWidget(QWidget):
         self.gear_big_view.setGeometry(90, 0, 182, 182)
 
         # Создаем QGraphicsPixmapItem и добавляем его в сцену
-        self.gear_small = RotatingGear(QPixmap('Icons/gear127.png'), 40, 4)
+        self.gear_small = AqRotatingGear(QPixmap('Icons/gear127.png'), 40, 4)
         # Создаем виджет QGraphicsView и устанавливаем его для окна
         self.gear_small_view = QGraphicsView(self)
         self.gear_small_view.setStyleSheet("background: transparent;")
@@ -43,7 +43,7 @@ class AQ_RotatingGearsWidget(QWidget):
         self.gear_big.stop()
 
 
-class RotatingGear(QGraphicsPixmapItem):
+class AqRotatingGear(QGraphicsPixmapItem):
     def __init__(self, pixmap, interval, angle_degree):
         super().__init__()
         self.setPixmap(pixmap)

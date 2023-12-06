@@ -2,7 +2,7 @@ from PySide6.QtCore import QTimer
 from PySide6.QtGui import QGuiApplication, QFont
 from PySide6.QtWidgets import QWidget, QFrame, QLabel
 
-from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
+from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
 from AQ_SetSlaveIdNetworkFrame import AQ_SetSlaveIdNetworkSettingsFrame
 
@@ -46,7 +46,7 @@ class AQ_DialogSetSlaveId(AQ_SimplifiedDialog):
     #     return device
 
     def show_connect_err_label(self):
-        self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)
+        self.connect_err_label = AqAddDeviceConnectErrorLabel(self.width(), 50, self.main_window_frame)
         self.connect_err_label.move(0, self.height() - 50)
         self.connect_err_label.show()
 

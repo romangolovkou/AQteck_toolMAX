@@ -24,6 +24,8 @@ class AQ_MainWindow(QMainWindow):
         self.spacing_between_frame = 2
         self.not_titlebtn_zone = 0
 
+        Core.init()
+
         # Менеджер подій
         Core.event_manager.register_event_handler('close_' + main_name, self.close)
         Core.event_manager.register_event_handler('minimize_' + main_name, self.showMinimized)
@@ -33,7 +35,7 @@ class AQ_MainWindow(QMainWindow):
         Core.event_manager.register_event_handler('resize_' + main_name, self.resize_MainWindow)
 
         #MainWindowFrame
-        self.main_window_frame = AQ_MainWindowFrame(self.event_manager, main_name, self.AQicon, self)
+        self.main_window_frame = AQ_MainWindowFrame(Core.event_manager, main_name, self.AQicon, self)
 
     def resize_MainWindow(self, pos_x, pos_y, width, height):
         if pos_x == '%':

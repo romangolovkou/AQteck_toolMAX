@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget
 from AQ_CustomWindowTemplates import AQ_Label
 
 
-class AQ_ConnectErrorLabel(QWidget):
+class AqAddDeviceConnectErrorLabel(QWidget):
     def __init__(self, width, height, parent=None):
         super().__init__(parent)
         self.setGeometry(0, 0, width, height)
