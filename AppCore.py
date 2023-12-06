@@ -9,7 +9,7 @@ class Core(object):
     session = None
     @classmethod
     def init(cls):
-        cls.event_manager = AQ_EventManager()
+        cls.event_manager = AQ_EventManager.get_global_event_manager()
         cls.session = AQ_CurrentSession(cls.event_manager, cls)
         AqConnectManager.init()
         DeviceCreator.init(cls.event_manager)
