@@ -74,9 +74,6 @@ class AQ_CurrentSession(QObject):
             self.devices.append(new_devices_list[i])
             self.devices[-1].init_parameters()
 
-        # #     Здесь ожидаем пока все параметры в устройстве прочитаются, в это время крутим и пишем
-        # time.sleep(10)
-
         self.event_manager.emit_event('new_devices_added', new_devices_list)
 
     def set_cur_active_device(self, device):

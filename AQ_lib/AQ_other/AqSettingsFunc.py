@@ -10,6 +10,9 @@ def load_last_combobox_state(settings, combobox):
 def save_combobox_current_state(settings, combobox):
     key = combobox.objectName()
     index = combobox.currentIndex()
+    if index < 0:
+        return
+
     settings.setValue(key, index)
     settings.sync()
 

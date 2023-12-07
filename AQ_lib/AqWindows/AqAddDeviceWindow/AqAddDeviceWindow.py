@@ -24,7 +24,6 @@ class AqAddDeviceWidget(QDialog):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.event_manager = AQ_EventManager.get_global_event_manager()
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
-        getattr(self.ui, "findBtn").clicked.connect(self.find_button_clicked)
         try:
             # Получаем текущий рабочий каталог (папку проекта)
             project_path = os.getcwd()
@@ -37,7 +36,6 @@ class AqAddDeviceWidget(QDialog):
 
         self.selected_devices_list = []
         # Рєєструємо обробники подій
-        # self.event_manager.register_event_handler('Find_device', self.on_find_button_clicked)
         self.event_manager.register_event_handler('Add_device', self.add_selected_devices_to_session)
 
         # Створюємо порожній список для всіх знайдених девайсів
@@ -90,6 +88,14 @@ class AqAddDeviceWidget(QDialog):
         self.ui.tableWidget.setColumnWidth(1, int(cur_width * 0.47))
         self.ui.tableWidget.setColumnWidth(2, int(cur_width * 0.24))
         self.ui.tableWidget.setColumnWidth(3, int(cur_width * 0.17))
+        self.ui.tableWidget.setFixedHeight(30)
+
+        # Прив'язуємо кнопки до слотів
+        self.ui.findBtn.clicked.connect(self.find_button_clicked)
+        self.ui.addBtn.clicked.connect(self.add_selected_devices_to_session)
+
+        #Скриємо кнопку "додати" до першого відображення знайденого девайсу
+        self.ui.addBtn.hide()
 
     def change_page_by_interface_selection(self):
         selected_item = self.ui.interface_combo_box.currentText()
@@ -143,7 +149,6 @@ class AqAddDeviceWidget(QDialog):
                 self.ui.slave_id_line_edit.show_err_label()
                 return
 
-        # self.event_manager.emit_event('Find_device')
         self.start_search()
 
     def start_search(self):
@@ -157,6 +162,7 @@ class AqAddDeviceWidget(QDialog):
 
     def search_finished(self):
         self.ui.RotatingGearsWidget.stop()
+        self.ui.findBtn.setEnabled(True)
 
     def search_error(self, error_message):
         # Выполняется в случае ошибки при выполнении connect_to_device
@@ -236,16 +242,8 @@ class AqAddDeviceWidget(QDialog):
         for i in range(len(found_devices)):
             self.ui.tableWidget.append_device_row(found_devices[i])
 
-        # bottom_right_corner_table_widget = self.ui.tableWwidget.mapTo(self.main_window_frame, self.ui.tableWwidget.rect().bottomRight())
-        # summ_rows_height = self.ui.tableWwidget.get_sum_of_rows_height()
-
-        # if hasattr(self, 'add_btn'):
-        #     self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
-        #                       summ_rows_height + 70)
-        # else:
-        #     self.add_btn = AQ_addButton(self.event_manager, 'Add device', self.main_window_frame)
-        #     self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
-        #                       summ_rows_height + 70)
+        # Відображаємо кнопку "додати"
+        self.ui.addBtn.show()
 
     def add_found_devices_to_all_list(self, found_devices):
         for i in range(len(found_devices)):
@@ -254,11 +252,10 @@ class AqAddDeviceWidget(QDialog):
     def add_selected_devices_to_session(self):
         devices_count = len(self.all_found_devices)
         for i in range(devices_count):
-            checkbox_item = self.table_widget.cellWidget(i, 0)
+            checkbox_item = self.ui.tableWidget.cellWidget(i, 0)
             if checkbox_item is not None and isinstance(checkbox_item, QCheckBox):
                 if checkbox_item.checkState() == Qt.Checked:
                     self.selected_devices_list.append(self.all_found_devices[i])
-
 
         self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
         self.all_found_devices.clear()
@@ -274,23 +271,10 @@ class AqAddDeviceWidget(QDialog):
 class AqAddDeviceTableWidget(QTableWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        # Создаем QTableWidget с 4 столбцами
-        # self.setColumnCount(4)
         self.horizontalHeader().setMinimumSectionSize(8)
         self.setRowCount(0)
-
-        # Добавляем заголовки столбцов
-        # self.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])
         self.setFixedWidth(420)
         self.setMaximumHeight(420)
-        # # Устанавливаем ширину столбцов
-        # cur_width = self.width()
-        # self.setColumnWidth(0, int(cur_width * 0.05))
-        # self.setColumnWidth(1, int(cur_width * 0.58))
-        # self.setColumnWidth(2, int(cur_width * 0.37))
-        # self.setColumnWidth(3, int(cur_width * 0.20))
-        # Установите высоту строк по умолчанию
-        # self.verticalHeader().setVisible(False)
         self.horizontalHeader().setStyleSheet(
             "QHeaderView::section { background-color: #2b2d30; color: #D0D0D0; border: 1px solid #1e1f22; }")
         # Убираем рамку таблицы
@@ -304,6 +288,9 @@ class AqAddDeviceTableWidget(QTableWidget):
         else:
             for i in range(self.columnCount()):
                 self.item(row, i).setBackground(QColor("#9d4d4f"))
+
+        new_height = self.get_sum_of_rows_height() + 30
+        self.setFixedHeight(new_height)
 
     def append_device_row(self, device: AqBaseDevice):
         if device.status == 'ok':
