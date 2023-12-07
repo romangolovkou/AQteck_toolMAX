@@ -84,6 +84,13 @@ class AqAddDeviceWidget(QDialog):
             load_last_combobox_state(self.auto_load_settings, self.ui.stopbits_combo_box)
             load_last_text_value(self.auto_load_settings, self.ui.slave_id_line_edit)
 
+        # Устанавливаем ширину столбцов в таблице справа
+        cur_width = self.ui.tableWidget.width()
+        self.ui.tableWidget.setColumnWidth(0, int(cur_width * 0.05))
+        self.ui.tableWidget.setColumnWidth(1, int(cur_width * 0.47))
+        self.ui.tableWidget.setColumnWidth(2, int(cur_width * 0.24))
+        self.ui.tableWidget.setColumnWidth(3, int(cur_width * 0.17))
+
     def change_page_by_interface_selection(self):
         selected_item = self.ui.interface_combo_box.currentText()
         if selected_item == "Ethernet":
@@ -143,23 +150,23 @@ class AqAddDeviceWidget(QDialog):
         self.ui.RotatingGearsWidget.start()
         # Запускаем функцию connect_to_device в отдельном потоке
         self.connect_thread = ConnectDeviceThread(self)
-        self.connect_thread.finished.connect(self.on_connect_thread_finished)
-        self.connect_thread.error.connect(self.on_connect_thread_error)
-        self.connect_thread.result_signal.connect(self.connect_finished)
+        self.connect_thread.finished.connect(self.search_finished)
+        self.connect_thread.error.connect(self.search_error)
+        self.connect_thread.result_signal.connect(self.search_successful)
         self.connect_thread.start()
 
-    def on_connect_thread_finished(self):
+    def search_finished(self):
         self.ui.RotatingGearsWidget.stop()
 
-    def on_connect_thread_error(self, error_message):
+    def search_error(self, error_message):
         # Выполняется в случае ошибки при выполнении connect_to_device
         # В этом слоте можно выполнить действия, которые должны произойти в случае ошибки
         self.show_connect_err_label()
         self.ui.RotatingGearsWidget.stop()
 
-    def connect_finished(self, found_devices):
+    def search_successful(self, found_devices):
         self.add_devices_to_table_widget(found_devices)
-        self.add_finded_devices_to_all_list(found_devices)
+        self.add_found_devices_to_all_list(found_devices)
 
     def connect_to_device(self):
         found_devices_list = []
@@ -225,6 +232,24 @@ class AqAddDeviceWidget(QDialog):
         save_current_text_value(self.auto_load_settings, self.ui.ip_line_edit)
         save_current_text_value(self.auto_load_settings, self.ui.slave_id_line_edit)
 
+    def add_devices_to_table_widget(self, found_devices):
+        for i in range(len(found_devices)):
+            self.ui.tableWidget.append_device_row(found_devices[i])
+
+        # bottom_right_corner_table_widget = self.ui.tableWwidget.mapTo(self.main_window_frame, self.ui.tableWwidget.rect().bottomRight())
+        # summ_rows_height = self.ui.tableWwidget.get_sum_of_rows_height()
+
+        # if hasattr(self, 'add_btn'):
+        #     self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
+        #                       summ_rows_height + 70)
+        # else:
+        #     self.add_btn = AQ_addButton(self.event_manager, 'Add device', self.main_window_frame)
+        #     self.add_btn.move(bottom_right_corner_table_widget.x() - self.add_btn.width() - 3,
+        #                       summ_rows_height + 70)
+
+    def add_found_devices_to_all_list(self, found_devices):
+        for i in range(len(found_devices)):
+            self.all_found_devices.append(found_devices[i])
 
     def add_selected_devices_to_session(self):
         devices_count = len(self.all_found_devices)
@@ -250,37 +275,35 @@ class AqAddDeviceTableWidget(QTableWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         # Создаем QTableWidget с 4 столбцами
-        self.setColumnCount(3)
+        # self.setColumnCount(4)
         self.horizontalHeader().setMinimumSectionSize(8)
         self.setRowCount(0)
 
         # Добавляем заголовки столбцов
-        self.setHorizontalHeaderLabels(["", "Name", "Address"])
+        # self.setHorizontalHeaderLabels(["", "Name", "Address", "Version"])
         self.setFixedWidth(420)
         self.setMaximumHeight(420)
-        # Устанавливаем ширину столбцов
-        cur_width = self.width()
-        self.setColumnWidth(0, int(cur_width * 0.05))
-        self.setColumnWidth(1, int(cur_width * 0.58))
-        self.setColumnWidth(2, int(cur_width * 0.37))
+        # # Устанавливаем ширину столбцов
+        # cur_width = self.width()
+        # self.setColumnWidth(0, int(cur_width * 0.05))
+        # self.setColumnWidth(1, int(cur_width * 0.58))
+        # self.setColumnWidth(2, int(cur_width * 0.37))
         # self.setColumnWidth(3, int(cur_width * 0.20))
         # Установите высоту строк по умолчанию
-        self.verticalHeader().setVisible(False)
+        # self.verticalHeader().setVisible(False)
         self.horizontalHeader().setStyleSheet(
             "QHeaderView::section { background-color: #2b2d30; color: #D0D0D0; border: 1px solid #1e1f22; }")
         # Убираем рамку таблицы
         self.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
                                                            QTableWidget::item { padding-left: 3px; }""")
 
-    def set_style_table_widget_item(self, row, err_flag=0):
+    def append_device_to_table(self, row, err_flag=0):
         if err_flag == 0:
-            for i in range(3):
+            for i in range(self.columnCount()):
                 self.item(row, i).setBackground(QColor("#429061"))
         else:
-            for i in range(3):
+            for i in range(self.columnCount()):
                 self.item(row, i).setBackground(QColor("#9d4d4f"))
-
-        # TODO: Rename this func like "append_device_to_table"
 
     def append_device_row(self, device: AqBaseDevice):
         if device.status == 'ok':
@@ -296,14 +319,14 @@ class AqAddDeviceTableWidget(QTableWidget):
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
         address_item = QTableWidgetItem(device.info('address'))
         address_item.setFlags(address_item.flags() & ~Qt.ItemIsEditable)
-        # version_item = QTableWidgetItem(device_data.get('version'))
-        # version_item.setFlags(version_item.flags() & ~Qt.ItemIsEditable)
+        version_item = QTableWidgetItem(device.info('version'))
+        version_item.setFlags(version_item.flags() & ~Qt.ItemIsEditable)
 
         # Устанавливаем элементы таблицы
         self.setItem(new_row_index, 0, checkbox_item)
         self.setItem(new_row_index, 1, name_item)
         self.setItem(new_row_index, 2, address_item)
-        # self.setItem(new_row_index, 3, version_item)
+        self.setItem(new_row_index, 3, version_item)
 
         # Устанавливаем чекбокс в первую колонку
         checkbox = QCheckBox()
@@ -318,7 +341,7 @@ class AqAddDeviceTableWidget(QTableWidget):
         item = self.item(new_row_index, 0)
         item.setTextAlignment(Qt.AlignCenter)
 
-        self.set_style_table_widget_item(new_row_index, err_flag)
+        self.append_device_to_table(new_row_index, err_flag)
 
     def get_sum_of_rows_height(self):
         sum_height = 0
