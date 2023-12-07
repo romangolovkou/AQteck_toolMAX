@@ -1,4 +1,5 @@
 import os
+import threading
 
 import serial
 from PySide6.QtCore import Qt, QSettings, QThread, Signal
@@ -47,6 +48,7 @@ class AqAddDeviceWidget(QDialog):
         # При старті одразу викликаємо оновлення стек-віджету та списку девайсів
         self.change_device_set_by_protocol_selection()
         self.change_page_by_interface_selection()
+
 
     def prepare_ui_objects(self):
         # Встановлюємо комбіновані імена в поля налаштувань (для збереження автозаповнення,
@@ -201,6 +203,10 @@ class AqAddDeviceWidget(QDialog):
                                'interface_type': 'ip',
                                'ip': ip,
                                'device': selected_dev}
+        elif selected_if == "Offline":
+            network_setting = {'interface': selected_if,
+                               'interface_type': 'Offline',
+                               'device': selected_dev}
         else:
             address = int(self.ui.slave_id_line_edit.text())
             boudrate = int(self.ui.boudrate_combo_box.currentText())
@@ -250,6 +256,8 @@ class AqAddDeviceWidget(QDialog):
             self.all_found_devices.append(found_devices[i])
 
     def add_selected_devices_to_session(self):
+        self.ui.addBtn.setEnabled(False)
+        # self.ui.RotatingGearsWidget.start()
         devices_count = len(self.all_found_devices)
         for i in range(devices_count):
             checkbox_item = self.ui.tableWidget.cellWidget(i, 0)
@@ -257,9 +265,11 @@ class AqAddDeviceWidget(QDialog):
                 if checkbox_item.checkState() == Qt.Checked:
                     self.selected_devices_list.append(self.all_found_devices[i])
 
-        self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
-        self.all_found_devices.clear()
-        self.selected_devices_list.clear()
+        # self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
+        AqDeviceFabrica.DeviceCreator.add_device(self.selected_devices_list)
+        # self.all_found_devices.clear()
+        # self.selected_devices_list.clear()
+        # self.ui.RotatingGearsWidget.stop()
         self.close()
 
     def show_connect_err_label(self):
@@ -354,6 +364,27 @@ class ConnectDeviceThread(QThread):
         try:
             result_data = self.parent.connect_to_device()
             self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
+            # По завершении успешного выполнения
+            self.finished.emit()
+        except Exception as e:
+            # В случае ошибки передаем текст ошибки обратно в главный поток
+            self.error.emit(str(e))
+
+
+class InitDeviceParamsThread(QThread):
+    finished = Signal()
+    error = Signal(str)
+    result_signal = Signal(object)  # Сигнал для передачи данных в главное окно
+
+    def __init__(self, devices_list, parent):
+        super().__init__(parent)
+        self.parent = parent
+        self.devices_list = devices_list
+
+    def run(self):
+        try:
+            for i in range(len(self.devices_list)):
+                self.devices_list[-1].init_parameters()
             # По завершении успешного выполнения
             self.finished.emit()
         except Exception as e:

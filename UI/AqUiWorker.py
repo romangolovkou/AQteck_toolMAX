@@ -1,5 +1,4 @@
 import AppCore
-from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AqAddDeviceWindow import AqAddDeviceWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
 from AqDeviceParamListModel import AqDeviceParamListModel

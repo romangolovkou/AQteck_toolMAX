@@ -8,7 +8,6 @@ import serial.tools.list_ports
 from pymodbus.exceptions import ModbusIOException
 
 import AqUiWorker
-from AQ_AddDevicesWindow import AQ_DialogAddDevices
 from AqBaseDevice import AqBaseDevice
 from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
 from AQ_WatchListWindow import AQ_DialogWatchList
@@ -70,9 +69,9 @@ class AQ_CurrentSession(QObject):
         self.set_slave_id_window.show()
 
     def add_new_devices(self, new_devices_list):
-        for i in range(len(new_devices_list)):
-            self.devices.append(new_devices_list[i])
-            self.devices[-1].init_parameters()
+        # for i in range(len(new_devices_list)):
+        self.devices.extend(new_devices_list)
+        #     self.devices[-1].init_parameters()
 
         self.event_manager.emit_event('new_devices_added', new_devices_list)
 

@@ -1,4 +1,5 @@
 import os
+import threading
 
 import serial.tools.list_ports
 
@@ -121,3 +122,15 @@ class DeviceCreator(object):
                                             _stopbits=stopbits)
         else:
             return None
+
+    @classmethod
+    def add_device(cls, devices: list):
+        cls.add_thread = threading.Thread(target=cls.add_device2, args=[devices])
+        cls.add_thread.start()
+
+    @classmethod
+    def add_device2(cls, devices: list):
+        for i in range(len(devices)):
+            devices[-1].init_parameters()
+
+        cls.event_manager.emit_event('add_new_devices', devices)
