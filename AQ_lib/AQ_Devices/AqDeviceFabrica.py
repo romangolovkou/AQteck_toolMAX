@@ -125,12 +125,20 @@ class DeviceCreator(object):
 
     @classmethod
     def add_device(cls, devices: list):
-        cls.add_thread = threading.Thread(target=cls.add_device2, args=[devices])
-        cls.add_thread.start()
-
-    @classmethod
-    def add_device2(cls, devices: list):
-        for i in range(len(devices)):
-            devices[-1].init_parameters()
+        for device in devices:
+            device.init_parameters()
 
         cls.event_manager.emit_event('add_new_devices', devices)
+
+    #
+    # @classmethod
+    # def add_device(cls, devices: list):
+    #     cls.add_thread = threading.Thread(target=cls.add_device2, args=[devices])
+    #     cls.add_thread.start()
+    #
+    # @classmethod
+    # def add_device2(cls, devices: list):
+    #     for i in range(len(devices)):
+    #         devices[-1].init_parameters()
+    #
+    #     cls.event_manager.emit_event('add_new_devices', devices)

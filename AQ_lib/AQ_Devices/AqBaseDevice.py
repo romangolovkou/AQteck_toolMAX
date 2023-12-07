@@ -32,7 +32,7 @@ class AqBaseDevice(ABC):
             'serial_num':       None,
             'address':          None
         }
-        self._status = None
+
         self._functions = {
             'read_write': None,
             'rtc': None,
@@ -42,6 +42,9 @@ class AqBaseDevice(ABC):
             'fw_update': None,
             'restart': None
         }
+
+        self._status = None
+        self._is_inited = False
 
         if self._connect is not None and self._connect.open():
             self._info['address'] = self._connect.address_string()
@@ -72,28 +75,39 @@ class AqBaseDevice(ABC):
     def device_info_model(self):
         return self.get_device_info_model()
 
+    @property
+    def is_inited(self):
+        return self._is_inited
+
     def func(self, name: str):
         return self._functions[name]
 
     def info(self, param):
         return self._info[param]
 
+    # def init_parameters(self):
+    #     self._event_manager.register_event_handler('current_device_data_updated', self.read_complete)
+    #     # TODO: check for offline connectivity
+    #     for i in self._params_list:
+    #         self.read_parameters(i)
+    #         with self._core_cv:
+    #             self._core_cv.wait()
+    #             # TODO: Установить значение по умолчанию или 0
+    #
+    #     self._event_manager.unregister_event_handler('current_device_data_updated', self.read_complete)
+    #     return True
+    #
+    # def read_complete(self, device, item):
+    #     if device == self:
+    #         with self._core_cv:
+    #             self._core_cv.notify()
+
     def init_parameters(self):
-        self._event_manager.register_event_handler('current_device_data_updated', self.read_complete)
-        # TODO: check for offline connectivity
-        for i in self._params_list:
-            self.read_parameters(i)
-            with self._core_cv:
-                self._core_cv.wait()
-                # TODO: Установить значение по умолчанию или 0
+        self._event_manager.register_event_handler('current_device_data_updated', self.init_complete)
+        self.read_parameters(self._params_list)
 
-        self._event_manager.unregister_event_handler('current_device_data_updated', self.read_complete)
-        return True
-
-    def read_complete(self, device, item):
-        if device == self:
-            with self._core_cv:
-                self._core_cv.notify()
+    def init_complete(self, *args):
+        self._is_inited = True
 
     def read_parameters(self, items=None):
         if len(self._request_count) == 0:

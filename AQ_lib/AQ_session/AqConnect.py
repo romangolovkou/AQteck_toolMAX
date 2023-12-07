@@ -6,6 +6,8 @@ from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 from pymodbus.pdu import ModbusResponse
 
+from AQ_IsValidIpFunc import is_valid_ip
+
 
 class AqConnect(QObject):
     def __init__(self):
@@ -36,7 +38,12 @@ class AqConnect(QObject):
 class AqIpConnectSettings:
     def __init__(self, _ip):
         super().__init__()
-        self.ip = _ip
+
+        if is_valid_ip(_ip):
+            self.ip = _ip
+        else:
+            raise ValueError("Invalid ip " + str(_ip))
+
 
     @property
     def addr(self):
@@ -53,13 +60,28 @@ class AqOfflineConnectSettings:
 
 
 class AqComConnectSettings:
+    available_baudrate = [4800, 9600, 19200, 38400, 57600, 115200]
+    available_parity = ["None", "Even", "Odd"]
+    available_stopbits = [1, 2]
     def __init__(self, _port, _baudrate, _parity, _stopbits):
         super().__init__()
+        # TODO: Зачем нам хранить одно и тоже в разных переменных???
         self.port = _port
-        self.baudrate = _baudrate
-        self.parity = _parity
-        self.stopbits = _stopbits
         self._interface = _port
+
+        if _baudrate in self.available_baudrate:
+            self.baudrate = _baudrate
+        else:
+            raise ValueError("Invalid baudrate " + str(_baudrate))
+        if _parity in self.available_parity:
+            self.parity = _parity
+        else:
+            raise ValueError("Invalid parity " + str(_parity))
+        if _stopbits in self.available_stopbits:
+            self.stopbits = _stopbits
+        else:
+            raise ValueError("Invalid stopbits " + str(_parity))
+
 
     @property
     def addr(self):

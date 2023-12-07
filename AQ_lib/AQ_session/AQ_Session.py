@@ -109,6 +109,7 @@ class AQ_CurrentSession(QObject):
             if len(self.devices) == 0:
                 self.event_manager.emit_event('no_devices')
 
+
     def restart_device(self, device):
         device.restart()
 

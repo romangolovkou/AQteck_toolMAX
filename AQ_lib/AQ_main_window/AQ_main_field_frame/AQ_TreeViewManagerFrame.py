@@ -8,6 +8,8 @@ from AQ_TreeViewItemModel import AQ_TreeViewItemModel
 from AQ_CustomTreeItems import AqParamManagerItem
 from AQ_TreeView import AQ_TreeView
 from AqBaseDevice import AqBaseDevice
+from DeviceNotInitedWifget import DeviceInitWidget
+from NoDevicesWidget import NoDeviceWidget
 
 
 class AQ_TreeViewFrame(QFrame):
@@ -33,7 +35,15 @@ class AQ_TreeViewManager(QStackedWidget):
         # self.event_manager.register_event_handler("current_device_data_updated", self.update_device_values)
         self.event_manager.register_event_handler("current_device_data_written", self.update_device_param_statuses)
         self.event_manager.register_event_handler("delete_device", self.delete_device_view)
+        self.event_manager.register_event_handler('no_devices', self.no_devices_action)
         self.devices_views = {}
+        self.active_device = None
+        self.no_device_widget = NoDeviceWidget()
+        self.addWidget(self.no_device_widget)
+        self.device_init_widget = DeviceInitWidget()
+        self.addWidget(self.device_init_widget)
+        self.setCurrentWidget(self.no_device_widget)
+        self.show()
 
     def add_new_devices_trees(self, new_devices_list):
         for i in range(len(new_devices_list)):
@@ -42,23 +52,29 @@ class AQ_TreeViewManager(QStackedWidget):
             device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
             tree_view.setModel(device_view_tree_model)
             self.devices_views[new_devices_list[i]] = tree_view
-            self.update_device_values(new_devices_list[i])
             self.addWidget(tree_view)
-            self.show()
+            # self.update_device_values(new_devices_list[i])
+            # self.show()
 
     def set_active_device_tree(self, device: AqBaseDevice):
         if device is not None:
-            # try:
-            widget = self.devices_views.get(device, None)
-            if widget is not None:
-                self.setCurrentWidget(widget)
-                self.update_device_values(device)
+            if device.is_inited:
+                widget = self.devices_views.get(device, None)
+                if widget is not None:
+                    self.update_device_values(device)
+                    self.setCurrentWidget(widget)
+                    self.device_init_widget.stop_animation()
+                else:
+                    self.setCurrentWidget(self.no_device_widget)
+                    self.device_init_widget.stop_animation()
             else:
+                self.device_init_widget.start_animation()
+                self.setCurrentWidget(self.device_init_widget)
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
                 QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
-            # except:
-            #     # Устанавливаем задержку в 50 м.сек и затем повторяем
-            #     QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
+
+    def no_devices_action(self):
+        self.setCurrentWidget(self.no_device_widget)
 
     def delete_device_view(self, device: AqBaseDevice):
         tree_view = self.devices_views.get(device, None)

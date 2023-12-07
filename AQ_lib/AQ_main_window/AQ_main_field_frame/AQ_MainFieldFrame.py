@@ -26,6 +26,7 @@ class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
         self.main_background_pic.setPixmap(self.background_pic)
         self.main_background_pic.setScaledContents(True)
         self.main_background_pic.setGeometry(0, 0, 450, 326)
+        self.main_background_pic.hide()
 
         # Створюємо бокову панель зліва з віджетами доданих девайсів
         self.left_panel = AQ_left_widget_panel_frame(self.event_manager, self)
@@ -36,10 +37,10 @@ class AQ_MainFieldFrame(AQ_ReducedMainFieldFrame):
                                          self.height())
 
     def show_hide_main_pic(self, device=None):
-        if device is None:
-            self.main_background_pic.show()
-        else:
-            self.main_background_pic.hide()
+        # if device is None:
+        #     self.main_background_pic.show()
+        # else:
+        self.main_background_pic.hide()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
