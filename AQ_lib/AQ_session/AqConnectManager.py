@@ -50,9 +50,11 @@ class AqConnectManager(object):
                     connect.close()
                 else:
                     connect = None
-                    # raise Exception('AqConnectManagerError: failed to open connect')
+                    print(cls.__name__ + 'Error: failed to open connect')
+                    raise Exception(cls.__name__ + 'Error: failed to open connect')
             except Exception as e:
                 print(str(e))
+                raise Exception(cls.__name__ + 'Error: failed to open connect')
         else:
             print('AqConnectManagerError: unknown settings instance')
             return None
