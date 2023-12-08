@@ -5,15 +5,12 @@ from AQ_MainWindowFrame import AQ_MainWindowFrame
 from AQ_Session import AQ_CurrentSession
 from AQ_EventManager import AQ_EventManager
 from AppCore import Core
-# Defines
-PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
 
 
 class AQ_MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         main_name = 'AQteckModules'
-        PROJ_DIR = 'D:/git/AQtech/AQtech Tool MAX/'
         self.AQicon = QIcon('Icons/AQico_silver.png')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle(main_name)

@@ -7,7 +7,7 @@ import serial.tools.list_ports
 from AqConnect import AqConnect
 from AQ_CustomTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
-from AQ_IsValidIpFunc import is_valid_ip
+from AqIsValidIpFunc import is_valid_ip
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AqDeviceConfig import AqDeviceConfig
 from AqDeviceInfoModel import AqDeviceInfoModel

@@ -10,7 +10,6 @@ from pymodbus.exceptions import ModbusIOException
 import AqUiWorker
 from AqBaseDevice import AqBaseDevice
 from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
-from AQ_WatchListWindow import AQ_DialogWatchList
 import pickle
 import io
 
@@ -28,7 +27,6 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("open_AddDevices", self.open_AddDevices)
         self.event_manager.register_event_handler("open_ParameterList", self.open_ParameterList)
         self.event_manager.register_event_handler("open_DeviceInfo", self.open_DeviceInfo)
-        self.event_manager.register_event_handler("open_WatchList", self.open_WatchList)
         self.event_manager.register_event_handler("open_SetSlaveId", self.open_SetSlaveId)
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
         self.event_manager.register_event_handler("set_active_device", self.set_cur_active_device)
@@ -44,8 +42,6 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
     def open_AddDevices(self):
-        # AddDevices_window = AQ_DialogAddDevices(self.event_manager, self.parent)
-        # AddDevices_window.exec()
         AqUiWorker.show_add_device_window()
 
     def open_ParameterList(self):
@@ -60,18 +56,12 @@ class AQ_CurrentSession(QObject):
         else:
             AqUiWorker.show_device_info_window(None)
 
-    def open_WatchList(self):
-        self.watch_list_window = AQ_DialogWatchList(self.event_manager, self.parent)
-        self.watch_list_window.show()
-
     def open_SetSlaveId(self):
         self.set_slave_id_window = AQ_DialogSetSlaveId(self.event_manager, self.parent)
         self.set_slave_id_window.show()
 
     def add_new_devices(self, new_devices_list):
-        # for i in range(len(new_devices_list)):
         self.devices.extend(new_devices_list)
-        #     self.devices[-1].init_parameters()
 
         self.event_manager.emit_event('new_devices_added', new_devices_list)
 
@@ -83,14 +73,8 @@ class AQ_CurrentSession(QObject):
         self.cur_active_device = None
 
     def read_params_cur_active_device(self):
-        self.wait_label = AQ_wait_label_widget('Please wait...', self.parent)
-        self.wait_label.show()
-
         if self.cur_active_device is not None:
             self.cur_active_device.read_parameters()
-
-        self.wait_label.hide()
-        self.wait_label.deleteLater()
 
     def write_params_cur_active_device(self):
         if self.cur_active_device is not None:
@@ -219,28 +203,3 @@ class AQ_CurrentSession(QObject):
                 self.event_manager.emit_event('set_slave_id_connect_ok')
             else:
                 self.event_manager.emit_event('set_slave_id_connect_error')
-
-    def connect_manager_finished(self):
-        pass
-
-    def connect_manager_error(self):
-        pass
-
-
-class AQ_wait_label_widget(QWidget):
-    def __init__(self, text, parent=None):
-        super().__init__(parent)
-        self.parent = parent
-        self.frame = QFrame(self)
-        self.frame.setGeometry(0, 0, 230, 80)
-        # Получаем геометрию основного экрана
-        screen_geometry = QGuiApplication.primaryScreen().geometry()
-        self.setGeometry(screen_geometry.width() // 2 - self.frame.width() // 2,
-                         screen_geometry.height() // 2 - self.frame.height() // 2,
-                         self.frame.width(), self.frame.height())
-        self.frame.setStyleSheet("border: 2px solid #fe2d2d; border-radius: 5px; background-color: #1e1f22")
-        self.text_label = QLabel(text, self)
-        self.text_label.setFont(QFont("Segoe UI", 12))
-        self.text_label.move(10, 5)
-        self.text_label.setStyleSheet("border: none; color: #E0E0E0; background-color: transparent")
-        self.show()

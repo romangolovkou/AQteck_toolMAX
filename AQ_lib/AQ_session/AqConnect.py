@@ -6,7 +6,7 @@ from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 from pymodbus.pdu import ModbusResponse
 
-from AQ_IsValidIpFunc import is_valid_ip
+from AqIsValidIpFunc import is_valid_ip
 
 
 class AqConnect(QObject):

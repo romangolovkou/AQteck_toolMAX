@@ -3,7 +3,7 @@ import threading
 
 import serial.tools.list_ports
 
-from AQ_IsValidIpFunc import is_valid_ip
+from AqIsValidIpFunc import is_valid_ip
 from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqConnect import AqComConnectSettings, AqOfflineConnectSettings, AqIpConnectSettings
 from AqConnectManager import AqConnectManager

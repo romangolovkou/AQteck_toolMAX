@@ -4,7 +4,7 @@ from typing import Any
 from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
 from PySide6.QtGui import QStandardItem
 
-from AQ_ParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
+from AqParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
     AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AqEnumROnlyTreeLineEdit, \
     AqSignedToFloatTreeLineEdit, AqFloatEnumROnlyTreeLineEdit, AqFloatEnumTreeComboBox, AqBitLineEdit, AqIpTreeLineEdit
 
