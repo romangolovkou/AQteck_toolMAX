@@ -68,10 +68,11 @@ class AQ_TreeViewManager(QStackedWidget):
                 self.show_current_device_widget(device)
             self.device_init_widget.stop_animation()
         else:
-            self.device_init_widget.start_animation()
-            self.setCurrentWidget(self.device_init_widget)
-            # Устанавливаем задержку в 50 м.сек и затем повторяем
-            QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
+            if self.active_device == device:
+                self.device_init_widget.start_animation()
+                self.setCurrentWidget(self.device_init_widget)
+                # Устанавливаем задержку в 50 м.сек и затем повторяем
+                QTimer.singleShot(50, lambda: self.check_is_device_inited(device))
 
     def show_current_device_widget(self, device):
         widget = self.devices_views.get(device, None)
