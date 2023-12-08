@@ -42,6 +42,7 @@ class AQ_TreeViewManager(QStackedWidget):
         self.addWidget(self.no_device_widget)
         self.device_init_widget = DeviceInitWidget()
         self.addWidget(self.device_init_widget)
+        self.active_device = None
         self.setCurrentWidget(self.no_device_widget)
         self.show()
 
@@ -57,21 +58,28 @@ class AQ_TreeViewManager(QStackedWidget):
             # self.show()
 
     def set_active_device_tree(self, device: AqBaseDevice):
+        self.active_device = device
         if device is not None:
-            if device.is_inited:
-                widget = self.devices_views.get(device, None)
-                if widget is not None:
-                    self.update_device_values(device)
-                    self.setCurrentWidget(widget)
-                    self.device_init_widget.stop_animation()
-                else:
-                    self.setCurrentWidget(self.no_device_widget)
-                    self.device_init_widget.stop_animation()
-            else:
-                self.device_init_widget.start_animation()
-                self.setCurrentWidget(self.device_init_widget)
-                # Устанавливаем задержку в 50 м.сек и затем повторяем
-                QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
+            self.check_is_device_inited(device)
+
+    def check_is_device_inited(self, device):
+        if device.is_inited:
+            if self.active_device == device:
+                self.show_current_device_widget(device)
+            self.device_init_widget.stop_animation()
+        else:
+            self.device_init_widget.start_animation()
+            self.setCurrentWidget(self.device_init_widget)
+            # Устанавливаем задержку в 50 м.сек и затем повторяем
+            QTimer.singleShot(50, lambda: self.set_active_device_tree(device))
+
+    def show_current_device_widget(self, device):
+        widget = self.devices_views.get(device, None)
+        if widget is not None:
+            self.update_device_values(device)
+            self.setCurrentWidget(widget)
+        else:
+            self.setCurrentWidget(self.no_device_widget)
 
     def no_devices_action(self):
         self.setCurrentWidget(self.no_device_widget)
