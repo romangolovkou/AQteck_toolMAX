@@ -1,5 +1,9 @@
 from AQ_ParseFunc import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
 
+#Імпорти нижче не видаляти, потрібні для globsls
+from AqModbusGenericItems import *
+from AqDY500Items import *
+
 
 def parse_config(configuration, conf_type=None):
     if conf_type is not None:
