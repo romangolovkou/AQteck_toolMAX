@@ -63,7 +63,6 @@ background-color: #1f232a;
 }
 
 #addBtnWidget {
-	background-color: #16191d;
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
 } 
@@ -1641,7 +1640,7 @@ background-color: #1f232a;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="addBtnWidget" native="true">
+              <widget class="AqLeftPanelAddWidget" name="addBtnWidget" native="true">
                <property name="maximumSize">
                 <size>
                  <width>200</width>
@@ -2996,6 +2995,14 @@ background-color: #1f232a;
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AqLeftPanelAddWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">AqLeftWidgetPanel.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resoursec.qrc"/>
  </resources>
