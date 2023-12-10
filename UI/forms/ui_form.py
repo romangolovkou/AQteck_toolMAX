@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
     QLayout, QMainWindow, QPushButton, QSizePolicy,
     QSpacerItem, QStackedWidget, QToolButton, QVBoxLayout,
     QWidget)
+import rc_resoursec
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -137,7 +138,7 @@ class Ui_MainWindow(object):
         self.menuBtn.setObjectName(u"menuBtn")
         self.menuBtn.setMaximumSize(QSize(45, 45))
         icon = QIcon()
-        icon.addFile(u"../../../../AQico_translucent.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/images/icons/AQico_translucent.png", QSize(), QIcon.Normal, QIcon.Off)
         self.menuBtn.setIcon(icon)
         self.menuBtn.setIconSize(QSize(40, 40))
 
@@ -202,7 +203,7 @@ class Ui_MainWindow(object):
         self.minimizeBtn.setObjectName(u"minimizeBtn")
         self.minimizeBtn.setMinimumSize(QSize(35, 25))
         icon1 = QIcon()
-        icon1.addFile(u":/icon/E:/feather/minus.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon1.addFile(u":/icons/icons/feather/minus.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.minimizeBtn.setIcon(icon1)
         self.minimizeBtn.setIconSize(QSize(20, 20))
 
@@ -212,7 +213,7 @@ class Ui_MainWindow(object):
         self.maximizeBtn.setObjectName(u"maximizeBtn")
         self.maximizeBtn.setMinimumSize(QSize(35, 25))
         icon2 = QIcon()
-        icon2.addFile(u":/icon/E:/feather/copy.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(u":/icons/icons/feather/copy.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.maximizeBtn.setIcon(icon2)
         self.maximizeBtn.setIconSize(QSize(20, 20))
 
@@ -222,7 +223,7 @@ class Ui_MainWindow(object):
         self.closeBtn.setObjectName(u"closeBtn")
         self.closeBtn.setMinimumSize(QSize(35, 25))
         icon3 = QIcon()
-        icon3.addFile(u":/icon/E:/feather/x.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon3.addFile(u":/icons/icons/feather/x.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.closeBtn.setIcon(icon3)
         self.closeBtn.setIconSize(QSize(20, 20))
 
@@ -264,7 +265,9 @@ class Ui_MainWindow(object):
         self.addDeviceMenuBtn_2.setMaximumSize(QSize(130, 25))
         self.addDeviceMenuBtn_2.setLayoutDirection(Qt.LeftToRight)
         self.addDeviceMenuBtn_2.setAutoFillBackground(False)
-        self.addDeviceMenuBtn_2.setIcon(icon)
+        icon4 = QIcon()
+        icon4.addFile(u"../../../../AQico_translucent.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.addDeviceMenuBtn_2.setIcon(icon4)
         self.addDeviceMenuBtn_2.setIconSize(QSize(20, 20))
         self.addDeviceMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -280,7 +283,7 @@ class Ui_MainWindow(object):
         font.setKerning(False)
         self.deleteDeviceMenuBtn_2.setFont(font)
         self.deleteDeviceMenuBtn_2.setFocusPolicy(Qt.TabFocus)
-        self.deleteDeviceMenuBtn_2.setIcon(icon)
+        self.deleteDeviceMenuBtn_2.setIcon(icon4)
         self.deleteDeviceMenuBtn_2.setIconSize(QSize(20, 20))
         self.deleteDeviceMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -295,7 +298,7 @@ class Ui_MainWindow(object):
         self.ipAddrMenuBtn_2.setSizePolicy(sizePolicy3)
         self.ipAddrMenuBtn_2.setMinimumSize(QSize(25, 25))
         self.ipAddrMenuBtn_2.setMaximumSize(QSize(130, 25))
-        self.ipAddrMenuBtn_2.setIcon(icon)
+        self.ipAddrMenuBtn_2.setIcon(icon4)
         self.ipAddrMenuBtn_2.setIconSize(QSize(20, 20))
         self.ipAddrMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -314,7 +317,7 @@ class Ui_MainWindow(object):
         self.readParamMenuBtn_2.setObjectName(u"readParamMenuBtn_2")
         self.readParamMenuBtn_2.setMinimumSize(QSize(25, 25))
         self.readParamMenuBtn_2.setMaximumSize(QSize(130, 25))
-        self.readParamMenuBtn_2.setIcon(icon)
+        self.readParamMenuBtn_2.setIcon(icon4)
         self.readParamMenuBtn_2.setIconSize(QSize(20, 20))
         self.readParamMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -324,7 +327,7 @@ class Ui_MainWindow(object):
         self.writeParamMenuBtn_2.setObjectName(u"writeParamMenuBtn_2")
         self.writeParamMenuBtn_2.setMinimumSize(QSize(25, 25))
         self.writeParamMenuBtn_2.setMaximumSize(QSize(130, 25))
-        self.writeParamMenuBtn_2.setIcon(icon)
+        self.writeParamMenuBtn_2.setIcon(icon4)
         self.writeParamMenuBtn_2.setIconSize(QSize(20, 20))
         self.writeParamMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -334,7 +337,7 @@ class Ui_MainWindow(object):
         self.setDefaultMenuBtn_2.setObjectName(u"setDefaultMenuBtn_2")
         self.setDefaultMenuBtn_2.setMinimumSize(QSize(25, 25))
         self.setDefaultMenuBtn_2.setMaximumSize(QSize(130, 25))
-        self.setDefaultMenuBtn_2.setIcon(icon)
+        self.setDefaultMenuBtn_2.setIcon(icon4)
         self.setDefaultMenuBtn_2.setIconSize(QSize(20, 20))
         self.setDefaultMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -343,7 +346,7 @@ class Ui_MainWindow(object):
         self.poaramListMenuBtn = QToolButton(self.paramPopUpContainer)
         self.poaramListMenuBtn.setObjectName(u"poaramListMenuBtn")
         self.poaramListMenuBtn.setMaximumSize(QSize(130, 25))
-        self.poaramListMenuBtn.setIcon(icon)
+        self.poaramListMenuBtn.setIcon(icon4)
         self.poaramListMenuBtn.setIconSize(QSize(20, 20))
         self.poaramListMenuBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -366,7 +369,7 @@ class Ui_MainWindow(object):
         self.saveLogMenuBtn.setMaximumSize(QSize(130, 25))
         self.saveLogMenuBtn.setLayoutDirection(Qt.LeftToRight)
         self.saveLogMenuBtn.setAutoFillBackground(False)
-        self.saveLogMenuBtn.setIcon(icon)
+        self.saveLogMenuBtn.setIcon(icon4)
         self.saveLogMenuBtn.setIconSize(QSize(20, 20))
         self.saveLogMenuBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -380,7 +383,7 @@ class Ui_MainWindow(object):
         self.dataLogCfgMenuBtn.setMaximumSize(QSize(130, 25))
         self.dataLogCfgMenuBtn.setFont(font)
         self.dataLogCfgMenuBtn.setFocusPolicy(Qt.TabFocus)
-        self.dataLogCfgMenuBtn.setIcon(icon)
+        self.dataLogCfgMenuBtn.setIcon(icon4)
         self.dataLogCfgMenuBtn.setIconSize(QSize(20, 20))
         self.dataLogCfgMenuBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -399,7 +402,7 @@ class Ui_MainWindow(object):
         self.watchListMenuBtn.setObjectName(u"watchListMenuBtn")
         self.watchListMenuBtn.setMinimumSize(QSize(25, 25))
         self.watchListMenuBtn.setMaximumSize(QSize(130, 25))
-        self.watchListMenuBtn.setIcon(icon)
+        self.watchListMenuBtn.setIcon(icon4)
         self.watchListMenuBtn.setIconSize(QSize(20, 20))
         self.watchListMenuBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -409,7 +412,7 @@ class Ui_MainWindow(object):
         self.rtcMenuBtn_2.setObjectName(u"rtcMenuBtn_2")
         self.rtcMenuBtn_2.setMinimumSize(QSize(25, 25))
         self.rtcMenuBtn_2.setMaximumSize(QSize(130, 25))
-        self.rtcMenuBtn_2.setIcon(icon)
+        self.rtcMenuBtn_2.setIcon(icon4)
         self.rtcMenuBtn_2.setIconSize(QSize(20, 20))
         self.rtcMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -419,7 +422,7 @@ class Ui_MainWindow(object):
         self.passwordMenuBtn_2.setObjectName(u"passwordMenuBtn_2")
         self.passwordMenuBtn_2.setMaximumSize(QSize(130, 25))
         self.passwordMenuBtn_2.setLayoutDirection(Qt.LeftToRight)
-        self.passwordMenuBtn_2.setIcon(icon)
+        self.passwordMenuBtn_2.setIcon(icon4)
         self.passwordMenuBtn_2.setIconSize(QSize(20, 20))
         self.passwordMenuBtn_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -428,7 +431,7 @@ class Ui_MainWindow(object):
         self.firmwareMenuBtn = QToolButton(self.utilsPopUpContainer)
         self.firmwareMenuBtn.setObjectName(u"firmwareMenuBtn")
         self.firmwareMenuBtn.setMaximumSize(QSize(130, 25))
-        self.firmwareMenuBtn.setIcon(icon)
+        self.firmwareMenuBtn.setIcon(icon4)
         self.firmwareMenuBtn.setIconSize(QSize(20, 20))
         self.firmwareMenuBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -438,7 +441,7 @@ class Ui_MainWindow(object):
         self.calibrationMenuBtn.setObjectName(u"calibrationMenuBtn")
         self.calibrationMenuBtn.setMinimumSize(QSize(25, 25))
         self.calibrationMenuBtn.setMaximumSize(QSize(130, 25))
-        self.calibrationMenuBtn.setIcon(icon)
+        self.calibrationMenuBtn.setIcon(icon4)
         self.calibrationMenuBtn.setIconSize(QSize(20, 20))
         self.calibrationMenuBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -514,7 +517,7 @@ class Ui_MainWindow(object):
         self.devIcon.setObjectName(u"devIcon")
         self.devIcon.setMaximumSize(QSize(50, 50))
         self.devIcon.setTextFormat(Qt.AutoText)
-        self.devIcon.setPixmap(QPixmap(u"../../../../AQico_translucent.png"))
+        self.devIcon.setPixmap(QPixmap(u":/images/icons/AQico_translucent.png"))
         self.devIcon.setScaledContents(True)
         self.devIcon.setAlignment(Qt.AlignCenter)
         self.devIcon.setWordWrap(False)
@@ -581,7 +584,7 @@ class Ui_MainWindow(object):
         self.devIcon_2.setObjectName(u"devIcon_2")
         self.devIcon_2.setMaximumSize(QSize(50, 50))
         self.devIcon_2.setTextFormat(Qt.AutoText)
-        self.devIcon_2.setPixmap(QPixmap(u"../../../../AQico_translucent.png"))
+        self.devIcon_2.setPixmap(QPixmap(u":/images/icons/AQico_translucent.png"))
         self.devIcon_2.setScaledContents(True)
         self.devIcon_2.setAlignment(Qt.AlignCenter)
         self.devIcon_2.setWordWrap(False)
@@ -647,7 +650,7 @@ class Ui_MainWindow(object):
         self.devIcon_3.setObjectName(u"devIcon_3")
         self.devIcon_3.setMaximumSize(QSize(50, 50))
         self.devIcon_3.setTextFormat(Qt.AutoText)
-        self.devIcon_3.setPixmap(QPixmap(u"../../../../AQico_translucent.png"))
+        self.devIcon_3.setPixmap(QPixmap(u":/images/icons/AQico_translucent.png"))
         self.devIcon_3.setScaledContents(True)
         self.devIcon_3.setAlignment(Qt.AlignCenter)
         self.devIcon_3.setWordWrap(False)
@@ -713,7 +716,7 @@ class Ui_MainWindow(object):
         self.devIcon_4.setObjectName(u"devIcon_4")
         self.devIcon_4.setMaximumSize(QSize(40, 40))
         self.devIcon_4.setTextFormat(Qt.AutoText)
-        self.devIcon_4.setPixmap(QPixmap(u"../../../../plus_2040520 \u043a\u043e\u043f\u0438\u044f.png"))
+        self.devIcon_4.setPixmap(QPixmap(u":/images/icons/plus.png"))
         self.devIcon_4.setScaledContents(True)
         self.devIcon_4.setAlignment(Qt.AlignCenter)
         self.devIcon_4.setWordWrap(False)
@@ -766,9 +769,9 @@ class Ui_MainWindow(object):
         self.scrollDevListBtn.setObjectName(u"scrollDevListBtn")
         self.scrollDevListBtn.setMinimumSize(QSize(0, 0))
         self.scrollDevListBtn.setMaximumSize(QSize(16777215, 20))
-        icon4 = QIcon()
-        icon4.addFile(u":/icon/E:/feather/chevrons-down.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.scrollDevListBtn.setIcon(icon4)
+        icon5 = QIcon()
+        icon5.addFile(u":/icon/E:/feather/chevrons-down.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.scrollDevListBtn.setIcon(icon5)
 
         self.verticalLayout_12.addWidget(self.scrollDevListBtn)
 
@@ -890,7 +893,7 @@ class Ui_MainWindow(object):
         self.readParamMenuBtn_3.setObjectName(u"readParamMenuBtn_3")
         self.readParamMenuBtn_3.setMinimumSize(QSize(25, 25))
         self.readParamMenuBtn_3.setMaximumSize(QSize(130, 25))
-        self.readParamMenuBtn_3.setIcon(icon)
+        self.readParamMenuBtn_3.setIcon(icon4)
         self.readParamMenuBtn_3.setIconSize(QSize(20, 20))
         self.readParamMenuBtn_3.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -900,7 +903,7 @@ class Ui_MainWindow(object):
         self.writeParamMenuBtn_3.setObjectName(u"writeParamMenuBtn_3")
         self.writeParamMenuBtn_3.setMinimumSize(QSize(25, 25))
         self.writeParamMenuBtn_3.setMaximumSize(QSize(130, 25))
-        self.writeParamMenuBtn_3.setIcon(icon)
+        self.writeParamMenuBtn_3.setIcon(icon4)
         self.writeParamMenuBtn_3.setIconSize(QSize(20, 20))
         self.writeParamMenuBtn_3.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -909,7 +912,7 @@ class Ui_MainWindow(object):
         self.toolButton = QToolButton(self.frame_4)
         self.toolButton.setObjectName(u"toolButton")
         self.toolButton.setMinimumSize(QSize(0, 25))
-        self.toolButton.setIcon(icon)
+        self.toolButton.setIcon(icon4)
         self.toolButton.setIconSize(QSize(20, 20))
         self.toolButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -923,7 +926,7 @@ class Ui_MainWindow(object):
         self.setDefaultMenuBtn_3.setObjectName(u"setDefaultMenuBtn_3")
         self.setDefaultMenuBtn_3.setMinimumSize(QSize(25, 25))
         self.setDefaultMenuBtn_3.setMaximumSize(QSize(130, 25))
-        self.setDefaultMenuBtn_3.setIcon(icon)
+        self.setDefaultMenuBtn_3.setIcon(icon4)
         self.setDefaultMenuBtn_3.setIconSize(QSize(20, 20))
         self.setDefaultMenuBtn_3.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -1021,9 +1024,9 @@ class Ui_MainWindow(object):
         self.setRtcBtn.setMinimumSize(QSize(32, 32))
         self.setRtcBtn.setMaximumSize(QSize(195, 32))
         self.setRtcBtn.setLayoutDirection(Qt.RightToLeft)
-        icon5 = QIcon()
-        icon5.addFile(u"../../../../icon/clock_223404.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.setRtcBtn.setIcon(icon5)
+        icon6 = QIcon()
+        icon6.addFile(u":/images/icons/clock.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.setRtcBtn.setIcon(icon6)
         self.setRtcBtn.setIconSize(QSize(32, 32))
         self.setRtcBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -1034,9 +1037,9 @@ class Ui_MainWindow(object):
         self.setPasswordBtn.setMinimumSize(QSize(32, 32))
         self.setPasswordBtn.setMaximumSize(QSize(195, 32))
         self.setPasswordBtn.setLayoutDirection(Qt.RightToLeft)
-        icon6 = QIcon()
-        icon6.addFile(u"../../../../icon/padlock_2889676.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.setPasswordBtn.setIcon(icon6)
+        icon7 = QIcon()
+        icon7.addFile(u":/images/icons/padlock.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.setPasswordBtn.setIcon(icon7)
         self.setPasswordBtn.setIconSize(QSize(32, 32))
         self.setPasswordBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -1047,9 +1050,9 @@ class Ui_MainWindow(object):
         self.calibDeviceBtn.setMinimumSize(QSize(32, 32))
         self.calibDeviceBtn.setMaximumSize(QSize(195, 32))
         self.calibDeviceBtn.setLayoutDirection(Qt.RightToLeft)
-        icon7 = QIcon()
-        icon7.addFile(u"../../../../icon/setting_10035148.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.calibDeviceBtn.setIcon(icon7)
+        icon8 = QIcon()
+        icon8.addFile(u":/images/icons/setting.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.calibDeviceBtn.setIcon(icon8)
         self.calibDeviceBtn.setIconSize(QSize(32, 32))
         self.calibDeviceBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -1136,7 +1139,9 @@ class Ui_MainWindow(object):
         self.firmwareUpdBtn.setMinimumSize(QSize(32, 32))
         self.firmwareUpdBtn.setMaximumSize(QSize(195, 32))
         self.firmwareUpdBtn.setLayoutDirection(Qt.RightToLeft)
-        self.firmwareUpdBtn.setIcon(icon)
+        icon9 = QIcon()
+        icon9.addFile(u":/images/icons/restore.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.firmwareUpdBtn.setIcon(icon9)
         self.firmwareUpdBtn.setIconSize(QSize(32, 32))
         self.firmwareUpdBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -1147,7 +1152,9 @@ class Ui_MainWindow(object):
         self.rebootDeviceBtn.setMinimumSize(QSize(32, 32))
         self.rebootDeviceBtn.setMaximumSize(QSize(195, 32))
         self.rebootDeviceBtn.setLayoutDirection(Qt.RightToLeft)
-        self.rebootDeviceBtn.setIcon(icon)
+        icon10 = QIcon()
+        icon10.addFile(u":/images/icons/electricity.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.rebootDeviceBtn.setIcon(icon10)
         self.rebootDeviceBtn.setIconSize(QSize(32, 32))
         self.rebootDeviceBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 

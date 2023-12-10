@@ -198,7 +198,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset resource="../resoursec.qrc">
-                 <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                 <normaloff>:/images/icons/AQico_silver.png</normaloff>:/images/icons/AQico_silver.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -1205,7 +1205,7 @@ background-color: #1f232a;
                       <enum>Qt::AutoText</enum>
                      </property>
                      <property name="pixmap">
-                      <pixmap resource="../resoursec.qrc">:/images/icons/AQico_translucent.png</pixmap>
+                      <pixmap resource="../resoursec.qrc">:/images/icons/AQico_silver.png</pixmap>
                      </property>
                      <property name="scaledContents">
                       <bool>true</bool>
