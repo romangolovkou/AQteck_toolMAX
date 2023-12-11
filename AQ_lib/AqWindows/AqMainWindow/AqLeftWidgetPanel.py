@@ -10,36 +10,8 @@ from ui_AqLeftDeviceWidget import Ui_AqLeftDeviceWidget
 class AqLeftWidgetPanelFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.event_manager = self.event_manager = AQ_EventManager.get_global_event_manager()
-        # self.event_manager.register_event_handler("new_devices_added", self.add_dev_widgets_to_left_panel)
-        self.event_manager.register_event_handler("delete_device", self.remove_dev_widget_from_left_panel)
+        self.event_manager = AQ_EventManager.get_global_event_manager()
 
-    # def add_dev_widgets_to_left_panel(self, new_devices):
-    #     for i in range(len(new_devices)):
-    #         dev_widget = AqLeftDeviceWidget(new_devices[i], self)
-    #         self.left_panel_layout.insertWidget(dev_widget)
-
-    def remove_dev_widget_from_left_panel(self, device):
-        delete_pos = None
-        for i in range(self.left_panel_layout.count()):
-            widget = self.left_panel_layout.itemAt(i).widget()
-            if widget.device == device:
-                self.left_panel_layout.removeWidget(widget)
-                widget.deleteLater()
-                delete_pos = i
-                break
-
-        if delete_pos is not None:
-            try:
-                widget = self.left_panel_layout.itemAt(delete_pos).widget()
-                widget.set_active_cur_widget()
-            except:
-                try:
-                    widget = self.left_panel_layout.itemAt(delete_pos - 1).widget()
-                    widget.set_active_cur_widget()
-                except Exception as e:
-                    print(f"Error occurred: {str(e)}")
-                    print(f"Немає жодного пристрою")
 
 class AqLeftDeviceWidget(QWidget):
     def __init__(self, device: AqBaseDevice, parent=None):
@@ -140,6 +112,7 @@ class AqLeftDeviceWidget(QWidget):
         #     action_write.triggered.connect(lambda: self.write_catalog_by_modbus(index, 1))
         # # Показываем контекстное меню
         context_menu.exec(event.globalPos())
+
 
 class AqLeftPanelAddWidget(QWidget):
     def __init__(self, parent=None):

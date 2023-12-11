@@ -1115,7 +1115,7 @@ background-color: #1f232a;
             </property>
             <layout class="QVBoxLayout" name="left_panel_layout">
              <property name="spacing">
-              <number>5</number>
+              <number>0</number>
              </property>
              <property name="leftMargin">
               <number>5</number>
@@ -1142,7 +1142,7 @@ background-color: #1f232a;
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <property name="spacing">
-                 <number>0</number>
+                 <number>3</number>
                 </property>
                 <property name="leftMargin">
                  <number>20</number>
@@ -1395,7 +1395,7 @@ background-color: #1f232a;
               <number>0</number>
              </property>
              <item>
-              <widget class="QStackedWidget" name="stackedWidget_2">
+              <widget class="AqTreeViewManager" name="stackedWidget_2">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -1458,7 +1458,7 @@ background-color: #1f232a;
                       </property>
                      </widget>
                     </item>
-                    <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+                    <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                      <widget class="QLabel" name="label_8">
                       <property name="font">
                        <font>
@@ -1470,7 +1470,7 @@ background-color: #1f232a;
                       </property>
                      </widget>
                     </item>
-                    <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
+                    <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                      <widget class="QLabel" name="label_9">
                       <property name="enabled">
                        <bool>true</bool>
@@ -1484,22 +1484,6 @@ background-color: #1f232a;
                        <string>To get started, click &quot;Add device&quot; in the device panel</string>
                       </property>
                      </widget>
-                    </item>
-                    <item>
-                     <spacer name="verticalSpacer_2">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
-                      </property>
-                      <property name="sizeType">
-                       <enum>QSizePolicy::Expanding</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>20</width>
-                        <height>40</height>
-                       </size>
-                      </property>
-                     </spacer>
                     </item>
                     <item alignment="Qt::AlignHCenter">
                      <widget class="QLabel" name="factoryPic">
@@ -1531,7 +1515,7 @@ background-color: #1f232a;
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap>../../../../industrial_pic1.png</pixmap>
+                       <pixmap resource="../resoursec.qrc">:/images/icons/industrial_pic.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -2496,6 +2480,12 @@ background-color: #1f232a;
    <class>AqLeftWidgetPanelFrame</class>
    <extends>QFrame</extends>
    <header location="global">AqLeftWidgetPanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqTreeViewManager</class>
+   <extends>QStackedWidget</extends>
+   <header location="global">AqMainStackedWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
