@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QWidget, QFrame, QMenu
 
+import AqUiWorker
 from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
 from ui_AqLeftDeviceWidget import Ui_AqLeftDeviceWidget
@@ -139,5 +140,6 @@ class AqLeftPanelAddWidget(QWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             print('widget "openAddDeviceWindow" was called')
-            self.event_manager.emit_event('open_AddDevices')
+            # self.event_manager.emit_event('open_AddDevices')
+            AqUiWorker.show_add_device_window()
         super().mousePressEvent(event)

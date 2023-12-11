@@ -99,7 +99,7 @@ class DeviceCreator(object):
                 return AqIpConnectSettings(_ip=ip)
             else:
                 return None
-        # Then if is there some COM setttings
+        # Then if is there some COM settings
         elif param_dict.get('interface_type', False) == 'com':
             interface = param_dict.get('interface', None)
             # Получаем список доступных COM-портов
@@ -129,16 +129,3 @@ class DeviceCreator(object):
             device.init_parameters()
 
         cls.event_manager.emit_event('add_new_devices', devices)
-
-    #
-    # @classmethod
-    # def add_device(cls, devices: list):
-    #     cls.add_thread = threading.Thread(target=cls.add_device2, args=[devices])
-    #     cls.add_thread.start()
-    #
-    # @classmethod
-    # def add_device2(cls, devices: list):
-    #     for i in range(len(devices)):
-    #         devices[-1].init_parameters()
-    #
-    #     cls.event_manager.emit_event('add_new_devices', devices)

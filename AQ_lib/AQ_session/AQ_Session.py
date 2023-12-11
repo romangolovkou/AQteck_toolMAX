@@ -24,7 +24,6 @@ class AQ_CurrentSession(QObject):
         self.event_manager = event_manager
         self.cur_active_device = None
         self.devices = []
-        self.event_manager.register_event_handler("open_AddDevices", self.open_AddDevices)
         self.event_manager.register_event_handler("open_ParameterList", self.open_ParameterList)
         self.event_manager.register_event_handler("open_DeviceInfo", self.open_DeviceInfo)
         self.event_manager.register_event_handler("open_SetSlaveId", self.open_SetSlaveId)
@@ -40,9 +39,6 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
-
-    def open_AddDevices(self):
-        AqUiWorker.show_add_device_window()
 
     def open_ParameterList(self):
         if self.cur_active_device is not None:
