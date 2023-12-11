@@ -2,6 +2,7 @@
     "files": [
         "",
         "../../UI/forms/AqAddDeviceWindow.ui",
+        "../../UI/forms/AqLeftDeviceWidget.ui",
         "../../UI/forms/DeviceInfoDialog.ui",
         "../../UI/forms/DeviceInitWidget.ui",
         "../../UI/forms/DeviceParamListWindow.ui",

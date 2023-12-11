@@ -5,6 +5,7 @@ from AQ_MainWindowFrame import AQ_MainWindowFrame
 from AQ_Session import AQ_CurrentSession
 from AQ_EventManager import AQ_EventManager
 from AppCore import Core
+from AqLeftWidgetPanel import AqLeftDeviceWidget
 from ui_form import Ui_MainWindow
 
 
@@ -21,6 +22,8 @@ class AqMainWindow(QMainWindow):
         Core.init()
 
         # # Менеджер подій
+        self.event_manager.register_event_handler("new_devices_added", self.add_dev_widgets_to_left_panel)
+        self.event_manager.register_event_handler("delete_device", self.remove_dev_widget_from_left_panel)
         # Core.event_manager.register_event_handler('close_' + self.objectName(), self.close)
         # Core.event_manager.register_event_handler('minimize_' + main_name, self.showMinimized)
         # Core.event_manager.register_event_handler('maximize_' + main_name, self.showMaximized)
@@ -30,6 +33,34 @@ class AqMainWindow(QMainWindow):
         #
         # #MainWindowFrame
         # self.main_window_frame = AQ_MainWindowFrame(Core.event_manager, main_name, self.AQicon, self)
+
+    def add_dev_widgets_to_left_panel(self, new_devices):
+        for device in new_devices:
+            dev_widget = AqLeftDeviceWidget(device, self)
+            self.ui.left_panel_layout.insertWidget(0, dev_widget)
+
+    def remove_dev_widget_from_left_panel(self, device):
+        delete_pos = None
+        for i in range(self.ui.left_panel_layout.count()):
+            widget = self.ui.left_panel_layout.itemAt(i).widget()
+            if widget.device == device:
+                self.ui.left_panel_layout.removeWidget(widget)
+                widget.deleteLater()
+                delete_pos = i
+                break
+
+        if delete_pos is not None:
+            try:
+                widget = self.ui.left_panel_layout.itemAt(delete_pos).widget()
+                widget.set_active_cur_widget()
+            except:
+                try:
+                    widget = self.ui.left_panel_layout.itemAt(delete_pos - 1).widget()
+                    widget.set_active_cur_widget()
+                except Exception as e:
+                    print(f"Error occurred: {str(e)}")
+                    print(f"Немає жодного пристрою")
+
 
     # def prepare_ui_objects(self):
         # Прив'язуємо кнопки до слотів
