@@ -153,8 +153,14 @@ class AqModbusConnect(AqConnect):
         function = request.get('method', None)
 
         if function is not None:
+            if isinstance(self.connect_settings, AqComConnectSettings):
+                self.client.connect()
             function(request.get('item', None))
+            if isinstance(self.connect_settings, AqComConnectSettings):
+                self.client.close()
         else:
+            if isinstance(self.connect_settings, AqComConnectSettings):
+                self.client.close()
             raise Exception('AqConnectError: unknown "method"')
 
     def read_param(self, item):
