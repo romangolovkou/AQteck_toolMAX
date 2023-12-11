@@ -5,7 +5,7 @@ from PySide6.QtGui import QStandardItem
 from PySide6.QtWidgets import QFrame, QStackedWidget
 
 from AQ_TreeViewItemModel import AQ_TreeViewItemModel
-from AQ_CustomTreeItems import AqParamManagerItem
+from AqBaseTreeItems import AqParamManagerItem
 from AQ_TreeView import AQ_TreeView
 from AqBaseDevice import AqBaseDevice
 from DeviceNotInitedWifget import DeviceInitWidget

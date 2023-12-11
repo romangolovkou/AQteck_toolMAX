@@ -2,7 +2,7 @@ import csv
 import os
 from dataclasses import dataclass
 
-from AQ_CustomTreeItems import AqCatalogItem
+from AqBaseTreeItems import AqCatalogItem
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AqParser import parse_parameter
 

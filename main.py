@@ -19,7 +19,6 @@ if __name__ == '__main__':
         # # Имитация загрузки (можно заменить на вашу реализацию)
         # time.sleep(2)  # Например, 2 секунды
 
-        # window = AQ_MainWindow()
         window = AqMainWindow()
         # window.showMaximized()
         window.show()

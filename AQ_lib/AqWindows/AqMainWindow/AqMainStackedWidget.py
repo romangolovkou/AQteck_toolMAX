@@ -4,7 +4,7 @@ from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QStandardItem
 from PySide6.QtWidgets import QStackedWidget
 
-from AQ_CustomTreeItems import AqParamManagerItem
+from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
 from AqTreeView import AqTreeView

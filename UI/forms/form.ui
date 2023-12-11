@@ -1485,7 +1485,7 @@ background-color: #1f232a;
                       </property>
                      </widget>
                     </item>
-                    <item alignment="Qt::AlignHCenter">
+                    <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
                      <widget class="QLabel" name="factoryPic">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">

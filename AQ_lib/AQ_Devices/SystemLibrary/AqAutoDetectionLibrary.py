@@ -1,11 +1,8 @@
 import array
-import struct
-from datetime import datetime
 
 from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_CustomTreeItems import *
+from AqBaseTreeItems import *
 from AqAutoDetectionItems import *
-from AqAutoDetectionPacker import AqAutoDetectionDevicePacker
 
 
 def get_containers_count(default_prg):

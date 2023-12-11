@@ -1,9 +1,8 @@
 import struct
 
-from AQ_CustomTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
+from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, AqUnsignedToFloatParamItem, \
     AqFloatEnumParamItem, AqBitParamItem
-from AqParamsDelegateEditors import AqEnumTreeComboBox, AqEnumROnlyTreeLineEdit
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes
 
