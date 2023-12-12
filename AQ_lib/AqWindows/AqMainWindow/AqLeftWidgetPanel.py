@@ -13,16 +13,44 @@ class AqLeftWidgetPanelFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.event_manager = AQ_EventManager.get_global_event_manager()
-        self.active_style = None
-        self.not_active_style = None
+        self.active_style = "* {background-color: #16191d;}"
+        self.not_active_style = "* {background-color: #19991d;}"
         self.group = list()
 
-    def addDevice(self, device):
-        widget = AqLeftDeviceWidget(device, self)
-        widget.clicked.connect(self.onWidgetClicked)
-        self.group.append(widget)
-        self.layout().addWidget(widget)
+        self.event_manager.register_event_handler("new_devices_added", self.addDevice)
+        self.event_manager.register_event_handler("delete_device", self.deleteDevice)
 
+    def addDevice(self, new_devices):
+        for device in new_devices:
+            widget = AqLeftDeviceWidget(device, self)
+            widget.setObjectName(u"AqLeftDeviceWidget" + '1')
+            widget.rand_name.connect(self.onWidgetClicked)
+            self.group.append(widget)
+            # self.layout().insertWidget(0, widget)
+            self.layout().addWidget(widget)
+
+
+    def deleteDevice(self, device):
+        delete_pos = None
+        for i in range(self.layout().count()):
+            widget = self.layout().itemAt(i).widget()
+            if widget.device == device:
+                self.layout().removeWidget(widget)
+                widget.deleteLater()
+                delete_pos = i
+                break
+
+        if delete_pos is not None:
+            try:
+                widget = self.layout().itemAt(delete_pos).widget()
+                widget.set_active_cur_widget()
+            except:
+                try:
+                    widget = self.layout().itemAt(delete_pos - 1).widget()
+                    widget.set_active_cur_widget()
+                except Exception as e:
+                    print(f"Error occurred: {str(e)}")
+                    print(f"Немає жодного пристрою")
 
     def onWidgetClicked(self, pressed_widget):
         for w in self.group:
@@ -30,7 +58,7 @@ class AqLeftWidgetPanelFrame(QFrame):
 
         pressed_widget.setStyleSheet(self.active_style)
 
-        self.event_manager.emit_event('set_active_device', pressed_widget.device)
+        self.setActiveDevice(pressed_widget.device)
 
     def setActiveStyleSheet(self, style):
         self.active_style = style
@@ -38,8 +66,11 @@ class AqLeftWidgetPanelFrame(QFrame):
     def setNotActiveStyleSheet(self, style):
         self.not_active_style = style
 
+    def setActiveDevice(self, device):
+        self.event_manager.emit_event('set_active_device', device)
 
 class AqLeftDeviceWidget(QWidget):
+    rand_name = Signal(object)
     def __init__(self, device: AqBaseDevice, parent=None):
         super().__init__(parent)
         self.ui = Ui_AqLeftDeviceWidget()
@@ -61,7 +92,7 @@ class AqLeftDeviceWidget(QWidget):
         # self.setPalette(self.hover_palette)
         # self.setAutoFillBackground(True)
 
-        self.clicked = Signal(object)
+
 
     # def enterEvent(self, event):
     #     # Применяем палитру при наведении
@@ -80,7 +111,7 @@ class AqLeftDeviceWidget(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.clicked.emit(self)
+            self.rand_name.emit(self)
             # Эта функция будет вызвана при нажатии левой кнопки мыши на виджет
             print("Левая кнопка мыши нажата на виджет!")
         super().mousePressEvent(event)
