@@ -1402,6 +1402,9 @@ background-color: #1f232a;
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="currentIndex">
+                <number>0</number>
+               </property>
                <widget class="QWidget" name="NoDevicesPage">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">

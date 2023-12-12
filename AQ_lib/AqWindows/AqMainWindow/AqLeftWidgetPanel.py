@@ -30,27 +30,27 @@ class AqLeftDeviceWidget(QWidget):
         if serial is None:
             serial = ''
         self.ui.deviceSerial.setText('S/N' + serial)
-        # Создаем палитру с фоновыми цветами
-        self.normal_palette = self.palette()
-        self.hover_palette = QPalette()
-        self.hover_palette.setColor(QPalette.Window, QColor("#16191d"))
-        self.setPalette(self.hover_palette)
-        self.setAutoFillBackground(True)
+        # # Создаем палитру с фоновыми цветами
+        # self.normal_palette = self.palette()
+        # self.hover_palette = QPalette()
+        # self.hover_palette.setColor(QPalette.Window, QColor("#16191d"))
+        # self.setPalette(self.hover_palette)
+        # self.setAutoFillBackground(True)
         self.set_active_cur_widget()
 
-    def enterEvent(self, event):
-        # Применяем палитру при наведении
-        if self.is_active_now == 0:
-            self.setPalette(self.hover_palette)
-            self.setAutoFillBackground(True)
-        super().enterEvent(event)
-
-    def leaveEvent(self, event):
-        # Возвращаем обычную палитру при уходе курсора
-        if self.is_active_now == 0:
-            self.setPalette(self.normal_palette)
-            self.setAutoFillBackground(False)
-        super().leaveEvent(event)
+    # def enterEvent(self, event):
+    #     # Применяем палитру при наведении
+    #     if self.is_active_now == 0:
+    #         self.setPalette(self.hover_palette)
+    #         self.setAutoFillBackground(True)
+    #     super().enterEvent(event)
+    #
+    # def leaveEvent(self, event):
+    #     # Возвращаем обычную палитру при уходе курсора
+    #     if self.is_active_now == 0:
+    #         self.setPalette(self.normal_palette)
+    #         self.setAutoFillBackground(False)
+    #     super().leaveEvent(event)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -61,16 +61,16 @@ class AqLeftDeviceWidget(QWidget):
         super().mousePressEvent(event)
 
     def set_active_cur_widget(self):
-        child_widgets = self.parent().findChildren(AqLeftDeviceWidget)
-        for child_widget in child_widgets:
-            if not child_widget == self:
-                # child_widget.background_field.setStyleSheet("background-color: transparent;")
-                child_widget.setPalette(self.normal_palette)
-                child_widget.setAutoFillBackground(False)
-                child_widget.is_active_now = 0
-
-        self.setPalette(self.hover_palette)
-        self.setAutoFillBackground(True)
+        # child_widgets = self.parent().findChildren(AqLeftDeviceWidget)
+        # for child_widget in child_widgets:
+        #     if not child_widget == self:
+        #         # child_widget.background_field.setStyleSheet("background-color: transparent;")
+        #         child_widget.setPalette(self.normal_palette)
+        #         child_widget.setAutoFillBackground(False)
+        #         child_widget.is_active_now = 0
+        #
+        # self.setPalette(self.hover_palette)
+        # self.setAutoFillBackground(True)
         self.is_active_now = 1
 
         self.event_manager.emit_event('set_active_device', self.device)
