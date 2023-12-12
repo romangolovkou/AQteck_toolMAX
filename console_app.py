@@ -1,6 +1,7 @@
 
 import console_help_functions
 from AppCore import Core
+from AqBaseDevice import AqBaseDevice
 from AqDeviceFabrica import DeviceCreator
 
 
@@ -28,8 +29,8 @@ def proceed_command():
         return_value = console_help_functions.print_command_help()
     else:
         return_value = 'Unknown command: ' + str(prg_cmd)
-        print(return_value)
 
+    print(return_value)
     return return_value
 
 
@@ -38,11 +39,13 @@ def connect(args_list):
     if isinstance(parse_result, dict):
         try:
             device = DeviceCreator.from_param_dict(parse_result)
+            if isinstance(device, AqBaseDevice):
+                return 'Connected'
+            else:
+                return 'Failed connect to device'
         except Exception as e:
-            print(str(e))
             return str(e)
     else:
-        print(parse_result)
         return parse_result
 
 

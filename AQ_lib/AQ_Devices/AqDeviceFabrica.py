@@ -62,7 +62,9 @@ class DeviceCreator(object):
             if connect is not None:
                 device = cls.__param_dict_to_device_object(param_dict, connect)
             else:
-                raise Exception('Can`t connect to device')
+                raise Exception(cls.__name__ + 'Error: Can`t connect to device')
+        else:
+            raise Exception(cls.__name__ + 'Error: no valid settings to connect')
 
         return device
 
@@ -83,7 +85,7 @@ class DeviceCreator(object):
                 print(f"Error occurred: {str(e)}")
                 raise Exception(e)
         else:
-            print(cls.__name__ + 'Error: no device type specified')
+            raise Exception(cls.__name__ + 'Error: no device type specified')
 
         return device
 
@@ -99,7 +101,7 @@ class DeviceCreator(object):
             if ip is not None and is_valid_ip(ip):
                 return AqIpConnectSettings(_ip=ip)
             else:
-                raise Exception("Invalid ip '" + str(ip) + "'")
+                raise Exception(cls.__name__ + "Error: Invalid ip '" + str(ip) + "'")
         # Then if is there some COM setttings
         elif param_dict.get('interface_type', False) == 'com':
             interface = param_dict.get('interface', None)
@@ -111,7 +113,7 @@ class DeviceCreator(object):
                     selected_port = port.device
 
             if selected_port is None:
-                raise Exception("Can`t find COM-port: " + str(interface))
+                raise Exception(cls.__name__ + "Error:Can`t find COM-port: " + str(interface))
 
             boudrate = param_dict.get('boudrate', None)
             parity = param_dict.get('parity', None)
@@ -126,7 +128,7 @@ class DeviceCreator(object):
                                             _parity=parity,
                                             _stopbits=stopbits)
             else:
-                raise Exception("Input all COM connect settings")
+                raise Exception(cls.__name__ + "Error: Input all COM connect settings")
 
         else:
-            raise Exception("Specify interface for connect to device")
+            raise Exception(cls.__name__ + "Error: Specify interface for connect to device")
