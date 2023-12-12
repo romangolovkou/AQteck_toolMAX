@@ -7,11 +7,36 @@ from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
 from ui_AqLeftDeviceWidget import Ui_AqLeftDeviceWidget
 
+from PySide6.QtCore import Qt, Signal
 
 class AqLeftWidgetPanelFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.event_manager = AQ_EventManager.get_global_event_manager()
+        self.active_style = None
+        self.not_active_style = None
+        self.group = list()
+
+    def addDevice(self, device):
+        widget = AqLeftDeviceWidget(device, self)
+        widget.clicked.connect(self.onWidgetClicked)
+        self.group.append(widget)
+        self.layout().addWidget(widget)
+
+
+    def onWidgetClicked(self, pressed_widget):
+        for w in self.group:
+            w.setStyleSheet(self.not_active_style)
+
+        pressed_widget.setStyleSheet(self.active_style)
+
+        self.event_manager.emit_event('set_active_device', pressed_widget.device)
+
+    def setActiveStyleSheet(self, style):
+        self.active_style = style
+
+    def setNotActiveStyleSheet(self, style):
+        self.not_active_style = style
 
 
 class AqLeftDeviceWidget(QWidget):
@@ -20,7 +45,6 @@ class AqLeftDeviceWidget(QWidget):
         self.ui = Ui_AqLeftDeviceWidget()
         self.ui.setupUi(self)
         self.device: AqBaseDevice = device
-        self.event_manager = self.event_manager = AQ_EventManager.get_global_event_manager()
         self.is_active_now = 1
 
         # Наповпнюємо віджет текстовими мітками
@@ -36,7 +60,8 @@ class AqLeftDeviceWidget(QWidget):
         # self.hover_palette.setColor(QPalette.Window, QColor("#16191d"))
         # self.setPalette(self.hover_palette)
         # self.setAutoFillBackground(True)
-        self.set_active_cur_widget()
+
+        self.clicked = Signal(object)
 
     # def enterEvent(self, event):
     #     # Применяем палитру при наведении
@@ -52,28 +77,13 @@ class AqLeftDeviceWidget(QWidget):
     #         self.setAutoFillBackground(False)
     #     super().leaveEvent(event)
 
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.set_active_cur_widget()
-
+            self.clicked.emit(self)
             # Эта функция будет вызвана при нажатии левой кнопки мыши на виджет
             print("Левая кнопка мыши нажата на виджет!")
         super().mousePressEvent(event)
-
-    def set_active_cur_widget(self):
-        # child_widgets = self.parent().findChildren(AqLeftDeviceWidget)
-        # for child_widget in child_widgets:
-        #     if not child_widget == self:
-        #         # child_widget.background_field.setStyleSheet("background-color: transparent;")
-        #         child_widget.setPalette(self.normal_palette)
-        #         child_widget.setAutoFillBackground(False)
-        #         child_widget.is_active_now = 0
-        #
-        # self.setPalette(self.hover_palette)
-        # self.setAutoFillBackground(True)
-        self.is_active_now = 1
-
-        self.event_manager.emit_event('set_active_device', self.device)
 
     def contextMenuEvent(self, event):
         # Создаем контекстное меню
