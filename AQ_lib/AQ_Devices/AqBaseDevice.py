@@ -99,11 +99,12 @@ class AqBaseDevice(ABC):
     #             self._core_cv.notify()
 
     def init_parameters(self):
-        self._event_manager.register_event_handler('current_device_data_updated', self.init_complete)
+        self._event_manager.register_event_handler('current_device_data_updated', self.init_complete, True)
         self.read_parameters(self._params_list)
 
     def init_complete(self, *args):
-        self._is_inited = True
+        if args[0] == self:
+            self._is_inited = True
 
     def read_parameters(self, items=None):
         if len(self._request_count) == 0:
