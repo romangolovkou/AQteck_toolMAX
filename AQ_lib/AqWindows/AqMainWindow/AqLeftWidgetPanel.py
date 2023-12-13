@@ -14,7 +14,7 @@ class AqLeftWidgetPanelFrame(QFrame):
         super().__init__(parent)
         self.event_manager = AQ_EventManager.get_global_event_manager()
         self.active_style = "* {background-color: #16191d;}"
-        self.not_active_style = "* {background-color: #19991d;}"
+        self.not_active_style = "* {background-color: #2c313c;}"
         self.group = list()
 
         self.event_manager.register_event_handler("new_devices_added", self.addDevice)
@@ -23,11 +23,10 @@ class AqLeftWidgetPanelFrame(QFrame):
     def addDevice(self, new_devices):
         for device in new_devices:
             widget = AqLeftDeviceWidget(device, self)
-            widget.setObjectName(u"AqLeftDeviceWidget" + '1')
-            widget.rand_name.connect(self.onWidgetClicked)
+            widget.cstm_clicked.connect(self.onWidgetClicked)
             self.group.append(widget)
-            # self.layout().insertWidget(0, widget)
-            self.layout().addWidget(widget)
+            self.layout().insertWidget(0, widget)
+            self.onWidgetClicked(widget)
 
 
     def deleteDevice(self, device):
@@ -36,6 +35,7 @@ class AqLeftWidgetPanelFrame(QFrame):
             widget = self.layout().itemAt(i).widget()
             if widget.device == device:
                 self.layout().removeWidget(widget)
+                self.group.remove(widget)
                 widget.deleteLater()
                 delete_pos = i
                 break
@@ -53,11 +53,12 @@ class AqLeftWidgetPanelFrame(QFrame):
                     print(f"Немає жодного пристрою")
 
     def onWidgetClicked(self, pressed_widget):
-        for w in self.group:
-            w.setStyleSheet(self.not_active_style)
+        for widget in self.group:
+            widget.setStyleSheet(self.not_active_style)
+            widget.is_active_now = False
 
         pressed_widget.setStyleSheet(self.active_style)
-
+        pressed_widget.is_active_now = True
         self.setActiveDevice(pressed_widget.device)
 
     def setActiveStyleSheet(self, style):
@@ -70,13 +71,16 @@ class AqLeftWidgetPanelFrame(QFrame):
         self.event_manager.emit_event('set_active_device', device)
 
 class AqLeftDeviceWidget(QWidget):
-    rand_name = Signal(object)
+    cstm_clicked = Signal(object)
     def __init__(self, device: AqBaseDevice, parent=None):
         super().__init__(parent)
         self.ui = Ui_AqLeftDeviceWidget()
         self.ui.setupUi(self)
+        self.event_manager = AQ_EventManager.get_global_event_manager()
         self.device: AqBaseDevice = device
-        self.is_active_now = 1
+        self.setStyleSheet(self.parent().active_style)
+        self.setAutoFillBackground(True)
+        self._is_active_now = True
 
         # Наповпнюємо віджет текстовими мітками
         self.ui.deviceName.setText(self.device.info('name'))
@@ -85,33 +89,31 @@ class AqLeftDeviceWidget(QWidget):
         if serial is None:
             serial = ''
         self.ui.deviceSerial.setText('S/N' + serial)
-        # # Создаем палитру с фоновыми цветами
-        # self.normal_palette = self.palette()
-        # self.hover_palette = QPalette()
-        # self.hover_palette.setColor(QPalette.Window, QColor("#16191d"))
-        # self.setPalette(self.hover_palette)
-        # self.setAutoFillBackground(True)
 
+    @property
+    def is_active_now(self):
+        return self._is_active_now
 
+    @is_active_now.setter
+    def is_active_now(self, state: bool):
+        self._is_active_now = state
 
-    # def enterEvent(self, event):
-    #     # Применяем палитру при наведении
-    #     if self.is_active_now == 0:
-    #         self.setPalette(self.hover_palette)
-    #         self.setAutoFillBackground(True)
-    #     super().enterEvent(event)
-    #
-    # def leaveEvent(self, event):
-    #     # Возвращаем обычную палитру при уходе курсора
-    #     if self.is_active_now == 0:
-    #         self.setPalette(self.normal_palette)
-    #         self.setAutoFillBackground(False)
-    #     super().leaveEvent(event)
+    def enterEvent(self, event):
+        # Применяем палитру при наведении
+        if self.is_active_now is False:
+            self.setStyleSheet(self.parent().active_style)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        # Возвращаем обычную палитру при уходе курсора
+        if self.is_active_now is False:
+            self.setStyleSheet(self.parent().not_active_style)
+        super().leaveEvent(event)
 
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.rand_name.emit(self)
+            self.cstm_clicked.emit(self)
             # Эта функция будет вызвана при нажатии левой кнопки мыши на виджет
             print("Левая кнопка мыши нажата на виджет!")
         super().mousePressEvent(event)

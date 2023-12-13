@@ -17,10 +17,10 @@ class AqTreeView(QTreeView):
         # Разрешаем отображение скроллбаров
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
+        # border: 1px solid #9ef1d3;
         self.setStyleSheet("""
                             QTreeView {
-                                border: 1px solid #9ef1d3;
+                                
                                 color: #D0D0D0;
                             }
                             QTreeView::item {
