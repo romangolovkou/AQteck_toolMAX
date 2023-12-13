@@ -25,9 +25,8 @@ class AqLeftWidgetPanelFrame(QFrame):
             widget = AqLeftDeviceWidget(device, self)
             widget.cstm_clicked.connect(self.onWidgetClicked)
             self.group.append(widget)
-            self.layout().insertWidget(0, widget)
             self.onWidgetClicked(widget)
-
+            self.layout().insertWidget(0, widget)
 
     def deleteDevice(self, device):
         delete_pos = None
@@ -78,10 +77,11 @@ class AqLeftDeviceWidget(QWidget):
         self.ui.setupUi(self)
         self.event_manager = AQ_EventManager.get_global_event_manager()
         self.device: AqBaseDevice = device
+        self.hide()
         self.setStyleSheet(self.parent().active_style)
-        self.setAutoFillBackground(True)
+        # self.setAutoFillBackground(True)
         self._is_active_now = True
-
+        self.show()
         # Наповпнюємо віджет текстовими мітками
         self.ui.deviceName.setText(self.device.info('name'))
         self.ui.deviceAddress.setText(self.device.info('address'))
@@ -109,6 +109,11 @@ class AqLeftDeviceWidget(QWidget):
         if self.is_active_now is False:
             self.setStyleSheet(self.parent().not_active_style)
         super().leaveEvent(event)
+
+    # def setStyleSheet(self, styleSheet):
+    #     self.hide()
+    #     super().setStyleSheet(styleSheet)
+
 
 
     def mousePressEvent(self, event):
