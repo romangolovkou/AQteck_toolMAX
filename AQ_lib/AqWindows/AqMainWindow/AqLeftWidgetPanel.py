@@ -13,8 +13,12 @@ class AqLeftWidgetPanelFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.event_manager = AQ_EventManager.get_global_event_manager()
-        self.active_style = "* {background-color: #16191d;}"
-        self.not_active_style = "* {background-color: #2c313c;}"
+        self.active_style = """* {background-color: #16191d; 
+                                border-top-left-radius: 5px;
+	                            border-bottom-left-radius: 5px;}"""
+        self.not_active_style = """* {background-color: #2c313c;
+                                border - top - left - radius: 5px;
+                                border - bottom - left - radius: 5px;}"""
         self.group = list()
 
         self.event_manager.register_event_handler("new_devices_added", self.addDevice)
@@ -110,12 +114,6 @@ class AqLeftDeviceWidget(QWidget):
             self.setStyleSheet(self.parent().not_active_style)
         super().leaveEvent(event)
 
-    # def setStyleSheet(self, styleSheet):
-    #     self.hide()
-    #     super().setStyleSheet(styleSheet)
-
-
-
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.cstm_clicked.emit(self)
@@ -167,27 +165,17 @@ class AqLeftPanelAddWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.event_manager = AQ_EventManager.get_global_event_manager()
-        # Создаем палитру с фоновыми цветами
-        self.normal_palette = self.palette()
-        self.hover_palette = QPalette()
-        self.hover_palette.setColor(QPalette.Window, QColor("#16191d"))
-        self.setPalette(self.hover_palette)
 
     def enterEvent(self, event):
-        # Применяем палитру при наведении
-        self.setPalette(self.hover_palette)
-        self.setAutoFillBackground(True)
+        self.setStyleSheet(self.parent().active_style)
         super().enterEvent(event)
 
     def leaveEvent(self, event):
-        # Возвращаем обычную палитру при уходе курсора
-        self.setPalette(self.normal_palette)
-        self.setAutoFillBackground(False)
+        self.setStyleSheet(self.parent().not_active_style)
         super().leaveEvent(event)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             print('widget "openAddDeviceWindow" was called')
-            # self.event_manager.emit_event('open_AddDevices')
             AqUiWorker.show_add_device_window()
         super().mousePressEvent(event)
