@@ -466,7 +466,6 @@ class QCustomSlideMenu(QWidget):
             return self.parent().width()
 
     def paintEvent(self, event: QPaintEvent):
-        print('Paint event called')
         opt = QStyleOption()
         opt.initFrom(self)
         painter = QPainter(self)
