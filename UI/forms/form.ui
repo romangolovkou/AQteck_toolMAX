@@ -26,6 +26,12 @@
 	color: #fff;
 }
 
+#headerContainer{
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	background-color: rgba(0, 0, 128, 128);
+}
+
 #menuBtn {
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px;
@@ -68,7 +74,7 @@ background-color: #1f232a;
 } 
 
 #rightMenuContainer {
-	background-color: #16191d;
+	background-color: transparent;
 }
 
 #rightMenuSubContainer {
@@ -1768,31 +1774,28 @@ background-color: #1f232a;
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="rightMenuContainer" native="true">
+           <widget class="QCustomSlideMenu" name="rightMenuContainer" native="true">
             <property name="minimumSize">
              <size>
-              <width>0</width>
+              <width>45</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>45</width>
+              <width>150</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="styleSheet">
              <string notr="true"/>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_18">
-             <property name="spacing">
-              <number>0</number>
-             </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
              <property name="leftMargin">
               <number>0</number>
              </property>
              <property name="topMargin">
-              <number>20</number>
+              <number>0</number>
              </property>
              <property name="rightMargin">
               <number>0</number>
@@ -1800,7 +1803,7 @@ background-color: #1f232a;
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+             <item>
               <widget class="QWidget" name="rightMenuSubContainer" native="true">
                <property name="minimumSize">
                 <size>
@@ -2528,6 +2531,12 @@ background-color: #1f232a;
    <class>AqTreeViewManager</class>
    <extends>QStackedWidget</extends>
    <header location="global">AqMainStackedWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSlideMenu</class>
+   <extends>QWidget</extends>
+   <header location="global">QCustomSlideMenu.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

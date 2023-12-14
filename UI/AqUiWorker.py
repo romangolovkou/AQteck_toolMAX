@@ -9,9 +9,9 @@ from ui_AqAddDeviceWindow import Ui_AqAddDeviceWindowWidget
 from ui_DeviceParamListWindow import Ui_DeviceParamListWidget
 
 
-def show_device_info_window(device_info: AqDeviceInfoModel):
+def show_device_info_window():
+    # device_info = AppCore.Core.session.get_current_device_info
     dialog = AqDeviceInfoWidget(Ui_DeviceInfoDialog)
-    # dialog.ui.pushButton.clicked.connect()
     dialog.set_device_info_model()
     dialog.exec()
 
@@ -20,7 +20,7 @@ def show_add_device_window():
     # dialog = AQ_DialogAddDevices(AppCore.Core.event_manager, None)
     dialog.exec()
 
-def show_device_param_list(device_param_model: AqDeviceParamListModel):
+def show_device_param_list():
     # widget = AqParamListWidget(Ui_DeviceParamListWidget, device_param_model)
     widget = AqParamListWidget(Ui_DeviceParamListWidget)
     widget.exec()

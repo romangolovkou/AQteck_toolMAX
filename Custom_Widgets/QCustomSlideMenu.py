@@ -44,6 +44,8 @@ class QCustomSlideMenu(QWidget):
         self.float = False
         self.floatPosition = ""
 
+        self.hover_expand = True
+
         # Set the object name
         # self.setObjectName("QCustomSlideMenu")
 
@@ -195,6 +197,24 @@ class QCustomSlideMenu(QWidget):
 
                 if position == "center-right":
                     self.setGeometry(QRect(self.parent().width() - self.width(), (self.parent().height() - self.height()) / 2, self.width(), self.height()))
+                    # print('**************')
+                    # print(self.parent().objectName())
+                    # print('parent_widht =' + str(self.parent().width()))
+                    # print('parent_height =' + str(self.parent().height()))
+                    # print('parent_pos  x = ' + str(self.parent().pos().x()) + ', y = ' + str(self.parent().pos().y()))
+                    # print(self.objectName())
+                    # print('self_width ' + str(self.width()))
+                    # print('self_height ' + str(self.height()))
+                    # print('self_pos  x = ' + str(self.pos().x()) + ', y = ' + str(self.pos().y()))
+                print('**************')
+                print(self.parent().objectName())
+                print('parent_widht =' + str(self.parent().width()))
+                print('parent_height =' + str(self.parent().height()))
+                print('parent_pos  x = ' + str(self.parent().pos().x()) + ', y = ' + str(self.parent().pos().y()))
+                print(self.objectName())
+                print('self_width ' + str(self.width()))
+                print('self_height ' + str(self.height()))
+                print('self_pos  x = ' + str(self.pos().x()) + ', y = ' + str(self.pos().y()))
 
     ########################################################################
     # Menu Toggle Button
@@ -464,6 +484,7 @@ class QCustomSlideMenu(QWidget):
             return self.parent().width()
 
     def paintEvent(self, event: QPaintEvent):
+        print('Paint event called')
         opt = QStyleOption()
         opt.initFrom(self)
         painter = QPainter(self)
@@ -507,5 +528,16 @@ class QCustomSlideMenu(QWidget):
 
         self.floatMenu()
 
+    def enterEvent(self, event):
+        # Применяем палитру при наведении
+        if self.hover_expand is True:
+            self.expandMenu()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        # Возвращаем обычную палитру при уходе курсора
+        if self.hover_expand is True:
+            self.collapseMenu()
+        super().leaveEvent(event)
 
     #######################################################################

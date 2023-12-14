@@ -1,6 +1,8 @@
+import AqUiWorker
+from Custom_Widgets import loadJsonStyle, QMainWindow
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QMainWindow
+# from PySide6.QtWidgets import QMainWindow
 from AQ_MainWindowFrame import AQ_MainWindowFrame
 from AQ_Session import AQ_CurrentSession
 from AQ_EventManager import AQ_EventManager
@@ -14,10 +16,15 @@ class AqMainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        loadJsonStyle(self, self.ui)
+
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.event_manager = AQ_EventManager.get_global_event_manager()
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
+        self.ui.deviceInfoBtn.clicked.connect(AqUiWorker.show_device_info_window)
+        self.ui.paramListBtn.clicked.connect(AqUiWorker.show_device_param_list)
 
         Core.init()
 
