@@ -197,24 +197,6 @@ class QCustomSlideMenu(QWidget):
 
                 if position == "center-right":
                     self.setGeometry(QRect(self.parent().width() - self.width(), (self.parent().height() - self.height()) / 2, self.width(), self.height()))
-                    # print('**************')
-                    # print(self.parent().objectName())
-                    # print('parent_widht =' + str(self.parent().width()))
-                    # print('parent_height =' + str(self.parent().height()))
-                    # print('parent_pos  x = ' + str(self.parent().pos().x()) + ', y = ' + str(self.parent().pos().y()))
-                    # print(self.objectName())
-                    # print('self_width ' + str(self.width()))
-                    # print('self_height ' + str(self.height()))
-                    # print('self_pos  x = ' + str(self.pos().x()) + ', y = ' + str(self.pos().y()))
-                print('**************')
-                print(self.parent().objectName())
-                print('parent_widht =' + str(self.parent().width()))
-                print('parent_height =' + str(self.parent().height()))
-                print('parent_pos  x = ' + str(self.parent().pos().x()) + ', y = ' + str(self.parent().pos().y()))
-                print(self.objectName())
-                print('self_width ' + str(self.width()))
-                print('self_height ' + str(self.height()))
-                print('self_pos  x = ' + str(self.pos().x()) + ', y = ' + str(self.pos().y()))
 
     ########################################################################
     # Menu Toggle Button
