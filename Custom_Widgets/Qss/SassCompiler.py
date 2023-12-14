@@ -36,7 +36,7 @@ import os
 import shutil
 
 from . colorsystem import CreateColorVariable,Dark,Light
-from . SvgToPngIcons import NewIconsGenerator
+# from . SvgToPngIcons import NewIconsGenerator
 ########################################################################
 ## IMPORT WORKER
 ########################################################################

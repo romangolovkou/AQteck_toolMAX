@@ -9,8 +9,8 @@
 ########################################################################
 import os
 
-from . import iconify as ico
-from . iconify.qt import QtGui, QtWidgets, QtCore
+# from . import iconify as ico
+# from . iconify.qt import QtGui, QtWidgets, QtCore
 
 ########################################################################
 ## MODULE UPDATED TO USE QT.PY

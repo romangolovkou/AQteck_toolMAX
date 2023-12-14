@@ -15,7 +15,7 @@ import __main__
 ########################################################################
 from .Qss import SassCompiler
 CompileStyleSheet = SassCompiler.CompileStyleSheet
-from .Qss.SvgToPngIcons import NewIconsGenerator
+# from .Qss.SvgToPngIcons import NewIconsGenerator
 
 from .QCustomQPushButtonGroup import QCustomQPushButtonGroup
 
@@ -99,6 +99,9 @@ class QMainWindow(QtWidgets.QMainWindow):
         # If window is maxmized
         if self.isMaximized():
             self.showNormal()
+            if hasattr(self, "floatingWidgets"):
+                for x in self.floatingWidgets:
+                    x.paintEvent(None)
 
         else:
             self.showMaximized()
