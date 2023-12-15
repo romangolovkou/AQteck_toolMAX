@@ -13,9 +13,9 @@ from AQ_MouseEventFunc import mousePressEvent_WidthR, mouseMoveEvent_WidthR, \
 
 
 class resizeWidthR_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения ширины окна R
         self.setGeometry(
@@ -28,9 +28,9 @@ class resizeWidthR_Qwidget(QWidget):
         self.mouseMoveEvent = partial(mouseMoveEvent_WidthR, self)
 
 class resizeWidthL_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения ширины окна L
         self.setGeometry(
@@ -44,9 +44,9 @@ class resizeWidthL_Qwidget(QWidget):
 
 
 class resizeHeigthLow_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения высоты окна
         self.setGeometry(
@@ -60,9 +60,9 @@ class resizeHeigthLow_Qwidget(QWidget):
 
 
 class resizeHeigthTop_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения высоты окна
         self.setGeometry(
@@ -76,9 +76,9 @@ class resizeHeigthTop_Qwidget(QWidget):
 
 
 class resizeDiag_BotRigth_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (прав. нижний угол)
         self.setGeometry(
@@ -92,9 +92,9 @@ class resizeDiag_BotRigth_Qwidget(QWidget):
 
 
 class resizeDiag_BotLeft_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (лев. нижний угол)
         self.setGeometry(
@@ -108,9 +108,9 @@ class resizeDiag_BotLeft_Qwidget(QWidget):
 
 
 class resizeDiag_TopLeft_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (лев. верх. угол)
         self.setGeometry(QRect(0, 0, parent.resizeLineWidth, parent.resizeLineWidth))
@@ -122,9 +122,9 @@ class resizeDiag_TopLeft_Qwidget(QWidget):
 
 
 class resizeDiag_TopRigth_Qwidget(QWidget):
-    def __init__(self, event_manager, window_name, parent=None):
+    def __init__(self, event_manager, parent):
         super().__init__(parent)
-        self.window_name = window_name
+        self.window_name = parent.objectName()
         self.event_manager = event_manager
         # Создаем виджет для изменения ширины и высоты окна (прав. верх. угол)
         self.setGeometry(

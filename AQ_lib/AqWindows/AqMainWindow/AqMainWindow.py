@@ -1,4 +1,5 @@
 import AqUiWorker
+from AQ_ResizeWidgets import *
 from Custom_Widgets import loadJsonStyle, QMainWindow
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
@@ -30,6 +31,8 @@ class AqMainWindow(QMainWindow):
 
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
         self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
+
+        self.create_resize_frame()
         # # Менеджер подій
         # self.event_manager.register_event_handler("new_devices_added", self.add_dev_widgets_to_left_panel)
         # self.event_manager.register_event_handler("delete_device", self.remove_dev_widget_from_left_panel)
@@ -38,10 +41,57 @@ class AqMainWindow(QMainWindow):
         # Core.event_manager.register_event_handler('maximize_' + main_name, self.showMaximized)
         # Core.event_manager.register_event_handler('normalize_' + main_name, self.showNormal)
         # Core.event_manager.register_event_handler('dragging_' + main_name, self.move)
-        # Core.event_manager.register_event_handler('resize_' + main_name, self.resize_MainWindow)
+
         #
         # #MainWindowFrame
         # self.main_window_frame = AQ_MainWindowFrame(Core.event_manager, main_name, self.AQicon, self)
+
+    def create_resize_frame(self):
+        Core.event_manager.register_event_handler('resize_' + self.objectName(), self.resize_MainWindow)
+        # # Создаем виджеты для изменения размеров окна
+        self.resizeLineWidth = 4
+        self.resizeWidthR_widget = resizeWidthR_Qwidget(self.event_manager, self)
+        self.resizeWidthL_widget = resizeWidthL_Qwidget(self.event_manager, self)
+        self.resizeHeigthLow_widget = resizeHeigthLow_Qwidget(self.event_manager, self)
+        self.resizeHeigthTop_widget = resizeHeigthTop_Qwidget(self.event_manager, self)
+        self.resizeDiag_BotRigth_widget = resizeDiag_BotRigth_Qwidget(self.event_manager, self)
+        self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(self.event_manager, self)
+        self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(self.event_manager, self)
+        self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(self.event_manager, self)
+
+    def resize_MainWindow(self, pos_x, pos_y, width, height):
+        if pos_x == '%':
+            pos_x = self.pos().x()
+        if pos_y == '%':
+            pos_y = self.pos().y()
+        if width == '%':
+            width = self.width()
+        if height == '%':
+            height = self.height()
+
+        self.setGeometry(pos_x, pos_y, width, height)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        self.resizeWidthR_widget.setGeometry(self.width() - self.resizeLineWidth,
+                                             self.resizeLineWidth, self.resizeLineWidth,
+                                             self.height() - (self.resizeLineWidth * 2))
+        self.resizeWidthL_widget.setGeometry(0, self.resizeLineWidth, self.resizeLineWidth,
+                                             self.height() - (self.resizeLineWidth * 2))
+        self.resizeHeigthLow_widget.setGeometry(self.resizeLineWidth, self.height() - self.resizeLineWidth,
+                                                self.width() - (self.resizeLineWidth * 2),
+                                                self.resizeLineWidth)
+        self.resizeHeigthTop_widget.setGeometry(self.resizeLineWidth, 0,
+                                                self.width() - (self.resizeLineWidth * 2),
+                                                self.resizeLineWidth)
+        self.resizeDiag_BotRigth_widget.move(self.width() - self.resizeLineWidth,
+                                             self.height() - self.resizeLineWidth)
+        self.resizeDiag_TopLeft_widget.move(0, 0)
+        self.resizeDiag_TopRigth_widget.move(self.width() - self.resizeLineWidth, 0)
+        self.resizeDiag_BotLeft_widget.move(0, self.height() - self.resizeLineWidth)
+
+        event.accept()
 
     # def add_dev_widgets_to_left_panel(self, new_devices):
     #     for device in new_devices:

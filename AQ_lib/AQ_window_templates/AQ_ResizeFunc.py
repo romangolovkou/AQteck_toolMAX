@@ -6,6 +6,7 @@ def resize_window_width(parent_frame, sender_widget, event):
     # Формат передачі агрументів у евент ('resize_main_window', new_pos_x, new_pos_y, new_width, new_height)
     # Строка з символом % - ознака, що цей параметр у розмірі вікна змінювати не потрібно
     sender_widget.event_manager.emit_event('resize_' + sender_widget.window_name, '%', '%', new_width, '%')
+    # Core.event_manager.emit_event('resize_' + sender_widget.window_name, '%', '%', new_width, '%')
     sender_widget.start_pos_x = event.globalPos().x()
 
 
