@@ -21,8 +21,9 @@ def show_add_device_window():
     dialog.exec()
 
 def show_device_param_list():
-    # widget = AqParamListWidget(Ui_DeviceParamListWidget, device_param_model)
-    widget = AqParamListWidget(Ui_DeviceParamListWidget)
-    widget.exec()
+    if AppCore.Core.session.cur_active_device is not None:
+        device_model = AppCore.Core.session.cur_active_device.get_device_param_list_model()
+        widget = AqParamListWidget(Ui_DeviceParamListWidget, device_model)
+        widget.exec()
 
 

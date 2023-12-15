@@ -7,6 +7,7 @@ from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AqDeviceConfig import AqDeviceConfig
 from AqDeviceInfoModel import AqDeviceInfoModel
+from AqDeviceParamListModel import AqDeviceParamListModel
 
 
 class AqBaseDevice(ABC):
@@ -190,6 +191,11 @@ class AqBaseDevice(ABC):
         dev_model = AqDeviceInfoModel()
         dev_model.add_general_info("Device name", self._info['name'])
         dev_model.add_general_info("Version", self._info['version'])
+        return dev_model
+
+    def get_device_param_list_model(self):
+        dev_model = AqDeviceParamListModel()
+        dev_model.param_list = self._params_list
         return dev_model
 
     @abstractmethod
