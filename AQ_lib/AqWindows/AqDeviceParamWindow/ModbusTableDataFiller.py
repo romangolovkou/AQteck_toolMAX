@@ -43,9 +43,11 @@ def create_new_row_for_table_view(item):
     param_item = QTableWidgetItem(parameter_attributes.get('name', 'name_error'))
 
 # Group
-#     cat_attributes = catalog_item.data(Qt.UserRole)
-#     group_name = cat_attributes.get('name', 'err_name')
-    group_item = QTableWidgetItem("Father name")
+    catalog_item = item.parent()
+    cat_attributes = catalog_item.data(Qt.UserRole)
+    group_name = cat_attributes.get('name', 'err_name')
+
+    group_item = QTableWidgetItem(group_name)
 
 # Address (dec)
     reg_num_dec = parameter_attributes.get('modbus_reg', 'reg_error')

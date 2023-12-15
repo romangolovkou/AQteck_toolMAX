@@ -180,7 +180,7 @@ QWidget#AqLeftDeviceWidget::item:hover {
           <widget class="QLabel" name="deviceName">
            <property name="font">
             <font>
-             <bold>false</bold>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">

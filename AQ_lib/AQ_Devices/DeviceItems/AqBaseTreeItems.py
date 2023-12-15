@@ -15,7 +15,7 @@ class AqParamItem(QStandardItem):
         R_Only = param_attributes.get('R_Only', None)
         W_Only = param_attributes.get('W_Only', None)
         if name is None or R_Only is None or W_Only is None:
-            raise Exception('AQ_ParamItemError: "name" is not exist')
+            raise Exception('AqParamItemError: "name" is not exist')
         super().__init__(name)
         self._value = None
         self.value_in_device = None
@@ -203,7 +203,7 @@ class AqEnumParamItem(AqParamItem):
         if param_attributes.get('max_limit', None) is None:
             param_attributes['max_limit'] = None
         if param_attributes.get('def_value', None) is None:
-            param_attributes['def_value'] = 0
+            param_attributes['def_value'] = ''
         super().__init__(param_attributes)
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_RW = AqEnumTreeComboBox

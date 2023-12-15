@@ -159,6 +159,9 @@ class AqBaseDevice(ABC):
         if item.get_status() == 'changed':
             self._stack_to_write.append(item)
 
+    def set_dafault_values(self):
+        self._params_list
+
     def reboot(self):
         """
             Return NotImplemented by default.

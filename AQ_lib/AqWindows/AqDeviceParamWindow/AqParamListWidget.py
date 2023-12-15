@@ -1,4 +1,5 @@
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QScreen
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem
 
 import ModbusTableDataFiller
@@ -12,6 +13,10 @@ class AqParamListWidget(QDialog):
         self.ui.setupUi(self)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
+
+        screen = QScreen()
+        # Получаем размер экрана и возвращаем высоту
+        self.setMaximumHeight(screen.size().height())
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
 
         # if isinstance(AqDeviceParamListModel.param_list[0], AqModbusItem):
