@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -137,7 +137,7 @@ class Ui_MainWindow(object):
         self.menuBtn.setObjectName(u"menuBtn")
         self.menuBtn.setMaximumSize(QSize(45, 45))
         icon = QIcon()
-        icon.addFile(u"E:/AQico_translucent.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u"../../../../AQico_translucent.png", QSize(), QIcon.Normal, QIcon.Off)
         self.menuBtn.setIcon(icon)
         self.menuBtn.setIconSize(QSize(40, 40))
 
@@ -514,7 +514,7 @@ class Ui_MainWindow(object):
         self.devIcon.setObjectName(u"devIcon")
         self.devIcon.setMaximumSize(QSize(50, 50))
         self.devIcon.setTextFormat(Qt.AutoText)
-        self.devIcon.setPixmap(QPixmap(u"E:/AQico_translucent.png"))
+        self.devIcon.setPixmap(QPixmap(u"../../../../AQico_translucent.png"))
         self.devIcon.setScaledContents(True)
         self.devIcon.setAlignment(Qt.AlignCenter)
         self.devIcon.setWordWrap(False)
@@ -581,7 +581,7 @@ class Ui_MainWindow(object):
         self.devIcon_2.setObjectName(u"devIcon_2")
         self.devIcon_2.setMaximumSize(QSize(50, 50))
         self.devIcon_2.setTextFormat(Qt.AutoText)
-        self.devIcon_2.setPixmap(QPixmap(u"E:/AQico_translucent.png"))
+        self.devIcon_2.setPixmap(QPixmap(u"../../../../AQico_translucent.png"))
         self.devIcon_2.setScaledContents(True)
         self.devIcon_2.setAlignment(Qt.AlignCenter)
         self.devIcon_2.setWordWrap(False)
@@ -647,7 +647,7 @@ class Ui_MainWindow(object):
         self.devIcon_3.setObjectName(u"devIcon_3")
         self.devIcon_3.setMaximumSize(QSize(50, 50))
         self.devIcon_3.setTextFormat(Qt.AutoText)
-        self.devIcon_3.setPixmap(QPixmap(u"E:/AQico_translucent.png"))
+        self.devIcon_3.setPixmap(QPixmap(u"../../../../AQico_translucent.png"))
         self.devIcon_3.setScaledContents(True)
         self.devIcon_3.setAlignment(Qt.AlignCenter)
         self.devIcon_3.setWordWrap(False)
@@ -713,7 +713,7 @@ class Ui_MainWindow(object):
         self.devIcon_4.setObjectName(u"devIcon_4")
         self.devIcon_4.setMaximumSize(QSize(40, 40))
         self.devIcon_4.setTextFormat(Qt.AutoText)
-        self.devIcon_4.setPixmap(QPixmap(u"E:/plus_2040520 \u043a\u043e\u043f\u0438\u044f.png"))
+        self.devIcon_4.setPixmap(QPixmap(u"../../../../plus_2040520 \u043a\u043e\u043f\u0438\u044f.png"))
         self.devIcon_4.setScaledContents(True)
         self.devIcon_4.setAlignment(Qt.AlignCenter)
         self.devIcon_4.setWordWrap(False)
@@ -799,13 +799,13 @@ class Ui_MainWindow(object):
         self.stackedWidget_2.setObjectName(u"stackedWidget_2")
         sizePolicy4.setHeightForWidth(self.stackedWidget_2.sizePolicy().hasHeightForWidth())
         self.stackedWidget_2.setSizePolicy(sizePolicy4)
-        self.page = QWidget()
-        self.page.setObjectName(u"page")
-        sizePolicy4.setHeightForWidth(self.page.sizePolicy().hasHeightForWidth())
-        self.page.setSizePolicy(sizePolicy4)
-        self.verticalLayout_3 = QVBoxLayout(self.page)
+        self.NoDevicesPage = QWidget()
+        self.NoDevicesPage.setObjectName(u"NoDevicesPage")
+        sizePolicy4.setHeightForWidth(self.NoDevicesPage.sizePolicy().hasHeightForWidth())
+        self.NoDevicesPage.setSizePolicy(sizePolicy4)
+        self.verticalLayout_3 = QVBoxLayout(self.NoDevicesPage)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.frame_5 = QFrame(self.page)
+        self.frame_5 = QFrame(self.NoDevicesPage)
         self.frame_5.setObjectName(u"frame_5")
         sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy5.setHorizontalStretch(0)
@@ -854,7 +854,7 @@ class Ui_MainWindow(object):
         self.factoryPic.setMinimumSize(QSize(273, 151))
         self.factoryPic.setMaximumSize(QSize(273, 151))
         self.factoryPic.setSizeIncrement(QSize(0, 0))
-        self.factoryPic.setPixmap(QPixmap(u"E:/industrial_pic1.png"))
+        self.factoryPic.setPixmap(QPixmap(u"../../../../industrial_pic1.png"))
         self.factoryPic.setScaledContents(True)
         self.factoryPic.setAlignment(Qt.AlignCenter)
 
@@ -863,7 +863,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.frame_5, 0, Qt.AlignHCenter|Qt.AlignVCenter)
 
-        self.stackedWidget_2.addWidget(self.page)
+        self.stackedWidget_2.addWidget(self.NoDevicesPage)
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
         sizePolicy4.setHeightForWidth(self.page_2.sizePolicy().hasHeightForWidth())
@@ -1022,7 +1022,7 @@ class Ui_MainWindow(object):
         self.setRtcBtn.setMaximumSize(QSize(195, 32))
         self.setRtcBtn.setLayoutDirection(Qt.RightToLeft)
         icon5 = QIcon()
-        icon5.addFile(u"E:/icon/clock_223404.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon5.addFile(u"../../../../icon/clock_223404.png", QSize(), QIcon.Normal, QIcon.Off)
         self.setRtcBtn.setIcon(icon5)
         self.setRtcBtn.setIconSize(QSize(32, 32))
         self.setRtcBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -1035,7 +1035,7 @@ class Ui_MainWindow(object):
         self.setPasswordBtn.setMaximumSize(QSize(195, 32))
         self.setPasswordBtn.setLayoutDirection(Qt.RightToLeft)
         icon6 = QIcon()
-        icon6.addFile(u"E:/icon/padlock_2889676.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon6.addFile(u"../../../../icon/padlock_2889676.png", QSize(), QIcon.Normal, QIcon.Off)
         self.setPasswordBtn.setIcon(icon6)
         self.setPasswordBtn.setIconSize(QSize(32, 32))
         self.setPasswordBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -1048,7 +1048,7 @@ class Ui_MainWindow(object):
         self.calibDeviceBtn.setMaximumSize(QSize(195, 32))
         self.calibDeviceBtn.setLayoutDirection(Qt.RightToLeft)
         icon7 = QIcon()
-        icon7.addFile(u"E:/icon/setting_10035148.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon7.addFile(u"../../../../icon/setting_10035148.png", QSize(), QIcon.Normal, QIcon.Off)
         self.calibDeviceBtn.setIcon(icon7)
         self.calibDeviceBtn.setIconSize(QSize(32, 32))
         self.calibDeviceBtn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)

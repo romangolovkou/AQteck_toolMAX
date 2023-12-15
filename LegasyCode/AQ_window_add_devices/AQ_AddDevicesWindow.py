@@ -2,16 +2,16 @@ from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QCheckBox
 
-from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
+import AqDeviceFabrica
+from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AQ_AddDevicesAddButton import AQ_addButton
 from AQ_AddDevicesRotatingGears import AQ_RotatingGearsWidget
 from AQ_AddDevicesTableWidget import AQ_addDevice_TableWidget
-from AQ_CustomWindowTemplates import AQ_SimplifiedDialog, AQ_ComboBox, AQ_Label, AQ_have_error_widget
+from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
 from AQ_AddDevicesNetworkFrame import AQ_NetworkSettingsFrame
-from AQ_Device_DY500 import AQ_DeviceDY500
 from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqGenericModbusLibrary import read_configuration_file
-from AqGenericModbusDevice import AqGenericModbusDevice
+from AqConnectManager import AqConnectManager
 
 
 class AQ_DialogAddDevices(AQ_SimplifiedDialog):
@@ -100,60 +100,28 @@ class AQ_DialogAddDevices(AQ_SimplifiedDialog):
         self.show_connect_err_label()
         self.rotating_gears.stop()
 
-    def connect_finished(self, finded_devices):
-        self.add_devices_to_table_widget(finded_devices)
-        self.add_finded_devices_to_all_list(finded_devices)
+    def connect_finished(self, found_devices):
+        self.add_devices_to_table_widget(found_devices)
+        self.add_finded_devices_to_all_list(found_devices)
 
     def connect_to_device(self):
-        finded_devices_list = []
+        found_devices_list = []
         network_settings_list = self.network_settings_frame.get_network_settings_list()
         for i in range(len(network_settings_list)):
-            connect = self.get_connect_by_settings(network_settings_list[i])
-            if connect != 'connect_error':
-                device = self.get_device_by_settings(self.event_manager, connect, network_settings_list[i])
+            device = AqDeviceFabrica.DeviceCreator.from_param_dict(network_settings_list[i])
+            if device is not None:
                 device_status = device.status
                 if device_status == 'ok' or device_status == 'data_error':
-                    finded_devices_list.append(device)
+                    found_devices_list.append(device)
                 else:
                     self.show_connect_err_label()
             else:
                 self.show_connect_err_label()
 
-        return finded_devices_list
-
-    def get_device_by_settings(self, event_manager, connect, network_settings):
-        dev_name = network_settings.get('device', None)
-        # if dev_name == 'МВ110-24_1ТД.csv':
-        #     device = AQ_DeviceDY500(event_manager, connect, network_settings)
-        if dev_name == 'МВ110-24_8А.csv' or\
-                dev_name == 'МВ110-24_8АС.csv' or\
-                dev_name == 'МВ110-24_16Д.csv' or\
-                dev_name == 'МК110-24_8Д_4Р.csv' or\
-                dev_name == 'МУ110-24_3У.csv' or\
-                dev_name == 'МУ110-24_8Р.csv' or \
-                dev_name == 'МВ110-24_1ТД.csv':
-            configuration = read_configuration_file(dev_name)
-            class_name = configuration.dev_descr_dict.get('Type')
-            try:
-                device = globals()[str(class_name)](event_manager, connect, configuration)
-            except Exception as e:
-                print(f"Error occurred: {str(e)}")
-                raise Exception(e)
-        elif network_settings.get('device', None) == "AqAutoDetectionDevice":
-            device = AqAutoDetectionDevice(event_manager, connect)
-        else:
-            raise Exception('AqAddDeviceWindowError: Unknown device type')
-
-        return device
-
-    def get_connect_by_settings(self, network_settings):
-        callback_dict = dict()
-        self.event_manager.emit_event('create_new_connect', network_settings, callback_dict)
-        return callback_dict['connect']
-
+        return found_devices_list
 
     def show_connect_err_label(self):
-        self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)
+        self.connect_err_label = AqAddDeviceConnectErrorLabel(self.width(), 50, self.main_window_frame)
         self.connect_err_label.move(0, self.height() - 50)
         self.connect_err_label.show()
 

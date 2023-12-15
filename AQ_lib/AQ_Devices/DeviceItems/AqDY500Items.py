@@ -1,8 +1,7 @@
 import struct
 
-from AQ_ModbusGenericItems import AqModbusEnumParamItem, AqModbusUnsignedParamItem, AqModbusFloatParamItem, \
+from AqModbusGenericItems import AqModbusEnumParamItem, AqModbusUnsignedParamItem, AqModbusFloatParamItem, \
     AqModbusFloatEnumParamItem
-from AQ_ParseFunc import swap_modbus_bytes
 
 
 class AqDY500EnumParamItem(AqModbusEnumParamItem):

@@ -4,8 +4,8 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QFrame, QLabel
 from AQ_CustomWindowTemplates import AQ_ComboBox, AQ_Label, AQ_IpLineEdit, AQ_SlaveIdLineEdit
 import serial.tools.list_ports
-from AQ_IsValidIpFunc import is_valid_ip
-from AQ_SettingsFunc import save_current_text_value, save_combobox_current_state, load_last_text_value, \
+from AqIsValidIpFunc import is_valid_ip
+from AqSettingsFunc import save_current_text_value, save_combobox_current_state, load_last_text_value, \
                              load_last_combobox_state
 
 
@@ -222,12 +222,17 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
     def get_network_settings_list(self):
         network_settings_list = []
         selected_dev = self.device_combo_box.currentText()
+        if selected_dev == 'AqAutoDetectionDevice':
+            selected_dev_type = 'AqAutoDetectionDevice'
+        else:
+            selected_dev_type = 'AqFileDescriptionDevice'
         selected_if = self.interface_combo_box.currentText()
         if selected_if == "Ethernet":
             ip = self.ip_line_edit.text()
             network_setting = {'interface': selected_if,
                                'ip': ip,
-                               'device': selected_dev}
+                               'device': selected_dev,
+                               'device_type': selected_dev_type}
         else:
             address = int(self.slave_id_line_edit.text())
             boudrate = int(self.boudrate_combo_box.currentText())
@@ -238,7 +243,8 @@ class AQ_NetworkSettingsLayout(QVBoxLayout):
                                'device': selected_dev,
                                'boudrate': boudrate,
                                'parity': parity,
-                               'stopbits': stopbits}
+                               'stopbits': stopbits,
+                               'device_type': selected_dev_type}
 
         network_settings_list.append(network_setting)
 

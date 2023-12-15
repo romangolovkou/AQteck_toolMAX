@@ -197,8 +197,8 @@ background-color: #1f232a;
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                <iconset resource="../resoursec.qrc">
+                 <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -345,8 +345,8 @@ background-color: #1f232a;
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
-                 <normaloff>:/icon/E:/feather/minus.svg</normaloff>:/icon/E:/feather/minus.svg</iconset>
+                <iconset resource="../resoursec.qrc">
+                 <normaloff>:/icons/icons/feather/minus.svg</normaloff>:/icons/icons/feather/minus.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -368,8 +368,8 @@ background-color: #1f232a;
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
-                 <normaloff>:/icon/E:/feather/copy.svg</normaloff>:/icon/E:/feather/copy.svg</iconset>
+                <iconset resource="../resoursec.qrc">
+                 <normaloff>:/icons/icons/feather/copy.svg</normaloff>:/icons/icons/feather/copy.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -391,8 +391,8 @@ background-color: #1f232a;
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
-                 <normaloff>:/icon/E:/feather/x.svg</normaloff>:/icon/E:/feather/x.svg</iconset>
+                <iconset resource="../resoursec.qrc">
+                 <normaloff>:/icons/icons/feather/x.svg</normaloff>:/icons/icons/feather/x.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -490,7 +490,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -536,7 +536,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -574,7 +574,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -627,7 +627,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -659,7 +659,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -691,7 +691,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -717,7 +717,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -782,7 +782,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -828,7 +828,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -881,7 +881,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -913,7 +913,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -942,7 +942,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -968,7 +968,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -1000,7 +1000,7 @@ background-color: #1f232a;
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                 <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -1205,7 +1205,7 @@ background-color: #1f232a;
                       <enum>Qt::AutoText</enum>
                      </property>
                      <property name="pixmap">
-                      <pixmap>E:/AQico_translucent.png</pixmap>
+                      <pixmap resource="../resoursec.qrc">:/images/icons/AQico_translucent.png</pixmap>
                      </property>
                      <property name="scaledContents">
                       <bool>true</bool>
@@ -1374,7 +1374,7 @@ background-color: #1f232a;
                       <enum>Qt::AutoText</enum>
                      </property>
                      <property name="pixmap">
-                      <pixmap>E:/AQico_translucent.png</pixmap>
+                      <pixmap resource="../resoursec.qrc">:/images/icons/AQico_translucent.png</pixmap>
                      </property>
                      <property name="scaledContents">
                       <bool>true</bool>
@@ -1546,7 +1546,7 @@ background-color: #1f232a;
                       <enum>Qt::AutoText</enum>
                      </property>
                      <property name="pixmap">
-                      <pixmap>E:/AQico_translucent.png</pixmap>
+                      <pixmap resource="../resoursec.qrc">:/images/icons/AQico_translucent.png</pixmap>
                      </property>
                      <property name="scaledContents">
                       <bool>true</bool>
@@ -1718,7 +1718,7 @@ background-color: #1f232a;
                       <enum>Qt::AutoText</enum>
                      </property>
                      <property name="pixmap">
-                      <pixmap>E:/plus_2040520 копия.png</pixmap>
+                      <pixmap resource="../resoursec.qrc">:/images/icons/plus.png</pixmap>
                      </property>
                      <property name="scaledContents">
                       <bool>true</bool>
@@ -1913,7 +1913,7 @@ background-color: #1f232a;
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <widget class="QWidget" name="page">
+               <widget class="QWidget" name="NoDevicesPage">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -2042,7 +2042,7 @@ background-color: #1f232a;
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap>E:/industrial_pic1.png</pixmap>
+                       <pixmap>../../../../industrial_pic1.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -2130,7 +2130,7 @@ background-color: #1f232a;
                   </property>
                   <property name="icon">
                    <iconset>
-                    <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                    <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2162,7 +2162,7 @@ background-color: #1f232a;
                   </property>
                   <property name="icon">
                    <iconset>
-                    <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                    <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2188,7 +2188,7 @@ background-color: #1f232a;
                   </property>
                   <property name="icon">
                    <iconset>
-                    <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                    <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2233,7 +2233,7 @@ background-color: #1f232a;
                   </property>
                   <property name="icon">
                    <iconset>
-                    <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                    <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2366,8 +2366,8 @@ background-color: #1f232a;
                       <string>Device Information</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2401,8 +2401,8 @@ background-color: #1f232a;
                       <string>Parameter list</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2515,8 +2515,8 @@ background-color: #1f232a;
                       <string>Real-time clock</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/icon/clock_223404.png</normaloff>E:/icon/clock_223404.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/clock.png</normaloff>:/images/icons/clock.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2550,8 +2550,8 @@ background-color: #1f232a;
                       <string>Password</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/icon/padlock_2889676.png</normaloff>E:/icon/padlock_2889676.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/padlock.png</normaloff>:/images/icons/padlock.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2585,8 +2585,8 @@ background-color: #1f232a;
                       <string>Calibration</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/icon/setting_10035148.png</normaloff>E:/icon/setting_10035148.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/setting.png</normaloff>:/images/icons/setting.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2699,8 +2699,8 @@ background-color: #1f232a;
                       <string>Save log data</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2734,8 +2734,8 @@ background-color: #1f232a;
                       <string>Logging configuration</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2830,8 +2830,8 @@ background-color: #1f232a;
                       <string>Firmware update</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/restore.png</normaloff>:/images/icons/restore.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2865,8 +2865,8 @@ background-color: #1f232a;
                       <string>Reboot device</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/electricity.png</normaloff>:/images/icons/electricity.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2964,8 +2964,8 @@ background-color: #1f232a;
                       <string>Watch list</string>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>E:/AQico_translucent.png</normaloff>E:/AQico_translucent.png</iconset>
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2996,6 +2996,8 @@ background-color: #1f232a;
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resoursec.qrc"/>
+ </resources>
  <connections/>
 </ui>

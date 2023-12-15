@@ -21,7 +21,7 @@ class AqDeviceInfoWidget(QDialog):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.generalInfoWidgets = list()
-        getattr(self.ui, "pushButton").clicked.connect(lambda: self.close())
+        getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
 
         if not hasattr(self.ui, 'generalInfoLayout') or \
                 not hasattr(self.ui, 'operatingInfoLayout'):

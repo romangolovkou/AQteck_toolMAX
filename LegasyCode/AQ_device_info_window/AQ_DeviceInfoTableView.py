@@ -3,8 +3,8 @@ import struct
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 
-from AQ_ParamsDelegateEditors import AqUintTreeLineEdit, AqEnumROnlyTreeLineEdit, AqIpTreeLineEdit, \
-    AqIntTreeLineEdit, AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AQ_TreeLineEdit
+from AqParamsDelegateEditors import AqUintTreeLineEdit, AqEnumROnlyTreeLineEdit, AqIpTreeLineEdit, \
+    AqIntTreeLineEdit, AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AqTreeLineEdit
 
 
 class AQ_DeviceInfoTableView(QTableView):
@@ -71,7 +71,7 @@ class AQ_DeviceInfoTableView(QTableView):
         elif param_type == 'date_time':
             editor = AqDateTimeLineEdit
         else:
-            editor = AQ_TreeLineEdit
+            editor = AqTreeLineEdit
 
         return editor
 

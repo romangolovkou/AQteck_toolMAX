@@ -5,11 +5,11 @@ import socket
 import struct
 
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import QComboBox, QLineEdit
-from AQ_CustomWindowTemplates import AQ_Label
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QComboBox, QLineEdit, QLabel
 
 
-class AQ_TreeLineEdit(QLineEdit):
+class AqTreeLineEdit(QLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
         self.min_limit = param_attributes.get('min_limit', None)
@@ -102,7 +102,7 @@ class AqEnumTreeComboBox(QComboBox):
         return None  # Возвращаем None, если объект не найден
 
 
-class AqEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
+class AqEnumROnlyTreeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.enum_str_dict = param_attributes.get('enum_strings', '')
@@ -111,7 +111,7 @@ class AqEnumROnlyTreeLineEdit(AQ_TreeLineEdit):
         self.setText(self.enum_str_dict.get(value, ''))
 
 
-class AqUintTreeLineEdit(AQ_TreeLineEdit):
+class AqUintTreeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.visual_type = param_attributes.get('visual_type', '')
@@ -172,7 +172,7 @@ class AqUintTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AqIpTreeLineEdit(AQ_TreeLineEdit):
+class AqIpTreeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.min_limit = 0
@@ -293,7 +293,7 @@ class AqIpTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AqIntTreeLineEdit(AQ_TreeLineEdit):
+class AqIntTreeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -372,7 +372,7 @@ class AqIntTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AqFloatTreeLineEdit(AQ_TreeLineEdit):
+class AqFloatTreeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -454,7 +454,7 @@ class AqFloatTreeLineEdit(AQ_TreeLineEdit):
             super().keyPressEvent(event)
 
 
-class AqStringTreeLineEdit(AQ_TreeLineEdit):
+class AqStringTreeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -463,7 +463,7 @@ class AqStringTreeLineEdit(AQ_TreeLineEdit):
         self.save_new_value(text)
 
 
-class AqDateTimeLineEdit(AQ_TreeLineEdit):
+class AqDateTimeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
 
@@ -479,7 +479,7 @@ class AqDateTimeLineEdit(AQ_TreeLineEdit):
         self.setText(str(value))
 
 
-class AqBitLineEdit(AQ_TreeLineEdit):
+class AqBitLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
         self.setReadOnly(True)
@@ -550,7 +550,7 @@ class AqFloatEnumROnlyTreeLineEdit(AqEnumROnlyTreeLineEdit):
         self.setText(self.enum_str_dict.get(value, ''))
 
 
-class AQ_EditorErrorLabel(AQ_Label):
+class AqEditorErrorLabel(QLabel):
     def __init__(self, pos, min_limit, max_limit, parent=None):
         super().__init__('Invalid value', parent)
         if min_limit is None:
@@ -559,6 +559,8 @@ class AQ_EditorErrorLabel(AQ_Label):
             max_limit = ''
         self.setText('Invalid value, valid ({}...{})'.format(min_limit, max_limit))
         self.setStyleSheet("color: #fe2d2d; background-color: #1e1f22; border-radius: 3px;\n")
+        self.setFixedHeight(20)
+        self.setFont(QFont("Segoe UI", 10))  # Задаем шрифт и размер
         self.move(pos.x() - 195, pos.y() - 20)
         self.show()
         # Устанавливаем задержку в 2 секунды и затем удаляем метку
@@ -569,4 +571,4 @@ def show_err_label(self):
     # Получаем координаты поля ввода относительно окна
     rect = self.geometry()
     pos = self.mapTo(self, rect.topRight())
-    self.err_label = AQ_EditorErrorLabel(pos, self.min_limit, self.max_limit, self.parent())
+    self.err_label = AqEditorErrorLabel(pos, self.min_limit, self.max_limit, self.parent())

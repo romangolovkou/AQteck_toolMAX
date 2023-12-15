@@ -2,6 +2,8 @@ from PySide6.QtCore import QObject
 
 
 class AQ_EventManager(QObject):
+
+    _global_instance = None
     def __init__(self):
         super().__init__()
         self._event_handlers = {}
@@ -29,3 +31,10 @@ class AQ_EventManager(QObject):
         handlers = self._event_handlers.get(event_name, set())
         for handler in handlers:
             handler(*args, **kwargs)
+
+    @staticmethod
+    def get_global_event_manager():
+        # Статический метод для получения или создания единственного экземпляра класса
+        if AQ_EventManager._global_instance is None:
+            AQ_EventManager._global_instance = AQ_EventManager()
+        return AQ_EventManager._global_instance

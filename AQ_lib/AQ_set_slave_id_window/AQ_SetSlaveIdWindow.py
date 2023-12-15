@@ -2,11 +2,8 @@ from PySide6.QtCore import QTimer
 from PySide6.QtGui import QGuiApplication, QFont
 from PySide6.QtWidgets import QWidget, QFrame, QLabel
 
-from AQ_AddDevicesConnectErrorLabel import AQ_ConnectErrorLabel
+from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AQ_CustomWindowTemplates import AQ_SimplifiedDialog
-from AQ_Device import AQ_Device
-from AQ_Device_110china import AQ_Device110China
-from AQ_Device_DY500 import AQ_DeviceDY500
 from AQ_SetSlaveIdNetworkFrame import AQ_SetSlaveIdNetworkSettingsFrame
 
 
@@ -37,19 +34,19 @@ class AQ_DialogSetSlaveId(AQ_SimplifiedDialog):
         self.network_settings_frame.setGeometry(25, self.main_window_frame.title_bar_frame.height() + 2,
                                                 self.width() - 50,
                                                 self.height() - self.main_window_frame.title_bar_frame.height() - 4)
-
-    def get_device_by_settings(self, event_manager, network_settings):
-        if network_settings[2] == 'МВ110-24_1ТД.csv':
-            device = AQ_DeviceDY500(event_manager, network_settings)
-        elif len(network_settings) > 2:
-            device = AQ_Device110China(event_manager, network_settings)
-        else:
-            device = AQ_Device(event_manager, network_settings)
-
-        return device
+    # TODO: Make this function normally
+    # def get_device_by_settings(self, event_manager, network_settings):
+    #     if network_settings[2] == 'МВ110-24_1ТД.csv':
+    #         device = AQ_DeviceDY500(event_manager, network_settings)
+    #     elif len(network_settings) > 2:
+    #         device = AQ_Device110China(event_manager, network_settings)
+    #     else:
+    #         device = AQ_Device(event_manager, network_settings)
+    #
+    #     return device
 
     def show_connect_err_label(self):
-        self.connect_err_label = AQ_ConnectErrorLabel(self.width(), 50, self.main_window_frame)
+        self.connect_err_label = AqAddDeviceConnectErrorLabel(self.width(), 50, self.main_window_frame)
         self.connect_err_label.move(0, self.height() - 50)
         self.connect_err_label.show()
 

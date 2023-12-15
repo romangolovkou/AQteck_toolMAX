@@ -6,6 +6,8 @@ from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 from pymodbus.pdu import ModbusResponse
 
+from AqIsValidIpFunc import is_valid_ip
+
 
 class AqConnect(QObject):
     def __init__(self):
@@ -36,21 +38,50 @@ class AqConnect(QObject):
 class AqIpConnectSettings:
     def __init__(self, _ip):
         super().__init__()
-        self.ip = _ip
+
+        if is_valid_ip(_ip):
+            self.ip = _ip
+        else:
+            raise ValueError("Invalid ip " + str(_ip))
+
 
     @property
     def addr(self):
         return 'IP: '+ str(self.ip)
 
 
+class AqOfflineConnectSettings:
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def addr(self):
+        return 'Offline'
+
+
 class AqComConnectSettings:
+    available_baudrate = [4800, 9600, 19200, 38400, 57600, 115200]
+    available_parity = ["None", "Even", "Odd"]
+    available_stopbits = [1, 2]
     def __init__(self, _port, _baudrate, _parity, _stopbits):
         super().__init__()
+        # TODO: Зачем нам хранить одно и тоже в разных переменных???
         self.port = _port
-        self.baudrate = _baudrate
-        self.parity = _parity
-        self.stopbits = _stopbits
         self._interface = _port
+
+        if _baudrate in self.available_baudrate:
+            self.baudrate = _baudrate
+        else:
+            raise ValueError("Invalid baudrate " + str(_baudrate))
+        if _parity in self.available_parity:
+            self.parity = _parity
+        else:
+            raise ValueError("Invalid parity " + str(_parity))
+        if _stopbits in self.available_stopbits:
+            self.stopbits = _stopbits
+        else:
+            raise ValueError("Invalid stopbits " + str(_parity))
+
 
     @property
     def addr(self):
@@ -66,7 +97,7 @@ class AqModbusConnect(AqConnect):
         self.param_request_stack = []
         self.file_request_stack = []
         self.timeout = 1.0
-        if type(self.connect_settings).__name__ == 'AqComConnectSettings':
+        if isinstance(self.connect_settings, AqComConnectSettings):
             self.client = ModbusSerialClient(method='rtu',
                                                     port=self.connect_settings.port,
                                                     baudrate=self.connect_settings.baudrate,
@@ -74,14 +105,14 @@ class AqModbusConnect(AqConnect):
                                                     stopbits=self.connect_settings.stopbits,
                                                     timeout=self.timeout)
             self.slave_id = slave_id
-        elif type(self.connect_settings).__name__ == 'AqIpConnectSettings':
+        elif isinstance(self.connect_settings, AqIpConnectSettings):
             self.client = ModbusTcpClient(self.connect_settings.ip)
             self.slave_id = 1
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
 
     def address_string(self):
-        if type(self.connect_settings).__name__ == 'AqIpConnectSettings':
+        if isinstance(self.connect_settings, AqIpConnectSettings):
             return self.connect_settings.addr
         else:
             return str(self.slave_id) + ' (' + self.connect_settings.addr + ')'

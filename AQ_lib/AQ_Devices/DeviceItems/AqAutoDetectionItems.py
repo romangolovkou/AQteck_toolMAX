@@ -1,29 +1,30 @@
 import struct
 
 from AQ_CustomTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
-    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, AqUnsignedToFloatParamItem, \
-    AqFloatEnumParamItem, AqBitParamItem
-from AQ_ParamsDelegateEditors import AqEnumTreeComboBox, AqEnumROnlyTreeLineEdit
-from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
+    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem
+# from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
+from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes
+# from AqModbusTips import reverse_registers
 
 
 # TODO: сделать модбас итем зависящий от функции
 
 
-class AqModbusEnumParamItem(AqEnumParamItem, AqModbusItem):
+class AqAutoDetectEnumParamItem(AqEnumParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
 
     def pack(self):
         # костиль для enum з розміром два регістра
-        if self.param_size == 2:
+        if self.param_size == 4:
             packed_data = struct.pack('I', self.value)
             registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
-        elif self.param_size == 1:
+        elif self.param_size == 2:
             packed_data = struct.pack('H', self.value)
             registers = struct.unpack('H', packed_data)
         else:
-            raise Exception('AqModbusEnumParamItemError: "param_size" is incorrect')
+            raise Exception('AqAutoDetectEnumParamItemError: "param_size" is incorrect')
+
 
         return registers
 
@@ -37,12 +38,12 @@ class AqModbusEnumParamItem(AqEnumParamItem, AqModbusItem):
         elif self.param_size == 2:
             param_value = struct.unpack('>H', byte_array)[0]
         else:
-            raise Exception('AqModbusEnumParamItemError: "param_size" is incorrect')
+            raise Exception('AqAutoDetectEnumParamItemError: "param_size" is incorrect')
 
         return param_value
 
 
-class AqModbusUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
+class AqAutoDetectUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
 
@@ -56,7 +57,7 @@ class AqModbusUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
         elif self.param_size == 8:
             packed_data = struct.pack('Q', self.value)
         else:
-            raise Exception('AQ_ModbusUnsignedParamItemError: param size is incorrect')
+            raise Exception('AqAutoDetectUnsignedParamItemError: param size is incorrect')
         # Разбиваем упакованные данные на 16-битные значения (2 байта)
         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
         return registers
@@ -71,18 +72,18 @@ class AqModbusUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
         elif self.param_size == 2:
             param_value = struct.unpack('>H', byte_array)[0]
         elif self.param_size == 4:
-            byte_array = reverse_modbus_registers(byte_array)
+            byte_array = reverse_registers(byte_array)
             param_value = struct.unpack('>I', byte_array)[0]
         elif self.param_size == 8:
-            byte_array = reverse_modbus_registers(byte_array)
+            byte_array = reverse_registers(byte_array)
             param_value = struct.unpack('>Q', byte_array)[0]
         else:
-            raise Exception('AQ_ModbusUnsignedParamItemError: param size is incorrect')
+            raise Exception('AqAutoDetectUnsignedParamItemError: param size is incorrect')
 
         return param_value
 
 
-class AqModbusSignedParamItem(AqSignedParamItem, AqModbusItem):
+class AqAutoDetectSignedParamItem(AqSignedParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
 
@@ -96,9 +97,11 @@ class AqModbusSignedParamItem(AqSignedParamItem, AqModbusItem):
         elif self.param_size == 8:
             packed_data = struct.pack('q', self.value)
         else:
-            raise Exception('AQ_ModbusSignedParamItemError: param size is incorrect')
+            raise Exception('AqAutoDetectSignedParamItemError: param size is incorrect')
         # Разбиваем упакованные данные на 16-битные значения (2 байта)
         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
+
     def unpack(self, data):
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in data.registers)
@@ -109,15 +112,15 @@ class AqModbusSignedParamItem(AqSignedParamItem, AqModbusItem):
         elif self.param_size == 2:
             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
         elif self.param_size == 4 or self.param_size == 8:
-            byte_array = reverse_modbus_registers(byte_array)
+            byte_array = reverse_registers(byte_array)
             param_value = int.from_bytes(byte_array, byteorder='big', signed=True)
         else:
-            raise Exception('AQ_ModbusSignedParamItemError: param size is incorrect')
+            raise Exception('AqAutoDetectSignedParamItemError: param size is incorrect')
 
         return param_value
 
 
-class AqModbusFloatParamItem(AqFloatParamItem, AqModbusItem):
+class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
 
@@ -129,7 +132,7 @@ class AqModbusFloatParamItem(AqFloatParamItem, AqModbusItem):
             floats_doubble = struct.pack('d', self.value)
             registers = struct.unpack('HHHH', floats_doubble)  # Возвращает два short int значения
         else:
-            raise Exception('AQ_ModbusSignedParamItemError: param size is incorrect')
+            raise Exception('AqAutoDetectFloatParamItemError: param size is incorrect')
 
         return registers
 
@@ -140,14 +143,14 @@ class AqModbusFloatParamItem(AqFloatParamItem, AqModbusItem):
         byte_array = bytes.fromhex(hex_string)
 
         reg_count = self.param_size // 2
-        byte_array = swap_modbus_bytes(byte_array, reg_count)
-        param_value = struct.unpack('>f', byte_array)[0]
+        byte_array = swap_bytes_at_registers(byte_array, reg_count)
+        param_value = struct.unpack('f', byte_array)[0]
         param_value = round(param_value, 7)
 
         return param_value
 
 
-class AqModbusStringParamItem(AqStringParamItem, AqModbusItem):
+class AqAutoDetectStringParamItem(AqStringParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
 
@@ -167,7 +170,7 @@ class AqModbusStringParamItem(AqStringParamItem, AqModbusItem):
         byte_array = bytes.fromhex(hex_string)
 
         reg_count = self.param_size // 2
-        byte_array = swap_modbus_bytes(byte_array, reg_count)
+        byte_array = swap_bytes_at_registers(byte_array, reg_count)
         # Расшифровуем в строку
         text = byte_array.decode('ANSI')
         param_value = remove_empty_bytes(text)
@@ -175,8 +178,9 @@ class AqModbusStringParamItem(AqStringParamItem, AqModbusItem):
         return param_value
 
 
-class AqModbusDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
+class AqAutoDetectDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
     def __init__(self, param_attributes):
+
         super().__init__(param_attributes)
 
     def pack(self):
@@ -191,28 +195,67 @@ class AqModbusDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
         # Конвертируем строку в массив байт
         byte_array = bytes.fromhex(hex_string)
 
-        byte_array = reverse_modbus_registers(byte_array)
+        byte_array = reverse_registers(byte_array)
         param_value = struct.unpack('>I', byte_array)[0]
 
         return param_value
 
 
-class AqModbusSignedToFloatParamItem(AqSignedToFloatParamItem, AqModbusSignedParamItem):
+class AqAutoDetectIpParamItem(AqIpParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
 
+    def pack(self):
+        if self.param_size == 4:
+            packed_data = struct.pack('I', self.value)
+        else:
+            raise Exception('AqAutoDetectIpParamItemError: param size is incorrect')
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
 
-class AqModbusUnsignedToFloatParamItem(AqUnsignedToFloatParamItem, AqModbusUnsignedParamItem):
+    def unpack(self, data):
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in data.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+        if self.param_size == 4:
+            byte_array = reverse_registers(byte_array)
+            param_value = struct.unpack('>I', byte_array)[0]
+        else:
+            raise Exception('AqAutoDetectIpParamItemError: param size is incorrect')
+
+        return param_value
+
+class AqAutoDetectMACParamItem(AqMACParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
 
+    def pack(self):
+        if self.param_size == 6:  # MAC address
+            packed_data = struct.pack('H', self.value)
+        else:
+            raise Exception('AqAutoDetectMACParamItemError: param size is incorrect')
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
 
-class AqModbusFloatEnumParamItem(AqFloatEnumParamItem, AqModbusEnumParamItem):
-    def __init__(self, param_attributes):
-        super().__init__(param_attributes)
+    def unpack(self, data):
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in data.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+
+        if self.param_size == 6:
+            byte_array = reverse_registers(byte_array)
+            param_value = byte_array
+        else:
+            raise Exception('AqAutoDetectMACParamItemError: param size is incorrect')
+
+        return param_value
 
 
-class AqModbusDiscretParamItem(AqBitParamItem, AqModbusItem):
+class AqAutoDetectDiscretParamItem(AqBitParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         param_attributes['param_size'] = 1
         super().__init__(param_attributes)

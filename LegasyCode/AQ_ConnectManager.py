@@ -6,7 +6,7 @@ from pymodbus.client import serial
 import serial.tools.list_ports
 
 from AqConnect import AqIpConnectSettings, AqComConnectSettings, AqModbusConnect, AqOfflineConnect
-from AQ_IsValidIpFunc import is_valid_ip
+from AqIsValidIpFunc import is_valid_ip
 
 
 class AQ_ConnectManager(QObject):

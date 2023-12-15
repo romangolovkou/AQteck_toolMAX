@@ -1,8 +1,11 @@
 {
     "files": [
         "",
+        "../../UI/forms/AqAddDeviceWindow.ui",
         "../../UI/forms/DeviceInfoDialog.ui",
+        "../../UI/forms/DeviceInitWidget.ui",
         "../../UI/forms/DeviceParamListWindow.ui",
+        "../../UI/forms/NoDeviceWidget.ui",
         "../../UI/forms/form.ui",
         "../../UI/resoursec.qrc",
         "main.py"

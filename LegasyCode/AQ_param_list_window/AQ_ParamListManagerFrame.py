@@ -5,11 +5,11 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit
 
-from AQ_Device import AQ_Device
+from LegasyCode.AQ_Device import AQ_Device
 from AQ_CustomWindowTemplates import AQ_Label
 from AQ_ParamListTableView import AQ_ParamListTableView, AQ_ParamListInfoTableView
 from AQ_ParamListTableViewItemModel import AQ_TableViewItemModel
-from AQ_SettingsFunc import get_last_path, save_last_path
+from AqSettingsFunc import get_last_path, save_last_path
 
 
 class AQ_ParamListManagerFrame(QFrame):

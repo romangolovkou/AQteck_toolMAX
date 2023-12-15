@@ -297,5 +297,7 @@
         <file>icons/plus.png</file>
         <file>icons/restore.png</file>
         <file>icons/setting.png</file>
+        <file>icons/AQico_silver.png</file>
+        <file>icons/cat.gif</file>
     </qresource>
 </RCC>
