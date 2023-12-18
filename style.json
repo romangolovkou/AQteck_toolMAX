@@ -2,10 +2,12 @@
   "QMainWindow": [
     {
       "tittle": "Akytec Design",
-      "icon": "UI/icons/AQico_translucent.png",
+      "icon": "UI/icons/AQico_silver.png",
       "frameless": true,
       "transluscentBg": true,
       "sizeGrip": "sizeGrip",
+	  "resizeFrameEnable": true,
+	  "resizeFrameWidth": "yhgf",
       "navigation": [
         {
           "minimize": "minimizeBtn",

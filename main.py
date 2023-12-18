@@ -7,10 +7,12 @@ from PySide6.QtWidgets import QApplication, QSplashScreen
 import console_app
 import console_help_functions
 from AQ_MainWindow import AQ_MainWindow
+from AppCore import Core
 from AqMainWindow import AqMainWindow
 
 if __name__ == '__main__':
     # Program started without advanced command
+    Core.init()
     if len(sys.argv) == 1:
         app = QApplication(sys.argv)
         splash = QSplashScreen(QPixmap("Icons/Splash3.png"))
