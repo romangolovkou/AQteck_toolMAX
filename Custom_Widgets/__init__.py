@@ -693,6 +693,7 @@ def applyJsonStyle(self, ui, data):
                     shadowYOffset = ""
                     floatMenu = False
                     autoHide = True
+                    hoverExpand = False
 
                     if "floatPosition" in QCustomSlideMenu:
                         floatMenu = True
@@ -780,6 +781,9 @@ def applyJsonStyle(self, ui, data):
                                 collapsingAnimationEasingCurve = returnAnimationEasingCurve(menuTransitionAnimation["animationEasingCurve"])
                                 expandingAnimationEasingCurve = returnAnimationEasingCurve(menuTransitionAnimation["animationEasingCurve"])
 
+                            if "hoverExpand" in menuTransitionAnimation:
+                                hoverExpand = menuTransitionAnimation["hoverExpand"]
+
                             if "whenCollapsing" in menuTransitionAnimation:
                                 for whenCollapsing in menuTransitionAnimation["whenCollapsing"]:
                                     if "animationDuration" in whenCollapsing:
@@ -838,7 +842,8 @@ def applyJsonStyle(self, ui, data):
                         shadowBlurRadius    = shadowBlurRadius,
                         shadowXOffset   = shadowXOffset,
                         shadowYOffset   = shadowYOffset,
-                        autoHide = autoHide
+                        autoHide = autoHide,
+                        hoverExpand = hoverExpand
                     )
 
                     if "toggleButton" in QCustomSlideMenu:

@@ -44,7 +44,7 @@ class QCustomSlideMenu(QWidget):
         self.float = False
         self.floatPosition = ""
 
-        self.hover_expand = True
+        self.hoverExpand = False
 
         # Set the object name
         # self.setObjectName("QCustomSlideMenu")
@@ -104,6 +104,9 @@ class QCustomSlideMenu(QWidget):
 
         if "animationEasingCurve" in customValues and len(str(customValues["animationEasingCurve"])) > 0:
             self.animationEasingCurve = customValues["animationEasingCurve"]
+
+        if "hoverExpand" in customValues and len(str(customValues["hoverExpand"])) > 0:
+            self.hoverExpand = customValues["hoverExpand"]
 
         if "collapsingAnimationDuration" in customValues and int(customValues["collapsingAnimationDuration"]) > 0:
             self.collapsingAnimationDuration = customValues["collapsingAnimationDuration"]
@@ -511,13 +514,13 @@ class QCustomSlideMenu(QWidget):
 
     def enterEvent(self, event):
         # Применяем палитру при наведении
-        if self.hover_expand is True:
+        if self.hoverExpand is True:
             self.expandMenu()
         super().enterEvent(event)
 
     def leaveEvent(self, event):
         # Возвращаем обычную палитру при уходе курсора
-        if self.hover_expand is True:
+        if self.hoverExpand is True:
             self.collapseMenu()
         super().leaveEvent(event)
 

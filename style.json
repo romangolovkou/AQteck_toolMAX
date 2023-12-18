@@ -47,8 +47,8 @@
       "menuTransitionAnimation": [
         {
           "animationDuration": 100,
-          "animationEasingCurve": "Linear"
-		  
+          "animationEasingCurve": "Linear",
+		  "hoverExpand": true
         }
       ],
 	  "floatPosition": [
