@@ -2,8 +2,9 @@ import random
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtWidgets import QWidget, QDialog, QLineEdit, QFormLayout
+from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
 from DeviceModels import AqDeviceInfoModel
+from AqCustomDialogWindow import QDialog
 
 
 class AqDeviceInfoWidget(QDialog):

@@ -7,7 +7,7 @@
       "transluscentBg": true,
       "sizeGrip": "sizeGrip",
 	  "resizeFrameEnable": true,
-	  "resizeFrameWidth": "yhgf",
+	  "resizeFrameWidth": 5,
       "navigation": [
         {
           "minimize": "minimizeBtn",

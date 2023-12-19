@@ -1102,6 +1102,136 @@ def applyJsonStyle(self, ui, data):
     ## END
     ########################################################################
 
+    ########################################################################
+    ## DIALOG WINDOWS FLAG
+    ########################################################################
+    if "QCustomDialog" in data:
+        for QCustomDialog in data['QCustomDialog']:
+            if "tittle" in QCustomDialog and len(str(QCustomDialog["tittle"])) > 0:
+                # Set window tittle
+                self.setWindowTitle(str(QCustomDialog["tittle"]))
+
+            if "icon" in QCustomDialog and len(str(QCustomDialog["icon"])) > 0:
+                #######################################################################
+                # Set window Icon
+                #######################################################################
+                self.setWindowIcon(QtGui.QIcon(str(QCustomDialog["icon"])))
+
+            if "frameless" in QCustomDialog and QCustomDialog["frameless"]:
+                #######################################################################
+                ## # Remove window tittle bar
+                ########################################################################
+                self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
+            if "transluscentBg" in QCustomDialog and QCustomDialog["transluscentBg"]:
+                #######################################################################
+                ## # Set main background to transparent
+                ########################################################################
+                self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+
+            if "sizeGrip" in QCustomDialog and len(str(QCustomDialog["sizeGrip"])) > 0:
+                #################################################################################
+                # Window Size grip to resize window
+                #################################################################################
+                if hasattr(self.ui, str(QCustomDialog["sizeGrip"])):
+                    QSizeGrip(getattr(self.ui, str(QCustomDialog["sizeGrip"])))
+
+            if "resizeFrameEnable" in QCustomDialog and QCustomDialog["resizeFrameEnable"]:
+                #######################################################################
+                ## # Activate and set width resize frame
+                ########################################################################
+                self.resizeFrameEnable = QCustomDialog["resizeFrameEnable"]
+                if self.resizeFrameEnable is True:
+                    if "resizeFrameWidth" in QCustomDialog and QCustomDialog["resizeFrameWidth"]:
+                        resizeFrameWidth = QCustomDialog["resizeFrameWidth"]
+                    else:
+                        resizeFrameWidth = None
+
+                    self.create_resize_frame(resizeFrameWidth)
+
+            if "shadow" in QCustomDialog:
+                #######################################################################
+                ## # Shadow effect style
+                ########################################################################
+
+                for shadow in QCustomDialog["shadow"]:
+                    if "centralWidget" in shadow and len(str(shadow['centralWidget'])) > 0:
+                        if hasattr(self.ui, str(shadow["centralWidget"])):
+                            self.shadow = QGraphicsDropShadowEffect(self)
+                            if "color" in shadow and len(str(shadow['color'])) > 0:
+                                self.shadow.setColor(QColor(str(shadow['color'])))
+                            if "blurRadius" in shadow and int(shadow['blurRadius']) > 0:
+                                self.shadow.setBlurRadius(int(shadow['blurRadius']))
+                            if "xOffset" in shadow and int(shadow['xOffset']) > 0:
+                                self.shadow.setXOffset(int(shadow['xOffset']))
+                            else:
+                                self.shadow.setXOffset(0)
+
+                            if "yOffset" in shadow and int(shadow['yOffset']) > 0:
+                                self.shadow.setYOffset(int(shadow['yOffset']))
+                            else:
+                                self.shadow.setYOffset(0)
+
+                            #######################################################################
+                            ## # Appy shadow to central widget
+                            ########################################################################
+                            getattr(self.ui, str(shadow["centralWidget"])).setGraphicsEffect(self.shadow)
+
+            if "navigation" in QCustomDialog:
+                for navigation in QCustomDialog["navigation"]:
+                    if "minimize" in navigation and len(str(navigation["minimize"])) > 0:
+                        #######################################################################
+                        # Minimize window
+                        if hasattr(self.ui, str(navigation["minimize"])):
+                            getattr(self.ui, str(navigation["minimize"])).clicked.connect(
+                                lambda: self.showMinimized())
+
+                    if "close" in navigation and len(str(navigation["close"])) > 0:
+                        #######################################################################
+                        # Close window
+                        if hasattr(self.ui, str(navigation["close"])):
+                            getattr(self.ui, str(navigation["close"])).clicked.connect(lambda: self.close())
+
+                    if "restore" in navigation:
+                        #######################################################################
+                        # Restore/Maximize window
+                        for restore in navigation["restore"]:
+                            if "buttonName" in restore and len(str(restore["buttonName"])) > 0:
+                                if hasattr(self.ui, str(restore["buttonName"])):
+                                    getattr(self.ui, str(restore["buttonName"])).clicked.connect(
+                                        lambda: self.restore_or_maximize_window())
+                                    self.restoreBtn = getattr(self.ui, str(restore["buttonName"]))
+                            if "normalIcon" in restore and len(str(restore["normalIcon"])) > 0:
+                                self.normalIcon = str(restore["normalIcon"])
+                            else:
+                                self.normalIcon = ""
+
+                            if "maximizedIcon" in restore and len(str(restore["maximizedIcon"])) > 0:
+                                self.maximizedIcon = str(restore["maximizedIcon"])
+                            else:
+                                self.maximizedIcon = ""
+
+                    if "moveWindow" in navigation and len(str(navigation["moveWindow"])) > 0:
+                        #######################################################################
+                        # Add click event/Mouse move event/drag event to the top header to move the window
+                        #######################################################################
+                        if hasattr(self.ui, str(navigation["moveWindow"])):
+                            getattr(self.ui, str(navigation["moveWindow"])).mouseMoveEvent = self.moveWindow
+                        #######################################################################
+
+                    if "tittleBar" in navigation and len(str(navigation["tittleBar"])) > 0:
+                        #######################################################################
+                        # Add click event/Mouse move event/drag event to the top header to move the window
+                        #######################################################################
+                        if hasattr(self.ui, str(navigation["tittleBar"])):
+                            getattr(self.ui,
+                                    str(navigation["tittleBar"])).mouseDoubleClickEvent = self.toggleWindowSize
+                        #######################################################################
+
+    ########################################################################
+    ## END
+    ########################################################################
+
     if "QPushButton" in data:
         for button in data['QPushButton']:
             if "name" in button and len(button["name"]) > 0:
