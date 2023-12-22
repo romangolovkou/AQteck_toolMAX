@@ -1,10 +1,9 @@
 import random
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
 from DeviceModels import AqDeviceInfoModel
-from AqCustomDialogWindow import QDialog
+from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 
 
 class AqDeviceInfoWidget(QDialog):
@@ -17,12 +16,13 @@ class AqDeviceInfoWidget(QDialog):
         super().__init__(parent)
         self.ui = _ui()
         self.ui.setupUi(self)
+        loadDialogJsonStyle(self, self.ui)
         self.generalTextEditors = list()
         self.operatingTextEditors = list()
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setAttribute(Qt.WA_TranslucentBackground)
         self.generalInfoWidgets = list()
-        getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
+        # getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
 
         if not hasattr(self.ui, 'generalInfoLayout') or \
                 not hasattr(self.ui, 'operatingInfoLayout'):

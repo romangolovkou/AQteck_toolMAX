@@ -40,7 +40,7 @@ from . colorsystem import CreateColorVariable,Dark,Light
 ########################################################################
 ## IMPORT WORKER
 ########################################################################
-from .. WidgetsWorker import Worker, WorkerResponse
+from WidgetsWorker import Worker, WorkerResponse
 
 settings = QSettings()
 

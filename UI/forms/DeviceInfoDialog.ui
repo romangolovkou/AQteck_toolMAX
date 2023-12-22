@@ -38,7 +38,7 @@
 
 #windowNameFrame {
 	border-top-left-radius: 10px;
-	background-color: #2F4858;
+	background-color: rgba(47, 72, 88, 180);
 	border: none;
 }
 
