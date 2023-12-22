@@ -4,11 +4,12 @@ import threading
 import serial
 from PySide6.QtCore import Qt, QSettings, QThread, Signal
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QTableWidget, QDialog, QCheckBox, QTableWidgetItem, QFrame
+from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame
 
 import AqBaseDevice
 import AqDeviceFabrica
 from AQ_EventManager import AQ_EventManager
+from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import load_last_combobox_state, load_last_text_value, save_combobox_current_state, \
@@ -20,11 +21,12 @@ class AqAddDeviceWidget(QDialog):
         super().__init__(parent)
         self.ui = _ui()
         self.ui.setupUi(self)
-        self.setObjectName("AqAddDeviceWindow")
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        loadDialogJsonStyle(self, self.ui)
+        # self.setObjectName("AqAddDeviceWindow")
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setAttribute(Qt.WA_TranslucentBackground)
         self.event_manager = AQ_EventManager.get_global_event_manager()
-        getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
+        # getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
         try:
             # Получаем текущий рабочий каталог (папку проекта)
             project_path = os.getcwd()

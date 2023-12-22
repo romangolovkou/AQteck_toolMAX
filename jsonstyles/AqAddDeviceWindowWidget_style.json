@@ -19,7 +19,8 @@
               "maximizedIcon": "UI/icons/feather/copy.svg"
             }
           ],
-          "moveWindow": "windowNameFrame"
+          "moveWindow": "headertext",
+          "tittleBar": "headertext"
         }
       ]
     }

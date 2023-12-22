@@ -44,7 +44,7 @@
 #toolboxFrame {
 	border-top-right-radius: 10px;
 	border-top-left-radius: 10px;
-	background-color: #2F4858;
+	background-color: rgba(47, 72, 88, 180);
 	border: none;
 }
 
@@ -61,7 +61,7 @@
 #icon {
 	border-top-left-radius: 10px;
 	border-left: 1px solid #D0D0D0;
-	background-color: #2F4858;
+	background-color: rgba(47, 72, 88, 0);
 }
 
 #title_text{
@@ -598,7 +598,7 @@ QTableWidget::item { padding-left: 3px; }
                <string notr="true"/>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page_com">
                <property name="sizePolicy">
