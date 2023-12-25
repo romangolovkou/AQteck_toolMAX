@@ -120,9 +120,10 @@ class AqBaseDevice(ABC):
                 for i in range(len(items)):
                     self.__read_item(items[i])
 
-            self._request_count.append(len(self._stack_to_read))
-            self._connect.create_param_request('read', self._stack_to_read)
-            self._stack_to_read.clear()
+            if len(self._stack_to_read) > 0:
+                self._request_count.append(len(self._stack_to_read))
+                self._connect.create_param_request('read', self._stack_to_read)
+                self._stack_to_read.clear()
 
     def write_parameters(self, items=None):
         if len(self._request_count) == 0:
@@ -137,9 +138,10 @@ class AqBaseDevice(ABC):
                 for i in range(len(items)):
                     self.__write_item(items[i])
 
-            self._request_count.append(len(self._stack_to_write))
-            self._connect.create_param_request('write', self._stack_to_write)
-            self._stack_to_write.clear()
+            if len(self._stack_to_write) > 0:
+                self._request_count.append(len(self._stack_to_write))
+                self._connect.create_param_request('write', self._stack_to_write)
+                self._stack_to_write.clear()
 
     # @abstractmethod
     # def read_parameter(self, item):
