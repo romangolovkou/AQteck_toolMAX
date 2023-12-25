@@ -4,25 +4,28 @@ from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QTableWidgetItem
 
 import ModbusTableDataFiller
 from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
+from AqWindowTemplate import AqDialogTemplate
 from DeviceModels import AqDeviceParamListModel
 
 
-class AqParamListWidget(QDialog):
+class AqParamListWidget(AqDialogTemplate):
     def __init__(self, _ui, dev_info: AqDeviceParamListModel = None, parent=None):
         super().__init__(parent)
         self.ui = _ui()
-        self.ui.setupUi(self)
-        loadDialogJsonStyle(self, self.ui)
+        self.ui.setupUi(self.content_widget)
+        self.name = 'Parameters list'
+        # loadDialogJsonStyle(self, self.ui)
         # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
 
-        screen = QScreen()
+        # screen = QScreen()
         # Получаем размер экрана и возвращаем высоту
-        self.setMaximumHeight(screen.size().height())
+        # self.setMaximumHeight(screen.size().height())
         # getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
 
         # if isinstance(AqDeviceParamListModel.param_list[0], AqModbusItem):
         #     self.ui.tableView = AqModbusParamListTableWidget()
+        self.ui.tableView.clear()
         self.ui.tableView.fillModbusData(dev_info.param_list)
 
         self.ui.tableView.horizontalHeader().sectionResized.connect(self.customAdjustSize)
@@ -31,6 +34,7 @@ class AqParamListWidget(QDialog):
     def customAdjustSize(self, *args):
         self.ui.tableView.adjustSize()
         self.adjustSize()
+        super().adjustSize()
 
 
 class AqParamListInfoFrame(QFrame):
