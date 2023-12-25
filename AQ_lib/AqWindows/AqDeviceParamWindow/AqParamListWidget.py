@@ -6,26 +6,34 @@ from PySide6.QtGui import QScreen
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
 import ModbusTableDataFiller
+from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
+from AqWindowTemplate import AqDialogTemplate
 from AqSettingsFunc import get_last_path, save_last_path
 from DeviceModels import AqDeviceParamListModel
 
 
-class AqParamListWidget(QDialog):
+class AqParamListWidget(AqDialogTemplate):
     def __init__(self, _ui, dev_info: AqDeviceParamListModel = None, parent=None):
         super().__init__(parent)
         self.ui = _ui()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self.content_widget)
+
+        self.name = 'Parameters list'
         self.auto_load_settings = None
         self.loadLastPath()
+
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        # loadDialogJsonStyle(self, self.ui)
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setAttribute(Qt.WA_TranslucentBackground)
 
-        getattr(self.ui, "closeBtn").clicked.connect(self.close)
         self.ui.saveBtn.clicked.connect(self.saveToFile)
 
         self.device_str = ''.join((dev_info.name, ' S/N: ', dev_info.serial))
-
         self.ui.deviceInfoLabel.setText(self.device_str)
+
+        self.ui.tableView.clear()
         self.ui.tableView.fillModbusData(dev_info.param_list)
         self.ui.infoFrame.setData(dev_info.network_info)
 
@@ -35,6 +43,7 @@ class AqParamListWidget(QDialog):
     def customAdjustSize(self, *args):
         self.ui.tableView.adjustSize()
         self.adjustSize()
+        super().adjustSize()
 
     #TODO: сделать отдельной бибкой, доступ через CORE
     def loadLastPath(self):

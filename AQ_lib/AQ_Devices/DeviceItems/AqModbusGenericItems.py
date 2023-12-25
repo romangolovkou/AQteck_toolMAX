@@ -101,6 +101,8 @@ class AqModbusSignedParamItem(AqSignedParamItem, AqModbusItem):
             raise Exception('AQ_ModbusSignedParamItemError: param size is incorrect')
         # Разбиваем упакованные данные на 16-битные значения (2 байта)
         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
+
     def unpack(self, data):
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in data.registers)

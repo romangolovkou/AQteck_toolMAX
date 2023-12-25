@@ -1,0 +1,28 @@
+{
+  "QDialog": [
+    {
+      "tittle": "Akytec Design",
+      "icon": "UI/icons/AQico_silver.png",
+      "frameless": true,
+      "transluscentBg": true,
+      "sizeGrip": "sizeGrip",
+	  "resizeFrameEnable": false,
+	  "resizeFrameWidth": 5,
+      "navigation": [
+        {
+          "minimize": "minimizeBtn",
+          "close": "closeBtn",
+          "restore": [
+            {
+              "buttonName": "maximizeBtn",
+              "normalIcon": "UI/icons/feather/square.svg",
+              "maximizedIcon": "UI/icons/feather/copy.svg"
+            }
+          ],
+          "moveWindow": "headertext",
+          "tittleBar": "headertext"
+        }
+      ]
+    }
+  ]
+}
