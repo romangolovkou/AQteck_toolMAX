@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>979</width>
-    <height>396</height>
+    <height>238</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,7 +67,10 @@ QHeaderView {
 
 QHeaderView::section {
 	background-color: #637A7B;
+}
 
+QPushButton {
+	border: 1px solid #637A7B;
 }
 </string>
   </property>
@@ -227,10 +230,13 @@ QHeaderView::section {
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <property name="spacing">
+       <number>10</number>
+      </property>
       <item>
        <widget class="QLabel" name="deviceInfoLabel">
         <property name="text">
-         <string>МУ210-402 S/N 5012398139128371</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -243,27 +249,21 @@ QHeaderView::section {
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QLineEdit" name="lineEdit_6">
-           <property name="text">
-            <string>Current IP: 102.15.13.23</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_4">
-           <property name="text">
-            <string>Protocol: Modbus TCP</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit">
-           <property name="text">
-            <string>Byte order: Least significant register first</string>
-           </property>
-          </widget>
-         </item>
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <property name="leftMargin">
+          <number>10</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
         </layout>
        </widget>
       </item>
@@ -356,31 +356,6 @@ QHeaderView::section {
            <attribute name="verticalHeaderHighlightSections">
             <bool>false</bool>
            </attribute>
-           <row>
-            <property name="text">
-             <string/>
-            </property>
-           </row>
-           <row>
-            <property name="text">
-             <string>Новая строка</string>
-            </property>
-           </row>
-           <row>
-            <property name="text">
-             <string>Новая строка</string>
-            </property>
-           </row>
-           <row>
-            <property name="text">
-             <string>Новая строка</string>
-            </property>
-           </row>
-           <row>
-            <property name="text">
-             <string>Новая строка</string>
-            </property>
-           </row>
            <column>
             <property name="text">
              <string>Parameter</string>
@@ -421,209 +396,28 @@ QHeaderView::section {
              <string>Data type</string>
             </property>
            </column>
-           <item row="0" column="0">
-            <property name="text">
-             <string>1</string>
-            </property>
-           </item>
-           <item row="0" column="1">
-            <property name="text">
-             <string>2</string>
-            </property>
-           </item>
-           <item row="0" column="2">
-            <property name="text">
-             <string>3</string>
-            </property>
-           </item>
-           <item row="0" column="3">
-            <property name="text">
-             <string>4</string>
-            </property>
-           </item>
-           <item row="0" column="4">
-            <property name="text">
-             <string>fgh</string>
-            </property>
-           </item>
-           <item row="0" column="5">
-            <property name="text">
-             <string>gfh</string>
-            </property>
-           </item>
-           <item row="0" column="6">
-            <property name="text">
-             <string>gfhfg</string>
-            </property>
-           </item>
-           <item row="0" column="7">
-            <property name="text">
-             <string>gfhg</string>
-            </property>
-           </item>
-           <item row="1" column="0">
-            <property name="text">
-             <string>2</string>
-            </property>
-           </item>
-           <item row="1" column="1">
-            <property name="text">
-             <string>3</string>
-            </property>
-           </item>
-           <item row="1" column="2">
-            <property name="text">
-             <string>4</string>
-            </property>
-           </item>
-           <item row="1" column="3">
-            <property name="text">
-             <string>5</string>
-            </property>
-           </item>
-           <item row="1" column="4">
-            <property name="text">
-             <string>gf</string>
-            </property>
-           </item>
-           <item row="1" column="5">
-            <property name="text">
-             <string>hfgh</string>
-            </property>
-           </item>
-           <item row="1" column="6">
-            <property name="text">
-             <string>hgf</string>
-            </property>
-           </item>
-           <item row="1" column="7">
-            <property name="text">
-             <string>hgfh</string>
-            </property>
-           </item>
-           <item row="2" column="0">
-            <property name="text">
-             <string>23</string>
-            </property>
-           </item>
-           <item row="2" column="1">
-            <property name="text">
-             <string>4</string>
-            </property>
-           </item>
-           <item row="2" column="2">
-            <property name="text">
-             <string>5</string>
-            </property>
-           </item>
-           <item row="2" column="3">
-            <property name="text">
-             <string>6</string>
-            </property>
-           </item>
-           <item row="2" column="4">
-            <property name="text">
-             <string>hfghf</string>
-            </property>
-           </item>
-           <item row="2" column="5">
-            <property name="text">
-             <string>dsfg</string>
-            </property>
-           </item>
-           <item row="2" column="6">
-            <property name="text">
-             <string>sdfg</string>
-            </property>
-           </item>
-           <item row="2" column="7">
-            <property name="text">
-             <string>fhgfh</string>
-            </property>
-           </item>
-           <item row="3" column="0">
-            <property name="text">
-             <string>123</string>
-            </property>
-           </item>
-           <item row="3" column="1">
-            <property name="text">
-             <string>123</string>
-            </property>
-           </item>
-           <item row="3" column="2">
-            <property name="text">
-             <string>312</string>
-            </property>
-           </item>
-           <item row="3" column="3">
-            <property name="text">
-             <string>132</string>
-            </property>
-           </item>
-           <item row="3" column="4">
-            <property name="text">
-             <string>ghfgh</string>
-            </property>
-           </item>
-           <item row="3" column="5">
-            <property name="text">
-             <string>sdgfsd</string>
-            </property>
-           </item>
-           <item row="3" column="6">
-            <property name="text">
-             <string>sdgf</string>
-            </property>
-           </item>
-           <item row="3" column="7">
-            <property name="text">
-             <string>gfh</string>
-            </property>
-           </item>
-           <item row="4" column="0">
-            <property name="text">
-             <string>1323</string>
-            </property>
-           </item>
-           <item row="4" column="1">
-            <property name="text">
-             <string>123</string>
-            </property>
-           </item>
-           <item row="4" column="2">
-            <property name="text">
-             <string>1243</string>
-            </property>
-           </item>
-           <item row="4" column="3">
-            <property name="text">
-             <string>123</string>
-            </property>
-           </item>
-           <item row="4" column="4">
-            <property name="text">
-             <string>hg</string>
-            </property>
-           </item>
-           <item row="4" column="5">
-            <property name="text">
-             <string>fg</string>
-            </property>
-           </item>
-           <item row="4" column="6">
-            <property name="text">
-             <string>hfgh</string>
-            </property>
-           </item>
-           <item row="4" column="7">
-            <property name="text">
-             <string>gfhfg</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignLeft">
+       <widget class="QPushButton" name="saveBtn">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Save to file...</string>
+        </property>
        </widget>
       </item>
       <item>

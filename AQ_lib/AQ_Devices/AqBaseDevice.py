@@ -195,6 +195,8 @@ class AqBaseDevice(ABC):
 
     def get_device_param_list_model(self):
         dev_model = AqDeviceParamListModel()
+        dev_model.name = self.info('name')
+        dev_model.serial = self.info('serial_num')
         dev_model.param_list = self._params_list
         return dev_model
 
