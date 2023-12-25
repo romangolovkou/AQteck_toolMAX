@@ -28,6 +28,8 @@ class AqMainWindow(QMainWindow):
 
         Core.init()
 
+        self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
+        self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
         # # Менеджер подій
         # self.event_manager.register_event_handler("new_devices_added", self.add_dev_widgets_to_left_panel)
         # self.event_manager.register_event_handler("delete_device", self.remove_dev_widget_from_left_panel)

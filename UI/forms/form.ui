@@ -93,6 +93,21 @@ background-color: #1f232a;
 	border: 2px solid #16191d;
 	border-style: solid;
 	background-color: #16191d;
+}
+
+#footer QToolButton {
+	border-top: 1px solid #9ef1d3;
+	border-right: 1px solid #000;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 1px;
+	background-color: #16191d;
+}
+
+#footer QToolButton::hover{
+	border-top: 1px solid #9ef1d3;
+	border-right: 1px solid #8ee1c3;
+	border-top-left-radius: 12px;
+	background-color: #2c313c;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -1606,7 +1621,7 @@ background-color: #1f232a;
               </widget>
              </item>
              <item>
-              <widget class="QFrame" name="frame_4">
+              <widget class="QFrame" name="footer">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1632,8 +1647,11 @@ background-color: #1f232a;
                 <enum>QFrame::Raised</enum>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
                 <item>
-                 <widget class="QToolButton" name="readParamMenuBtn_3">
+                 <widget class="QToolButton" name="readParamMenuBtn">
                   <property name="minimumSize">
                    <size>
                     <width>25</width>
@@ -1647,7 +1665,7 @@ background-color: #1f232a;
                    </size>
                   </property>
                   <property name="text">
-                   <string>Read all</string>
+                   <string>Read parameters</string>
                   </property>
                   <property name="icon">
                    <iconset>
@@ -1660,12 +1678,12 @@ background-color: #1f232a;
                    </size>
                   </property>
                   <property name="toolButtonStyle">
-                   <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   <enum>Qt::ToolButtonTextOnly</enum>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QToolButton" name="writeParamMenuBtn_3">
+                 <widget class="QToolButton" name="writeParamMenuBtn">
                   <property name="minimumSize">
                    <size>
                     <width>25</width>
@@ -1679,7 +1697,7 @@ background-color: #1f232a;
                    </size>
                   </property>
                   <property name="text">
-                   <string>Write changed</string>
+                   <string>Write parameters</string>
                   </property>
                   <property name="icon">
                    <iconset>
@@ -1692,33 +1710,7 @@ background-color: #1f232a;
                    </size>
                   </property>
                   <property name="toolButtonStyle">
-                   <enum>Qt::ToolButtonTextBesideIcon</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QToolButton" name="toolButton">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Write all</string>
-                  </property>
-                  <property name="icon">
-                   <iconset>
-                    <normaloff>../../../../AQico_translucent.png</normaloff>../../../../AQico_translucent.png</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>20</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                  <property name="toolButtonStyle">
-                   <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   <enum>Qt::ToolButtonTextOnly</enum>
                   </property>
                  </widget>
                 </item>
@@ -1737,6 +1729,9 @@ background-color: #1f232a;
                 </item>
                 <item>
                  <widget class="QToolButton" name="setDefaultMenuBtn_3">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>25</width>
@@ -1763,7 +1758,7 @@ background-color: #1f232a;
                    </size>
                   </property>
                   <property name="toolButtonStyle">
-                   <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   <enum>Qt::ToolButtonTextOnly</enum>
                   </property>
                  </widget>
                 </item>
@@ -1900,6 +1895,12 @@ background-color: #1f232a;
                    </item>
                    <item alignment="Qt::AlignLeft">
                     <widget class="QToolButton" name="paramListBtn">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>32</width>

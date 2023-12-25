@@ -10,3 +10,5 @@ Accent 1 (border-line): #637A7B
 
 
 Selected: #A5ADA8
+
+Hover widgets: #202339

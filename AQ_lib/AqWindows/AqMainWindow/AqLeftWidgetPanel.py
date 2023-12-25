@@ -17,8 +17,11 @@ class AqLeftWidgetPanelFrame(QFrame):
                                 border-top-left-radius: 5px;
 	                            border-bottom-left-radius: 5px;}"""
         self.not_active_style = """* {background-color: #2c313c;
-                                border - top - left - radius: 5px;
-                                border - bottom - left - radius: 5px;}"""
+                                border-top-left-radius: 5px;
+                                border-bottom-left-radius: 5px;}"""
+        self.hover_style = """* {background-color: #202339; 
+                                border-top-left-radius: 5px;
+	                            border-bottom-left-radius: 5px;}"""
         self.group = list()
 
         self.event_manager.register_event_handler("new_devices_added", self.addDevice)
@@ -105,7 +108,7 @@ class AqLeftDeviceWidget(QWidget):
     def enterEvent(self, event):
         # Применяем палитру при наведении
         if self.is_active_now is False:
-            self.setStyleSheet(self.parent().active_style)
+            self.setStyleSheet(self.parent().hover_style)
         super().enterEvent(event)
 
     def leaveEvent(self, event):
@@ -167,7 +170,7 @@ class AqLeftPanelAddWidget(QWidget):
         self.event_manager = AQ_EventManager.get_global_event_manager()
 
     def enterEvent(self, event):
-        self.setStyleSheet(self.parent().active_style)
+        self.setStyleSheet(self.parent().hover_style)
         super().enterEvent(event)
 
     def leaveEvent(self, event):
