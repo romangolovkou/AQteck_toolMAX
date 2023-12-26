@@ -16,9 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QFrame,
-    QHBoxLayout, QHeaderView, QLabel, QPushButton,
-    QSizePolicy, QSpacerItem, QTableWidgetItem, QVBoxLayout,
-    QWidget)
+    QHeaderView, QLabel, QPushButton, QSizePolicy,
+    QSpacerItem, QTableWidgetItem, QVBoxLayout, QWidget)
 
 from AqDeviceParamWindow.AqParamListWidget import (AqParamListInfoFrame, AqParamListTableWidget)
 
@@ -26,29 +25,15 @@ class Ui_DeviceParamListWidget(object):
     def setupUi(self, DeviceParamListWidget):
         if not DeviceParamListWidget.objectName():
             DeviceParamListWidget.setObjectName(u"DeviceParamListWidget")
-        DeviceParamListWidget.resize(979, 238)
+        DeviceParamListWidget.resize(961, 158)
         DeviceParamListWidget.setStyleSheet(u"* {\n"
 "	border: none;\n"
-"	background-color: transparent;\n"
-"	background: transparent;\n"
 "	padding: 0;\n"
 "	margin: 0;\n"
 "	color: #fff;\n"
 "}\n"
 "\n"
-"#toolboxFrame {\n"
-"	border-top-left-radius: 10px;\n"
-"	background-color: #2c313c;\n"
-"	border-top-right-radius: 10px;\n"
-"}\n"
-"\n"
-"#windowNameFrame {\n"
-"	border-top-left-radius: 10px;\n"
-"	border-bottom-right-radius: 10px;\n"
-"	background-color: #2F4858;\n"
-"}\n"
-"\n"
-"#mainFrame {\n"
+"#DeviceParamListWidget {\n"
 "	background-color: #2c313c;\n"
 "}\n"
 "\n"
@@ -82,99 +67,40 @@ class Ui_DeviceParamListWidget(object):
 "	background-color: #637A7B;\n"
 "}\n"
 "\n"
-"QPushButton {\n"
-"	border"
-                        ": 1px solid #637A7B;\n"
+"QLineEdit{\n"
+"	background-color: transparent;\n"
+"       }\n"
+"\n"
+"       QPushButton {\n"
+"	border: 1px solid #637A7B;\n"
 "}\n"
+"\n"
 "")
         self.verticalLayout = QVBoxLayout(DeviceParamListWidget)
-        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.toolboxFrame = QFrame(DeviceParamListWidget)
-        self.toolboxFrame.setObjectName(u"toolboxFrame")
-        self.toolboxFrame.setMinimumSize(QSize(0, 30))
-        self.toolboxFrame.setFrameShape(QFrame.StyledPanel)
-        self.toolboxFrame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout = QHBoxLayout(self.toolboxFrame)
-        self.horizontalLayout.setSpacing(0)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.windowNameFrame = QFrame(self.toolboxFrame)
-        self.windowNameFrame.setObjectName(u"windowNameFrame")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.windowNameFrame.sizePolicy().hasHeightForWidth())
-        self.windowNameFrame.setSizePolicy(sizePolicy)
-        self.windowNameFrame.setMaximumSize(QSize(16777215, 30))
-        self.windowNameFrame.setFrameShape(QFrame.StyledPanel)
-        self.windowNameFrame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_3 = QHBoxLayout(self.windowNameFrame)
-        self.horizontalLayout_3.setSpacing(0)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalLayout_3.setContentsMargins(5, 0, 5, 0)
-        self.windowNameLabel = QLabel(self.windowNameFrame)
-        self.windowNameLabel.setObjectName(u"windowNameLabel")
-        sizePolicy.setHeightForWidth(self.windowNameLabel.sizePolicy().hasHeightForWidth())
-        self.windowNameLabel.setSizePolicy(sizePolicy)
-        self.windowNameLabel.setMaximumSize(QSize(16777215, 30))
-
-        self.horizontalLayout_3.addWidget(self.windowNameLabel, 0, Qt.AlignHCenter)
-
-
-        self.horizontalLayout.addWidget(self.windowNameFrame)
-
-        self.btnFrame = QFrame(self.toolboxFrame)
-        self.btnFrame.setObjectName(u"btnFrame")
-        self.btnFrame.setFrameShape(QFrame.StyledPanel)
-        self.btnFrame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_2 = QHBoxLayout(self.btnFrame)
-        self.horizontalLayout_2.setSpacing(0)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setContentsMargins(5, 0, 5, 0)
-        self.closeBtn = QPushButton(self.btnFrame)
-        self.closeBtn.setObjectName(u"closeBtn")
-        self.closeBtn.setMaximumSize(QSize(50, 30))
-
-        self.horizontalLayout_2.addWidget(self.closeBtn, 0, Qt.AlignHCenter)
-
-
-        self.horizontalLayout.addWidget(self.btnFrame)
-
-
-        self.verticalLayout.addWidget(self.toolboxFrame)
-
-        self.mainFrame = QFrame(DeviceParamListWidget)
-        self.mainFrame.setObjectName(u"mainFrame")
-        self.mainFrame.setFrameShape(QFrame.StyledPanel)
-        self.mainFrame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_4 = QVBoxLayout(self.mainFrame)
-        self.verticalLayout_4.setSpacing(10)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.deviceInfoLabel = QLabel(self.mainFrame)
+        self.deviceInfoLabel = QLabel(DeviceParamListWidget)
         self.deviceInfoLabel.setObjectName(u"deviceInfoLabel")
 
-        self.verticalLayout_4.addWidget(self.deviceInfoLabel)
+        self.verticalLayout.addWidget(self.deviceInfoLabel)
 
-        self.infoFrame = AqParamListInfoFrame(self.mainFrame)
+        self.infoFrame = AqParamListInfoFrame(DeviceParamListWidget)
         self.infoFrame.setObjectName(u"infoFrame")
         self.infoFrame.setFrameShape(QFrame.StyledPanel)
         self.infoFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.infoFrame)
-        self.verticalLayout_2.setSpacing(4)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(10, 0, 0, 0)
 
-        self.verticalLayout_4.addWidget(self.infoFrame)
+        self.verticalLayout.addWidget(self.infoFrame)
 
-        self.tableFrame = QFrame(self.mainFrame)
+        self.tableFrame = QFrame(DeviceParamListWidget)
         self.tableFrame.setObjectName(u"tableFrame")
-        sizePolicy1 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.tableFrame.sizePolicy().hasHeightForWidth())
-        self.tableFrame.setSizePolicy(sizePolicy1)
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tableFrame.sizePolicy().hasHeightForWidth())
+        self.tableFrame.setSizePolicy(sizePolicy)
         self.tableFrame.setMaximumSize(QSize(16777215, 500))
         self.tableFrame.setFrameShape(QFrame.StyledPanel)
         self.tableFrame.setFrameShadow(QFrame.Raised)
@@ -202,8 +128,8 @@ class Ui_DeviceParamListWidget(object):
         __qtablewidgetitem7 = QTableWidgetItem()
         self.tableView.setHorizontalHeaderItem(7, __qtablewidgetitem7)
         self.tableView.setObjectName(u"tableView")
-        sizePolicy1.setHeightForWidth(self.tableView.sizePolicy().hasHeightForWidth())
-        self.tableView.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.tableView.sizePolicy().hasHeightForWidth())
+        self.tableView.setSizePolicy(sizePolicy)
         self.tableView.setMinimumSize(QSize(0, 0))
         self.tableView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.tableView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
@@ -222,21 +148,17 @@ class Ui_DeviceParamListWidget(object):
         self.verticalLayout_3.addWidget(self.tableView, 0, Qt.AlignTop)
 
 
-        self.verticalLayout_4.addWidget(self.tableFrame, 0, Qt.AlignTop)
+        self.verticalLayout.addWidget(self.tableFrame)
 
-        self.saveBtn = QPushButton(self.mainFrame)
+        self.verticalSpacer = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer)
+
+        self.saveBtn = QPushButton(DeviceParamListWidget)
         self.saveBtn.setObjectName(u"saveBtn")
-        self.saveBtn.setMinimumSize(QSize(100, 0))
-        self.saveBtn.setMaximumSize(QSize(200, 16777215))
+        self.saveBtn.setMinimumSize(QSize(150, 25))
 
-        self.verticalLayout_4.addWidget(self.saveBtn, 0, Qt.AlignLeft)
-
-        self.verticalSpacer = QSpacerItem(20, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout_4.addItem(self.verticalSpacer)
-
-
-        self.verticalLayout.addWidget(self.mainFrame)
+        self.verticalLayout.addWidget(self.saveBtn, 0, Qt.AlignLeft)
 
 
         self.retranslateUi(DeviceParamListWidget)
@@ -246,9 +168,7 @@ class Ui_DeviceParamListWidget(object):
 
     def retranslateUi(self, DeviceParamListWidget):
         DeviceParamListWidget.setWindowTitle(QCoreApplication.translate("DeviceParamListWidget", u"Form", None))
-        self.windowNameLabel.setText(QCoreApplication.translate("DeviceParamListWidget", u"Device Information", None))
-        self.closeBtn.setText(QCoreApplication.translate("DeviceParamListWidget", u"Close", None))
-        self.deviceInfoLabel.setText("")
+        self.deviceInfoLabel.setText(QCoreApplication.translate("DeviceParamListWidget", u"#DeviceName, #DeviceSerial", None))
         ___qtablewidgetitem = self.tableView.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("DeviceParamListWidget", u"Parameter", None));
         ___qtablewidgetitem1 = self.tableView.horizontalHeaderItem(1)
