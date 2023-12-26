@@ -2,6 +2,7 @@ from AqAutoDetectionItems import AqAutoDetectStringParamItem
 from AqBaseDevice import AqBaseDevice
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
+from AqDeviceStrings import get_translated_string
 from SystemLibrary.AqModbusTips import swap_bytes_at_registers, remove_empty_bytes, \
     reverse_registers
 
@@ -104,14 +105,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
             self._status = 'connect_err'
             return None
 
-        # # Конвертируем значения регистров в строку
-        # hex_string = ''.join(format(value, '04X') for value in response.registers)
-        # # Конвертируем строку в массив байт
-        # byte_array = bytes.fromhex(hex_string)
-        # byte_array = swap_bytes_at_registers(byte_array, self._system_string[name][1])
-        # # Расшифровуем в строку
-        # text = byte_array.decode('ANSI')
-        # result_str = remove_empty_bytes(text)
         result_str = self.system_params_dict[name].value
 
         return result_str
@@ -119,9 +112,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
     def __read_file(self, name):
         record_size = 124
         left_to_read = self._system_file[name][2] // 2
-        # Не понял логику этих строк, надо отладить
-        # if (file_size // 2) % 124 or file_size % 2:
-        #     req_count = req_count + 1
         encrypt_file = bytearray()
 
         record_number = self._system_file[name][1]
@@ -214,5 +204,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     devParam.value = cfgParam['value']
         #TODO: optimize this algorithm
 
-        # self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
         self._event_manager.emit_event('current_device_data_updated', self)
+
+    def get_device_param_list_model(self):
+        dev_model = super().get_device_param_list_model()
+        dev_model.network_info.append(get_translated_string('protocol_modbus_str'))
+        dev_model.network_info.append(get_translated_string('byte_order_ms_str'))
+        dev_model.network_info.append(get_translated_string('register_order_ls_str'))
+        return dev_model
