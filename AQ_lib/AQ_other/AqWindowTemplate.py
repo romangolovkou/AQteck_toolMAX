@@ -45,6 +45,7 @@ class AqDialogTemplate(QDialog):
         self.setAttribute(Qt.WA_TranslucentBackground)
         getattr(self.ui_title, "closeBtn").clicked.connect(lambda: self.close())
         getattr(self.ui_title, "maximizeBtn").clicked.connect(lambda: self.restore_or_maximize_window())
+        getattr(self.ui_title, "minimizeBtn").clicked.connect(lambda: self.showMinimized())
 
     @property
     def name(self):
