@@ -78,7 +78,7 @@ class AqDialogTemplate(QDialog):
         if state is False:
             self._maximizeBtnEnable = state
             getattr(self.ui_title, "maximizeBtn").hide()
-            getattr(self.ui_title, "minimizeBtn").deleteLater()
+            getattr(self.ui_title, "maximizeBtn").deleteLater()
 
     @property
     def content_widget(self):
