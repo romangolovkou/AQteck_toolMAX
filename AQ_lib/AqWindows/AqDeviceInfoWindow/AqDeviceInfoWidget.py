@@ -18,6 +18,7 @@ class AqDeviceInfoWidget(AqDialogTemplate):
         super().__init__(parent)
         self.ui = _ui()
         self.ui.setupUi(self.content_widget)
+        self.maximizeBtnEnable = False
 
         self.name = 'Device info'
         # loadDialogJsonStyle(self, self.ui)

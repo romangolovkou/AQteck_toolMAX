@@ -17,6 +17,7 @@ class AqParamListWidget(AqDialogTemplate):
         super().__init__(parent)
         self.ui = _ui()
         self.ui.setupUi(self.content_widget)
+        self.maximizeBtnEnable = False
 
         self.name = 'Parameters list'
         self.auto_load_settings = None

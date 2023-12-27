@@ -37,6 +37,8 @@ class AqDialogTemplate(QDialog):
         self.dragging_enable = True
         self._resizeFrameEnable = False
         self._resizeFrameWidth = 5
+        self._minimizeBtnEnable = True
+        self._maximizeBtnEnable = True
         self.maximizedIcon = "UI/icons/feather/copy.svg"
         self.normalIcon = "UI/icons/feather/square.svg"
         self.event_manager = AQ_EventManager.get_global_event_manager()
@@ -55,6 +57,28 @@ class AqDialogTemplate(QDialog):
     def name(self, name):
         self._window_name = name
         self.ui_title.headertext.setText(name)
+
+    @property
+    def minimizeBtnEnable(self):
+        return self._minimizeBtnEnable
+
+    @minimizeBtnEnable.setter
+    def minimizeBtnEnable(self, state: bool):
+        if state is False:
+            self._minimizeBtnEnable = state
+            getattr(self.ui_title, "minimizeBtn").hide()
+            getattr(self.ui_title, "minimizeBtn").deleteLater()
+
+    @property
+    def maximizeBtnEnable(self):
+        return self._maximizeBtnEnable
+
+    @maximizeBtnEnable.setter
+    def maximizeBtnEnable(self, state: bool):
+        if state is False:
+            self._maximizeBtnEnable = state
+            getattr(self.ui_title, "maximizeBtn").hide()
+            getattr(self.ui_title, "minimizeBtn").deleteLater()
 
     @property
     def content_widget(self):
