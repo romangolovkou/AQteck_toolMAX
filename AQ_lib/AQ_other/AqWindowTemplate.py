@@ -35,11 +35,16 @@ class AqDialogTemplate(QDialog):
         self.ui_title.setupUi(self)
         self._dragging_enable = False
         self.dragging_enable = True
+        self._resizeFrameEnable = False
+        self._resizeFrameWidth = 5
+        self.maximizedIcon = "UI/icons/feather/copy.svg"
+        self.normalIcon = "UI/icons/feather/square.svg"
         self.event_manager = AQ_EventManager.get_global_event_manager()
         self.clickPosition = None  # Initialize clickPosition attribute
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         getattr(self.ui_title, "closeBtn").clicked.connect(lambda: self.close())
+        getattr(self.ui_title, "maximizeBtn").clicked.connect(lambda: self.restore_or_maximize_window())
 
     @property
     def name(self):
@@ -63,6 +68,18 @@ class AqDialogTemplate(QDialog):
         self._dragging_enable = value
         if hasattr(self.ui_title, 'headertext'):
             getattr(self.ui_title, 'headertext').mouseMoveEvent = self.moveWindow
+
+    @property
+    def resizeFrameEnable(self):
+        return self._resizeFrameEnable
+
+    @resizeFrameEnable.setter
+    def resizeFrameEnable(self, state_n_width: list):
+        if state_n_width[0] is True and self._resizeFrameEnable is False:
+            self._resizeFrameWidth = state_n_width[1]
+            self.create_resize_frame(self._resizeFrameWidth)
+
+        self._resizeFrameEnable = state_n_width[0]
 
     def create_resize_frame(self, resizeFrameWidth):
         self.event_manager.register_event_handler('resize_' + self.objectName(), self.resize_MainWindow)
@@ -156,11 +173,11 @@ class AqDialogTemplate(QDialog):
         if self.isMaximized():
             # Change Iconload
             if len(str(self.maximizedIcon)) > 0:
-                self.restoreBtn.setIcon(QtGui.QIcon(str(self.maximizedIcon)))
+                self.ui_title.maximizeBtn.setIcon(QtGui.QIcon(str(self.maximizedIcon)))
         else:
             # Change Icon
             if len(str(self.normalIcon)) > 0:
-                self.restoreBtn.setIcon(QtGui.QIcon(str(self.normalIcon)))
+                self.ui_title.maximizeBtn.setIcon(QtGui.QIcon(str(self.normalIcon)))
 
 
     def restore_or_maximize_window(self):

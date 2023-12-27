@@ -22,11 +22,12 @@ class AqParamListWidget(AqDialogTemplate):
         self.auto_load_settings = None
         self.loadLastPath()
 
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setAttribute(Qt.WA_TranslucentBackground)
         # loadDialogJsonStyle(self, self.ui)
         # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
+
 
         self.ui.saveBtn.clicked.connect(self.saveToFile)
 

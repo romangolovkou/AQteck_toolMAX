@@ -2,11 +2,13 @@ import random
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
+
+from AqWindowTemplate import AqDialogTemplate
 from DeviceModels import AqDeviceInfoModel
 from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 
 
-class AqDeviceInfoWidget(QDialog):
+class AqDeviceInfoWidget(AqDialogTemplate):
     """
     Widget require ui.generalInfoFrame and ui.operatingInfoFrame for work
     Check names at your generated Ui
@@ -15,8 +17,10 @@ class AqDeviceInfoWidget(QDialog):
     def __init__(self, _ui, parent=None):
         super().__init__(parent)
         self.ui = _ui()
-        self.ui.setupUi(self)
-        loadDialogJsonStyle(self, self.ui)
+        self.ui.setupUi(self.content_widget)
+
+        self.name = 'Device info'
+        # loadDialogJsonStyle(self, self.ui)
         self.generalTextEditors = list()
         self.operatingTextEditors = list()
         # self.setWindowFlags(Qt.FramelessWindowHint)
