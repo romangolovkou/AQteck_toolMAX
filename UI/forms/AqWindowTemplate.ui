@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>142</width>
-    <height>35</height>
+    <width>176</width>
+    <height>53</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -48,6 +48,12 @@
 
 #mainWidget {
 	background-color: #2c313c;
+}
+
+#mainFrame{
+	border-left: 1px solid #D0D0D0;
+	border-bottom: 1px solid #D0D0D0;
+	border-right: 1px solid #D0D0D0;
 }
 
 #closeBtn {
@@ -123,7 +129,7 @@ QLabel{
 	background: transparent;
 }</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -139,7 +145,7 @@ QLabel{
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item alignment="Qt::AlignTop">
+   <item>
     <widget class="QFrame" name="toolboxFrame">
      <property name="minimumSize">
       <size>
@@ -272,13 +278,40 @@ QLabel{
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="mainWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="QFrame" name="mainFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="mainWidget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
