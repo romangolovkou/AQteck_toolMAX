@@ -49,11 +49,11 @@ class AqLeftWidgetPanelFrame(QFrame):
         if delete_pos is not None:
             try:
                 widget = self.layout().itemAt(delete_pos).widget()
-                widget.set_active_cur_widget()
+                self.onWidgetClicked(widget)
             except:
                 try:
                     widget = self.layout().itemAt(delete_pos - 1).widget()
-                    widget.set_active_cur_widget()
+                    self.onWidgetClicked(widget)
                 except Exception as e:
                     print(f"Error occurred: {str(e)}")
                     print(f"Немає жодного пристрою")

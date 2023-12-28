@@ -14,14 +14,18 @@ from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import load_last_combobox_state, load_last_text_value, save_combobox_current_state, \
     save_current_text_value
+from AqWindowTemplate import AqDialogTemplate
 
 
-class AqAddDeviceWidget(QDialog):
+class AqAddDeviceWidget(AqDialogTemplate):
     def __init__(self, _ui, parent=None):
         super().__init__(parent)
         self.ui = _ui()
-        self.ui.setupUi(self)
-        loadDialogJsonStyle(self, self.ui)
+        self.ui.setupUi(self.content_widget)
+        self.maximizeBtnEnable = False
+
+        self.name = 'Add devices'
+        # loadDialogJsonStyle(self, self.ui)
         # self.setObjectName("AqAddDeviceWindow")
         # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
