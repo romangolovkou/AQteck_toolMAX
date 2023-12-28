@@ -115,6 +115,8 @@ class AqTreeView(QTreeView):
                         action_write = context_menu.addAction("Write parameters")
                         # Подключаем обработчик события выбора действия
                         action_write.triggered.connect(lambda: self.model().write_parameter(index))
+                    action_add_to_watch_list = context_menu.addAction("Add to watch list")
+                    action_add_to_watch_list.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
                     # # Показываем контекстное меню
                     context_menu.exec(event.globalPos())
                 else:
@@ -146,6 +148,8 @@ class AqTreeView(QTreeView):
                         action_write = context_menu.addAction("Write parameter")
                         # Подключаем обработчик события выбора действия
                         action_write.triggered.connect(lambda: self.model().write_parameter(index))
+                    action_add_to_watch_list = context_menu.addAction("Add to watch list")
+                    action_add_to_watch_list.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
 
                     # Показываем контекстное меню
                     context_menu.exec(event.globalPos())

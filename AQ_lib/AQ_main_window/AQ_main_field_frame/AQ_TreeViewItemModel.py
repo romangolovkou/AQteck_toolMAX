@@ -1,6 +1,8 @@
 from PySide6.QtGui import QStandardItemModel
 
 
+
+
 class AQ_TreeItemModel(QStandardItemModel):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -14,6 +16,7 @@ class AQ_TreeItemModel(QStandardItemModel):
 
 
 class AQ_TreeViewItemModel(QStandardItemModel):
+
     def __init__(self, device, event_manager, parent=None):
         super().__init__(parent)
         self.device = device
@@ -108,4 +111,6 @@ class AQ_TreeViewItemModel(QStandardItemModel):
 
     def add_parameter_to_watch_list(self, index):
         item = self.itemFromIndex(index)
-        self.event_manager.emit_event('add_parameter_to_watch_list', item, self)
+        sourse_item = item.get_sourse_item()
+        from AqWatchListCore import AqWatchListCore
+        AqWatchListCore.addItem(self.device, sourse_item)

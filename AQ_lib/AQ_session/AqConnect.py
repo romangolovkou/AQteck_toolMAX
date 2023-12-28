@@ -1,7 +1,8 @@
+import asyncio
 from abc import abstractmethod
 
 from PySide6.QtCore import QObject
-from pymodbus.client import ModbusTcpClient, ModbusSerialClient
+from pymodbus.client import AsyncModbusTcpClient, AsyncModbusSerialClient
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 from pymodbus.pdu import ModbusResponse
@@ -14,7 +15,7 @@ class AqConnect(QObject):
         super().__init__()
 
     @abstractmethod
-    def open(self):
+    async def open(self):
         pass
 
     @abstractmethod
@@ -98,7 +99,7 @@ class AqModbusConnect(AqConnect):
         self.file_request_stack = []
         self.timeout = 1.0
         if isinstance(self.connect_settings, AqComConnectSettings):
-            self.client = ModbusSerialClient(method='rtu',
+            self.client = AsyncModbusSerialClient(method='rtu',
                                                     port=self.connect_settings.port,
                                                     baudrate=self.connect_settings.baudrate,
                                                     parity=self.connect_settings.parity[:1],
@@ -106,7 +107,7 @@ class AqModbusConnect(AqConnect):
                                                     timeout=self.timeout)
             self.slave_id = slave_id
         elif isinstance(self.connect_settings, AqIpConnectSettings):
-            self.client = ModbusTcpClient(self.connect_settings.ip)
+            self.client = AsyncModbusTcpClient(self.connect_settings.ip)
             self.slave_id = 1
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
@@ -118,7 +119,7 @@ class AqModbusConnect(AqConnect):
             return str(self.slave_id) + ' (' + self.connect_settings.addr + ')'
 
     def open(self):
-        return self.client.connect()
+        return asyncio.run(self.client.connect())
 
     def close(self):
         self.client.close()
@@ -149,21 +150,21 @@ class AqModbusConnect(AqConnect):
         with self.core_cv:
             self.core_cv.notify()
 
-    def proceed_request(self, request):
+    async def proceed_request(self, request):
         function = request.get('method', None)
 
         if function is not None:
-            if isinstance(self.connect_settings, AqComConnectSettings):
-                self.client.connect()
-            function(request.get('item', None))
-            if isinstance(self.connect_settings, AqComConnectSettings):
-                self.client.close()
+           # if isinstance(self.connect_settings, AqComConnectSettings):
+            await self.client.connect()
+            await function(request.get('item', None))
+            # if isinstance(self.connect_settings, AqComConnectSettings):
+            self.client.close()
         else:
-            if isinstance(self.connect_settings, AqComConnectSettings):
-                self.client.close()
+            # if isinstance(self.connect_settings, AqComConnectSettings):
+            self.client.close()
             raise Exception('AqConnectError: unknown "method"')
 
-    def read_param(self, item):
+    async def read_param(self, item):
         if item is not None:
             param_attributes = item.get_param_attributes()
 
@@ -182,11 +183,11 @@ class AqModbusConnect(AqConnect):
                                              or "param_size" or "modbus_reg" not exist'.format(item.__name__))
 
             if func == 3:
-                result = self.client.read_holding_registers(modbus_reg, count, self.slave_id)
+                result = await self.client.read_holding_registers(modbus_reg, count, self.slave_id)
             elif func == 2:
-                result = self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
+                result = await self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
             elif func == 1:
-                result = self.client.read_coils(modbus_reg, 1, self.slave_id)
+                result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
             else:
                 return 'modbus_error'
 
@@ -196,7 +197,7 @@ class AqModbusConnect(AqConnect):
             else:
                 item.data_from_network(result)
 
-    def write_param(self, item):
+    async def write_param(self, item):
         if item is not None:
             param_attributes = item.get_param_attributes()
 
@@ -206,10 +207,10 @@ class AqModbusConnect(AqConnect):
             try:
                 result = None
                 if func == 16:
-                    result = self.client.write_registers(modbus_reg, data, self.slave_id)
+                    result = await self.client.write_registers(modbus_reg, data, self.slave_id)
                 elif func == 5:
                     # Запись одного дискретного выхода (бита)
-                    result = self.client.write_coil(modbus_reg, data, self.slave_id)
+                    result = await self.client.write_coil(modbus_reg, data, self.slave_id)
                 elif func == 6:
 
                     if item.param_size < 2:
@@ -222,12 +223,12 @@ class AqModbusConnect(AqConnect):
                     # TODO: перенести костыль в функцию в расслыку широковещательного запроса
                     if modbus_reg == 100:
                         # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
-                        result = self.client.write_register(modbus_reg, data, 0)
+                        result = await self.client.write_register(modbus_reg, data, 0)
                         if not isinstance(result, ModbusIOException):
                             self.slave_id = data
                     else:
                         # Запись одного регистра
-                        result = self.client.write_register(modbus_reg, data, self.slave_id)
+                        result = await self.client.write_register(modbus_reg, data, self.slave_id)
 
                 if isinstance(result, ModbusIOException):
                     item.confirm_writing(False, 'modbus_error')
@@ -294,11 +295,11 @@ class AqOfflineConnect(AqConnect):
         with self.core_cv:
             self.core_cv.notify()
 
-    def proceed_request(self, request):
+    async def proceed_request(self, request):
         function = request.get('method', None)
 
         if function is not None:
-            function(request.get('item', None))
+            await function(request.get('item', None))
         else:
             raise Exception('AqConnectError: unknown "method"')
 

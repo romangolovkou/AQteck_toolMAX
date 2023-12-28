@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from AqConnect import AqConnect
 from AqBaseTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
-from AQ_TreeViewItemModel import AQ_TreeItemModel
+from AqTreeViewItemModel import AqTreeItemModel
 from AqDeviceConfig import AqDeviceConfig
 from AqDeviceInfoModel import AqDeviceInfoModel
 from AqDeviceParamListModel import AqDeviceParamListModel
@@ -43,7 +43,7 @@ class AqBaseDevice(ABC):
         self._status = None
         self._is_inited = False
 
-        if self._connect is not None and self._connect.open():
+        if self._connect is not None:
             self._info['address'] = self._connect.address_string()
         else:
             raise Exception('AqBaseDeviceError: can`t open connect')
@@ -51,7 +51,7 @@ class AqBaseDevice(ABC):
         if not self.init_device():
             raise Exception('AqBaseDeviceError: can`t initialize device')
 
-        if self._device_tree is not None and isinstance(self._device_tree, AQ_TreeItemModel):
+        if self._device_tree is not None and isinstance(self._device_tree, AqTreeItemModel):
             self._device_tree.set_device(self)
         else:
             raise Exception('AqBaseDeviceError: device_tree isn`t exists')
@@ -122,6 +122,11 @@ class AqBaseDevice(ABC):
 
             if len(self._stack_to_read) > 0:
                 self._request_count.append(len(self._stack_to_read))
+                print('AqBaseDevice: Device: '
+                      + self.info('name') + ' addr: '
+                      + self.info('address')
+                      + ' maked request. Request size = '
+                      + str(len(self._stack_to_read)))
                 self._connect.create_param_request('read', self._stack_to_read)
                 self._stack_to_read.clear()
 
@@ -231,11 +236,20 @@ class AqBaseDevice(ABC):
     # Private function
     def __add_param_to_update_stack(self, item):
         if item not in self._update_param_stack:
+            print('AqBaseDevice: Device: '
+                  + self.info('name') + ' addr: '
+                  + self.info('address')
+                  + ' get item' )
             self._update_param_stack.append(item)
-            if len(self._update_param_stack) == self._request_count[0]:
-                self._request_count.pop(0)
-                self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-                self._update_param_stack.clear()
+            if len(self._request_count) != 0:
+                if len(self._update_param_stack) == self._request_count[0]:
+                    print('AqBaseDevice: Device: '
+                          + self.info('name') + ' addr: '
+                          + self.info('address')
+                          + ' complete request.')
+                    self._request_count.pop(0)
+                    self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+                    self._update_param_stack.clear()
 
     def __convert_tree_branch_to_list(self, item):
         param_attributes = item.get_param_attributes()

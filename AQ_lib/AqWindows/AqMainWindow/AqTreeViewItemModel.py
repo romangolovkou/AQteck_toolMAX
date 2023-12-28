@@ -108,4 +108,7 @@ class AqTreeViewItemModel(QStandardItemModel):
 
     def add_parameter_to_watch_list(self, index):
         item = self.itemFromIndex(index)
-        self.event_manager.emit_event('add_parameter_to_watch_list', item, self)
+        sourse_item = item.get_sourse_item()
+        from AqWatchListCore import AqWatchListCore
+        AqWatchListCore.addItem(self.device, sourse_item)
+

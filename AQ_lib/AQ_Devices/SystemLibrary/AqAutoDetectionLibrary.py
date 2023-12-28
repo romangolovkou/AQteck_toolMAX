@@ -1,6 +1,6 @@
 import array
 
-from AQ_TreeViewItemModel import AQ_TreeItemModel
+from AqTreeViewItemModel import AqTreeItemModel
 from AqBaseTreeItems import *
 from AqAutoDetectionItems import *
 
@@ -88,7 +88,7 @@ def parse_tree(storage_container):
         cache_descr_offsets[i] = cache_descr_offsets[i - 1] + descr_area[cache_descr_offsets[i - 1]] + 1
 
     # tree_model = QStandardItemModel()
-    tree_model = AQ_TreeItemModel()
+    tree_model = AqTreeItemModel()
     tree_model.setColumnCount(1)
 
     # Создание корневого элемента

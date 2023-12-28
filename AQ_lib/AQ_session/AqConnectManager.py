@@ -2,6 +2,7 @@ import asyncio
 import threading
 import time
 from random import random
+from codetiming import Timer
 
 from AqConnect import AqOfflineConnect, AqModbusConnect, AqConnect, AqOfflineConnectSettings
 from AqConnect import AqIpConnectSettings, AqComConnectSettings
@@ -14,6 +15,8 @@ class AqConnectManager(object):
     core_thread = None
     connect_list = []
     request_stack = []
+
+    work_queue = asyncio.Queue()
 
     @classmethod
     def init(cls):
@@ -30,11 +33,18 @@ class AqConnectManager(object):
         with AqConnectManager.core_cv:
             while True:
                 cls.core_cv.wait()
-                for i in range(len(cls.connect_list)):
-                    while len(cls.connect_list[i].param_request_stack) > 0:
-                        await cls.proceedParamRequest(cls.connect_list[i])
-                    while len(cls.connect_list[i].file_request_stack) > 0:
-                        await cls.proceedFileRequest(cls.connect_list[i].param_request_stack.pop())
+                with Timer(text="\nTotal elapsed time: {:.1f}"):
+                    for i in range(len(cls.connect_list)):
+                        if len(cls.connect_list[i].param_request_stack) > 0:
+                            await cls.work_queue.put(cls.connect_list[i])
+                    await asyncio.gather(
+                        asyncio.create_task(cls.proceedParamRequest("One")),
+                        asyncio.create_task(cls.proceedParamRequest("Two")),
+                    )
+                                # await cls.proceedParamRequest(cls.connect_list[i])
+                            # while len(cls.connect_list[i].file_request_stack) > 0:
+                            #     await cls.proceedFileRequest(cls.connect_list[i].param_request_stack.pop())
+
 
     @classmethod
     def create_connect(cls, connect_settings, device_id=None) -> AqConnect:
@@ -46,17 +56,17 @@ class AqConnectManager(object):
                 if device_id is None:
                     device_id = 1
                 connect = AqModbusConnect(connect_settings, device_id, cls.core_cv)
-                if connect.open():
-                    connect.close()
-                else:
-                    connect = None
-                    print(cls.__name__ + 'Error: failed to open connect')
-                    raise Exception(cls.__name__ + 'Error: failed to open connect')
+                # if connect.open():
+                #     connect.close()
+                # else:
+                #     connect = None
+                #     print(cls.__name__ + 'Error: failed to open connect')
+                #     raise Exception(cls.__name__ + 'Error: failed to open connect')
             except Exception as e:
                 print(str(e))
                 raise Exception(cls.__name__ + 'Error: failed to open connect')
         else:
-            print('AqConnectManagerError: unknown settings instance')
+            print('AqConnectManagerError: unknown settFings instance')
             return None
 
         if connect is not None:
@@ -64,17 +74,26 @@ class AqConnectManager(object):
 
         return connect
 
-    @staticmethod
-    async def proceedParamRequest(connect):
-        for i in range(len(connect.param_request_stack)):
-            request = connect.param_request_stack.pop()
-            connect.proceed_request(request)
+    @classmethod
+    async def proceedParamRequest(cls, name):
+        print(f"Created read task {name}")
 
-    @staticmethod
-    async def proceedFileRequest(req_data):
-        data_storage = req_data['data']
-        time.sleep(random.uniform(0.1, 2.0))
-        data_storage = random.randint(50, 100)
+        timer = Timer(text=f"Task {name} elapsed time: {{:.1f}}")
+
+        while not cls.work_queue.empty():
+            connect = await cls.work_queue.get()
+            timer.start()
+            for i in range(len(connect.param_request_stack)):
+                request = connect.param_request_stack.pop()
+                await connect.proceed_request(request)
+
+            timer.stop()
+
+    # @staticmethod
+    # async def proceedFileRequest(req_data):
+    #     data_storage = req_data['data']
+    #     time.sleep(random.uniform(0.1, 2.0))
+    #     data_storage = random.randint(50, 100)
 
 
 
