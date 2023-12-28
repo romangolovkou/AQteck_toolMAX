@@ -175,6 +175,22 @@ class AqModbusItem(AqParamItem):
         self.setData(param_attributes, Qt.UserRole)
 
 
+class AqModbusFileItem(AqParamItem):
+    def __init__(self, param_attributes):
+
+        file_num = param_attributes.get('file_num', None)
+        start_record_num = param_attributes.get('start_record_num', None)
+        file_size = param_attributes.get('file_size', None)
+        if file_num is None or start_record_num is None or file_size is None:
+            raise Exception('ModbusItemError: "file_num", "start_record_num" or "file_size" not exist')
+
+        param_attributes['protocol'] = 'modbus'
+
+        super().__init__(param_attributes)
+
+        self.setData(param_attributes, Qt.UserRole)
+
+
 class AqCatalogItem(AqParamItem):
     def __init__(self, param_attributes):
         is_catalog = param_attributes.get('is_catalog', None)

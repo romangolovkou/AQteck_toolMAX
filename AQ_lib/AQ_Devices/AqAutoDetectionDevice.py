@@ -1,13 +1,12 @@
-from AqAutoDetectionItems import AqAutoDetectStringParamItem
+import time
+
+from AqAutoDetectionItems import AqAutoDetectStringParamItem, AqAutoDetectModbusFileItem
 from AqBaseDevice import AqBaseDevice
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
 from AqDeviceStrings import get_translated_string
 from SystemLibrary.AqModbusTips import swap_bytes_at_registers, remove_empty_bytes, \
     reverse_registers
-
-
-from Crypto.Cipher import DES
 
 from SystemLibrary.AqAutoDetectionLibrary import get_containers_count, \
     get_containers_offset, get_storage_container, parse_tree
@@ -41,10 +40,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._connect = connect
 
     def init_device(self) -> bool:
-        self._create_system_params()
-        self._info['name'] = self.__read_string('name')
-        self._info['version'] = self.__read_string('version')
-        self._info['serial_num'] = self.__read_string('serial_num')
+        self.__create_system_params()
+        self.__create_system_files()
+        self._info['name'] = self.__sync_read_param(self.system_params_dict['name'])
+        self._info['version'] = self.__sync_read_param(self.system_params_dict['version'])
+        self._info['serial_num'] = self.__sync_read_param(self.system_params_dict['serial_num'])
         self._info['password'] = None
         self._default_prg = self.__read_default_prg()
 
@@ -72,7 +72,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._status = 'ok'
         return True
 
-    def _create_system_params(self):
+    def __create_system_params(self):
         # Створюємо строкові системні ітеми
         keys_list = list(self._system_string.keys())
         for i in range(len(keys_list)):
@@ -84,6 +84,20 @@ class AqAutoDetectionDevice(AqBaseDevice):
             param_attributes['R_Only'] = 1
             param_attributes['W_Only'] = 0
             self.system_params_dict[keys_list[i]] = AqAutoDetectStringParamItem(param_attributes)
+            self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
+
+    def __create_system_files(self):
+        keys_list = list(self._system_file.keys())
+        for i in range(len(keys_list)):
+            param_attributes = dict()
+            param_attributes['name'] = keys_list[i]
+            param_attributes['file_num'] = self._system_file[keys_list[i]][0]
+            param_attributes['start_record_num'] = self._system_file[keys_list[i]][1]
+            param_attributes['file_size'] = self._system_file[keys_list[i]][2] // 2
+            param_attributes['R_Only'] = 1
+            param_attributes['W_Only'] = 0
+            self.system_params_dict[keys_list[i]] = AqAutoDetectModbusFileItem(param_attributes)
+            self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
 
     def __parse_default_prg(self):
         try:
@@ -96,18 +110,41 @@ class AqAutoDetectionDevice(AqBaseDevice):
             print(f"Error occurred: {str(e)}")
             return 'parsing_err'
 
-    def __read_string(self, name):
-        try:
-            # Выполняем запрос
-            response = self._connect.read_param(self.system_params_dict[name])
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            self._status = 'connect_err'
-            return None
+    def __sync_read_param(self, item):
+        self.read_parameters(item)
+        with self._core_cv:
+            self._core_cv.wait()
+        return item.value
 
-        result_str = self.system_params_dict[name].value
+    def __sync_read_file(self, item):
+        self.read_file(item)
+        with self._core_cv:
+            self._core_cv.wait()
+        return item.value
 
-        return result_str
+    def read_file(self, item):
+        if len(self._request_count) == 0:
+            if item is not None:
+                self.read_parameter(item)
+            if len(self._stack_to_read) > 0:
+                self._request_count.append(len(self._stack_to_read))
+                self._connect.create_param_request('read_file', self._stack_to_read)
+                self._stack_to_read.clear()
+
+
+
+    # def __read_string(self, name):
+    #     try:
+    #         # Выполняем запрос
+    #         response = self._connect.read_param(self.system_params_dict[name])
+    #     except Exception as e:
+    #         print(f"Error occurred: {str(e)}")
+    #         self._status = 'connect_err'
+    #         return None
+    #
+    #     result_str = self.system_params_dict[name].value
+    #
+    #     return result_str
 
     def __read_file(self, name):
         record_size = 124
@@ -141,43 +178,46 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return decrypt_file
 
     def __read_default_prg(self):
+
+
+
         # Read first page from file to determine file size
-        first_page = self.__read_file('default_prg')
+        first_page = self.__sync_read_file(self.system_params_dict['default_prg'])
 
         file_size = int.from_bytes((first_page[4:8][::-1]), byteorder='big')
-        self._system_file['default_prg'][2] = file_size
+        self.system_params_dict['default_prg'].set_file_size(file_size // 2)
 
         # Read full file
-        decrypt_file = self.__read_file('default_prg')
+        full_file = self.__sync_read_file(self.system_params_dict['default_prg'])
 
         # Ця вставка робить файл default.prg у корні проекту (було необхідно для відладки)
         filename = 'default.prg'
         with open(filename, 'wb') as file:
-            file.write(decrypt_file)
+            file.write(full_file)
 
-        return decrypt_file
+        return full_file
 
-    def __decrypt_data(self, encrypted_data):
-        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
-        decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
-
-        return decrypted_data
-
-    def __encrypt_data(self, data):
-        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
-        encrypted_data = cipher.encrypt(data)
-
-        return encrypted_data
-
-    def __get_key(self):
-        # return self._info['password'] if self._info['password'] else b'superkey'
-        return self.info('password') if self.info('password') else b'superkey'
-
-    def __get_hash(self):
-        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
-        return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
+    # def __decrypt_data(self, encrypted_data):
+    #     # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+    #     cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
+    #     decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
+    #
+    #     return decrypted_data
+    #
+    # def __encrypt_data(self, data):
+    #     # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+    #     cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
+    #     encrypted_data = cipher.encrypt(data)
+    #
+    #     return encrypted_data
+    #
+    # def __get_key(self):
+    #     # return self._info['password'] if self._info['password'] else b'superkey'
+    #     return self.info('password') if self.info('password') else b'superkey'
+    #
+    # def __get_hash(self):
+    #     # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+    #     return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
 
     def get_configuration(self) -> AqDeviceConfig:
         config = AqDeviceConfig()
