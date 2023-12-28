@@ -1,10 +1,15 @@
 import struct
 
+from PySide6.QtCore import Qt
+
 from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
-    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem
+    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem, \
+    AqModbusFileItem
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes
 # from AqModbusTips import reverse_registers
+
+from Crypto.Cipher import DES
 
 
 # TODO: сделать модбас итем зависящий от функции
@@ -24,7 +29,6 @@ class AqAutoDetectEnumParamItem(AqEnumParamItem, AqModbusItem):
             registers = struct.unpack('H', packed_data)
         else:
             raise Exception('AqAutoDetectEnumParamItemError: "param_size" is incorrect')
-
 
         return registers
 
@@ -149,10 +153,54 @@ class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
 
         return param_value
 
+class AqAutoDetectModbusFileItem(AqModbusFileItem):
+    def __init__(self, param_attributes):
+        super().__init__(param_attributes)
+        self.key = b'superkey'
+
+    def pack(self):
+        pass
+
+    def unpack(self, data):
+        decrypt_file = None
+        try:
+            # Перевірка на кратність 8 байтам, потрібно для DES
+            if (len(data) % 8) > 0:
+                padding = 8 - (len(data) % 8)
+                data = data + bytes([padding] * padding)
+            decrypt_file = self.__decrypt_data(data)
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return 'decrypt_err'  # Помилка дешифрування
+
+        return decrypt_file
+
+    def __decrypt_data(self, encrypted_data):
+        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.key)
+        decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
+
+        return decrypted_data
+
+    def set_key(self, new_key):
+        self.key = new_key
+
+    def set_file_size(self, new_file_size):
+        attr = self.get_param_attributes()
+        attr['file_size'] = new_file_size
+        self.setData(attr, Qt.UserRole)
+        print('aaaaa')
+
+    def __get_hash(self):
+        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+        return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
+
+
 
 class AqAutoDetectStringParamItem(AqStringParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
+        self.value = ''
 
     def pack(self):
         text_bytes = self.value.encode('ANSI')

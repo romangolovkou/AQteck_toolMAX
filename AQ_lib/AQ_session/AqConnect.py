@@ -132,6 +132,8 @@ class AqModbusConnect(AqConnect):
                 request['method'] = self.read_param
             elif method == 'write':
                 request['method'] = self.write_param
+            elif method == 'read_file':
+                request['method'] = self.read_file
             else:
                 raise Exception('AqConnectError: unknown stack name')
 
@@ -144,11 +146,6 @@ class AqModbusConnect(AqConnect):
         with self.core_cv:
             self.core_cv.notify()
 
-    def createFileRequest(self, func, file_num, record_num, record_len, data):
-        self.file_request_stack.append({'func': func, 'file_num': file_num,
-                                        'record_num': record_num, 'record_len': record_len, 'data': data})
-        with self.core_cv:
-            self.core_cv.notify()
 
     async def proceed_request(self, request):
         function = request.get('method', None)
@@ -238,6 +235,37 @@ class AqModbusConnect(AqConnect):
             except Exception as e:
                 print(f"Error occurred: {str(e)}")
                 raise
+
+    async def read_file(self, item):
+        if item is not None:
+            max_record_size = 124
+            param_attributes = item.get_param_attributes()
+
+            file_num = param_attributes.get('file_num', '')
+            start_record_num = param_attributes.get('start_record_num', '')
+            left_to_read = param_attributes.get('file_size', '')
+            summary_data = bytearray()
+            while left_to_read:
+                read_size = max_record_size if left_to_read > max_record_size else left_to_read
+                result = None
+                request = ReadFileRecordRequest(self.slave_id)
+                request.file_number = file_num
+                request.record_number = start_record_num
+                request.record_length = read_size
+
+                try:
+                    result = await self.client.read_file_record(self.slave_id, [request])
+                    start_record_num += read_size
+                    left_to_read -= read_size
+                except Exception as e:
+                    print(f"Error occurred: {str(e)}")
+                    item.data_from_network(None, True, 'modbus_error')
+                    return
+
+                summary_data += result.records[0].record_data
+
+            item.data_from_network(summary_data)
+
 
     def read_file_record(self, file_number, record_number, record_length):
         # Создание экземпляра структуры ReadFileRecordRequest

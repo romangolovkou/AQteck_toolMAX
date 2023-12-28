@@ -62,4 +62,4 @@ class AqWatchListCore(object):
                 print('AqWatchListCore: started making read request')
                 for watched_item in cls.watched_items:
                     watched_item.device.read_parameters(watched_item.items)
-                time.sleep(2)
+                time.sleep(0.5)

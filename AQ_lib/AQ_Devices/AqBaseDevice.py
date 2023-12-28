@@ -22,12 +22,13 @@ class AqBaseDevice(ABC):
         self._stack_to_read = list()
         self._stack_to_write = list()
         self._core_cv = threading.Condition()
+        self.__create_local_event_manager()
 
         self._info = {
-            'name':             None,
-            'version':          None,
+            'name':             '',
+            'version':          '',
             'serial_num':       None,
-            'address':          None
+            'address':          ''
         }
 
         self._functions = {
@@ -57,7 +58,7 @@ class AqBaseDevice(ABC):
             raise Exception('AqBaseDeviceError: device_tree isn`t exists')
 
         self.__param_convert_tree_to_list()
-        self.__create_local_event_manager()
+
         # self.__verify()
 
     @property
@@ -122,11 +123,11 @@ class AqBaseDevice(ABC):
 
             if len(self._stack_to_read) > 0:
                 self._request_count.append(len(self._stack_to_read))
-                print('AqBaseDevice: Device: '
-                      + self.info('name') + ' addr: '
-                      + self.info('address')
-                      + ' maked request. Request size = '
-                      + str(len(self._stack_to_read)))
+                # print('AqBaseDevice: Device: '
+                #       + self.info('name') + ' addr: '
+                #       + self.info('address')
+                #       + ' maked request. Request size = '
+                #       + str(len(self._stack_to_read)))
                 self._connect.create_param_request('read', self._stack_to_read)
                 self._stack_to_read.clear()
 
@@ -249,6 +250,8 @@ class AqBaseDevice(ABC):
                           + ' complete request.')
                     self._request_count.pop(0)
                     self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+                    with self._core_cv:
+                        self._core_cv.notify()
                     self._update_param_stack.clear()
 
     def __convert_tree_branch_to_list(self, item):
@@ -260,6 +263,7 @@ class AqBaseDevice(ABC):
                 self.__convert_tree_branch_to_list(child_item)
         else:
             self._params_list.append(item)
+            item.set_local_event_manager(self._local_event_manager)
 
     @abstractmethod
     def init_device(self) -> bool:
@@ -316,10 +320,8 @@ class AqBaseDevice(ABC):
             child_item = root.child(row)
             self.__convert_tree_branch_to_list(child_item)
 
+
     def __create_local_event_manager(self):
         self._local_event_manager = AQ_EventManager()
-
-        for item in self._params_list:
-            item.set_local_event_manager(self._local_event_manager)
 
         self._local_event_manager.register_event_handler('add_param_to_update_stack', self.__add_param_to_update_stack)
