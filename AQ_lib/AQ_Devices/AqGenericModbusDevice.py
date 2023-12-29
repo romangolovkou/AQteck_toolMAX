@@ -34,7 +34,8 @@ class AqGenericModbusDevice(AqBaseDevice):
             if rand_item is not None:
                 child_item = rand_item
 
-        self._connect.read_param(child_item)
+        child_item.set_local_event_manager(self._local_event_manager)
+        self.__sync_read_param(child_item)
         if child_item.get_status() != 'ok':
             self._status = 'error'
             return False
@@ -54,6 +55,27 @@ class AqGenericModbusDevice(AqBaseDevice):
 
         self._status = 'ok'
         return True
+
+    def __sync_read_param(self, item):
+        self.read_parameters(item)
+        with self._core_cv:
+            self._core_cv.wait()
+        return item.value
+
+    def __sync_read_file(self, item):
+        self.read_file(item)
+        with self._core_cv:
+            self._core_cv.wait()
+        return item.value
+
+    def read_file(self, item):
+        if len(self._request_count) == 0:
+            if item is not None:
+                self.read_parameter(item)
+            if len(self._stack_to_read) > 0:
+                self._request_count.append(len(self._stack_to_read))
+                self._connect.create_param_request('read_file', self._stack_to_read)
+                self._stack_to_read.clear()
 
     def get_configuration(self) -> AqDeviceConfig:
         config = AqDeviceConfig()
