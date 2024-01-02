@@ -3,7 +3,9 @@ from AqAddDeviceWindow import AqAddDeviceWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
 from AqDeviceParamListModel import AqDeviceParamListModel
 from AqParamListWidget import AqParamListWidget
+from AqWatchListWindow import AqWatchListWidget
 from DeviceModels import AqDeviceInfoModel
+from ui_AqWatchListWidget import Ui_AqWatchListWidget
 from ui_DeviceInfoDialog import Ui_DeviceInfoDialog
 from ui_AqAddDeviceWindow import Ui_AqAddDeviceWindowWidget
 from ui_DeviceParamListWindow import Ui_DeviceParamListWidget
@@ -25,5 +27,9 @@ def show_device_param_list():
         device_model = AppCore.Core.session.cur_active_device.get_device_param_list_model()
         widget = AqParamListWidget(Ui_DeviceParamListWidget, device_model)
         widget.exec()
+
+def show_watch_list_window():
+    dialog = AqWatchListWidget(Ui_AqWatchListWidget)
+    dialog.exec()
 
 
