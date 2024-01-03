@@ -33,7 +33,7 @@ class AqConnectManager(object):
         with AqConnectManager.core_cv:
             while True:
                 cls.core_cv.wait()
-                with Timer(text="\nTotal elapsed time: {:.1f}"):
+                with Timer(): #/text="\nTotal elapsed time: {:.1f}"):
                     for i in range(len(cls.connect_list)):
                         if len(cls.connect_list[i].param_request_stack) > 0:
                             await cls.work_queue.put(cls.connect_list[i])
@@ -76,9 +76,9 @@ class AqConnectManager(object):
 
     @classmethod
     async def proceedParamRequest(cls, name):
-        print(f"Created read task {name}")
+        # print(f"Created read task {name}")
 
-        timer = Timer(text=f"Task {name} elapsed time: {{:.1f}}")
+        timer = Timer() #/text=f"Task {name} elapsed time: {{:.1f}}")
 
         while not cls.work_queue.empty():
             connect = await cls.work_queue.get()

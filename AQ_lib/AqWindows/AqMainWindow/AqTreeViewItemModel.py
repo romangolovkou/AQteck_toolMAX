@@ -1,5 +1,7 @@
 from PySide6.QtGui import QStandardItemModel
 
+import AqUiWorker
+
 
 class AqTreeItemModel(QStandardItemModel):
     def __init__(self, parent=None):
@@ -110,5 +112,7 @@ class AqTreeViewItemModel(QStandardItemModel):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
         from AqWatchListCore import AqWatchListCore
+        AqUiWorker.show_watch_list_window()
         AqWatchListCore.addItem(self.device, sourse_item)
+
 

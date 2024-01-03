@@ -237,17 +237,17 @@ class AqBaseDevice(ABC):
     # Private function
     def __add_param_to_update_stack(self, item):
         if item not in self._update_param_stack:
-            print('AqBaseDevice: Device: '
-                  + self.info('name') + ' addr: '
-                  + self.info('address')
-                  + ' get item' )
+            # print('AqBaseDevice: Device: '
+            #       + self.info('name') + ' addr: '
+            #       + self.info('address')
+            #       + ' get item' )
             self._update_param_stack.append(item)
             if len(self._request_count) != 0:
                 if len(self._update_param_stack) == self._request_count[0]:
-                    print('AqBaseDevice: Device: '
-                          + self.info('name') + ' addr: '
-                          + self.info('address')
-                          + ' complete request.')
+                    # print('AqBaseDevice: Device: '
+                    #       + self.info('name') + ' addr: '
+                    #       + self.info('address')
+                    #       + ' complete request.')
                     self._request_count.pop(0)
                     self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
                     with self._core_cv:

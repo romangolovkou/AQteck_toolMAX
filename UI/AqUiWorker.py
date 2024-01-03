@@ -30,6 +30,7 @@ def show_device_param_list():
 
 def show_watch_list_window():
     dialog = AqWatchListWidget(Ui_AqWatchListWidget)
-    dialog.exec()
+    # Потрібно show замість exec, для немодального вікна
+    dialog.show()
 
 

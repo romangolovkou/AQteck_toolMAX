@@ -2,25 +2,46 @@ import csv
 import os
 
 from PySide6.QtCore import Qt, QSettings
-from PySide6.QtGui import QScreen
+from PySide6.QtGui import QScreen, QStandardItem
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
 import ModbusTableDataFiller
+from AqBaseTreeItems import AqParamManagerItem
 from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
+from AqWatchListCore import AqWatchListCore
+from AqWatchListTableViewModel import AqWatchListTableViewModel
 from AqWindowTemplate import AqDialogTemplate
 from AqSettingsFunc import get_last_path, save_last_path
 from DeviceModels import AqDeviceParamListModel
 
 
 class AqWatchListWidget(AqDialogTemplate):
-    def __init__(self, _ui, dev_info: AqDeviceParamListModel = None, parent=None):
+    _instances = None
+    _inited = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instances is not None:
+            return cls._instances
+        else:
+            cls._instances = super().__new__(cls, *args, **kwargs)
+            return cls._instances
+
+    def __init__(self, _ui, parent=None):
+        if AqWatchListWidget._inited is True:
+            return
         super().__init__(parent)
         self.ui = _ui()
         self.ui.setupUi(self.content_widget)
         self.maximizeBtnEnable = False
+        self.resizeFrameEnable = [True, 5]
 
         self.name = 'Watch list'
 
+        self.watch_list_table_model = AqWatchListTableViewModel()
+
+        AqWatchListCore.signals.watch_item_add.connect(self.add_new_parameter)
+
+        AqWatchListWidget._inited = True
         # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
         # loadDialogJsonStyle(self, self.ui)
@@ -45,65 +66,40 @@ class AqWatchListWidget(AqDialogTemplate):
         self.adjustSize()
         super().adjustSize()
 
-    # def saveToFile(self):
-    #     # Сохраняем данные в файл CSV
-    #     def_name = self.device_str.replace('S/N:','').replace(' ', '_') + '.csv'
-    #     # Начальный путь для диалога
-    #     initial_path = get_last_path(self.auto_load_settings, 'param_list_csv_path')
-    #     if initial_path == '':
-    #         initial_path = "C:/"
-    #     self.file_dialog = QFileDialog(self)
-    #     options = self.file_dialog.options()
-    #     # options |= self.file_dialog.DontUseNativeDialog
-    #
-    #     path = initial_path + '/' + def_name
-    #
-    #     # Открываем диалог для выбора файла и места сохранения
-    #     filename, _ = self.file_dialog.getSaveFileName(self, "Save parameters as CSV", path, "CSV Files (*.csv);;All Files (*)", options=options)
-    #     if filename != '':
-    #         with open(filename, 'w', newline='') as csvfile:
-    #             writer = csv.writer(csvfile, delimiter=';')
-    #
-    #             # Записываем заголовки (названия колонок)
-    #             headers = [self.ui.tableView.horizontalHeaderItem(col).text()
-    #                        for col in range(self.ui.tableView.columnCount())]
-    #             writer.writerow(headers)
-    #
-    #             # Записуємо дані з моделі з параметрами
-    #             for row in range(self.ui.tableView.rowCount()):
-    #                 row_data = [self.ui.tableView.item(row, col).text()
-    #                             for col in range(self.ui.tableView.columnCount())]
-    #                 writer.writerow(row_data)
-    #         # Извлекаем путь к каталогу
-    #         directory_path = os.path.dirname(filename)
-    #         save_last_path(self.auto_load_settings, 'param_list_csv_path', directory_path)
+    def add_new_parameter(self, item):
 
+        parameter_attributes = item.data(Qt.UserRole)
+        if parameter_attributes is not None:
+            if parameter_attributes.get('is_catalog', 0) == 1:
+                for row in range(item.rowCount()):
+                    child_item = item.child(row)
+                    self.add_new_parameter(child_item, model)
+            else:
+                root = self.watch_list_table_model.invisibleRootItem()
+                root.appendRow(self.create_new_row_for_table_view(item, model))
 
-# class AqParamListTableWidget(QTableWidget):
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#
-#     def fillModbusData(self, param_list: list):
-#         self.clear()
-#         ModbusTableDataFiller.fill_table_with_modbus_items(self, param_list)
-#
-#
-#
-#     """Base item list class
-#     provide functionality by add data to table, set size, resize, etc"""
-#
-#     def adjustSize(self):
-#         content_height = self.horizontalHeader().height()
-#         content_width = self.verticalHeader().width()
-#         for i in range(self.rowCount()):
-#             content_height += self.rowHeight(i)
-#
-#         for i in range(self.columnCount()):
-#             content_width += self.columnWidth(i)
-#
-#         if content_height > self.parent().maximumHeight():
-#             content_height = self.parent().maximumHeight()
-#
-#         self.setFixedSize(content_width, content_height)
-#
-#         self.parent().adjustSize()
+    def create_new_row_for_table_view(self, item, model):
+        parameter_attributes = item.data(Qt.UserRole)
+        device = model.device
+        device_data = device.get_device_data()
+
+        param_item = AqWatchParamManagerItem(item.get_sourse_item(), device, model)
+
+        value_item = QStandardItem()
+        device_item = QStandardItem()
+
+        value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
+        device_item.setFlags(device_item.flags() & ~Qt.ItemIsEditable)
+
+        return [param_item, value_item, device_item]
+
+class AqWatchParamManagerItem(AqParamManagerItem):
+    def __init__(self, sourse_item, device, tree_view_model=None):
+        param_attributes = sourse_item.data(Qt.UserRole)
+        super().__init__(sourse_item)
+        self.sourse_item = sourse_item
+        self.device = device
+        self.tree_view_model = tree_view_model
+        self.editor_object = None
+        self.param_status = 'ok'
+        self.setData(self.param_status, Qt.UserRole + 1)

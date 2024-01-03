@@ -24,9 +24,10 @@ class AQ_CurrentSession(QObject):
         self.event_manager = event_manager
         self.cur_active_device = None
         self.devices = []
-        self.event_manager.register_event_handler("open_ParameterList", self.open_ParameterList)
-        self.event_manager.register_event_handler("open_DeviceInfo", self.open_DeviceInfo)
-        self.event_manager.register_event_handler("open_SetSlaveId", self.open_SetSlaveId)
+        # self._watch_list_window_exist = False
+        # self.event_manager.register_event_handler("open_ParameterList", self.open_ParameterList)
+        # self.event_manager.register_event_handler("open_DeviceInfo", self.open_DeviceInfo)
+        # self.event_manager.register_event_handler("open_SetSlaveId", self.open_SetSlaveId)
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
         self.event_manager.register_event_handler("set_active_device", self.set_cur_active_device)
         self.event_manager.register_event_handler("read_params_cur_active_device", self.read_params_cur_active_device)
@@ -35,26 +36,32 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("delete_device", self.delete_device)
         self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
         self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
-        self.event_manager.register_event_handler('add_parameter_to_watch_list', self.add_param_to_watch_list)
+        # self.event_manager.register_event_handler('add_parameter_to_watch_list', self.add_param_to_watch_list)
         self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
 
-    def open_ParameterList(self):
-        if self.cur_active_device is not None:
-            AqUiWorker.show_device_param_list(None)
-        else:
-            AqUiWorker.show_device_param_list(None)
-
-    def open_DeviceInfo(self):
-        if self.cur_active_device is not None:
-            AqUiWorker.show_device_info_window(self.cur_active_device.device_info_model)
-        else:
-            AqUiWorker.show_device_info_window(None)
-
-    def open_SetSlaveId(self):
-        self.set_slave_id_window = AQ_DialogSetSlaveId(self.event_manager, self.parent)
-        self.set_slave_id_window.show()
+    # def open_ParameterList(self):
+    #     if self.cur_active_device is not None:
+    #         AqUiWorker.show_device_param_list(None)
+    #     else:
+    #         AqUiWorker.show_device_param_list(None)
+    #
+    # def open_DeviceInfo(self):
+    #     if self.cur_active_device is not None:
+    #         AqUiWorker.show_device_info_window(self.cur_active_device.device_info_model)
+    #     else:
+    #         AqUiWorker.show_device_info_window(None)
+    #
+    # def open_WatchList(self):
+    #     if self.cur_active_device is not None:
+    #         AqUiWorker.show_watch_list_window()
+    #     # else:
+    #     #     AqUiWorker.show_watch_list_window()
+    #
+    # def open_SetSlaveId(self):
+    #     self.set_slave_id_window = AQ_DialogSetSlaveId(self.event_manager, self.parent)
+    #     self.set_slave_id_window.show()
 
     def add_new_devices(self, new_devices_list):
         self.devices.extend(new_devices_list)
@@ -97,13 +104,11 @@ class AQ_CurrentSession(QObject):
         if self.cur_active_device is not None:
             self.restart_device(self.cur_active_device)
 
-    def add_param_to_watch_list(self, item, model):
-        if not hasattr(self, 'watch_list_window'):
-            self.open_WatchList()
-        elif self.watch_list_window is None:
-            self.open_WatchList()
-
-        self.event_manager.emit_event('add_item_to_watch_list', item, model)
+    # def add_param_to_watch_list(self, item, model):
+    #     if self.watch_list_window_exist is False:
+    #         self.open_WatchList()
+    #
+    #     self.event_manager.emit_event('add_item_to_watch_list', item, model)
 
     def save_device_config(self, device: AqBaseDevice):
         fname = None

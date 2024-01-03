@@ -179,14 +179,20 @@ class AqModbusConnect(AqConnect):
                 raise Exception('AqConnectError: in {} attributes "func"\
                                              or "param_size" or "modbus_reg" not exist'.format(item.__name__))
 
-            if func == 3:
-                result = await self.client.read_holding_registers(modbus_reg, count, self.slave_id)
-            elif func == 2:
-                result = await self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
-            elif func == 1:
-                result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
-            else:
+            try:
+                if func == 3:
+                    result = await self.client.read_holding_registers(modbus_reg, count, self.slave_id)
+                elif func == 2:
+                    result = await self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
+                elif func == 1:
+                    result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
+                else:
+                    return 'modbus_error'
+
+            except Exception as e:
+                print(f"Error occurred: {str(e)}")
                 return 'modbus_error'
+
 
             if isinstance(result, ModbusIOException):
                 # return 'modbus_error'
