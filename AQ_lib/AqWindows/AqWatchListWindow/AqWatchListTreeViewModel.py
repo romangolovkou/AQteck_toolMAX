@@ -1,6 +1,7 @@
 from PySide6.QtGui import QStandardItemModel
 
 import AqUiWorker
+from AqWatchListCore import AqWatchListCore
 
 
 # class AqTreeItemModel(QStandardItemModel):
@@ -20,7 +21,7 @@ class AqWatchListTreeViewModel(QStandardItemModel):
         super().__init__(parent)
         # self.device = device
         self.event_manager = event_manager
-        # self.event_manager.register_event_handler('current_device_data_updated', self.update_params_values, True)
+        self.event_manager.register_event_handler('current_device_data_updated', self.update_params_values, True)
         self.setColumnCount(3)
         self.setHorizontalHeaderLabels(
             ["Name", "Value", "Device"])
@@ -40,19 +41,20 @@ class AqWatchListTreeViewModel(QStandardItemModel):
                 self.update_parameter_value(child_item)
 
     def update_params_values(self, device, param_stack=None):
-        if self.device == device:
-            if param_stack is None:
-                root = self.invisibleRootItem()
-                for row in range(root.rowCount()):
-                    child_item = root.child(row)
-                    self.update_params_catalog(child_item)
-            else:
-                for i in range(len(param_stack)):
-                    sourse_item = param_stack[i]
-                    manager_item = self.travers_find_manager_by_sourse_item(sourse_item)
-                    if manager_item is not None:
-                        manager_item.show_new_value()
-                        manager_item.update_status()
+        for watchItem in AqWatchListCore.watched_items:
+            if watchItem.device == device:
+                if param_stack is None:
+                    root = self.invisibleRootItem()
+                    for row in range(root.rowCount()):
+                        child_item = root.child(row)
+                        self.update_params_catalog(child_item)
+                else:
+                    for i in range(len(param_stack)):
+                        sourse_item = param_stack[i]
+                        manager_item = self.travers_find_manager_by_sourse_item(sourse_item)
+                        if manager_item is not None:
+                            manager_item.show_new_value()
+                            manager_item.update_status()
 
     def travers_find_manager_by_sourse_item(self, sourse_item):
         manager_item = None
