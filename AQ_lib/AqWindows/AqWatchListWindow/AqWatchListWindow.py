@@ -1,7 +1,7 @@
 import csv
 import os
 
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QModelIndex
 from PySide6.QtGui import QScreen, QStandardItem
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
@@ -53,11 +53,14 @@ class AqWatchListWidget(AqDialogTemplate):
         super().adjustSize()
 
     def add_new_parameter(self, watchItem):
-        for item in self.tree_model_for_view.children():
-            if item.watchItem == watchItem:
-                index = self.tree_model_for_view.indexFromItem(item)
-                self.tree_model_for_view.removeRow(index.row(),
-                                                   self.tree_model_for_view.invisibleRootItem())
+        row_count = self.tree_model_for_view.invisibleRootItem().rowCount()
+        for row in range(row_count):
+            # Якщо такий вотч-ітем вже додано до вікна, то видаляємо його стару версію з моделі
+            child_item = self.tree_model_for_view.invisibleRootItem().child(row)
+            if child_item.watchItem == watchItem:
+                index = self.tree_model_for_view.indexFromItem(child_item)
+                self.tree_model_for_view.removeRow(index.row())
+
         watch_catalog_item = AqWatchListCatalogItem(watchItem)
 
         for item in watchItem.items:
@@ -66,6 +69,7 @@ class AqWatchListWidget(AqDialogTemplate):
         root = self.tree_model_for_view.invisibleRootItem()
         root.appendRow(watch_catalog_item)
         self.ui.treeView.setModel(self.tree_model_for_view)
+        # self.ui.treeView.setExpanded()
 
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
