@@ -77,6 +77,10 @@ class AqBaseDevice(ABC):
     def is_inited(self):
         return self._is_inited
 
+    @property
+    def name(self):
+        return self._info['name']
+
     def func(self, name: str):
         return self._functions[name]
 
