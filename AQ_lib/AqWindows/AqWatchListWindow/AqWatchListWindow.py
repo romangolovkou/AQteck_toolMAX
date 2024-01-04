@@ -6,7 +6,8 @@ from PySide6.QtGui import QScreen, QStandardItem
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
 import ModbusTableDataFiller
-from AqBaseTreeItems import AqParamManagerItem
+from AqBaseDevice import AqBaseDevice
+from AqBaseTreeItems import AqParamManagerItem, AqCatalogItem
 from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 from AqTreeView import AqTreeView
 from AqWatchListCore import AqWatchListCore
@@ -94,12 +95,13 @@ class AqWatchListWidget(AqDialogTemplate):
         #             self.add_new_parameter(child_item, model)
         #     else:
         # watch_catalog_item = AqParamManagerItem(watchItem)
-        watch_catalog_item = QStandardItem()
+        watch_catalog_item = AqWatchListCatalogItem(watchItem.device)
         root = self.tree_model_for_view.invisibleRootItem()
         for item in watchItem.items:
             watch_catalog_item.appendRow(self.create_new_row_for_tree_view(item))
 
         root.appendRow(watch_catalog_item)
+        self.ui.treeView.setModel(self.tree_model_for_view)
         # size_view = self.ui.treeView.geometry()
         # size_view = self.ui.treeView.geometry()
 
@@ -161,3 +163,13 @@ class AqWatchParamManagerItem(AqParamManagerItem):
         # self.editor_object = None
         # self.param_status = 'ok'
         # self.setData(self.param_status, Qt.UserRole + 1)
+
+class AqWatchListCatalogItem(AqParamManagerItem):
+    def __init__(self, device: AqBaseDevice):
+        param_attributes = dict()
+        param_attributes['name'] = device.name
+        param_attributes['R_Only'] = 0
+        param_attributes['W_Only'] = 0
+        param_attributes['is_catalog'] = 1
+        fake_sourse_item = AqCatalogItem(param_attributes)
+        super().__init__(fake_sourse_item)
