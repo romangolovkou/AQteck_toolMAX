@@ -1,6 +1,7 @@
 from PySide6.QtGui import QStandardItemModel
 
 import AqUiWorker
+from AQ_EventManager import AQ_EventManager
 from AqWatchListCore import AqWatchListCore
 
 
@@ -17,14 +18,13 @@ from AqWatchListCore import AqWatchListCore
 
 
 class AqWatchListTreeViewModel(QStandardItemModel):
-    def __init__(self, event_manager, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         # self.device = device
-        self.event_manager = event_manager
+        self.event_manager = AQ_EventManager.get_global_event_manager()
         self.event_manager.register_event_handler('current_device_data_updated', self.update_params_values, True)
-        self.setColumnCount(3)
-        self.setHorizontalHeaderLabels(
-            ["Name", "Value", "Device"])
+        self.setColumnCount(2)
+        self.setHorizontalHeaderLabels(["Name", "Value"])
 
     def update_parameter_value(self, manager_item):
         manager_item.show_new_value()

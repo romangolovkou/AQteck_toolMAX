@@ -11,7 +11,6 @@ from AqBaseTreeItems import AqParamManagerItem, AqCatalogItem
 from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 from AqTreeView import AqTreeView
 from AqWatchListCore import AqWatchListCore
-from AqWatchListTableViewModel import AqWatchListTableViewModel
 from AqWatchListTreeViewModel import AqWatchListTreeViewModel
 from AqWindowTemplate import AqDialogTemplate
 from AqSettingsFunc import get_last_path, save_last_path
@@ -40,7 +39,7 @@ class AqWatchListWidget(AqDialogTemplate):
 
         self.name = 'Watch list'
 
-        self.tree_model_for_view = AqWatchListTreeViewModel(self.event_manager)
+        self.tree_model_for_view = AqWatchListTreeViewModel()
         self.ui.treeView.setModel(self.tree_model_for_view)
 
         AqWatchListCore.signals.watch_item_add.connect(self.add_new_parameter)
@@ -69,7 +68,7 @@ class AqWatchListWidget(AqDialogTemplate):
         root = self.tree_model_for_view.invisibleRootItem()
         root.appendRow(watch_catalog_item)
         self.ui.treeView.setModel(self.tree_model_for_view)
-        # self.ui.treeView.setExpanded()
+        self.ui.treeView.setExpanded(self.tree_model_for_view.indexFromItem(watch_catalog_item), True)
 
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)

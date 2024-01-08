@@ -1,6 +1,7 @@
 from PySide6.QtGui import QStandardItemModel
 
 import AqUiWorker
+from TreeBranchToListConv import param_convert_tree_to_list
 
 
 class AqTreeItemModel(QStandardItemModel):
@@ -113,6 +114,10 @@ class AqTreeViewItemModel(QStandardItemModel):
         sourse_item = item.get_sourse_item()
         from AqWatchListCore import AqWatchListCore
         AqUiWorker.show_watch_list_window()
-        AqWatchListCore.addItem(self.device, sourse_item)
-
-
+        param_attributes = sourse_item.get_param_attributes()
+        if param_attributes.get('is_catalog', 0) == 1:
+            item_list = param_convert_tree_to_list(sourse_item)
+            for sourse_child_item in item_list:
+                AqWatchListCore.addItem(self.device, sourse_child_item)
+        else:
+            AqWatchListCore.addItem(self.device, sourse_item)
