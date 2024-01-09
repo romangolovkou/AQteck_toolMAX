@@ -8,9 +8,6 @@
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_Devices/DeviceModels" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_Devices/SystemLibrary" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_device_info_window" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_main_window" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_main_window/AQ_main_field_frame" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_main_window/AQ_main_window_frame" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_other" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_param_list_window" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AQ_session" isTestSource="false" />

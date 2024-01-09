@@ -1,8 +1,8 @@
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QMenu, QTreeView
 
-from AQ_TreeViewDelegates import AQ_NameTreeDelegate, AQ_ValueTreeDelegate
-from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget, AQ_have_error_widget
+from AqTreeViewDelegates import AqNameTreeDelegate, AqValueTreeDelegate
+from AQ_CustomWindowTemplates import AQ_have_error_widget
 
 
 
@@ -10,9 +10,9 @@ class AqTreeView(QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        name_delegate = AQ_NameTreeDelegate(self)
+        name_delegate = AqNameTreeDelegate(self)
         self.setItemDelegateForColumn(0, name_delegate)
-        value_delegate = AQ_ValueTreeDelegate(self)
+        value_delegate = AqValueTreeDelegate(self)
         self.setItemDelegateForColumn(1, value_delegate)
         # Разрешаем отображение скроллбаров
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItem
 
 from AqParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
