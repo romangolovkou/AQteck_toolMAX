@@ -58,6 +58,7 @@ class AqWatchListCore(QObject):
     def removeItem(cls, item):
         if isinstance(item, WatchedItem):
             cls.watched_items.remove(item)
+            cls.signals.watch_item_remove.emit(item)
         elif isinstance(item, AqParamItem):
             watchedItem = cls.getWatchedItemByParamItem(item)
             if watchedItem is not None:
@@ -90,6 +91,6 @@ class AqWatchListCore(QObject):
 
 class AqWatchCoreSignals(QObject):
     watch_item_change = Signal(WatchedItem)
-    watch_item_delete = Signal(str)
+    watch_item_remove = Signal(WatchedItem)
     def __init__(self):
         super().__init__()

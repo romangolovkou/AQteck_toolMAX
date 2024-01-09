@@ -12,6 +12,7 @@ from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 from AqTreeView import AqTreeView
 from AqWatchListCore import AqWatchListCore
 from AqWatchListTreeViewModel import AqWatchListTreeViewModel
+from AqWatchedItem import WatchedItem
 from AqWindowTemplate import AqDialogTemplate
 from AqSettingsFunc import get_last_path, save_last_path
 from DeviceModels import AqDeviceParamListModel
@@ -43,6 +44,7 @@ class AqWatchListWidget(AqDialogTemplate):
         self.ui.treeView.setModel(self.tree_model_for_view)
 
         AqWatchListCore.signals.watch_item_change.connect(self.add_new_parameter)
+        AqWatchListCore.signals.watch_item_remove.connect(self.remove_parameter)
 
         AqWatchListWidget._inited = True
 
@@ -51,14 +53,17 @@ class AqWatchListWidget(AqDialogTemplate):
         self.adjustSize()
         super().adjustSize()
 
-    def add_new_parameter(self, watchItem):
+    def add_new_parameter(self, watchItem: WatchedItem):
+        # last_row = None
         row_count = self.tree_model_for_view.invisibleRootItem().rowCount()
         for row in range(row_count):
             # Якщо такий вотч-ітем вже додано до вікна, то видаляємо його стару версію з моделі
             child_item = self.tree_model_for_view.invisibleRootItem().child(row)
             if child_item.watchItem == watchItem:
                 index = self.tree_model_for_view.indexFromItem(child_item)
+                # last_row = index.row()
                 self.tree_model_for_view.removeRow(index.row())
+                break
 
         watch_catalog_item = AqWatchListCatalogItem(watchItem)
 
@@ -66,9 +71,23 @@ class AqWatchListWidget(AqDialogTemplate):
             watch_catalog_item.appendRow(self.create_new_row_for_tree_view(item))
 
         root = self.tree_model_for_view.invisibleRootItem()
+        # if last_row is None:
         root.appendRow(watch_catalog_item)
+        # else:
+        #     root.insertRow(last_row, watch_catalog_item)
+
         self.ui.treeView.setModel(self.tree_model_for_view)
         self.ui.treeView.setExpanded(self.tree_model_for_view.indexFromItem(watch_catalog_item), True)
+
+    def remove_parameter(self, watchItem: WatchedItem):
+        row_count = self.tree_model_for_view.invisibleRootItem().rowCount()
+        for row in range(row_count):
+            # Якщо такий вотч-ітем вже додано до вікна, то видаляємо його стару версію з моделі
+            child_item = self.tree_model_for_view.invisibleRootItem().child(row)
+            if child_item.watchItem == watchItem:
+                index = self.tree_model_for_view.indexFromItem(child_item)
+                self.tree_model_for_view.removeRow(index.row())
+                break
 
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
