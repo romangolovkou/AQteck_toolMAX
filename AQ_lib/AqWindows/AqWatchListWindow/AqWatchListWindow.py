@@ -42,7 +42,7 @@ class AqWatchListWidget(AqDialogTemplate):
         self.tree_model_for_view = AqWatchListTreeViewModel()
         self.ui.treeView.setModel(self.tree_model_for_view)
 
-        AqWatchListCore.signals.watch_item_add.connect(self.add_new_parameter)
+        AqWatchListCore.signals.watch_item_change.connect(self.add_new_parameter)
 
         AqWatchListWidget._inited = True
 

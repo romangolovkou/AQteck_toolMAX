@@ -4,6 +4,8 @@ import os
 import threading
 import time
 from PySide6.QtCore import Signal, QObject
+
+from AqBaseTreeItems import AqParamItem
 from AqWatchedItem import WatchedItem
 
 
@@ -34,7 +36,7 @@ class AqWatchListCore(QObject):
             cls.watched_items.append(watchedItem)
         # Add new item to watching list
         watchedItem.addItemToWatch(items)
-        cls.signals.watch_item_add.emit(watchedItem)
+        cls.signals.watch_item_change.emit(watchedItem)
 
     @classmethod
     def getWatchedItemByDevice(cls, device):
@@ -45,9 +47,24 @@ class AqWatchListCore(QObject):
             return None
 
     @classmethod
-    def removeItem(cls, item: WatchedItem):
-        cls.watched_items.remove(item)
-        pass
+    def getWatchedItemByParamItem(cls, item: AqParamItem):
+        for w_item in cls.watched_items:
+            if w_item.check_param_in_self(item) is True:
+                return w_item
+
+        return None
+
+    @classmethod
+    def removeItem(cls, item):
+        if isinstance(item, WatchedItem):
+            cls.watched_items.remove(item)
+        elif isinstance(item, AqParamItem):
+            watchedItem = cls.getWatchedItemByParamItem(item)
+            if watchedItem is not None:
+                watchedItem.removeItem(item)
+                cls.signals.watch_item_change.emit(watchedItem)
+        else:
+            pass
 
     def removeItemByDevice(self, device):
         pass
@@ -72,7 +89,7 @@ class AqWatchListCore(QObject):
 
 
 class AqWatchCoreSignals(QObject):
-    watch_item_add = Signal(WatchedItem)
+    watch_item_change = Signal(WatchedItem)
     watch_item_delete = Signal(str)
     def __init__(self):
         super().__init__()
