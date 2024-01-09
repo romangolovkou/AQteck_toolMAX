@@ -23,3 +23,9 @@ class WatchedItem:
         else:
             return False
 
+    @property
+    def isNotEmpty(self):
+        if len(self.items) > 0:
+            return True
+        else:
+            return False

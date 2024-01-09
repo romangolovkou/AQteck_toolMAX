@@ -55,6 +55,7 @@ class AqWatchListWidget(AqDialogTemplate):
 
     def add_new_parameter(self, watchItem: WatchedItem):
         # last_row = None
+        watch_catalog_item = None
         row_count = self.tree_model_for_view.invisibleRootItem().rowCount()
         for row in range(row_count):
             # Якщо такий вотч-ітем вже додано до вікна, то видаляємо його стару версію з моделі
@@ -65,19 +66,21 @@ class AqWatchListWidget(AqDialogTemplate):
                 self.tree_model_for_view.removeRow(index.row())
                 break
 
-        watch_catalog_item = AqWatchListCatalogItem(watchItem)
+        if watchItem.isNotEmpty is True:
+            watch_catalog_item = AqWatchListCatalogItem(watchItem)
 
-        for item in watchItem.items:
-            watch_catalog_item.appendRow(self.create_new_row_for_tree_view(item))
+            for item in watchItem.items:
+                watch_catalog_item.appendRow(self.create_new_row_for_tree_view(item))
 
-        root = self.tree_model_for_view.invisibleRootItem()
-        # if last_row is None:
-        root.appendRow(watch_catalog_item)
-        # else:
-        #     root.insertRow(last_row, watch_catalog_item)
+            root = self.tree_model_for_view.invisibleRootItem()
+            # if last_row is None:
+            root.appendRow(watch_catalog_item)
+            # else:
+            #     root.insertRow(last_row, watch_catalog_item)
 
         self.ui.treeView.setModel(self.tree_model_for_view)
-        self.ui.treeView.setExpanded(self.tree_model_for_view.indexFromItem(watch_catalog_item), True)
+        if watchItem.isNotEmpty is True and watch_catalog_item is not None:
+            self.ui.treeView.setExpanded(self.tree_model_for_view.indexFromItem(watch_catalog_item), True)
 
     def remove_parameter(self, watchItem: WatchedItem):
         row_count = self.tree_model_for_view.invisibleRootItem().rowCount()
