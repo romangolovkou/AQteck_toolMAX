@@ -95,7 +95,19 @@ QScrollBar:horizontal {
     background: #1e1f22;
 	height: 10px;  /* Высота горизонтального скроллбара */
 }
-</string>
+
+QMenu {
+     color: #D0D0D0;
+}
+
+QMenu::item:selected {
+	background-color: #3a3a3a;
+    color: #FFFFFF;
+}
+
+ QMenu::item:disabled {
+    color: #808080; /* Цвет для неактивных действий */
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">

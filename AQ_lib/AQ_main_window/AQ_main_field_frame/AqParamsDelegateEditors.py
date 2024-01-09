@@ -68,7 +68,7 @@ class AqEnumTreeComboBox(QComboBox):
         super().__init__(parent)
         self.parent = parent
         self.view().setStyleSheet("color: #D0D0D0; background-color: #1e1f22;")
-        self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; }")
+        self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; background-color: #16191d;}")
         # Отключение обработчика события колеса мыши
         self.wheelEvent = lambda event: event.ignore()
         self.save_new_value = None
