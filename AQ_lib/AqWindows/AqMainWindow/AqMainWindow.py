@@ -1,3 +1,5 @@
+from PySide6.QtCore import QCoreApplication
+
 import AqUiWorker
 from AQ_ResizeWidgets import *
 from Custom_Widgets import QMainWindow, loadJsonStyle
@@ -25,3 +27,8 @@ class AqMainWindow(QMainWindow):
 
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
         self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
+
+    def close(self):
+        super().close()
+        Core.de_init()
+        QCoreApplication.quit()

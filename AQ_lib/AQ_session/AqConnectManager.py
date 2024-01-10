@@ -22,7 +22,13 @@ class AqConnectManager(object):
     def init(cls):
         cls.core_cv = threading.Condition()
         cls.core_thread = threading.Thread(target=cls.run)
+        cls.core_thread.daemon = True
         cls.core_thread.start()
+
+    @classmethod
+    def deinit(cls):
+        for connect in cls.connect_list:
+            connect.close()
 
     @classmethod
     def run(cls):

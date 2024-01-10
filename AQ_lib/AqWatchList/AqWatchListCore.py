@@ -14,6 +14,7 @@ from AqWatchedItem import WatchedItem
 class AqWatchListCore(QObject):
 
     core_cv = None
+    stop_flag = None
     core_thread = None
     watched_items = list()
     poll_period = None
@@ -24,9 +25,14 @@ class AqWatchListCore(QObject):
         # At ms
         cls.poll_period = 5000
         cls.core_cv = threading.Condition()
+        cls.stop_flag = threading.Event()
         cls.core_thread = threading.Thread(target=cls.run)
         cls.core_thread.start()
         cls.signals = AqWatchCoreSignals()
+
+    @classmethod
+    def deinit(cls):
+        cls.stop_flag.set()
 
     @classmethod
     def addItem(cls, device, items: Union[AqParamItem, list]):
@@ -88,12 +94,14 @@ class AqWatchListCore(QObject):
     @classmethod
     async def proceed(cls):
         with cls.core_cv:
-            while True:
+            while not cls.stop_flag.is_set():
                 # print('\n')
                 # print('AqWatchListCore: started making read request')
                 for watched_item in cls.watched_items:
                     watched_item.device.read_parameters(watched_item.items)
                 time.sleep(0.5)
+
+            print('AqWatchListCore is finished')
 
 
 class AqWatchCoreSignals(QObject):
