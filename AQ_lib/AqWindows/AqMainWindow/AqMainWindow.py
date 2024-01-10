@@ -1,11 +1,9 @@
 from PySide6.QtCore import QCoreApplication
 
 import AqUiWorker
-from AQ_ResizeWidgets import *
 from Custom_Widgets import QMainWindow, loadJsonStyle
 from AQ_EventManager import AQ_EventManager
 from AppCore import Core
-from AqLeftWidgetPanel import AqLeftDeviceWidget
 from ui_form import Ui_MainWindow
 
 

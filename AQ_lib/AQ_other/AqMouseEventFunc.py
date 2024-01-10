@@ -1,4 +1,4 @@
-from AQ_ResizeFunc import resize_window_width, resize_window_height, resize_and_move_win_width,\
+from AqResizeFunc import resize_window_width, resize_window_height, resize_and_move_win_width,\
     resize_and_move_win_height
 from PySide6.QtCore import Qt
 

@@ -1,7 +1,7 @@
 from AQ_MainFieldFrame import AQ_MainFieldFrame
 from AQ_TitlebarFrame import AQ_TitleBarFrame
 from AQ_ToolbarFrame import AQ_ToolPanelFrame
-from AQ_ResizeWidgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
+from AqResizeWidgets import resizeWidthR_Qwidget, resizeWidthL_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
     resizeDiag_BotRigth_Qwidget, resizeDiag_BotLeft_Qwidget, resizeDiag_TopLeft_Qwidget, resizeDiag_TopRigth_Qwidget
 from AQ_CustomWindowTemplates import AQ_SimplifiedMainFrame
 
