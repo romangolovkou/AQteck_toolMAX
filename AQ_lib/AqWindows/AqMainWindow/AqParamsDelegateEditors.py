@@ -62,6 +62,10 @@ class AqTreeLineEdit(QLineEdit):
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
             self.red_blink_timer.stop()
 
+    def setText(self, arg__1):
+        if not self.hasFocus():
+            super().setText(arg__1)
+
 
 class AqEnumTreeComboBox(QComboBox):
     def __init__(self, param_attributes, parent=None):
