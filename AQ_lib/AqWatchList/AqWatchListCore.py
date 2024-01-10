@@ -3,6 +3,8 @@ import dataclasses
 import os
 import threading
 import time
+from typing import Union
+
 from PySide6.QtCore import Signal, QObject
 
 from AqBaseTreeItems import AqParamItem
@@ -27,7 +29,7 @@ class AqWatchListCore(QObject):
         cls.signals = AqWatchCoreSignals()
 
     @classmethod
-    def addItem(cls, device, items):
+    def addItem(cls, device, items: Union[AqParamItem, list]):
         watchedItem = cls.getWatchedItemByDevice(device)
         if watchedItem is None:
             # Create new device
@@ -35,7 +37,12 @@ class AqWatchListCore(QObject):
             # Add device to list
             cls.watched_items.append(watchedItem)
         # Add new item to watching list
-        watchedItem.addItemToWatch(items)
+        if isinstance(items, AqParamItem):
+            watchedItem.addItemToWatch(items)
+        elif isinstance(items, list):
+            for item in items:
+                watchedItem.addItemToWatch(item)
+
         cls.signals.watch_item_change.emit(watchedItem)
 
     @classmethod

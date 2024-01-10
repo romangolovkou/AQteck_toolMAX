@@ -117,7 +117,7 @@ class AqTreeViewItemModel(QStandardItemModel):
         param_attributes = sourse_item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             item_list = param_convert_tree_to_list(sourse_item)
-            for sourse_child_item in item_list:
-                AqWatchListCore.addItem(self.device, sourse_child_item)
+            # for sourse_child_item in item_list:
+            AqWatchListCore.addItem(self.device, item_list)
         else:
             AqWatchListCore.addItem(self.device, sourse_item)
