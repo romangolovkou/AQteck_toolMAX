@@ -13,6 +13,7 @@ from AqIsValidIpFunc import is_valid_ip
 class AqConnect(QObject):
     def __init__(self):
         super().__init__()
+        self.status = 'no status'
 
     @abstractmethod
     async def open(self):
@@ -118,8 +119,10 @@ class AqModbusConnect(AqConnect):
         else:
             return str(self.slave_id) + ' (' + self.connect_settings.addr + ')'
 
-    def open(self):
-        return asyncio.run(self.client.connect())
+    async def open(self):
+        result = await self.client.connect()
+        self.status = 'connect_ok' if result else 'connect_err'
+        return result
 
     def close(self):
         self.client.close()
@@ -143,23 +146,24 @@ class AqModbusConnect(AqConnect):
             request_stack.append(request)
 
         self.param_request_stack = request_stack
-        with self.core_cv:
-            self.core_cv.notify()
+        self.core_cv.set()
 
 
     async def proceed_request(self, request):
         function = request.get('method', None)
 
         if function is not None:
-           # if isinstance(self.connect_settings, AqComConnectSettings):
-            await self.client.connect()
             await function(request.get('item', None))
-            # if isinstance(self.connect_settings, AqComConnectSettings):
-            self.client.close()
         else:
-            # if isinstance(self.connect_settings, AqComConnectSettings):
-            self.client.close()
             raise Exception('AqConnectError: unknown "method"')
+
+    def proceed_failed_request(self, request):
+        item = request.get('item', None)
+        function = request.get('method', None)
+        if function.__name__ == 'read_param':
+            item.data_from_network(None, True, 'modbus_error')
+        elif function.__name__ == 'write_param':
+            item.confirm_writing(False, 'modbus_error')
 
     async def read_param(self, item):
         if item is not None:

@@ -43,19 +43,22 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self.__create_system_params()
         self.__create_system_files()
         self._info['name'] = self.__sync_read_param(self.system_params_dict['name'])
+        if self._connect.status == 'connect_err':
+            self._status = 'connect_err'
+            return False
         self._info['version'] = self.__sync_read_param(self.system_params_dict['version'])
         self._info['serial_num'] = self.__sync_read_param(self.system_params_dict['serial_num'])
         self._info['password'] = None
         self._default_prg = self.__read_default_prg()
 
         if self._default_prg == 'decrypt_err':
-            self._status = 'error'
+            self._status = 'decrypt_err'
             return False
 
         self._device_tree = self.__parse_default_prg()
         if self._device_tree == 'parsing_err' or \
                 self._device_tree is None:
-            self._status = 'error'
+            self._status = 'parsing_err'
             return False
 
         # TODO: describe rules to chache which functions are supported
