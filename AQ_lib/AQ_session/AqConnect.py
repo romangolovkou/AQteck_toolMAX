@@ -220,7 +220,10 @@ class AqModbusConnect(AqConnect):
                         data = data[0]
                     else:
                         low_byte = data[0]
-                        high_byte = data[1]
+                        try:
+                            high_byte = data[1]
+                        except:
+                            high_byte = 0x00
                         # Восстановление 16-битного числа
                         data = (high_byte << 8) | low_byte
                     # TODO: перенести костыль в функцию в расслыку широковещательного запроса
