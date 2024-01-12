@@ -140,9 +140,13 @@ class AqTreeViewManager(QStackedWidget):
     def get_min_limit_item(self, param_attributes):
         param_type = param_attributes.get('type', '')
         visual_type = param_attributes.get('visual_type', '')
-        if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string'\
-            or visual_type == 'hex':
+        if param_type == 'enum' \
+                or visual_type == 'ip_format' \
+                or param_type == 'string' \
+                or visual_type == 'hex':
+
             min_limit_item = QStandardItem('')
+
         elif param_type == 'date_time':
             start_time = datetime(2000, 1, 1).timestamp()
             min_lim_value = param_attributes.get('min_limit', None)
@@ -153,6 +157,12 @@ class AqTreeViewManager(QStackedWidget):
                 min_time_limit_str = ''
 
             min_limit_item = QStandardItem(str(min_time_limit_str))
+        elif param_attributes.get('multiply', None) is not None:
+            min_lim = param_attributes.get('min_limit', '')
+            if min_lim != '':
+                min_lim = min_lim * param_attributes.get('multiply', 1)
+
+            min_limit_item = QStandardItem(str(round(float(min_lim), 7)))
         else:
             min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
 
@@ -174,6 +184,12 @@ class AqTreeViewManager(QStackedWidget):
                 max_time_limit_str = ''
 
             max_limit_item = QStandardItem(str(max_time_limit_str))
+        elif param_attributes.get('multiply', None) is not None:
+            max_lim = param_attributes.get('max_limit', '')
+            if max_lim != '':
+                max_lim = max_lim * param_attributes.get('multiply', 1)
+
+            max_limit_item = QStandardItem(str(round(float(max_lim), 7)))
         else:
             max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
 
