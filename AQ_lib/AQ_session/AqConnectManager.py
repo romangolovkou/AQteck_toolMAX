@@ -15,6 +15,7 @@ class AqConnectManager(object):
     core_cv = None
     core_thread = None
     connect_list = []
+    connect_mutex = dict()
     request_stack = []
 
     work_queue = asyncio.Queue()
@@ -57,9 +58,15 @@ class AqConnectManager(object):
     @classmethod
     def create_connect(cls, connect_settings, device_id=None) -> AqConnect:
         connect = None
+
         if isinstance(connect_settings, AqOfflineConnectSettings):
             connect = AqOfflineConnect(cls.core_cv)
         elif isinstance(connect_settings, (AqIpConnectSettings, AqComConnectSettings)):
+            locker = cls.connect_mutex.get(connect_settings.addr, None)
+            if locker is None:
+                locker = asyncio.Lock()
+                cls.connect_mutex[connect_settings.addr] = locker
+            connect_settings.mutex = locker
             if device_id is None:
                 device_id = 1
             connect = AqModbusConnect(connect_settings, device_id, cls.core_cv)
@@ -91,19 +98,3 @@ class AqConnectManager(object):
                     request = connect.param_request_stack.pop()
                     connect.proceed_failed_request(request)
             timer.stop()
-
-    # @staticmethod
-    # async def proceedFileRequest(req_data):
-    #     data_storage = req_data['data']
-    #     time.sleep(random.uniform(0.1, 2.0))
-    #     data_storage = random.randint(50, 100)
-
-
-
-
-
-
-
-
-
-

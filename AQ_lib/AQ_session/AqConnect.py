@@ -46,6 +46,8 @@ class AqIpConnectSettings:
         else:
             raise ValueError("Invalid ip " + str(_ip))
 
+        self.mutex = None
+
 
     @property
     def addr(self):
@@ -70,6 +72,7 @@ class AqComConnectSettings:
         # TODO: Зачем нам хранить одно и тоже в разных переменных???
         self.port = _port
         self._interface = _port
+        self.mutex = None
 
         if _baudrate in self.available_baudrate:
             self.baudrate = _baudrate
@@ -90,6 +93,7 @@ class AqComConnectSettings:
         return str(self.port)
 
 
+
 class AqModbusConnect(AqConnect):
 
     def __init__(self, connect_settings, slave_id, core_cv):
@@ -99,6 +103,7 @@ class AqModbusConnect(AqConnect):
         self.param_request_stack = []
         self.file_request_stack = []
         self.timeout = 1.0
+        self.mutex = connect_settings.mutex
         if isinstance(self.connect_settings, AqComConnectSettings):
             self.client = AsyncModbusSerialClient(method='rtu',
                                                     port=self.connect_settings.port,
@@ -120,12 +125,14 @@ class AqModbusConnect(AqConnect):
             return str(self.slave_id) + ' (' + self.connect_settings.addr + ')'
 
     async def open(self):
+        await self.mutex.acquire()
         result = await self.client.connect()
         self.status = 'connect_ok' if result else 'connect_err'
         return result
 
     def close(self):
         self.client.close()
+        self.mutex.release()
 
     def create_param_request(self, method, stack):
         request_stack = list()
@@ -182,15 +189,21 @@ class AqModbusConnect(AqConnect):
             else:
                 raise Exception('AqConnectError: in {} attributes "func"\
                                              or "param_size" or "modbus_reg" not exist'.format(item.__name__))
-
-            if func == 3:
-                result = await self.client.read_holding_registers(modbus_reg, count, self.slave_id)
-            elif func == 2:
-                result = await self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
-            elif func == 1:
-                result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
-            else:
-                return 'modbus_error'
+            try:
+                if func == 3:
+                    result = await self.client.read_holding_registers(modbus_reg, count, self.slave_id)
+                elif func == 2:
+                    result = await self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
+                elif func == 1:
+                    result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
+                else:
+                    item.data_from_network(None, True, 'modbus_error')
+                    raise Exception('AqConnectError: in {} attributes "func" is not supported'.format(
+                        item.__name__))
+            except Exception:
+                self.status = 'connect_err'
+                item.data_from_network(None, True, 'modbus_error')
+                return
 
             if isinstance(result, ModbusIOException):
                 # return 'modbus_error'

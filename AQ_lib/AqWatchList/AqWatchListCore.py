@@ -58,8 +58,8 @@ class AqWatchListCore(object):
     async def proceed(cls):
         with cls.core_cv:
             while True:
-                # print('\n')
-                # print('AqWatchListCore: started making read request')
+                print('\n')
+                print('AqWatchListCore: started making read request')
                 for watched_item in cls.watched_items:
                     watched_item.device.read_parameters(watched_item.items)
-                time.sleep(0.5)
+                await asyncio.sleep(0.5)

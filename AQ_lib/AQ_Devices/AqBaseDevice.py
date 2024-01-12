@@ -123,11 +123,11 @@ class AqBaseDevice(ABC):
 
             if len(self._stack_to_read) > 0:
                 self._request_count.append(len(self._stack_to_read))
-                # print('AqBaseDevice: Device: '
-                #       + self.info('name') + ' addr: '
-                #       + self.info('address')
-                #       + ' maked request. Request size = '
-                #       + str(len(self._stack_to_read)))
+                print('AqBaseDevice: Device: '
+                      + self.info('name') + ' addr: '
+                      + self.info('address')
+                      + ' maked request. Request size = '
+                      + str(len(self._stack_to_read)))
                 self._connect.create_param_request('read', self._stack_to_read)
                 self._stack_to_read.clear()
 
