@@ -13,6 +13,7 @@ from AqIsValidIpFunc import is_valid_ip
 class AqConnect(QObject):
     def __init__(self):
         super().__init__()
+        self.status = 'no status'
 
     @abstractmethod
     async def open(self):
@@ -45,6 +46,8 @@ class AqIpConnectSettings:
         else:
             raise ValueError("Invalid ip " + str(_ip))
 
+        self.mutex = None
+
 
     @property
     def addr(self):
@@ -69,6 +72,7 @@ class AqComConnectSettings:
         # TODO: Зачем нам хранить одно и тоже в разных переменных???
         self.port = _port
         self._interface = _port
+        self.mutex = None
 
         if _baudrate in self.available_baudrate:
             self.baudrate = _baudrate
@@ -89,6 +93,7 @@ class AqComConnectSettings:
         return str(self.port)
 
 
+
 class AqModbusConnect(AqConnect):
 
     def __init__(self, connect_settings, slave_id, core_cv):
@@ -98,6 +103,7 @@ class AqModbusConnect(AqConnect):
         self.param_request_stack = []
         self.file_request_stack = []
         self.timeout = 1.0
+        self.mutex = connect_settings.mutex
         if isinstance(self.connect_settings, AqComConnectSettings):
             self.client = AsyncModbusSerialClient(method='rtu',
                                                     port=self.connect_settings.port,
@@ -118,11 +124,15 @@ class AqModbusConnect(AqConnect):
         else:
             return str(self.slave_id) + ' (' + self.connect_settings.addr + ')'
 
-    def open(self):
-        return asyncio.run(self.client.connect())
+    async def open(self):
+        await self.mutex.acquire()
+        result = await self.client.connect()
+        self.status = 'connect_ok' if result else 'connect_err'
+        return result
 
     def close(self):
         self.client.close()
+        self.mutex.release()
 
     def create_param_request(self, method, stack):
         request_stack = list()
@@ -143,23 +153,24 @@ class AqModbusConnect(AqConnect):
             request_stack.append(request)
 
         self.param_request_stack = request_stack
-        with self.core_cv:
-            self.core_cv.notify()
+        self.core_cv.set()
 
 
     async def proceed_request(self, request):
         function = request.get('method', None)
 
         if function is not None:
-           # if isinstance(self.connect_settings, AqComConnectSettings):
-            await self.client.connect()
             await function(request.get('item', None))
-            # if isinstance(self.connect_settings, AqComConnectSettings):
-            self.client.close()
         else:
-            # if isinstance(self.connect_settings, AqComConnectSettings):
-            self.client.close()
             raise Exception('AqConnectError: unknown "method"')
+
+    def proceed_failed_request(self, request):
+        item = request.get('item', None)
+        function = request.get('method', None)
+        if function.__name__ == 'read_param':
+            item.data_from_network(None, True, 'modbus_error')
+        elif function.__name__ == 'write_param':
+            item.confirm_writing(False, 'modbus_error')
 
     async def read_param(self, item):
         if item is not None:
@@ -178,7 +189,6 @@ class AqModbusConnect(AqConnect):
             else:
                 raise Exception('AqConnectError: in {} attributes "func"\
                                              or "param_size" or "modbus_reg" not exist'.format(item.__name__))
-
             try:
                 if func == 3:
                     result = await self.client.read_holding_registers(modbus_reg, count, self.slave_id)
@@ -187,12 +197,13 @@ class AqModbusConnect(AqConnect):
                 elif func == 1:
                     result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
                 else:
-                    return 'modbus_error'
-
-            except Exception as e:
-                print(f"Error occurred: {str(e)}")
-                return 'modbus_error'
-
+                    item.data_from_network(None, True, 'modbus_error')
+                    raise Exception('AqConnectError: in {} attributes "func" is not supported'.format(
+                        item.__name__))
+            except Exception:
+                self.status = 'connect_err'
+                item.data_from_network(None, True, 'modbus_error')
+                return
 
             if isinstance(result, ModbusIOException):
                 # return 'modbus_error'
@@ -220,10 +231,7 @@ class AqModbusConnect(AqConnect):
                         data = data[0]
                     else:
                         low_byte = data[0]
-                        try:
-                            high_byte = data[1]
-                        except:
-                            high_byte = 0x00
+                        high_byte = data[1]
                         # Восстановление 16-битного числа
                         data = (high_byte << 8) | low_byte
                     # TODO: перенести костыль в функцию в расслыку широковещательного запроса

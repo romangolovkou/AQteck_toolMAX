@@ -99,7 +99,7 @@ class AqWatchListCore(QObject):
                 # print('AqWatchListCore: started making read request')
                 for watched_item in cls.watched_items:
                     watched_item.device.read_parameters(watched_item.items)
-                time.sleep(0.5)
+                await asyncio.sleep(0.5)
 
             print('AqWatchListCore is finished')
 

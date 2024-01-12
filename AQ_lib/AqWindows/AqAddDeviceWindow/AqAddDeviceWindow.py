@@ -193,8 +193,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
                     found_devices_list.append(device)
                 else:
                     self.show_connect_err_label()
-            else:
-                self.show_connect_err_label()
+            # else:
+            #     self.show_connect_err_label()
 
         return found_devices_list
 

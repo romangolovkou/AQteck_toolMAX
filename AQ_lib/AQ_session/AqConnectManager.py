@@ -1,6 +1,7 @@
 import asyncio
 import threading
 import time
+from asyncio import CancelledError
 from random import random
 from codetiming import Timer
 
@@ -14,13 +15,14 @@ class AqConnectManager(object):
     core_cv = None
     core_thread = None
     connect_list = []
+    connect_mutex = dict()
     request_stack = []
 
     work_queue = asyncio.Queue()
 
     @classmethod
     def init(cls):
-        cls.core_cv = threading.Condition()
+        cls.core_cv = asyncio.Event()
         cls.core_thread = threading.Thread(target=cls.run)
         cls.core_thread.daemon = True
         cls.core_thread.start()
@@ -32,47 +34,50 @@ class AqConnectManager(object):
 
     @classmethod
     def run(cls):
-        asyncio.run(cls.proceed())
+        asyncio.run(cls.core())
+
+    @classmethod
+    async def core(cls):
+        tasks = [
+            asyncio.create_task(cls.proceed()),
+            asyncio.create_task(cls.proceedParamRequest("One")),
+            asyncio.create_task(cls.proceedParamRequest("Two")),
+        ]
+        try:
+            await asyncio.gather(*tasks)
+        except CancelledError:
+            return None
 
     @classmethod
     async def proceed(cls):
-        with AqConnectManager.core_cv:
-            while True:
-                cls.core_cv.wait()
-                with Timer(): #/text="\nTotal elapsed time: {:.1f}"):
+        while True:
+            await asyncio.sleep(0.1)
+            # await cls.core_cv.wait()
+            if cls.core_cv.is_set():
+                cls.core_cv.clear()
+                with Timer(text="\nTotal elapsed time: {:.1f}"):
                     for i in range(len(cls.connect_list)):
                         if len(cls.connect_list[i].param_request_stack) > 0:
                             await cls.work_queue.put(cls.connect_list[i])
-                    await asyncio.gather(
-                        asyncio.create_task(cls.proceedParamRequest("One")),
-                        asyncio.create_task(cls.proceedParamRequest("Two")),
-                    )
-                                # await cls.proceedParamRequest(cls.connect_list[i])
-                            # while len(cls.connect_list[i].file_request_stack) > 0:
-                            #     await cls.proceedFileRequest(cls.connect_list[i].param_request_stack.pop())
 
 
     @classmethod
     def create_connect(cls, connect_settings, device_id=None) -> AqConnect:
         connect = None
+
         if isinstance(connect_settings, AqOfflineConnectSettings):
             connect = AqOfflineConnect(cls.core_cv)
         elif isinstance(connect_settings, (AqIpConnectSettings, AqComConnectSettings)):
-            try:
-                if device_id is None:
-                    device_id = 1
-                connect = AqModbusConnect(connect_settings, device_id, cls.core_cv)
-                # if connect.open():
-                #     connect.close()
-                # else:
-                #     connect = None
-                #     print(cls.__name__ + 'Error: failed to open connect')
-                #     raise Exception(cls.__name__ + 'Error: failed to open connect')
-            except Exception as e:
-                print(str(e))
-                raise Exception(cls.__name__ + 'Error: failed to open connect')
+            locker = cls.connect_mutex.get(connect_settings.addr, None)
+            if locker is None:
+                locker = asyncio.Lock()
+                cls.connect_mutex[connect_settings.addr] = locker
+            connect_settings.mutex = locker
+            if device_id is None:
+                device_id = 1
+            connect = AqModbusConnect(connect_settings, device_id, cls.core_cv)
         else:
-            print('AqConnectManagerError: unknown settFings instance')
+            print('AqConnectManagerError: unknown settings instance')
             return None
 
         if connect is not None:
@@ -82,31 +87,20 @@ class AqConnectManager(object):
 
     @classmethod
     async def proceedParamRequest(cls, name):
-        # print(f"Created read task {name}")
+        print(f"Created read task {name}")
 
-        timer = Timer() #/text=f"Task {name} elapsed time: {{:.1f}}")
-
-        while not cls.work_queue.empty():
+        timer = Timer(text=f"Task {name} elapsed time: {{:.4f}}")
+        while True:
             connect = await cls.work_queue.get()
             timer.start()
-            for i in range(len(connect.param_request_stack)):
-                request = connect.param_request_stack.pop()
-                await connect.proceed_request(request)
-
+            connect_result = await connect.open()
+            if connect_result is True:
+                for i in range(len(connect.param_request_stack)):
+                    request = connect.param_request_stack.pop()
+                    await connect.proceed_request(request)
+                connect.close()
+            else:
+                for i in range(len(connect.param_request_stack)):
+                    request = connect.param_request_stack.pop()
+                    connect.proceed_failed_request(request)
             timer.stop()
-
-    # @staticmethod
-    # async def proceedFileRequest(req_data):
-    #     data_storage = req_data['data']
-    #     time.sleep(random.uniform(0.1, 2.0))
-    #     data_storage = random.randint(50, 100)
-
-
-
-
-
-
-
-
-
-
