@@ -45,7 +45,14 @@ class DeviceCreator(object):
         devices = list()
         if protocol == 'Modbus':
             # Получаем список файлов в указанной директории
-            devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+            try:
+                devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+            except:
+                devices.clear()
+                devices.append('Not configuration catalog')
+
+            if len(devices) == 0:
+                devices.append('Not available configuration')
 
         return devices
 
