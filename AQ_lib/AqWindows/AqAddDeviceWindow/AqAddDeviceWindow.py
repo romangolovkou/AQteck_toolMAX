@@ -280,7 +280,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def show_connect_err_label(self):
         self.connect_err_label = AqAddDeviceConnectErrorLabel(self.width(), 50, self.ui.mainWidget)
-        self.connect_err_label.move(0, self.height() - 50)
+        self.connect_err_label.move(0, self.height()-86)
         self.connect_err_label.show()
 
 

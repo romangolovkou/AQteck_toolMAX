@@ -95,9 +95,10 @@ class AqEnumTreeComboBox(QComboBox):
         self.save_new_value = handler
 
     def set_value(self, value):
-        string = self.enum_str_dict.get(value, '')
-        self.setCurrentText(string)
-        # self.setCurrentIndex(value)
+        if not self.hasFocus():
+            string = self.enum_str_dict.get(value, '')
+            self.setCurrentText(string)
+            # self.setCurrentIndex(value)
 
     def get_key_by_value(self, dictionary, value):
         for key, val in dictionary.items():
