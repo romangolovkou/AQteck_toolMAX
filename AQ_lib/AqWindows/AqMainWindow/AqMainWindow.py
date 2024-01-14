@@ -6,6 +6,8 @@ from AQ_EventManager import AQ_EventManager
 from AppCore import Core
 from ui_form import Ui_MainWindow
 
+version_path = "version.txt"
+
 
 class AqMainWindow(QMainWindow):
     def __init__(self):
@@ -18,6 +20,13 @@ class AqMainWindow(QMainWindow):
         # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
         self.event_manager = AQ_EventManager.get_global_event_manager()
+        try:
+            with open(version_path, 'r') as file:
+                version_str = file.read()
+        except:
+            version_str = 'unknown version'
+
+        self.ui.TitleName.setText(self.windowTitle() + ' ' + version_str)
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
         self.ui.deviceInfoBtn.clicked.connect(AqUiWorker.show_device_info_window)
         self.ui.paramListBtn.clicked.connect(AqUiWorker.show_device_param_list)
