@@ -220,6 +220,12 @@ class AqTreeViewManager(QStackedWidget):
                     cur_par_default = def_str
         elif param_attributes.get('visual_type', '') == 'ip_format':
             cur_par_default = ''
+        elif param_attributes.get('multiply', None) is not None:
+            cur_par_default = param_attributes.get('def_value', '')
+            if cur_par_default != '':
+                cur_par_default = cur_par_default * param_attributes.get('multiply', 1)
+
+            cur_par_default = round(float(cur_par_default), 7)
         else:
             cur_par_default = param_attributes.get('def_value', '')
 
