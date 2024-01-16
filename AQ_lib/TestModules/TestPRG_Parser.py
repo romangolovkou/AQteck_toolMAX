@@ -44,8 +44,13 @@ def __get_hash():
 class TestConsole(TestCase):
 
     def test_pars_defprg(self):
-        default_prg = read_def_prg('E:/git_new/AQteck_toolMAX/test_files/deflt.prg')
-        # default_prg = unpack(enc_default_prg)
+        enc_default_prg = read_def_prg('E:/git_new/AQteck_toolMAX/test_files/deflt.prg')
+        default_prg = unpack(enc_default_prg)
+        # Ця вставка робить файл default.prg у корні проекту (було необхідно для відладки)
+        filename = 'E:/git_new/AQteck_toolMAX/test_files/decrypted_default.prg'
+        with open(filename, 'wb') as file:
+            file.write(default_prg)
+
         device_tree = AqParser.parse_default_prg(default_prg)
         self.assertNotEqual(device_tree, 'parsing_err')
 
