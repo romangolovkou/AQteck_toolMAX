@@ -54,11 +54,10 @@ class AqConnectManager(object):
             await asyncio.sleep(0.1)
             # await cls.core_cv.wait()
             if cls.core_cv.is_set():
+                for i in range(len(cls.connect_list)):
+                    if len(cls.connect_list[i].param_request_stack) > 0:
+                        await cls.work_queue.put(cls.connect_list[i])
                 cls.core_cv.clear()
-                with Timer(text="\nTotal elapsed time: {:.1f}"):
-                    for i in range(len(cls.connect_list)):
-                        if len(cls.connect_list[i].param_request_stack) > 0:
-                            await cls.work_queue.put(cls.connect_list[i])
 
 
     @classmethod
@@ -102,9 +101,9 @@ class AqConnectManager(object):
                 for i in range(len(connect.param_request_stack)):
                     request = connect.param_request_stack.pop()
                     await connect.proceed_request(request)
-                connect.close()
             else:
                 for i in range(len(connect.param_request_stack)):
                     request = connect.param_request_stack.pop()
                     connect.proceed_failed_request(request)
+            connect.close()
             timer.stop()
