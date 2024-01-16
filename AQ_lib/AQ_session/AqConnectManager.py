@@ -86,6 +86,10 @@ class AqConnectManager(object):
         return connect
 
     @classmethod
+    def deleteConnect(cls, connect):
+        cls.connect_list.remove(connect)
+
+    @classmethod
     async def proceedParamRequest(cls, name):
         print(f"Created read task {name}")
 
