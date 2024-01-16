@@ -264,8 +264,9 @@ class AqModbusConnect(AqConnect):
             start_record_num = param_attributes.get('start_record_num', '')
             left_to_read = param_attributes.get('file_size', '')
             summary_data = bytearray()
-            while left_to_read:
-                read_size = max_record_size if left_to_read > max_record_size else left_to_read
+            while left_to_read > 0:
+                # read_size = max_record_size if left_to_read > max_record_size else left_to_read
+                read_size = max_record_size
                 result = None
                 request = ReadFileRecordRequest(self.slave_id)
                 request.file_number = file_num
@@ -283,7 +284,7 @@ class AqModbusConnect(AqConnect):
 
                 summary_data += result.records[0].record_data
 
-                filename = 'E:/git_new/AQteck_toolMAX/encrypted_default.prg'
+                filename = 'D:/CodeProjects/AQteck_toolMAX/encrypted_default.prg'
                 with open(filename, 'wb') as file:
                     file.write(summary_data)
 
