@@ -1,5 +1,4 @@
-from AQ_ParseFunc import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
-
+from AqAutoDetectionLibrary import parse_tree, get_storage_container, get_containers_offset
 #Імпорти нижче не видаляти, потрібні для globsls
 from AqModbusGenericItems import *
 from AqDY500Items import *
@@ -27,7 +26,7 @@ def parse_config(configuration, conf_type=None):
 
 def parse_default_prg(default_prg):
     try:
-        containers_count = get_conteiners_count(default_prg)
+        # containers_count = get_conteiners_count(default_prg)
         containers_offset = get_containers_offset(default_prg)
         storage_container = get_storage_container(default_prg, containers_offset)
         device_tree = parse_tree(storage_container)

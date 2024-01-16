@@ -132,7 +132,9 @@ class AqModbusConnect(AqConnect):
 
     def close(self):
         self.client.close()
-        self.mutex.release()
+        if self.mutex.locked():
+            self.mutex.release()
+
 
     def create_param_request(self, method, stack):
         request_stack = list()
