@@ -284,10 +284,6 @@ class AqModbusConnect(AqConnect):
 
                 summary_data += result.records[0].record_data
 
-                filename = 'D:/CodeProjects/AQteck_toolMAX/encrypted_default.prg'
-                with open(filename, 'wb') as file:
-                    file.write(summary_data)
-
             item.data_from_network(summary_data)
 
 
