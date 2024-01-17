@@ -109,6 +109,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
         #Скриємо кнопку "додати" до першого відображення знайденого девайсу
         self.ui.addBtn.hide()
 
+        self.ui.insideStackedWidget.update()
+
     def change_page_by_interface_selection(self):
         selected_item = self.ui.interface_combo_box.currentText()
         if selected_item == "Ethernet":
