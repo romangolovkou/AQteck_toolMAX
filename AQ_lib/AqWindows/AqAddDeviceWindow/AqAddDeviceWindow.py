@@ -57,6 +57,10 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
 
     def prepare_ui_objects(self):
+        # Прив'язуємо radiobattons до сторінок у внутрішьному стекед віджеті для ком-порту
+        self.ui.deviceRadioBtn.toggled.connect(lambda: self.ui.insideStackedWidget.setCurrentIndex(0))
+        self.ui.deviceRadioBtn.setChecked(True)
+        self.ui.scanRadioBtn.toggled.connect(lambda: self.ui.insideStackedWidget.setCurrentIndex(1))
         # Встановлюємо комбіновані імена в поля налаштувань (для збереження автозаповнення,
         # унікальні імена полів - це ключ для значення у auto_load_settings.ini)
         self.ui.protocol_combo_box.setObjectName(self.objectName() + "_" + self.ui.protocol_combo_box.objectName())

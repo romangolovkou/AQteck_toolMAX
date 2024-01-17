@@ -110,6 +110,79 @@ border-radius: 4px;
 QHeaderView::section { background-color: #2b2d30;}
 QTableWidget { border: none; }
 QTableWidget::item { padding-left: 3px; }
+
+QRadioButton {
+    font-size: 12px;
+    color: #D0D0D0;
+    background-color: #2b2d30;
+    padding: 1px;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+}
+
+#deviceRadioBtn{
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+#scanRadioBtn{
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	border-left: 0px solid #9ef1d3;
+}
+
+QRadioButton:hover {
+   background-color: #3c3e41;
+}
+
+QRadioButton::indicator {
+    width: 0px;
+    height: 0px;
+	background-color: transparent;
+}
+
+QRadioButton:checked {
+    background-color: #429061;
+}
+
+#boudrateFrame{
+	color: #D0D0D0;
+    background-color: #2b2d30;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+	padding: 6px;
+}
+#parityFrame{
+	color: #D0D0D0;
+    background-color: #2b2d30;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+	padding: 6px;
+}
+#stopbitsFrame{
+	color: #D0D0D0;
+    background-color: #2b2d30;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+	padding: 6px;
+}
+
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -390,10 +463,10 @@ QTableWidget::item { padding-left: 3px; }
            </layout>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QFrame" name="stackedFrame">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -407,7 +480,7 @@ QTableWidget::item { padding-left: 3px; }
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>260</height>
+             <height>270</height>
             </size>
            </property>
            <property name="styleSheet">
@@ -420,17 +493,20 @@ QTableWidget::item { padding-left: 3px; }
             <enum>QFrame::Raised</enum>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <property name="leftMargin">
              <number>0</number>
             </property>
             <property name="topMargin">
-             <number>0</number>
+             <number>5</number>
             </property>
             <property name="rightMargin">
              <number>0</number>
             </property>
             <property name="bottomMargin">
-             <number>0</number>
+             <number>5</number>
             </property>
             <item alignment="Qt::AlignTop">
              <widget class="QStackedWidget" name="stackedWidget">
@@ -449,14 +525,14 @@ QTableWidget::item { padding-left: 3px; }
               <property name="maximumSize">
                <size>
                 <width>10000</width>
-                <height>250</height>
+                <height>10000</height>
                </size>
               </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page_com">
                <property name="sizePolicy">
@@ -468,18 +544,18 @@ QTableWidget::item { padding-left: 3px; }
                <property name="maximumSize">
                 <size>
                  <width>16777215</width>
-                 <height>250</height>
+                 <height>260</height>
                 </size>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
                 <property name="spacing">
-                 <number>6</number>
+                 <number>0</number>
                 </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
                 <property name="topMargin">
-                 <number>6</number>
+                 <number>0</number>
                 </property>
                 <property name="rightMargin">
                  <number>0</number>
@@ -513,6 +589,11 @@ QTableWidget::item { padding-left: 3px; }
                    </property>
                    <item>
                     <widget class="QRadioButton" name="deviceRadioBtn">
+                     <property name="font">
+                      <font>
+                       <pointsize>-1</pointsize>
+                      </font>
+                     </property>
                      <property name="autoFillBackground">
                       <bool>false</bool>
                      </property>
@@ -526,6 +607,11 @@ QTableWidget::item { padding-left: 3px; }
                    </item>
                    <item>
                     <widget class="QRadioButton" name="scanRadioBtn">
+                     <property name="font">
+                      <font>
+                       <pointsize>-1</pointsize>
+                      </font>
+                     </property>
                      <property name="layoutDirection">
                       <enum>Qt::RightToLeft</enum>
                      </property>
@@ -537,15 +623,39 @@ QTableWidget::item { padding-left: 3px; }
                   </layout>
                  </widget>
                 </item>
-                <item>
+                <item alignment="Qt::AlignTop">
                  <widget class="QStackedWidget" name="insideStackedWidget">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
                   <property name="currentIndex">
                    <number>0</number>
                   </property>
                   <widget class="QWidget" name="pageDevice">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                    <layout class="QVBoxLayout" name="verticalLayout_9">
                     <property name="spacing">
-                     <number>6</number>
+                     <number>0</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -564,13 +674,13 @@ QTableWidget::item { padding-left: 3px; }
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
                         <width>16777215</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="font">
@@ -634,13 +744,13 @@ QTableWidget::item { padding-left: 3px; }
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
                         <width>16777215</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="font">
@@ -689,13 +799,13 @@ QTableWidget::item { padding-left: 3px; }
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
                         <width>16777215</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="font">
@@ -739,13 +849,13 @@ QTableWidget::item { padding-left: 3px; }
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
                         <width>16777215</width>
-                        <height>20</height>
+                        <height>25</height>
                        </size>
                       </property>
                       <property name="font">
@@ -776,7 +886,292 @@ QTableWidget::item { padding-left: 3px; }
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="pageScanNetwork"/>
+                  <widget class="QWidget" name="pageScanNetwork">
+                   <layout class="QVBoxLayout" name="verticalLayout_10">
+                    <property name="spacing">
+                     <number>6</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>10</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item alignment="Qt::AlignTop">
+                     <widget class="QFrame" name="boudrateFrame">
+                      <property name="frameShape">
+                       <enum>QFrame::StyledPanel</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_11">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="boudrateScanLabel">
+                         <property name="font">
+                          <font>
+                           <pointsize>10</pointsize>
+                          </font>
+                         </property>
+                         <property name="text">
+                          <string>Boudrate for scan</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QFrame" name="boudrateCheckBoxFrame">
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QGridLayout" name="gridLayout">
+                          <item row="0" column="0">
+                           <widget class="QCheckBox" name="checkBox4800">
+                            <property name="text">
+                             <string>4800</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QCheckBox" name="checkBox9600">
+                            <property name="text">
+                             <string>9600</string>
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                            <property name="tristate">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QCheckBox" name="checkBox38400">
+                            <property name="text">
+                             <string>38400</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="2">
+                           <widget class="QCheckBox" name="checkBox19200">
+                            <property name="text">
+                             <string>19200</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QCheckBox" name="checkBox57600">
+                            <property name="text">
+                             <string>57600</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="2">
+                           <widget class="QCheckBox" name="checkBox115200">
+                            <property name="text">
+                             <string>115200</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="parityFrame">
+                      <property name="frameShape">
+                       <enum>QFrame::StyledPanel</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_12">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QFrame" name="parityCheckBoxFrame">
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_7">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="parityScanLabelabel">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Parity </string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QCheckBox" name="checkBox">
+                            <property name="text">
+                             <string>None</string>
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QCheckBox" name="checkBox_2">
+                            <property name="text">
+                             <string>Odd</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QCheckBox" name="checkBox_3">
+                            <property name="text">
+                             <string>Even</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="stopbitsFrame">
+                      <property name="frameShape">
+                       <enum>QFrame::StyledPanel</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_13">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QFrame" name="stopbitsCheckBoxFrame">
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_8">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="stopbitsScanLabel">
+                            <property name="text">
+                             <string>Stopbits</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QCheckBox" name="checkBox_4">
+                            <property name="text">
+                             <string>1</string>
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QCheckBox" name="checkBox_5">
+                            <property name="text">
+                             <string>2</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
                  </widget>
                 </item>
                </layout>
@@ -802,26 +1197,53 @@ QTableWidget::item { padding-left: 3px; }
                  <number>0</number>
                 </property>
                 <item alignment="Qt::AlignTop">
-                 <widget class="QLabel" name="ip_line_edit_label">
-                  <property name="text">
-                   <string>IP Address</string>
+                 <widget class="QFrame" name="page_ip_Frame">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
                   </property>
-                 </widget>
-                </item>
-                <item alignment="Qt::AlignTop">
-                 <widget class="AqIpLineEdit" name="ip_line_edit">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>30</height>
-                   </size>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
                   </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>30</height>
-                   </size>
-                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_14">
+                   <property name="spacing">
+                    <number>6</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="ip_line_edit_label">
+                     <property name="text">
+                      <string>IP Address</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="AqIpLineEdit" name="ip_line_edit">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </widget>
                 </item>
                </layout>
