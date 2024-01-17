@@ -309,7 +309,7 @@ class AqOfflineConnect(AqConnect):
     def address_string(self):
         return 'Offline'
 
-    def open(self):
+    async def open(self):
         # return self.client.connect()
         return True
 
@@ -334,8 +334,7 @@ class AqOfflineConnect(AqConnect):
             request_stack.append(request)
 
         self.param_request_stack = request_stack
-        with self.core_cv:
-            self.core_cv.notify()
+        self.core_cv.set()
 
     def createFileRequest(self, func, file_num, record_num, record_len, data):
         self.file_request_stack.append({'func': func, 'file_num': file_num,
@@ -351,7 +350,7 @@ class AqOfflineConnect(AqConnect):
         else:
             raise Exception('AqConnectError: unknown "method"')
 
-    def read_param(self, item):
+    async def read_param(self, item):
         if item is not None:
             if item.value_in_device is None:
                 item.set_default_value()
@@ -359,7 +358,7 @@ class AqOfflineConnect(AqConnect):
             item.value = item.value_in_device
             item.synchronized = True
 
-    def write_param(self, item):
+    async def write_param(self, item):
         if item is not None:
             item.confirm_writing(True)
 
