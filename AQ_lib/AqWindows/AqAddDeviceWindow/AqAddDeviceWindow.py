@@ -115,6 +115,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
         selected_item = self.ui.interface_combo_box.currentText()
         if selected_item == "Ethernet":
             widget = getattr(self.ui, "page_ip")
+        elif selected_item == 'Offline':
+            widget = getattr(self.ui, "page_offline")
         else:
             widget = getattr(self.ui, "page_com")
 
