@@ -231,19 +231,20 @@ class AqAddDeviceWidget(AqDialogTemplate):
             print(f'                           Stopbits-{stopbits}, Address-{address}')
             try:
                 device = AqDeviceFabrica.DeviceCreator.from_param_dict(scan_network_list[i])
-                print('              Result: Found!')
+
             except Exception as e:
                 device = None
-                print('              Result: Not find')
+                print('              Result: Not found')
 
             if device is not None:
                 device_status = device.status
                 if device_status == 'ok' or device_status == 'data_error':
                     found_devices_list.append(device)
+                    print('              Result: Found!')
                 # else:
                 #     self.show_connect_err_label()
-            # else:
-            #     self.show_connect_err_label()
+            else:
+                print('              Result: Not found')
 
         return found_devices_list
 
@@ -405,7 +406,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
             self.ui.tableWidget.append_device_row(found_devices[i])
 
         # Відображаємо кнопку "додати"
-        self.ui.addBtn.show()
+        if len(found_devices) > 0:
+            self.ui.addBtn.show()
 
     def add_found_devices_to_all_list(self, found_devices):
         for i in range(len(found_devices)):
