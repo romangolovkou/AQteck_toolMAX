@@ -5,7 +5,7 @@ from PySide6.QtCore import QObject
 from pymodbus.client import AsyncModbusTcpClient, AsyncModbusSerialClient
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
-from pymodbus.pdu import ModbusResponse
+from pymodbus.pdu import ModbusResponse, ExceptionResponse
 
 from AqIsValidIpFunc import is_valid_ip
 
@@ -210,6 +210,10 @@ class AqModbusConnect(AqConnect):
             if isinstance(result, ModbusIOException):
                 # return 'modbus_error'
                 item.data_from_network(None, True, 'modbus_error')
+            elif isinstance(result, ExceptionResponse):
+                self.status = 'connect_err'
+                item.data_from_network(None, True, 'modbus_error')
+                return
             else:
                 item.data_from_network(result)
 
