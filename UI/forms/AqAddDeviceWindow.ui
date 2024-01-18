@@ -526,7 +526,7 @@ QCheckBox::indicator:checked {
              <number>0</number>
             </property>
             <property name="bottomMargin">
-             <number>5</number>
+             <number>10</number>
             </property>
             <item alignment="Qt::AlignTop">
              <widget class="QStackedWidget" name="stackedWidget">
@@ -921,7 +921,7 @@ QCheckBox::indicator:checked {
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_10">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>6</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1182,7 +1182,7 @@ QCheckBox::indicator:checked {
                                  <number>0</number>
                                 </property>
                                 <item>
-                                 <widget class="QCheckBox" name="checkBoxNone_2">
+                                 <widget class="QCheckBox" name="checkBoxNone">
                                   <property name="text">
                                    <string>None</string>
                                   </property>
@@ -1192,14 +1192,14 @@ QCheckBox::indicator:checked {
                                  </widget>
                                 </item>
                                 <item>
-                                 <widget class="QCheckBox" name="checkBoxEven_2">
+                                 <widget class="QCheckBox" name="checkBoxEven">
                                   <property name="text">
                                    <string>Even</string>
                                   </property>
                                  </widget>
                                 </item>
                                 <item>
-                                 <widget class="QCheckBox" name="checkBoxOdd_2">
+                                 <widget class="QCheckBox" name="checkBoxOdd">
                                   <property name="text">
                                    <string>Odd</string>
                                   </property>
@@ -1284,7 +1284,7 @@ QCheckBox::indicator:checked {
                                  <number>0</number>
                                 </property>
                                 <item>
-                                 <widget class="QCheckBox" name="checkBox1">
+                                 <widget class="QCheckBox" name="checkBox1sb">
                                   <property name="text">
                                    <string>1</string>
                                   </property>
@@ -1294,7 +1294,7 @@ QCheckBox::indicator:checked {
                                  </widget>
                                 </item>
                                 <item>
-                                 <widget class="QCheckBox" name="checkBox2">
+                                 <widget class="QCheckBox" name="checkBox2sb">
                                   <property name="text">
                                    <string>2</string>
                                   </property>
@@ -1316,14 +1316,17 @@ QCheckBox::indicator:checked {
                      </widget>
                     </item>
                     <item alignment="Qt::AlignTop">
-                     <widget class="QFrame" name="startAddressFrame">
+                     <widget class="QFrame" name="slaveIdFrame">
                       <property name="frameShape">
                        <enum>QFrame::StyledPanel</enum>
                       </property>
                       <property name="frameShadow">
                        <enum>QFrame::Raised</enum>
                       </property>
-                      <layout class="QVBoxLayout" name="verticalLayout_12">
+                      <layout class="QHBoxLayout" name="horizontalLayout_10">
+                       <property name="spacing">
+                        <number>10</number>
+                       </property>
                        <property name="leftMargin">
                         <number>0</number>
                        </property>
@@ -1337,78 +1340,107 @@ QCheckBox::indicator:checked {
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QLabel" name="startLineEditLabel">
-                         <property name="font">
-                          <font>
-                           <pointsize>10</pointsize>
-                          </font>
+                        <widget class="QFrame" name="startAddressFrame">
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
                          </property>
-                         <property name="text">
-                          <string>Start address</string>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
                          </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_12">
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="startLineEditLabel">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Start address</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="AqSlaveIdLineEdit" name="startLineEdit">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </widget>
                        </item>
                        <item>
-                        <widget class="AqSlaveIdLineEdit" name="startLineEdit">
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>30</height>
-                          </size>
+                        <widget class="QFrame" name="endAddressFrame">
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
                          </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>16777215</width>
-                           <height>30</height>
-                          </size>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
                          </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                    <item alignment="Qt::AlignTop">
-                     <widget class="QFrame" name="endAddressFrame">
-                      <property name="frameShape">
-                       <enum>QFrame::StyledPanel</enum>
-                      </property>
-                      <property name="frameShadow">
-                       <enum>QFrame::Raised</enum>
-                      </property>
-                      <layout class="QVBoxLayout" name="verticalLayout_13">
-                       <property name="leftMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item>
-                        <widget class="QLabel" name="endLineEditLabelLabel">
-                         <property name="text">
-                          <string>End address</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="AqSlaveIdLineEdit" name="endLineEdit">
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>16777215</width>
-                           <height>30</height>
-                          </size>
-                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_13">
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="endLineEditLabelLabel">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>End address</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="AqSlaveIdLineEdit" name="endLineEdit">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </widget>
                        </item>
                       </layout>
