@@ -61,6 +61,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.deviceRadioBtn.toggled.connect(lambda: self.ui.insideStackedWidget.setCurrentIndex(0))
         self.ui.deviceRadioBtn.setChecked(True)
         self.ui.scanRadioBtn.toggled.connect(lambda: self.ui.insideStackedWidget.setCurrentIndex(1))
+        self.ui.insideStackedWidget.setCurrentIndex(0)
+
         # Встановлюємо комбіновані імена в поля налаштувань (для збереження автозаповнення,
         # унікальні імена полів - це ключ для значення у auto_load_settings.ini)
         self.ui.protocol_combo_box.setObjectName(self.objectName() + "_" + self.ui.protocol_combo_box.objectName())
@@ -109,8 +111,6 @@ class AqAddDeviceWidget(AqDialogTemplate):
         #Скриємо кнопку "додати" до першого відображення знайденого девайсу
         self.ui.addBtn.hide()
 
-        self.ui.insideStackedWidget.update()
-
     def change_page_by_interface_selection(self):
         selected_item = self.ui.interface_combo_box.currentText()
         if selected_item == "Ethernet":
@@ -147,32 +147,46 @@ class AqAddDeviceWidget(AqDialogTemplate):
     def find_button_clicked(self):
         # Декативуємо кнопку для запобігання подвійного натискання до завершення пошуку
         self.ui.findBtn.setEnabled(False)
-        # Перед викликом події перевіряємо чи не порожні поля, та корректні в них дані
-        selected_item = self.ui.interface_combo_box.currentText()
-        if selected_item == "Ethernet":
-            ip = self.ui.ip_line_edit.text()
-            if not is_valid_ip(ip):
-                self.ui.ip_line_edit.red_blink_timer.start()
-                self.ui.ip_line_edit.show_err_label()
-                return
-        elif selected_item == 'Offline':
-            pass
-        else:
-            if self.ui.slave_id_line_edit.text() == '':
-                self.ui.slave_id_line_edit.red_blink_timer.start()
-                self.ui.slave_id_line_edit.show_err_label()
-                return
 
-        self.start_search()
+        if self.ui.deviceRadioBtn.isChecked() is True:
+            # Перед викликом події перевіряємо чи не порожні поля, та корректні в них дані
+            selected_item = self.ui.interface_combo_box.currentText()
+            if selected_item == "Ethernet":
+                ip = self.ui.ip_line_edit.text()
+                if not is_valid_ip(ip):
+                    self.ui.ip_line_edit.red_blink_timer.start()
+                    self.ui.ip_line_edit.show_err_label()
+                    return
+            elif selected_item == 'Offline':
+                pass
+            else:
+                if self.ui.slave_id_line_edit.text() == '':
+                    self.ui.slave_id_line_edit.red_blink_timer.start()
+                    self.ui.slave_id_line_edit.show_err_label()
+                    return
+
+            self.start_search()
+
+        elif self.ui.scanRadioBtn.isChecked() is True:
+            self.start_scan()
 
     def start_search(self):
         self.ui.RotatingGearsWidget.start()
         # Запускаем функцию connect_to_device в отдельном потоке
-        self.connect_thread = ConnectDeviceThread(self)
+        self.connect_thread = ConnectDeviceThread(self.connect_to_device)
         self.connect_thread.finished.connect(self.search_finished)
         self.connect_thread.error.connect(self.search_error)
         self.connect_thread.result_signal.connect(self.search_successful)
         self.connect_thread.start()
+
+    def start_scan(self):
+        # self.ui.RotatingGearsWidget.start()
+        # Запускаем функцию connect_to_device в отдельном потоке
+        self.scan_thread = ScanNetworkThread(self.scan_network)
+        self.scan_thread.finished.connect(self.search_finished)
+        self.scan_thread.error.connect(self.search_error)
+        self.scan_thread.result_signal.connect(self.search_successful)
+        self.scan_thread.start()
 
     def search_finished(self):
         self.ui.RotatingGearsWidget.stop()
@@ -199,6 +213,35 @@ class AqAddDeviceWidget(AqDialogTemplate):
                     found_devices_list.append(device)
                 else:
                     self.show_connect_err_label()
+            # else:
+            #     self.show_connect_err_label()
+
+        return found_devices_list
+
+    def scan_network(self):
+        found_devices_list = []
+        scan_network_list = self.get_scan_network_list()
+        for i in range(len(scan_network_list)):
+            network_settings = scan_network_list[i]
+            boudrate = network_settings.get('boudrate', None)
+            parity = network_settings.get('parity', None)
+            stopbits = network_settings.get('stopbits', None)
+            address = network_settings.get('address', None)
+            print(f'Scan network: Try find -> Boudrate-{boudrate}, Parity-{parity}')
+            print(f'                           Stopbits-{stopbits}, Address-{address}')
+            try:
+                device = AqDeviceFabrica.DeviceCreator.from_param_dict(scan_network_list[i])
+                print('              Result: Found!')
+            except Exception as e:
+                device = None
+                print('              Result: Not find')
+
+            if device is not None:
+                device_status = device.status
+                if device_status == 'ok' or device_status == 'data_error':
+                    found_devices_list.append(device)
+                # else:
+                #     self.show_connect_err_label()
             # else:
             #     self.show_connect_err_label()
 
@@ -245,6 +288,107 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.save_current_fields()
 
         return network_settings_list
+
+    def get_scan_network_list(self):
+        scan_network_list = []
+        selected_protocol = self.ui.protocol_combo_box.currentText()
+        selected_dev = self.ui.device_combo_box.currentText()
+        selected_if = self.ui.interface_combo_box.currentText()
+        # if selected_if == "Ethernet":
+        #     ip = self.ui.ip_line_edit.text()
+        #     network_setting = {'interface': selected_if,
+        #                        'interface_type': 'ip',
+        #                        'ip': ip,
+        #                        'device': selected_dev}
+        # elif selected_if == "Offline":
+        #     network_setting = {'interface': selected_if,
+        #                        'interface_type': 'Offline',
+        #                        'device': selected_dev}
+        # else:
+        boudrate_list = self.get_scan_boudrate_list()
+        address_list = self.get_scan_address_list()
+        parity_list = self.get_scan_parity_list()
+        stopbits_list = self.get_scan_stopbits_list()
+        for boudrate in boudrate_list:
+            for parity in parity_list:
+                for stopbits in stopbits_list:
+                    for address in address_list:
+                        network_setting = {'interface': selected_if,
+                                           'interface_type': 'com',
+                                           'address': address,
+                                           'device': selected_dev,
+                                           'boudrate': boudrate,
+                                           'parity': parity,
+                                           'stopbits': stopbits}
+
+                        if selected_protocol == 'Modbus':
+                            network_setting['device_type'] = 'AqFileDescriptionDevice'
+                        elif selected_protocol == 'AqAutoDetectionProtocol':
+                            network_setting['device_type'] = 'AqAutoDetectionDevice'
+                        else:
+                            print(self.__name__ + 'Error: unknown device type')
+                            raise Exception(self.__name__ + 'Error: unknown device type')
+
+                        scan_network_list.append(network_setting)
+
+        self.save_current_fields()
+
+        return scan_network_list
+
+    def get_scan_boudrate_list(self):
+        boudrate_list = list()
+        if self.ui.checkBox4800.isChecked():
+            boudrate_list.append(4800)
+        if self.ui.checkBox9600.isChecked():
+            boudrate_list.append(9600)
+        if self.ui.checkBox19200.isChecked():
+            boudrate_list.append(19200)
+        if self.ui.checkBox38400.isChecked():
+            boudrate_list.append(38400)
+        if self.ui.checkBox57600.isChecked():
+            boudrate_list.append(57600)
+        if self.ui.checkBox115200.isChecked():
+            boudrate_list.append(115200)
+
+        if len(boudrate_list) == 0:
+            raise Exception('Scan network error: empty boudrate!')
+
+        return boudrate_list
+
+    def get_scan_address_list(self):
+        start_address = int(self.ui.startLineEdit.text())
+        end_address = int(self.ui.endLineEdit.text())
+        if start_address > end_address:
+            raise Exception('Scan network error: incorrect address!')
+
+        address_list = list(range(start_address, end_address + 1))
+        return address_list
+
+    def get_scan_parity_list(self):
+        parity_list = list()
+        if self.ui.checkBoxNone.isChecked():
+            parity_list.append('None')
+        if self.ui.checkBoxEven.isChecked():
+            parity_list.append('Even')
+        if self.ui.checkBoxOdd.isChecked():
+            parity_list.append('Odd')
+
+        if len(parity_list) == 0:
+            raise Exception('Scan network error: empty parity!')
+
+        return parity_list
+
+    def get_scan_stopbits_list(self):
+        stopbits_list = list()
+        if self.ui.checkBox1sb.isChecked():
+            stopbits_list.append(1)
+        if self.ui.checkBox2sb.isChecked():
+            stopbits_list.append(2)
+
+        if len(stopbits_list) == 0:
+            raise Exception('Scan network error: empty stopbits!')
+
+        return stopbits_list
 
     def save_current_fields(self):
         save_combobox_current_state(self.auto_load_settings, self.ui.protocol_combo_box)
@@ -368,13 +512,13 @@ class ConnectDeviceThread(QThread):
     error = Signal(str)
     result_signal = Signal(object)  # Сигнал для передачи данных в главное окно
 
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.parent = parent
+    def __init__(self, connect_func):
+        super().__init__()
+        self.connect_func = connect_func
 
     def run(self):
         try:
-            result_data = self.parent.connect_to_device()
+            result_data = self.connect_func()
             self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
             # По завершении успешного выполнения
             self.finished.emit()
@@ -383,22 +527,42 @@ class ConnectDeviceThread(QThread):
             self.error.emit(str(e))
 
 
-class InitDeviceParamsThread(QThread):
+class ScanNetworkThread(QThread):
     finished = Signal()
     error = Signal(str)
     result_signal = Signal(object)  # Сигнал для передачи данных в главное окно
 
-    def __init__(self, devices_list, parent):
-        super().__init__(parent)
-        self.parent = parent
-        self.devices_list = devices_list
+    def __init__(self, scan_func):
+        super().__init__()
+        self.scan_func = scan_func
 
     def run(self):
         try:
-            for i in range(len(self.devices_list)):
-                self.devices_list[-1].init_parameters()
+            result_data = self.scan_func()
+            self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
             # По завершении успешного выполнения
             self.finished.emit()
         except Exception as e:
             # В случае ошибки передаем текст ошибки обратно в главный поток
             self.error.emit(str(e))
+
+
+# class InitDeviceParamsThread(QThread):
+#     finished = Signal()
+#     error = Signal(str)
+#     result_signal = Signal(object)  # Сигнал для передачи данных в главное окно
+#
+#     def __init__(self, devices_list, parent):
+#         super().__init__(parent)
+#         self.parent = parent
+#         self.devices_list = devices_list
+#
+#     def run(self):
+#         try:
+#             for i in range(len(self.devices_list)):
+#                 self.devices_list[-1].init_parameters()
+#             # По завершении успешного выполнения
+#             self.finished.emit()
+#         except Exception as e:
+#             # В случае ошибки передаем текст ошибки обратно в главный поток
+#             self.error.emit(str(e))
