@@ -58,9 +58,9 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def prepare_ui_objects(self):
         # Прив'язуємо radiobattons до сторінок у внутрішьному стекед віджеті для ком-порту
-        self.ui.deviceRadioBtn.toggled.connect(lambda: self.ui.insideStackedWidget.setCurrentIndex(0))
+        self.ui.deviceRadioBtn.toggled.connect(self.change_page_by_device_scan_mode_selection)
         self.ui.deviceRadioBtn.setChecked(True)
-        self.ui.scanRadioBtn.toggled.connect(lambda: self.ui.insideStackedWidget.setCurrentIndex(1))
+        self.ui.scanRadioBtn.toggled.connect(self.change_page_by_device_scan_mode_selection)
         self.ui.insideStackedWidget.setCurrentIndex(0)
 
         # Встановлюємо комбіновані імена в поля налаштувань (для збереження автозаповнення,
@@ -124,10 +124,33 @@ class AqAddDeviceWidget(AqDialogTemplate):
         if size.height() > widget.maximumHeight():
             height = widget.maximumHeight()
         else:
-            height = size.height()
+            height = size.height() + 10
 
         self.ui.stackedWidget.setCurrentWidget(widget)
         self.ui.stackedWidget.setFixedHeight(height)
+
+    def change_page_by_device_scan_mode_selection(self):
+        if self.ui.deviceRadioBtn.isChecked():
+            selected_mode = 'device'
+        elif self.ui.scanRadioBtn.isChecked():
+            selected_mode = 'scan'
+        else:
+            raise Exception(self.objectName() + ' error: unknown mode')
+
+        if selected_mode == 'device':
+            widget = getattr(self.ui, "pageDevice")
+        else:
+            widget = getattr(self.ui, "pageScanNetwork")
+
+        size = widget.sizeHint()
+        if size.height() > widget.maximumHeight():
+            height = widget.maximumHeight()
+        else:
+            height = size.height()
+
+        self.ui.insideStackedWidget.setCurrentWidget(widget)
+        self.ui.insideStackedWidget.setFixedHeight(height)
+        self.change_page_by_interface_selection()
 
     def change_device_set_by_protocol_selection(self):
         protocol = self.ui.protocol_combo_box.currentText()
@@ -243,8 +266,6 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if device_status == 'ok' or device_status == 'data_error':
                     found_devices_list.append(device)
                     print('              Result: Found!')
-                # else:
-                #     self.show_connect_err_label()
             else:
                 print('              Result: Not found')
 
