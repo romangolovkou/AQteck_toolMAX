@@ -23,7 +23,8 @@ class AqBaseDevice(ABC):
         self._stack_to_write = list()
         self._core_cv = threading.Condition()
         self.__create_local_event_manager()
-        self._event_manager.register_event_handler('requestGroupProceedDoneSignal', self.update_param_slot)
+        self._connect.setRequestGroupProceedDoneCallback(self.update_param_slot)
+        # self._event_manager.register_event_handler('requestGroupProceedDoneSignal', self.update_param_slot)
 
         self._info = {
             'name':             '',

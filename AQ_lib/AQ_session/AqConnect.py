@@ -104,6 +104,7 @@ class RequestGroup:
 
 class AqModbusConnect(AqConnect):
     requestGroupProceedDoneSignal = Signal()
+    requestGroupProceedDoneCallback = None
 
     def __init__(self, connect_settings, slave_id, core_cv):
         super().__init__()
@@ -129,8 +130,11 @@ class AqModbusConnect(AqConnect):
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
 
-    def setRequestGroupProceedDoneSlot(self, slot):
-        self.requestGroupProceedDoneSignal.connect(slot)
+    # def setRequestGroupProceedDoneCallback(self, slot):
+    #     self.requestGroupProceedDoneSignal.connect(slot)
+
+    def setRequestGroupProceedDoneCallback(self, callback):
+        self.requestGroupProceedDoneCallback = callback
 
     def address_string(self):
         if isinstance(self.connect_settings, AqIpConnectSettings):
@@ -168,7 +172,8 @@ class AqModbusConnect(AqConnect):
                 self.proceed_failed_request(request)
         self.close()
         # self.requestGroupProceedDoneSignal.emit()
-        self.event_manager.emit_event('requestGroupProceedDoneSignal')
+        # self.event_manager.emit_event('requestGroupProceedDoneSignal')
+        self.requestGroupProceedDoneCallback()
 
     def create_param_request(self, method, stack):
         request_stack = list()

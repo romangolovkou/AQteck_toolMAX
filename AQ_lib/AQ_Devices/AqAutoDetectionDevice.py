@@ -38,7 +38,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         super().__init__(event_manager, connect)
         self._default_prg = None
         self._connect = connect
-        self._connect.setRequestGroupProceedDoneSlot(self.update_param_slot)
+        # self._connect.setRequestGroupProceedDoneSlot(self.update_param_slot)
 
     def init_device(self) -> bool:
         self.__create_system_params()
