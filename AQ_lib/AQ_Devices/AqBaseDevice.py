@@ -18,11 +18,12 @@ class AqBaseDevice(ABC):
         self._connect = connect
         self._params_list = list()
         self._update_param_stack = list()
-        self._request_count = list()
+        # self._request_count = list()
         self._stack_to_read = list()
         self._stack_to_write = list()
         self._core_cv = threading.Condition()
         self.__create_local_event_manager()
+        self._event_manager.register_event_handler('requestGroupProceedDoneSignal', self.update_param_slot)
 
         self._info = {
             'name':             '',
@@ -113,7 +114,7 @@ class AqBaseDevice(ABC):
             self._is_inited = True
 
     def read_parameters(self, items=None):
-        if len(self._request_count) == 0:
+        # if len(self._request_count) == 0:
             if items is None:
                 root = self._device_tree.invisibleRootItem()
                 for row in range(root.rowCount()):
@@ -126,7 +127,7 @@ class AqBaseDevice(ABC):
                     self.__read_item(items[i])
 
             if len(self._stack_to_read) > 0:
-                self._request_count.append(len(self._stack_to_read))
+                # self._request_count.append(len(self._stack_to_read))
                 print('AqBaseDevice: Device: '
                       + self.info('name') + ' addr: '
                       + self.info('address')
@@ -136,7 +137,7 @@ class AqBaseDevice(ABC):
                 self._stack_to_read.clear()
 
     def write_parameters(self, items=None):
-        if len(self._request_count) == 0:
+        # if len(self._request_count) == 0:
             if items is None:
                 root = self.device_tree.invisibleRootItem()
                 for row in range(root.rowCount()):
@@ -149,7 +150,7 @@ class AqBaseDevice(ABC):
                     self.__write_item(items[i])
 
             if len(self._stack_to_write) > 0:
-                self._request_count.append(len(self._stack_to_write))
+                # self._request_count.append(len(self._stack_to_write))
                 self._connect.create_param_request('write', self._stack_to_write)
                 self._stack_to_write.clear()
 
@@ -246,17 +247,27 @@ class AqBaseDevice(ABC):
             #       + self.info('address')
             #       + ' get item' )
             self._update_param_stack.append(item)
-            if len(self._request_count) != 0:
-                if len(self._update_param_stack) == self._request_count[0]:
-                    # print('AqBaseDevice: Device: '
-                    #       + self.info('name') + ' addr: '
-                    #       + self.info('address')
-                    #       + ' complete request.')
-                    self._request_count.pop(0)
-                    self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-                    with self._core_cv:
-                        self._core_cv.notify()
-                    self._update_param_stack.clear()
+            # if len(self._request_count) != 0:
+            #     if len(self._update_param_stack) == self._request_count[0]:
+            #         # print('AqBaseDevice: Device: '
+            #         #       + self.info('name') + ' addr: '
+            #         #       + self.info('address')
+            #         #       + ' complete request.')
+            #         self._request_count.pop(0)
+            #         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+            #         with self._core_cv:
+            #             self._core_cv.notify()
+            #         self._update_param_stack.clear()
+
+    def update_param_slot(self):
+        # print('AqBaseDevice: Device: '
+        #       + self.info('name') + ' addr: '
+        #       + self.info('address')
+        #       + ' complete request.')
+        self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        with self._core_cv:
+            self._core_cv.notify()
+        self._update_param_stack.clear()
 
     def __convert_tree_branch_to_list(self, item):
         param_attributes = item.get_param_attributes()

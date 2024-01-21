@@ -1,12 +1,15 @@
 import asyncio
 from abc import abstractmethod
+from dataclasses import dataclass
+from queue import Queue
 
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Signal
 from pymodbus.client import AsyncModbusTcpClient, AsyncModbusSerialClient
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest
 from pymodbus.pdu import ModbusResponse, ExceptionResponse
 
+from AQ_EventManager import AQ_EventManager
 from AqIsValidIpFunc import is_valid_ip
 
 
@@ -93,17 +96,25 @@ class AqComConnectSettings:
         return str(self.port)
 
 
+@dataclass
+class RequestGroup:
+    connect: AqConnect
+    requestStack: list
+
 
 class AqModbusConnect(AqConnect):
+    requestGroupProceedDoneSignal = Signal()
 
     def __init__(self, connect_settings, slave_id, core_cv):
         super().__init__()
         self.connect_settings = connect_settings
         self.core_cv = core_cv
-        self.param_request_stack = []
+        self.RequestGroupQueue = Queue()
+        # self.param_request_stack = []
         self.file_request_stack = []
         self.timeout = 1.0
         self.mutex = connect_settings.mutex
+        self.event_manager = AQ_EventManager.get_global_event_manager()
         if isinstance(self.connect_settings, AqComConnectSettings):
             self.client = AsyncModbusSerialClient(method='rtu',
                                                     port=self.connect_settings.port,
@@ -117,6 +128,9 @@ class AqModbusConnect(AqConnect):
             self.slave_id = 1
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
+
+    def setRequestGroupProceedDoneSlot(self, slot):
+        self.requestGroupProceedDoneSignal.connect(slot)
 
     def address_string(self):
         if isinstance(self.connect_settings, AqIpConnectSettings):
@@ -135,6 +149,26 @@ class AqModbusConnect(AqConnect):
         if self.mutex.locked():
             self.mutex.release()
 
+    @property
+    def hasRequests(self):
+        if not self.RequestGroupQueue.empty():
+            return True
+        else:
+            return False
+
+    async def proceedRequestGroup(self, param_request_stack):
+        connect_result = await self.open()
+        if connect_result is True:
+            for i in range(len(param_request_stack)):
+                request = param_request_stack.pop()
+                await self.proceed_request(request)
+        else:
+            for i in range(len(param_request_stack)):
+                request = param_request_stack.pop()
+                self.proceed_failed_request(request)
+        self.close()
+        # self.requestGroupProceedDoneSignal.emit()
+        self.event_manager.emit_event('requestGroupProceedDoneSignal')
 
     def create_param_request(self, method, stack):
         request_stack = list()
@@ -154,7 +188,9 @@ class AqModbusConnect(AqConnect):
             # Формируем запрос
             request_stack.append(request)
 
-        self.param_request_stack = request_stack
+        self.RequestGroupQueue.put(RequestGroup(self, request_stack))
+
+        # self.param_request_stack = request_stack
         self.core_cv.set()
 
 

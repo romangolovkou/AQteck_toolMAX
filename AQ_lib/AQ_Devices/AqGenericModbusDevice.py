@@ -69,11 +69,11 @@ class AqGenericModbusDevice(AqBaseDevice):
         return item.value
 
     def read_file(self, item):
-        if len(self._request_count) == 0:
+        # if len(self._request_count) == 0:
             if item is not None:
                 self.read_parameter(item)
             if len(self._stack_to_read) > 0:
-                self._request_count.append(len(self._stack_to_read))
+                # self._request_count.append(len(self._stack_to_read))
                 self._connect.create_param_request('read_file', self._stack_to_read)
                 self._stack_to_read.clear()
 

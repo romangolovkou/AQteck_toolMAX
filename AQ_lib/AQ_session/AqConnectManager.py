@@ -55,8 +55,8 @@ class AqConnectManager(object):
             # await cls.core_cv.wait()
             if cls.core_cv.is_set():
                 for i in range(len(cls.connect_list)):
-                    if len(cls.connect_list[i].param_request_stack) > 0:
-                        await cls.work_queue.put(cls.connect_list[i])
+                    if cls.connect_list[i].hasRequests:
+                        await cls.work_queue.put(cls.connect_list[i].RequestGroupQueue.get())
                 cls.core_cv.clear()
 
 
@@ -94,16 +94,18 @@ class AqConnectManager(object):
 
         timer = Timer(text=f"Task {name} elapsed time: {{:.4f}}")
         while True:
-            connect = await cls.work_queue.get()
+            requestGroup = await cls.work_queue.get()
+            connect = requestGroup.connect
             timer.start()
-            connect_result = await connect.open()
-            if connect_result is True:
-                for i in range(len(connect.param_request_stack)):
-                    request = connect.param_request_stack.pop()
-                    await connect.proceed_request(request)
-            else:
-                for i in range(len(connect.param_request_stack)):
-                    request = connect.param_request_stack.pop()
-                    connect.proceed_failed_request(request)
-            connect.close()
+            await connect.proceedRequestGroup(requestGroup.requestStack)
+            # connect_result = await connect.open()
+            # if connect_result is True:
+            #     for i in range(len(connect.param_request_stack)):
+            #         request = connect.param_request_stack.pop()
+            #         await connect.proceed_request(request)
+            # else:
+            #     for i in range(len(connect.param_request_stack)):
+            #         request = connect.param_request_stack.pop()
+            #         connect.proceed_failed_request(request)
+            # connect.close()
             timer.stop()
