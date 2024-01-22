@@ -14,7 +14,7 @@ class AQ_ValueTreeDelegate(QStyledItemDelegate):
             editor = manager_item.get_editor()
             param_attributes = manager_item.get_param_attributes()
             editor = editor(param_attributes, parent)
-            editor.set_new_value_handler(manager_item.save_new_value)
+            editor.set_manager_item_handler(manager_item.save_new_value)
             manager_item.save_editor_object(editor)
             return editor
 

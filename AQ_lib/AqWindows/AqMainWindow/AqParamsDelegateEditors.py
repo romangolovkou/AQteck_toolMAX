@@ -14,7 +14,7 @@ class AqTreeLineEdit(QLineEdit):
         super().__init__(parent)
         self.min_limit = param_attributes.get('min_limit', None)
         self.max_limit = param_attributes.get('max_limit', None)
-        self.save_new_value = None
+        self.manager_item_handler = None
         self.setStyleSheet(
             "border: none; color: #D0D0D0; background-color: transparent; \n")  # Задаем цветную границу и цвет шрифта
         self.red_blink_timer = QTimer()
@@ -37,8 +37,11 @@ class AqTreeLineEdit(QLineEdit):
             value = None
         self.save_new_value(value)
 
-    def set_new_value_handler(self, handler):
-        self.save_new_value = handler
+    def set_manager_item_handler(self, manager_item_handler):
+        self.manager_item_handler = manager_item_handler
+
+    def save_new_value(self, value):
+        self.manager_item_handler.save_new_value(value)
 
     def set_value(self, value):
         if value is None:
@@ -66,6 +69,11 @@ class AqTreeLineEdit(QLineEdit):
         if not self.hasFocus():
             super().setText(arg__1)
 
+    def focusInEvent(self, event):
+        # Викликається при отриманні єдітором фокусу
+
+        super().focusInEvent(event)
+
 
 class AqEnumTreeComboBox(QComboBox):
     def __init__(self, param_attributes, parent=None):
@@ -75,7 +83,7 @@ class AqEnumTreeComboBox(QComboBox):
         self.setStyleSheet("QComboBox { border: 0px solid #D0D0D0; color: #D0D0D0; background-color: #16191d;}")
         # Отключение обработчика события колеса мыши
         self.wheelEvent = lambda event: event.ignore()
-        self.save_new_value = None
+        self.manager_item_handler = None
         self.enum_str_dict = param_attributes.get('enum_strings', '')
         enum_strings = self.enum_str_dict.values()
         enum_strings = list(enum_strings)
@@ -91,8 +99,11 @@ class AqEnumTreeComboBox(QComboBox):
         key = self.get_key_by_value(self.enum_str_dict, string)
         self.save_new_value(key)
 
-    def set_new_value_handler(self, handler):
-        self.save_new_value = handler
+    def set_manager_item_handler(self, manager_item_handler):
+        self.manager_item_handler = manager_item_handler
+
+    def save_new_value(self, value):
+        self.manager_item_handler.save_new_value(value)
 
     def set_value(self, value):
         if not self.hasFocus():
