@@ -100,7 +100,8 @@ class AqWatchListCore(QObject):
                 for watched_item in cls.watched_items:
                     items_to_read = list()
                     for item in watched_item.items:
-                        if item.get_status() != 'changed':
+                        # if item.get_status() != 'changed':
+                        if not item.is_blocked and item.get_status() != 'changed':
                             items_to_read.append(item)
                     watched_item.device.read_parameters(items_to_read)
                 await asyncio.sleep(0.5)

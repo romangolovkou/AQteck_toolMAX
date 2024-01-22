@@ -24,6 +24,7 @@ class AqParamItem(QStandardItem):
         self.param_status = None
         self.local_event_manager = None
         self.setData(param_attributes, Qt.UserRole)
+        self._is_blocked = False
 
     @property
     def value(self):
@@ -60,6 +61,14 @@ class AqParamItem(QStandardItem):
                 self.local_event_manager.emit_event('add_param_to_update_stack', self)
 
         self.synchro_flag = flag
+
+    @property
+    def is_blocked(self):
+        return self._is_blocked
+
+    @is_blocked.setter
+    def is_blocked(self, state: bool):
+        self._is_blocked = state
 
     def confirm_writing(self, result: bool, message=None):
         """
@@ -515,3 +524,6 @@ class AqParamManagerItem(QStandardItem):
 
     def update_status(self):
         self.setData(self.sourse_item.get_status(), Qt.UserRole + 1)
+
+    def set_blocked(self, state: bool):
+        self.sourse_item.is_blocked = state
