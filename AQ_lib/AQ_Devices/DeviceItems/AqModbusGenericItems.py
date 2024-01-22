@@ -69,6 +69,8 @@ class AqModbusUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
         byte_array = bytes.fromhex(hex_string)
         if self.param_size == 1:
             param_value = struct.unpack('>H', byte_array)[0]
+
+        #TODO: have bug
         elif self.param_size == 2:
             param_value = struct.unpack('>H', byte_array)[0]
         elif self.param_size == 4:

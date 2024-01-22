@@ -5,18 +5,6 @@ from AQ_EventManager import AQ_EventManager
 from AqWatchListCore import AqWatchListCore
 
 
-# class AqTreeItemModel(QStandardItemModel):
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.device = None
-#
-#     def get_device(self):
-#         return self.device
-#
-#     def set_device(self, device):
-#         self.device = device
-
-
 class AqWatchListTreeViewModel(QStandardItemModel):
     def __init__(self):
         super().__init__()
@@ -100,24 +88,3 @@ class AqWatchListTreeViewModel(QStandardItemModel):
         for row in range(root.rowCount()):
             child_item = root.child(row)
             self.update_parameter_status(child_item)
-
-    def read_parameter(self, index):
-        item = self.itemFromIndex(index)
-        sourse_item = item.get_sourse_item()
-        self.device.read_parameters(sourse_item)
-        # self.update_parameter_value(item)
-
-    def write_parameter(self, index):
-        item = self.itemFromIndex(index)
-        sourse_item = item.get_sourse_item()
-        self.device.write_parameters(sourse_item)
-        # self.update_parameter_status(item)
-
-    def add_parameter_to_watch_list(self, index):
-        item = self.itemFromIndex(index)
-        sourse_item = item.get_sourse_item()
-        from AqWatchListCore import AqWatchListCore
-        AqUiWorker.show_watch_list_window()
-        AqWatchListCore.addItem(self.device, sourse_item)
-
-

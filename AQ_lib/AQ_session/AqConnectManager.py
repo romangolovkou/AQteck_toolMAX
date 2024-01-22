@@ -98,14 +98,4 @@ class AqConnectManager(object):
             connect = requestGroup.connect
             timer.start()
             await connect.proceedRequestGroup(requestGroup.requestStack)
-            # connect_result = await connect.open()
-            # if connect_result is True:
-            #     for i in range(len(connect.param_request_stack)):
-            #         request = connect.param_request_stack.pop()
-            #         await connect.proceed_request(request)
-            # else:
-            #     for i in range(len(connect.param_request_stack)):
-            #         request = connect.param_request_stack.pop()
-            #         connect.proceed_failed_request(request)
-            # connect.close()
             timer.stop()
