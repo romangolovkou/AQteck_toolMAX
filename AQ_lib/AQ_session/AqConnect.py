@@ -14,9 +14,13 @@ from AqIsValidIpFunc import is_valid_ip
 
 
 class AqConnect(QObject):
-    def __init__(self):
+    requestGroupProceedDoneCallback = None
+    RequestGroupQueue = Queue()
+
+    def __init__(self, core_cv):
         super().__init__()
         self.status = 'no status'
+        self.core_cv = core_cv
 
     @abstractmethod
     async def open(self):
@@ -26,18 +30,77 @@ class AqConnect(QObject):
     def close(self):
         pass
 
-    def create_param_request(self, method, stack):
-        pass
-
     def read_param(self, item):
         pass
 
     def write_param(self, item):
         pass
 
+    async def proceedRequestGroup(self, param_request_stack):
+        connect_result = await self.open()
+        if connect_result is True:
+            for i in range(len(param_request_stack)):
+                request = param_request_stack.pop()
+                await self.proceed_request(request)
+        else:
+            for i in range(len(param_request_stack)):
+                request = param_request_stack.pop()
+                self.proceed_failed_request(request)
+        self.close()
+        self.requestGroupProceedDoneCallback()
+
+    async def proceed_request(self, request):
+        function = request.get('method', None)
+
+        if function is not None:
+            await function(request.get('item', None))
+        else:
+            raise Exception('AqConnectError: unknown "method"')
+
+    def proceed_failed_request(self, request):
+        item = request.get('item', None)
+        function = request.get('method', None)
+        if function.__name__ == 'read_param':
+            item.data_from_network(None, True, 'modbus_error')
+        elif function.__name__ == 'write_param':
+            item.confirm_writing(False, 'modbus_error')
+
+    def create_param_request(self, method, stack):
+        request_stack = list()
+        for i in range(len(stack)):
+            request = dict()
+            if method == 'read':
+                request['method'] = self.read_param
+            elif method == 'write':
+                request['method'] = self.write_param
+            elif method == 'read_file':
+                request['method'] = self.read_file
+            else:
+                raise Exception('AqConnectError: unknown stack name')
+
+            request['item'] = stack[i]
+
+            # Формируем запрос
+            request_stack.append(request)
+
+        self.RequestGroupQueue.put(RequestGroup(self, request_stack))
+
+        # self.param_request_stack = request_stack
+        self.core_cv.set()
+
     @abstractmethod
     def address_string(self):
         pass
+
+    def setRequestGroupProceedDoneCallback(self, callback):
+        self.requestGroupProceedDoneCallback = callback
+
+    @property
+    def hasRequests(self):
+        if not self.RequestGroupQueue.empty():
+            return True
+        else:
+            return False
 
 
 class AqIpConnectSettings:
@@ -103,15 +166,10 @@ class RequestGroup:
 
 
 class AqModbusConnect(AqConnect):
-    requestGroupProceedDoneSignal = Signal()
-    requestGroupProceedDoneCallback = None
 
     def __init__(self, connect_settings, slave_id, core_cv):
-        super().__init__()
+        super().__init__(core_cv)
         self.connect_settings = connect_settings
-        self.core_cv = core_cv
-        self.RequestGroupQueue = Queue()
-        # self.param_request_stack = []
         self.file_request_stack = []
         self.timeout = 1.0
         self.mutex = connect_settings.mutex
@@ -130,12 +188,6 @@ class AqModbusConnect(AqConnect):
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
 
-    # def setRequestGroupProceedDoneCallback(self, slot):
-    #     self.requestGroupProceedDoneSignal.connect(slot)
-
-    def setRequestGroupProceedDoneCallback(self, callback):
-        self.requestGroupProceedDoneCallback = callback
-
     def address_string(self):
         if isinstance(self.connect_settings, AqIpConnectSettings):
             return self.connect_settings.addr
@@ -152,68 +204,6 @@ class AqModbusConnect(AqConnect):
         self.client.close()
         if self.mutex.locked():
             self.mutex.release()
-
-    @property
-    def hasRequests(self):
-        if not self.RequestGroupQueue.empty():
-            return True
-        else:
-            return False
-
-    async def proceedRequestGroup(self, param_request_stack):
-        connect_result = await self.open()
-        if connect_result is True:
-            for i in range(len(param_request_stack)):
-                request = param_request_stack.pop()
-                await self.proceed_request(request)
-        else:
-            for i in range(len(param_request_stack)):
-                request = param_request_stack.pop()
-                self.proceed_failed_request(request)
-        self.close()
-        # self.requestGroupProceedDoneSignal.emit()
-        # self.event_manager.emit_event('requestGroupProceedDoneSignal')
-        self.requestGroupProceedDoneCallback()
-
-    def create_param_request(self, method, stack):
-        request_stack = list()
-        for i in range(len(stack)):
-            request = dict()
-            if method == 'read':
-                request['method'] = self.read_param
-            elif method == 'write':
-                request['method'] = self.write_param
-            elif method == 'read_file':
-                request['method'] = self.read_file
-            else:
-                raise Exception('AqConnectError: unknown stack name')
-
-            request['item'] = stack[i]
-
-            # Формируем запрос
-            request_stack.append(request)
-
-        self.RequestGroupQueue.put(RequestGroup(self, request_stack))
-
-        # self.param_request_stack = request_stack
-        self.core_cv.set()
-
-
-    async def proceed_request(self, request):
-        function = request.get('method', None)
-
-        if function is not None:
-            await function(request.get('item', None))
-        else:
-            raise Exception('AqConnectError: unknown "method"')
-
-    def proceed_failed_request(self, request):
-        item = request.get('item', None)
-        function = request.get('method', None)
-        if function.__name__ == 'read_param':
-            item.data_from_network(None, True, 'modbus_error')
-        elif function.__name__ == 'write_param':
-            item.confirm_writing(False, 'modbus_error')
 
     async def read_param(self, item):
         if item is not None:
@@ -346,8 +336,8 @@ class AqModbusConnect(AqConnect):
 
 class AqOfflineConnect(AqConnect):
     def __init__(self, core_cv):
-        super().__init__()
-        self.core_cv = core_cv
+        super().__init__(core_cv)
+        # self.core_cv = core_cv
         self.param_request_stack = []
         self.file_request_stack = []
 
@@ -362,38 +352,11 @@ class AqOfflineConnect(AqConnect):
         # self.client.close()
         return True
 
-    def create_param_request(self, method, stack):
-        request_stack = list()
-        for i in range(len(stack)):
-            request = dict()
-            if method == 'read':
-                request['method'] = self.read_param
-            elif method == 'write':
-                request['method'] = self.write_param
-            else:
-                raise Exception('AqConnectError: unknown stack name')
-
-            request['item'] = stack[i]
-
-            # Формируем запрос
-            request_stack.append(request)
-
-        self.param_request_stack = request_stack
-        self.core_cv.set()
-
     def createFileRequest(self, func, file_num, record_num, record_len, data):
         self.file_request_stack.append({'func': func, 'file_num': file_num,
                                         'record_num': record_num, 'record_len': record_len, 'data': data})
         with self.core_cv:
             self.core_cv.notify()
-
-    async def proceed_request(self, request):
-        function = request.get('method', None)
-
-        if function is not None:
-            await function(request.get('item', None))
-        else:
-            raise Exception('AqConnectError: unknown "method"')
 
     async def read_param(self, item):
         if item is not None:

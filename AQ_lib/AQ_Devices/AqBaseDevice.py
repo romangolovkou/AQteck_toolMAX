@@ -18,13 +18,11 @@ class AqBaseDevice(ABC):
         self._connect = connect
         self._params_list = list()
         self._update_param_stack = list()
-        # self._request_count = list()
         self._stack_to_read = list()
         self._stack_to_write = list()
         self._core_cv = threading.Condition()
         self.__create_local_event_manager()
-        self._connect.setRequestGroupProceedDoneCallback(self.update_param_slot)
-        # self._event_manager.register_event_handler('requestGroupProceedDoneSignal', self.update_param_slot)
+        self._connect.setRequestGroupProceedDoneCallback(self.update_param_callback)
 
         self._info = {
             'name':             '',
@@ -164,11 +162,6 @@ class AqBaseDevice(ABC):
         """Read parameter from device"""
         self._stack_to_read.append(item)
 
-    # @abstractmethod
-    # def write_parameter(self, item):
-    #     """Read parameter from device"""
-    #     return NotImplementedError
-
     def write_parameter(self, item):
         if item.get_status() == 'changed':
             self._stack_to_write.append(item)
@@ -243,28 +236,9 @@ class AqBaseDevice(ABC):
     # Private function
     def __add_param_to_update_stack(self, item):
         if item not in self._update_param_stack:
-            # print('AqBaseDevice: Device: '
-            #       + self.info('name') + ' addr: '
-            #       + self.info('address')
-            #       + ' get item' )
             self._update_param_stack.append(item)
-            # if len(self._request_count) != 0:
-            #     if len(self._update_param_stack) == self._request_count[0]:
-            #         # print('AqBaseDevice: Device: '
-            #         #       + self.info('name') + ' addr: '
-            #         #       + self.info('address')
-            #         #       + ' complete request.')
-            #         self._request_count.pop(0)
-            #         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-            #         with self._core_cv:
-            #             self._core_cv.notify()
-            #         self._update_param_stack.clear()
 
-    def update_param_slot(self):
-        # print('AqBaseDevice: Device: '
-        #       + self.info('name') + ' addr: '
-        #       + self.info('address')
-        #       + ' complete request.')
+    def update_param_callback(self):
         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
         with self._core_cv:
             self._core_cv.notify()
