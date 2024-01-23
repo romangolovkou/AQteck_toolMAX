@@ -96,12 +96,18 @@ class AqEnumTreeComboBox(QComboBox):
             self.addItem(enum_str)
 
         self.currentIndexChanged.connect(self.updateIndex)
+        self.activated.connect(self.popupActivated)
+        self.highlighted.connect(self.popupOpened)
 
     def updateIndex(self, index):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         string = self.itemText(index)
         key = self.get_key_by_value(self.enum_str_dict, string)
         self.save_new_value(key)
+
+    def popupActivated(self):
+        self.manager_item_handler.set_blocked(False)
+        print('unblock')
 
     def set_manager_item_handler(self, manager_item_handler):
         self.manager_item_handler = manager_item_handler
@@ -120,6 +126,27 @@ class AqEnumTreeComboBox(QComboBox):
             if val == value:
                 return key
         return None  # Возвращаем None, если объект не найден
+
+    def focusInEvent(self, event):
+        # Викликається при отриманні єдітором фокусу
+        super().focusInEvent(event)
+        self.manager_item_handler.set_blocked(True)
+
+        print('block')
+
+    def popupOpened(self):
+        self.manager_item_handler.set_blocked(True)
+
+        print('block')
+
+    def focusOutEvent(self, event):
+        # Викликається при втраті єдітором фокусу
+        super().focusInEvent(event)
+        if not self.view().isVisible():
+            self.manager_item_handler.set_blocked(False)
+            print('unblock')
+
+
 
 
 class AqEnumROnlyTreeLineEdit(AqTreeLineEdit):

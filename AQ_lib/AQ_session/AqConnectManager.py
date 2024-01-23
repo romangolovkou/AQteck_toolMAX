@@ -56,6 +56,7 @@ class AqConnectManager(object):
             if cls.core_cv.is_set():
                 for i in range(len(cls.connect_list)):
                     if cls.connect_list[i].hasRequests:
+                        print(cls.connect_list[i].objectName() + ' q_size ' + str(cls.connect_list[i].RequestGroupQueue.qsize()))
                         await cls.work_queue.put(cls.connect_list[i].RequestGroupQueue.get())
                 cls.core_cv.clear()
 
