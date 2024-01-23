@@ -49,3 +49,6 @@ class AqWatchTreeView(AqTreeView):
             AqWatchListCore.removeItem(item.watchItem)
         else:
             AqWatchListCore.removeItem(item.get_sourse_item())
+
+    def writeWatchItemParameter(self, items_to_write):
+        AqWatchListCore.writeWatchedItemParam(items_to_write)

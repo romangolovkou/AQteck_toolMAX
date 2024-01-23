@@ -4,12 +4,14 @@ import ipaddress
 import socket
 import struct
 
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QComboBox, QLineEdit, QLabel
 
 
 class AqTreeLineEdit(QLineEdit):
+    enter_key_signal = Signal(object)
+
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
         self.min_limit = param_attributes.get('min_limit', None)
@@ -29,6 +31,8 @@ class AqTreeLineEdit(QLineEdit):
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")
             self.textChanged.connect(self.line_edit_changed_update_value)
 
+        self.returnPressed.connect(lambda: self.enter_key_signal.emit(self.manager_item_handler.get_sourse_item()))
+
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         if text != '':
@@ -39,6 +43,9 @@ class AqTreeLineEdit(QLineEdit):
 
     def set_manager_item_handler(self, manager_item_handler):
         self.manager_item_handler = manager_item_handler
+
+    def enter_pressed(self):
+        self.enter_key_signal.emit(self.manager_item_handler.get_sourse_item())
 
     def save_new_value(self, value):
         self.manager_item_handler.save_new_value(value)
@@ -79,7 +86,10 @@ class AqTreeLineEdit(QLineEdit):
         self.manager_item_handler.set_blocked(False)
         super().focusInEvent(event)
 
+
 class AqEnumTreeComboBox(QComboBox):
+    change_combo_box_signal = Signal(object)
+
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
         self.parent = parent
@@ -191,6 +201,9 @@ class AqUintTreeLineEdit(AqTreeLineEdit):
                 return
             elif key == Qt.Key_Backspace:
                 self.backspace()
+                return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
                 return
 
             cursor_position = self.cursorPosition()

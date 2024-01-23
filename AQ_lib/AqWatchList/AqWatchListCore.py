@@ -103,11 +103,19 @@ class AqWatchListCore(QObject):
                         # if item.get_status() != 'changed':
                         if not item.is_blocked and item.get_status() != 'changed':
                             items_to_read.append(item)
-                    watched_item.device.read_parameters(items_to_read)
+                    cls.readWatchedItemParam(watched_item, items_to_read)
                 await asyncio.sleep(0.5)
 
             print('AqWatchListCore is finished')
 
+    @classmethod
+    def writeWatchedItemParam(cls, items_to_write):
+        watchedItem = cls.getWatchedItemByParamItem(items_to_write)
+        watchedItem.device.write_parameters(items_to_write)
+
+    @classmethod
+    def readWatchedItemParam(cls, watchedItem, items_to_read):
+        watchedItem.device.read_parameters(items_to_read)
 
 class AqWatchCoreSignals(QObject):
     watch_item_change = Signal(WatchedItem)

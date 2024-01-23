@@ -15,6 +15,9 @@ class AqValueTreeDelegate(QStyledItemDelegate):
             param_attributes = manager_item.get_param_attributes()
             editor = editor(param_attributes, parent)
             editor.set_manager_item_handler(manager_item)
+            if hasattr(self.parent(), 'writeWatchItemParameter'):
+                editor.enter_key_signal.connect(self.parent().writeWatchItemParameter)
+
             manager_item.save_editor_object(editor)
             return editor
 
