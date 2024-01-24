@@ -43,6 +43,8 @@ class AqWatchListWidget(AqDialogTemplate):
         self.tree_model_for_view = AqWatchListTreeViewModel()
         self.ui.treeView.setModel(self.tree_model_for_view)
 
+        self.ui.clearAllBtn.clicked.connect(self.ui.treeView.removeAllItems)
+
         AqWatchListCore.signals.watch_item_change.connect(self.add_new_parameter)
         AqWatchListCore.signals.watch_item_remove.connect(self.remove_parameter)
 

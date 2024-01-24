@@ -153,10 +153,10 @@ QMenu::item:selected {
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>0</number>
+       <number>10</number>
       </property>
       <property name="rightMargin">
-       <number>0</number>
+       <number>10</number>
       </property>
       <item>
        <widget class="QFrame" name="periodFrame">
@@ -195,16 +195,39 @@ QMenu::item:selected {
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="periodLabel">
-           <property name="text">
-            <string>Period (msec)</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QLineEdit" name="periodLineEdit"/>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearAllBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Clear all</string>
+        </property>
        </widget>
       </item>
      </layout>
@@ -220,7 +243,14 @@ QMenu::item:selected {
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="AqWatchTreeView" name="treeView"/>
+       <widget class="AqWatchTreeView" name="treeView">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
