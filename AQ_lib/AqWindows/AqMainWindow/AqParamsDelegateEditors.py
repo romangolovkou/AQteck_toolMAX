@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QComboBox, QLineEdit, QLabel
 
 
 class AqTreeLineEdit(QLineEdit):
-    enter_key_signal = Signal(object)
+    edit_done_signal = Signal(object)
 
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
@@ -31,7 +31,7 @@ class AqTreeLineEdit(QLineEdit):
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent; \n")
             self.textChanged.connect(self.line_edit_changed_update_value)
 
-        self.returnPressed.connect(lambda: self.enter_key_signal.emit(self.manager_item_handler.get_sourse_item()))
+        self.returnPressed.connect(lambda: self.edit_done_signal.emit(self.manager_item_handler.get_sourse_item()))
 
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
@@ -45,7 +45,7 @@ class AqTreeLineEdit(QLineEdit):
         self.manager_item_handler = manager_item_handler
 
     def enter_pressed(self):
-        self.enter_key_signal.emit(self.manager_item_handler.get_sourse_item())
+        self.edit_done_signal.emit(self.manager_item_handler.get_sourse_item())
 
     def save_new_value(self, value):
         self.manager_item_handler.save_new_value(value)
@@ -84,11 +84,11 @@ class AqTreeLineEdit(QLineEdit):
     def focusOutEvent(self, event):
         # Викликається при втраті єдітором фокусу
         self.manager_item_handler.set_blocked(False)
-        super().focusInEvent(event)
+        super().focusOutEvent(event)
 
 
 class AqEnumTreeComboBox(QComboBox):
-    change_combo_box_signal = Signal(object)
+    edit_done_signal = Signal(object)
 
     def __init__(self, param_attributes, parent=None):
         super().__init__(parent)
@@ -114,6 +114,7 @@ class AqEnumTreeComboBox(QComboBox):
         string = self.itemText(index)
         key = self.get_key_by_value(self.enum_str_dict, string)
         self.save_new_value(key)
+        self.edit_done_signal.emit(self.manager_item_handler.get_sourse_item())
 
     def popupActivated(self):
         self.manager_item_handler.set_blocked(False)
@@ -151,7 +152,7 @@ class AqEnumTreeComboBox(QComboBox):
 
     def focusOutEvent(self, event):
         # Викликається при втраті єдітором фокусу
-        super().focusInEvent(event)
+        super().focusOutEvent(event)
         if not self.view().isVisible():
             self.manager_item_handler.set_blocked(False)
             print('unblock')
@@ -295,6 +296,9 @@ class AqIpTreeLineEdit(AqTreeLineEdit):
                         return
                     self.backspace()
                 return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
+                return
 
             if self.hasSelectedText():
                 self.backspace()
@@ -379,6 +383,9 @@ class AqIntTreeLineEdit(AqTreeLineEdit):
             elif key == Qt.Key_Backspace:
                 self.backspace()
                 return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
+                return
 
             if self.hasSelectedText():
                 self.backspace()
@@ -457,6 +464,9 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
                 return
             elif key == Qt.Key_Backspace:
                 self.backspace()
+                return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
                 return
 
             if self.hasSelectedText():
