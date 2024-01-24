@@ -88,13 +88,14 @@ class AqParamItem(QStandardItem):
             self.local_event_manager.emit_event('add_param_to_update_stack', self)
 
     def data_from_network(self, new_value, is_error=False, message=None):
-        if is_error:
-            self.set_error_flag(message)
-        else:
-            new_value = self.unpack(new_value)
-            self.validate(new_value)
-            self._value = new_value
-            self.synchronized = True
+        if not self.is_blocked:
+            if is_error:
+                self.set_error_flag(message)
+            else:
+                new_value = self.unpack(new_value)
+                self.validate(new_value)
+                self._value = new_value
+                self.synchronized = True
 
     def data_for_network(self):
         return self.pack()
