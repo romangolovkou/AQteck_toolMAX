@@ -103,6 +103,11 @@ class AqBaseDevice(ABC):
     #     if device == self:
     #         with self._core_cv:
     #             self._core_cv.notify()
+    def clear_existing_requests(self):
+        requests = self._connect.RequestGroupQueue
+        # Очищаем очередь
+        while not requests.empty():
+            requests.get()
 
     def init_parameters(self):
         self._event_manager.register_event_handler('current_device_data_updated', self.init_complete, True)
@@ -113,50 +118,41 @@ class AqBaseDevice(ABC):
             self._is_inited = True
 
     def read_parameters(self, items=None):
-        # if len(self._request_count) == 0:
-            if items is None:
-                root = self._device_tree.invisibleRootItem()
-                for row in range(root.rowCount()):
-                    child_item = root.child(row)
-                    self.__read_item(child_item)
-            else:
-                if isinstance(items, AqParamItem):
-                    items = [items]
-                for i in range(len(items)):
-                    self.__read_item(items[i])
+        if items is None:
+            root = self._device_tree.invisibleRootItem()
+            for row in range(root.rowCount()):
+                child_item = root.child(row)
+                self.__read_item(child_item)
+        else:
+            if isinstance(items, AqParamItem):
+                items = [items]
+            for i in range(len(items)):
+                self.__read_item(items[i])
 
-            if len(self._stack_to_read) > 0:
-                # self._request_count.append(len(self._stack_to_read))
-                print('AqBaseDevice: Device: '
-                      + self.info('name') + ' addr: '
-                      + self.info('address')
-                      + ' maked request. Request size = '
-                      + str(len(self._stack_to_read)))
-                self._connect.create_param_request('read', self._stack_to_read)
-                self._stack_to_read.clear()
+        if len(self._stack_to_read) > 0:
+            print('AqBaseDevice: Device: '
+                  + self.info('name') + ' addr: '
+                  + self.info('address')
+                  + ' maked request. Request size = '
+                  + str(len(self._stack_to_read)))
+            self._connect.create_param_request('read', self._stack_to_read)
+            self._stack_to_read.clear()
 
     def write_parameters(self, items=None):
-        # if len(self._request_count) == 0:
-            if items is None:
-                root = self.device_tree.invisibleRootItem()
-                for row in range(root.rowCount()):
-                    child_item = root.child(row)
-                    self.__write_item(child_item)
-            else:
-                if isinstance(items, AqParamItem):
-                    items = [items]
-                for i in range(len(items)):
-                    self.__write_item(items[i])
+        if items is None:
+            root = self.device_tree.invisibleRootItem()
+            for row in range(root.rowCount()):
+                child_item = root.child(row)
+                self.__write_item(child_item)
+        else:
+            if isinstance(items, AqParamItem):
+                items = [items]
+            for i in range(len(items)):
+                self.__write_item(items[i])
 
-            if len(self._stack_to_write) > 0:
-                # self._request_count.append(len(self._stack_to_write))
-                self._connect.create_param_request('write', self._stack_to_write)
-                self._stack_to_write.clear()
-
-    # @abstractmethod
-    # def read_parameter(self, item):
-    #     """Read parameter from device"""
-    #     return NotImplementedError
+        if len(self._stack_to_write) > 0:
+            self._connect.create_param_request('write', self._stack_to_write)
+            self._stack_to_write.clear()
 
     def read_parameter(self, item):
         """Read parameter from device"""

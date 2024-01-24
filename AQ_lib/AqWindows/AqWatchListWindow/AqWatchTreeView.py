@@ -47,6 +47,7 @@ class AqWatchTreeView(AqTreeView):
         param_attributes = item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             AqWatchListCore.removeItem(item.watchItem)
+            item.watchItem.device.clear_existing_requests()
         else:
             AqWatchListCore.removeItem(item.get_sourse_item())
 
