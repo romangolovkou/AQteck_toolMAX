@@ -103,11 +103,13 @@ class AqBaseDevice(ABC):
     #     if device == self:
     #         with self._core_cv:
     #             self._core_cv.notify()
-    def clear_existing_requests(self):
-        requests = self._connect.RequestGroupQueue
-        # Очищаем очередь
-        while not requests.empty():
-            requests.get()
+
+    def de_init(self):
+        self._connect.close()
+        self._clear_existing_requests()
+
+    def _clear_existing_requests(self):
+        self._connect.clear_existing_requests()
 
     def init_parameters(self):
         self._event_manager.register_event_handler('current_device_data_updated', self.init_complete, True)

@@ -49,8 +49,11 @@ class AqTreeViewItemModel(QStandardItemModel):
                     sourse_item = param_stack[i]
                     manager_item = self.travers_find_manager_by_sourse_item(sourse_item)
                     if manager_item is not None:
-                        manager_item.show_new_value()
-                        manager_item.update_status()
+                        try:
+                            manager_item.show_new_value()
+                            manager_item.update_status()
+                        except Exception as e:
+                            print(e)
 
     def travers_find_manager_by_sourse_item(self, sourse_item):
         manager_item = None

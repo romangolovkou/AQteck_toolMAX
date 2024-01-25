@@ -15,6 +15,7 @@ import io
 
 from AqConnectManager import AqConnectManager
 from AqDeviceFabrica import DeviceCreator
+from AqWatchListCore import AqWatchListCore
 
 
 class AQ_CurrentSession(QObject):
@@ -90,7 +91,11 @@ class AQ_CurrentSession(QObject):
     def delete_device(self, device):
         if device is not None:
             # TODO: delete device object and do deinit inside
-            device._connect.close()
+            AqWatchListCore.removeItemByDevice(device)
+            AqConnectManager.deleteConnect(device._connect)
+            device.de_init()
+
+
             index_to_remove = self.devices.index(device)
             removed_element = self.devices.pop(index_to_remove)
             if len(self.devices) == 0:
@@ -103,12 +108,6 @@ class AQ_CurrentSession(QObject):
     def restart_current_active_device(self):
         if self.cur_active_device is not None:
             self.restart_device(self.cur_active_device)
-
-    # def add_param_to_watch_list(self, item, model):
-    #     if self.watch_list_window_exist is False:
-    #         self.open_WatchList()
-    #
-    #     self.event_manager.emit_event('add_item_to_watch_list', item, model)
 
     def save_device_config(self, device: AqBaseDevice):
         fname = None

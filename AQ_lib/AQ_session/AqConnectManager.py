@@ -56,8 +56,14 @@ class AqConnectManager(object):
             if cls.core_cv.is_set():
                 for i in range(len(cls.connect_list)):
                     if cls.connect_list[i].hasRequests:
-                        print(cls.connect_list[i].objectName() + ' q_size ' + str(cls.connect_list[i].RequestGroupQueue.qsize()))
-                        await cls.work_queue.put(cls.connect_list[i].RequestGroupQueue.get())
+                        print(cls.connect_list[i].objectName() + ' q_size ' + str(len(cls.connect_list[i].RequestGroupQueue)))
+                        group_request = cls.connect_list[i].RequestGroupQueue.popleft()
+                        items_requests = group_request.requestStack
+                        for items in items_requests:
+                            if items['method'] == cls.connect_list[i].write_param:
+                                print('i get the write_request!!!!!!!!!!!!!!!!!!')
+
+                        await cls.work_queue.put(group_request)
                 cls.core_cv.clear()
 
 
@@ -96,6 +102,8 @@ class AqConnectManager(object):
         timer = Timer(text=f"Task {name} elapsed time: {{:.4f}}")
         while True:
             requestGroup = await cls.work_queue.get()
+            if len(requestGroup.requestStack) == 1:
+                print('!!!!i get_1_param_stack!!!!')
             connect = requestGroup.connect
             timer.start()
             await connect.proceedRequestGroup(requestGroup.requestStack)
