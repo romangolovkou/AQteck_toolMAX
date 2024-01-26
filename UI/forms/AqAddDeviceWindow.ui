@@ -168,14 +168,14 @@ QRadioButton:checked {
     border-top: 1px solid #9ef1d3;
 	border-right: 1px solid #5bb192;
     border-radius: 5px;
-	padding: 6px;
+	padding-left: 6px;
 }
 #stopbitsFrame{
 	color: #D0D0D0;
     background-color: #2b2d30;
     border-top: 1px solid #9ef1d3;
     border-bottom-right-radius: 5px;
-	padding: 6px;
+	padding-left: 6px;
 }
 
 QCheckBox {
@@ -670,7 +670,7 @@ QCheckBox::indicator:checked {
                    </size>
                   </property>
                   <property name="currentIndex">
-                   <number>0</number>
+                   <number>1</number>
                   </property>
                   <widget class="QWidget" name="pageDevice">
                    <property name="sizePolicy">
@@ -990,7 +990,7 @@ QCheckBox::indicator:checked {
                         <number>0</number>
                        </property>
                        <item alignment="Qt::AlignTop">
-                        <widget class="QFrame" name="boudrateFrame">
+                        <widget class="AqScanCheckBoxFrame" name="boudrateFrame">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                            <horstretch>0</horstretch>
@@ -1145,8 +1145,8 @@ QCheckBox::indicator:checked {
                           <property name="bottomMargin">
                            <number>0</number>
                           </property>
-                          <item>
-                           <widget class="QFrame" name="parityFrame">
+                          <item alignment="Qt::AlignTop">
+                           <widget class="AqScanCheckBoxFrame" name="parityFrame">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                               <horstretch>0</horstretch>
@@ -1189,6 +1189,12 @@ QCheckBox::indicator:checked {
                              </property>
                              <item>
                               <widget class="QLabel" name="parityScanLabel_2">
+                               <property name="sizePolicy">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
+                                </sizepolicy>
+                               </property>
                                <property name="font">
                                 <font>
                                  <pointsize>10</pointsize>
@@ -1260,7 +1266,7 @@ QCheckBox::indicator:checked {
                            </widget>
                           </item>
                           <item alignment="Qt::AlignTop">
-                           <widget class="QFrame" name="stopbitsFrame">
+                           <widget class="AqScanCheckBoxFrame" name="stopbitsFrame">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                               <horstretch>0</horstretch>
@@ -1303,6 +1309,12 @@ QCheckBox::indicator:checked {
                              </property>
                              <item>
                               <widget class="QLabel" name="stopbitsScanLabel">
+                               <property name="sizePolicy">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
+                                </sizepolicy>
+                               </property>
                                <property name="font">
                                 <font>
                                  <pointsize>10</pointsize>
@@ -1984,6 +1996,12 @@ QCheckBox::indicator:checked {
    <class>AqRotatingGearsWidget</class>
    <extends>QWidget</extends>
    <header location="global">AqAddDeviceRotatingGears.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqScanCheckBoxFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">AqScanSettingsWidgets.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
