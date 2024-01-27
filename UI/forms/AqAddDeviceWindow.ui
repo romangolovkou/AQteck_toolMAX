@@ -922,7 +922,7 @@ QCheckBox::indicator:checked {
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="pageScanNetwork">
+                  <widget class="AqScanNetworkSettingsWidget" name="pageScanNetwork">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                      <horstretch>0</horstretch>
@@ -2038,6 +2038,12 @@ QCheckBox::indicator:checked {
   <customwidget>
    <class>AqScanSlaveIDFrame</class>
    <extends>QFrame</extends>
+   <header location="global">AqScanSettingsWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqScanNetworkSettingsWidget</class>
+   <extends>QWidget</extends>
    <header location="global">AqScanSettingsWidgets.h</header>
    <container>1</container>
   </customwidget>

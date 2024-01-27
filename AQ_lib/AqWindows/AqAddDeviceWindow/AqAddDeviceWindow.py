@@ -111,10 +111,11 @@ class AqAddDeviceWidget(AqDialogTemplate):
         #Скриємо кнопку "додати" до першого відображення знайденого девайсу
         self.ui.addBtn.hide()
 
-        self.ui.boudrateFrame.prepare_ui()
-        self.ui.parityFrame.prepare_ui()
-        self.ui.stopbitsFrame.prepare_ui()
-        self.ui.slaveIdFrame.prepare_ui()
+        # self.ui.boudrateFrame.prepare_ui()
+        # self.ui.parityFrame.prepare_ui()
+        # self.ui.stopbitsFrame.prepare_ui()
+        # self.ui.slaveIdFrame.prepare_ui()
+        self.ui.pageScanNetwork.prepare_ui()
 
     def change_page_by_interface_selection(self):
         selected_item = self.ui.interface_combo_box.currentText()
