@@ -1717,6 +1717,25 @@ QCheckBox::indicator:checked {
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QPushButton" name="stopScanBtn">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Stop scan</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
