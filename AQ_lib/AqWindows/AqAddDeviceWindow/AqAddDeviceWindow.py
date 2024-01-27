@@ -263,8 +263,10 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.stopScanBtn.show()
         found_devices_list = []
         scan_network_list = self.get_scan_network_list()
+        first_find_stop_flag = self.ui.firstFindCheckBox.isChecked()
         for i in range(len(scan_network_list)):
             if self.scan_stop_event.isAccepted():
+                self.scan_stop_event.setAccepted(False)
                 break
             network_settings = scan_network_list[i]
             boudrate = network_settings.get('boudrate', None)
@@ -285,6 +287,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if device_status == 'ok' or device_status == 'data_error':
                     found_devices_list.append(device)
                     print('              Result: Found!')
+                    if first_find_stop_flag is True:
+                        self.scan_stop_event.setAccepted(True)
             else:
                 print('              Result: Not found')
 
