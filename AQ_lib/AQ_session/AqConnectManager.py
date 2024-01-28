@@ -16,9 +16,10 @@ class AqConnectManager(object):
     core_thread = None
     connect_list = []
     connect_mutex = dict()
-    request_stack = []
 
     work_queue = asyncio.Queue()
+
+    requested_connect = set()
 
     @classmethod
     def init(cls):
@@ -42,6 +43,8 @@ class AqConnectManager(object):
             asyncio.create_task(cls.proceed()),
             asyncio.create_task(cls.proceedParamRequest("One")),
             asyncio.create_task(cls.proceedParamRequest("Two")),
+            asyncio.create_task(cls.proceedParamRequest("Three")),
+            asyncio.create_task(cls.proceedParamRequest("Four")),
         ]
         try:
             await asyncio.gather(*tasks)
@@ -52,14 +55,16 @@ class AqConnectManager(object):
     async def proceed(cls):
         while True:
             await asyncio.sleep(0.1)
-            # await cls.core_cv.wait()
             if cls.core_cv.is_set():
-                for i in range(len(cls.connect_list)):
-                    if cls.connect_list[i].hasRequests:
-                        print(cls.connect_list[i].objectName() + ' q_size ' + str(cls.connect_list[i].RequestGroupQueue.qsize()))
-                        await cls.work_queue.put(cls.connect_list[i].RequestGroupQueue.get())
+                for i in range(len(cls.requested_connect)):
+                    await cls.work_queue.put(cls.requested_connect.pop())
+                cls.requested_connect.clear()
                 cls.core_cv.clear()
 
+    @classmethod
+    def notify(cls, connect_obj):
+        cls.requested_connect.add(connect_obj)
+        cls.core_cv.set()
 
     @classmethod
     def create_connect(cls, connect_settings, device_id=None) -> AqConnect:
@@ -75,7 +80,7 @@ class AqConnectManager(object):
             connect_settings.mutex = locker
             if device_id is None:
                 device_id = 1
-            connect = AqModbusConnect(connect_settings, device_id, cls.core_cv)
+            connect = AqModbusConnect(connect_settings, device_id, cls.notify)
         else:
             print('AqConnectManagerError: unknown settings instance')
             return None
@@ -91,12 +96,11 @@ class AqConnectManager(object):
 
     @classmethod
     async def proceedParamRequest(cls, name):
-        print(f"Created read task {name}")
+        print(f"Created task {name}")
 
         timer = Timer(text=f"Task {name} elapsed time: {{:.4f}}")
         while True:
-            requestGroup = await cls.work_queue.get()
-            connect = requestGroup.connect
+            connect = await cls.work_queue.get()
             timer.start()
-            await connect.proceedRequestGroup(requestGroup.requestStack)
+            await connect.proceedOneRequestGroup()
             timer.stop()

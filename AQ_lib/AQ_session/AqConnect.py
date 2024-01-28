@@ -1,7 +1,8 @@
 import asyncio
 from abc import abstractmethod
+from collections import deque
 from dataclasses import dataclass
-from queue import Queue
+from queue import Queue, PriorityQueue
 
 from PySide6.QtCore import QObject, Signal
 from pymodbus.client import AsyncModbusTcpClient, AsyncModbusSerialClient
@@ -14,13 +15,13 @@ from AqIsValidIpFunc import is_valid_ip
 
 
 class AqConnect(QObject):
-    requestGroupProceedDoneCallback = None
-    RequestGroupQueue = Queue()
 
-    def __init__(self, core_cv):
+    def __init__(self, notify):
         super().__init__()
         self.status = 'no status'
-        self.core_cv = core_cv
+        self.notify = notify
+        self.requestGroupProceedDoneCallback = None
+        self.RequestGroupQueue = deque()
 
     @abstractmethod
     async def open(self):
@@ -36,18 +37,67 @@ class AqConnect(QObject):
     def write_param(self, item):
         pass
 
-    async def proceedRequestGroup(self, param_request_stack):
+    # async def proceedRequestGroup(self, param_request_stack):
+    #     connect_result = await self.open()
+    #     if connect_result is True:
+    #         for i in range(len(param_request_stack)):
+    #             request = param_request_stack.pop()
+    #             if request['method'] == self.write_param:
+    #                 print('!!!!write_check!!!!')
+    #             await self.proceed_request(request)
+    #     else:
+    #         for i in range(len(param_request_stack)):
+    #             request = param_request_stack.pop()
+    #             if request['method'] == self.write_param:
+    #                 print('!!!!Failed_write_check!!!!')
+    #             self.proceed_failed_request(request)
+    #
+    #         self.RequestGroupQueue.clear()
+    #     self.close()
+    #     self.requestGroupProceedDoneCallback()
+
+    # async def proceedRequestGroup(self, param_request_stack):
+    #
+    #     if len(param_request_stack) == 1:
+    #         print('!!!!write_check_2!!!!')
+    #     connect_result = await self.open()
+    #     if connect_result is True:
+    #         for i in range(len(param_request_stack)):
+    #             request = param_request_stack.pop()
+    #             if request['method'] == self.write_param:
+    #                 print('!!!!write_check!!!!')
+    #             await self.proceed_request(request)
+    #     else:
+    #         for i in range(len(param_request_stack)):
+    #             request = param_request_stack.pop()
+    #             if request['method'] == self.write_param:
+    #                 print('!!!!Failed_write_check!!!!')
+    #             self.proceed_failed_request(request)
+    #
+    #         self.RequestGroupQueue.clear()
+    #     self.close()
+    #     self.requestGroupProceedDoneCallback()
+
+    async def proceedOneRequestGroup(self):
+        if len(self.RequestGroupQueue) > 0:
+            request_stack = self.RequestGroupQueue.popleft()
+        else:
+            print("WTF????")
+            self.set_ready_flag()
+            return
         connect_result = await self.open()
         if connect_result is True:
-            for i in range(len(param_request_stack)):
-                request = param_request_stack.pop()
+            for i in range(len(request_stack)):
+                request = request_stack.pop()
                 await self.proceed_request(request)
         else:
-            for i in range(len(param_request_stack)):
-                request = param_request_stack.pop()
+            for i in range(len(request_stack)):
+                request = request_stack.pop()
                 self.proceed_failed_request(request)
+            self.RequestGroupQueue.clear()
         self.close()
         self.requestGroupProceedDoneCallback()
+        self.set_ready_flag()
 
     async def proceed_request(self, request):
         function = request.get('method', None)
@@ -83,10 +133,20 @@ class AqConnect(QObject):
             # Формируем запрос
             request_stack.append(request)
 
-        self.RequestGroupQueue.put(RequestGroup(self, request_stack))
+        if method == 'write':
+            self.RequestGroupQueue.appendleft(request_stack)
+        else:
+            self.RequestGroupQueue.append(request_stack)
 
-        # self.param_request_stack = request_stack
-        self.core_cv.set()
+        self.set_ready_flag()
+
+    def set_ready_flag(self):
+        if len(self.RequestGroupQueue) > 0 and not self.mutex.locked():
+            self.notify(self)
+
+    def clear_existing_requests(self):
+        # Очищаем очередь
+        self.RequestGroupQueue.clear()
 
     @abstractmethod
     def address_string(self):
@@ -94,13 +154,6 @@ class AqConnect(QObject):
 
     def setRequestGroupProceedDoneCallback(self, callback):
         self.requestGroupProceedDoneCallback = callback
-
-    @property
-    def hasRequests(self):
-        if not self.RequestGroupQueue.empty():
-            return True
-        else:
-            return False
 
 
 class AqIpConnectSettings:
@@ -167,8 +220,8 @@ class RequestGroup:
 
 class AqModbusConnect(AqConnect):
 
-    def __init__(self, connect_settings, slave_id, core_cv):
-        super().__init__(core_cv)
+    def __init__(self, connect_settings, slave_id, notify):
+        super().__init__(notify)
         self.connect_settings = connect_settings
         self.file_request_stack = []
         self.timeout = 1.0

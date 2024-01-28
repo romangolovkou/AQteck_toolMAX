@@ -71,7 +71,6 @@ class AqWatchListCore(QObject):
     def removeItem(cls, item):
         if isinstance(item, WatchedItem):
             cls.watched_items.remove(item)
-            item.device.clear_existing_requests()
             cls.signals.watch_item_remove.emit(item)
         elif isinstance(item, AqParamItem):
             watchedItem = cls.getWatchedItemByParamItem(item)
@@ -81,8 +80,10 @@ class AqWatchListCore(QObject):
         else:
             pass
 
-    def removeItemByDevice(self, device):
-        pass
+    @classmethod
+    def removeItemByDevice(cls, device):
+        watchedItem = cls.getWatchedItemByDevice(device)
+        cls.removeItem(watchedItem)
 
     def setPollingPeriod(cls, period):
         cls.poll_period = period

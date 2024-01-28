@@ -438,7 +438,6 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def add_selected_devices_to_session(self):
         self.ui.addBtn.setEnabled(False)
-        # self.ui.RotatingGearsWidget.start()
         devices_count = len(self.all_found_devices)
         for i in range(devices_count):
             checkbox_item = self.ui.tableWidget.cellWidget(i, 0)
@@ -446,11 +445,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if checkbox_item.checkState() == Qt.Checked:
                     self.selected_devices_list.append(self.all_found_devices[i])
 
-        # self.event_manager.emit_event('add_new_devices', self.selected_devices_list)
         AqDeviceFabrica.DeviceCreator.add_device(self.selected_devices_list)
-        # self.all_found_devices.clear()
-        # self.selected_devices_list.clear()
-        # self.ui.RotatingGearsWidget.stop()
         self.close()
 
     def show_connect_err_label(self):
