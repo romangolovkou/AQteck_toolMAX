@@ -556,10 +556,13 @@ class AqBitLineEdit(AqTreeLineEdit):
 
     def mousePressEvent(self, event):
         # Меняем значение при каждом клике мышью
-        current_value = int(self.text())
-        new_value = 1 if current_value == 0 else 0
-        QLineEdit.setText(self, str(new_value))
-        self.edit_done_signal.emit(self.manager_item_handler.get_sourse_item())
+        try:
+            current_value = int(self.text())
+            new_value = 1 if current_value == 0 else 0
+            QLineEdit.setText(self, str(new_value))
+            self.edit_done_signal.emit(self.manager_item_handler.get_sourse_item())
+        except:
+            print(self.objectName() + ' error editor')
 
 
 class AqSignedToFloatTreeLineEdit(AqFloatTreeLineEdit):

@@ -117,7 +117,8 @@ class AqWatchListCore(QObject):
 
     @classmethod
     def readWatchedItemParam(cls, watchedItem, items_to_read):
-        watchedItem.device.read_parameters(items_to_read)
+        if watchedItem.device._connect.hasRequests is False:
+            watchedItem.device.read_parameters(items_to_read)
 
 class AqWatchCoreSignals(QObject):
     watch_item_change = Signal(WatchedItem)

@@ -155,6 +155,13 @@ class AqConnect(QObject):
     def setRequestGroupProceedDoneCallback(self, callback):
         self.requestGroupProceedDoneCallback = callback
 
+    @property
+    def hasRequests(self):
+        if len(self.RequestGroupQueue) > 0:
+            return True
+        else:
+            return False
+
 
 class AqIpConnectSettings:
     def __init__(self, _ip):
@@ -257,6 +264,7 @@ class AqModbusConnect(AqConnect):
         self.client.close()
         if self.mutex.locked():
             self.mutex.release()
+            self.set_ready_flag()
 
     async def read_param(self, item):
         if item is not None:
