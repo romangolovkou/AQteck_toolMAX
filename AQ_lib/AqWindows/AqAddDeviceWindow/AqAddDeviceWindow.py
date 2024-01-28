@@ -185,7 +185,9 @@ class AqAddDeviceWidget(AqDialogTemplate):
         # Декативуємо кнопку для запобігання подвійного натискання до завершення пошуку
         self.ui.findBtn.setEnabled(False)
 
-        if self.ui.deviceRadioBtn.isChecked() is True:
+        if self.ui.scanRadioBtn.isChecked() is True and self.ui.scanRadioBtn.isVisible():
+            self.start_scan()
+        else:
             # Перед викликом події перевіряємо чи не порожні поля, та корректні в них дані
             selected_item = self.ui.interface_combo_box.currentText()
             if selected_item == "Ethernet":
@@ -203,9 +205,6 @@ class AqAddDeviceWidget(AqDialogTemplate):
                     return
 
             self.start_search()
-
-        elif self.ui.scanRadioBtn.isChecked() is True:
-            self.start_scan()
 
     def start_search(self):
         self.ui.RotatingGearsWidget.start()
