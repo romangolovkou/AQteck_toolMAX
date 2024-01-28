@@ -2,7 +2,7 @@ import os
 import threading
 
 import serial
-from PySide6.QtCore import Qt, QSettings, QThread, Signal
+from PySide6.QtCore import Qt, QSettings, QThread, Signal, QEvent
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame
 
@@ -23,6 +23,11 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui = _ui()
         self.ui.setupUi(self.content_widget)
         self.maximizeBtnEnable = False
+
+        # Створюємо та скидаємо евент примусової зупинки сканування мережі
+        # для секції ScanNetwork (надає змогу передчасно зупинити потік сканування)
+        self.scan_stop_event = QEvent(QEvent.User)
+        self.scan_stop_event.setAccepted(False)
 
         self.name = 'Add devices'
         # loadDialogJsonStyle(self, self.ui)
@@ -107,9 +112,16 @@ class AqAddDeviceWidget(AqDialogTemplate):
         # Прив'язуємо кнопки до слотів
         self.ui.findBtn.clicked.connect(self.find_button_clicked)
         self.ui.addBtn.clicked.connect(self.add_selected_devices_to_session)
+        self.ui.stopScanBtn.clicked.connect(lambda: self.scan_stop_event.setAccepted(True))
 
         #Скриємо кнопку "додати" до першого відображення знайденого девайсу
         self.ui.addBtn.hide()
+
+        # Скриваємо кнопку стоп скан до початку сканування
+        self.ui.stopScanBtn.hide()
+
+        # Налаштовуємо поведінку секції ScanNetwork
+        self.ui.pageScanNetwork.prepare_ui()
 
     def change_page_by_interface_selection(self):
         selected_item = self.ui.interface_combo_box.currentText()
@@ -205,7 +217,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.connect_thread.start()
 
     def start_scan(self):
-        # self.ui.RotatingGearsWidget.start()
+        self.ui.RotatingGearsWidget.start()
         # Запускаем функцию connect_to_device в отдельном потоке
         self.scan_thread = ScanNetworkThread(self.scan_network)
         self.scan_thread.finished.connect(self.search_finished)
@@ -215,7 +227,9 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def search_finished(self):
         self.ui.RotatingGearsWidget.stop()
+        self.ui.findBtn.show()
         self.ui.findBtn.setEnabled(True)
+        self.ui.stopScanBtn.hide()
 
     def search_error(self, error_message):
         # Выполняется в случае ошибки при выполнении connect_to_device
@@ -244,9 +258,16 @@ class AqAddDeviceWidget(AqDialogTemplate):
         return found_devices_list
 
     def scan_network(self):
+        self.ui.findBtn.setEnabled(False)
+        self.ui.findBtn.hide()
+        self.ui.stopScanBtn.show()
         found_devices_list = []
         scan_network_list = self.get_scan_network_list()
+        first_find_stop_flag = self.ui.firstFindCheckBox.isChecked()
         for i in range(len(scan_network_list)):
+            if self.scan_stop_event.isAccepted():
+                self.scan_stop_event.setAccepted(False)
+                break
             network_settings = scan_network_list[i]
             boudrate = network_settings.get('boudrate', None)
             parity = network_settings.get('parity', None)
@@ -266,6 +287,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if device_status == 'ok' or device_status == 'data_error':
                     found_devices_list.append(device)
                     print('              Result: Found!')
+                    if first_find_stop_flag is True:
+                        self.scan_stop_event.setAccepted(True)
             else:
                 print('              Result: Not found')
 

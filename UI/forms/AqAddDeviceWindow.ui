@@ -168,14 +168,14 @@ QRadioButton:checked {
     border-top: 1px solid #9ef1d3;
 	border-right: 1px solid #5bb192;
     border-radius: 5px;
-	padding: 6px;
+	padding-left: 6px;
 }
 #stopbitsFrame{
 	color: #D0D0D0;
     background-color: #2b2d30;
     border-top: 1px solid #9ef1d3;
     border-bottom-right-radius: 5px;
-	padding: 6px;
+	padding-left: 6px;
 }
 
 QCheckBox {
@@ -201,6 +201,10 @@ QCheckBox::indicator:checked {
 	image: url(UI/icons/check-mark.png);
     background-color: #5bb192; /* Цвет фона при выборе */
     /*border-color: darkgreen; /* Цвет обводки при выборе */
+}
+
+#slaveIdWarningMsgLabel{
+	color: #fe2d2d;
 }
 
 </string>
@@ -670,7 +674,7 @@ QCheckBox::indicator:checked {
                    </size>
                   </property>
                   <property name="currentIndex">
-                   <number>0</number>
+                   <number>1</number>
                   </property>
                   <widget class="QWidget" name="pageDevice">
                    <property name="sizePolicy">
@@ -918,7 +922,7 @@ QCheckBox::indicator:checked {
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="pageScanNetwork">
+                  <widget class="AqScanNetworkSettingsWidget" name="pageScanNetwork">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                      <horstretch>0</horstretch>
@@ -990,7 +994,7 @@ QCheckBox::indicator:checked {
                         <number>0</number>
                        </property>
                        <item alignment="Qt::AlignTop">
-                        <widget class="QFrame" name="boudrateFrame">
+                        <widget class="AqScanCheckBoxFrame" name="boudrateFrame">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                            <horstretch>0</horstretch>
@@ -1145,8 +1149,8 @@ QCheckBox::indicator:checked {
                           <property name="bottomMargin">
                            <number>0</number>
                           </property>
-                          <item>
-                           <widget class="QFrame" name="parityFrame">
+                          <item alignment="Qt::AlignTop">
+                           <widget class="AqScanCheckBoxFrame" name="parityFrame">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                               <horstretch>0</horstretch>
@@ -1189,6 +1193,12 @@ QCheckBox::indicator:checked {
                              </property>
                              <item>
                               <widget class="QLabel" name="parityScanLabel_2">
+                               <property name="sizePolicy">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
+                                </sizepolicy>
+                               </property>
                                <property name="font">
                                 <font>
                                  <pointsize>10</pointsize>
@@ -1260,7 +1270,7 @@ QCheckBox::indicator:checked {
                            </widget>
                           </item>
                           <item alignment="Qt::AlignTop">
-                           <widget class="QFrame" name="stopbitsFrame">
+                           <widget class="AqScanCheckBoxFrame" name="stopbitsFrame">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                               <horstretch>0</horstretch>
@@ -1303,6 +1313,12 @@ QCheckBox::indicator:checked {
                              </property>
                              <item>
                               <widget class="QLabel" name="stopbitsScanLabel">
+                               <property name="sizePolicy">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
+                                </sizepolicy>
+                               </property>
                                <property name="font">
                                 <font>
                                  <pointsize>10</pointsize>
@@ -1376,7 +1392,7 @@ QCheckBox::indicator:checked {
                      </widget>
                     </item>
                     <item alignment="Qt::AlignTop">
-                     <widget class="QFrame" name="slaveIdFrame">
+                     <widget class="AqScanSlaveIDFrame" name="slaveIdFrame">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                         <horstretch>0</horstretch>
@@ -1389,9 +1405,9 @@ QCheckBox::indicator:checked {
                       <property name="frameShadow">
                        <enum>QFrame::Raised</enum>
                       </property>
-                      <layout class="QHBoxLayout" name="horizontalLayout_10">
+                      <layout class="QVBoxLayout" name="verticalLayout_19">
                        <property name="spacing">
-                        <number>10</number>
+                        <number>0</number>
                        </property>
                        <property name="leftMargin">
                         <number>0</number>
@@ -1403,23 +1419,20 @@ QCheckBox::indicator:checked {
                         <number>0</number>
                        </property>
                        <property name="bottomMargin">
-                        <number>0</number>
+                        <number>20</number>
                        </property>
-                       <item alignment="Qt::AlignTop">
-                        <widget class="QFrame" name="startAddressFrame">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
+                       <item>
+                        <widget class="QFrame" name="editiorsFrame">
                          <property name="frameShape">
                           <enum>QFrame::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
                           <enum>QFrame::Raised</enum>
                          </property>
-                         <layout class="QVBoxLayout" name="verticalLayout_12">
+                         <layout class="QHBoxLayout" name="horizontalLayout_10">
+                          <property name="spacing">
+                           <number>6</number>
+                          </property>
                           <property name="leftMargin">
                            <number>0</number>
                           </property>
@@ -1433,92 +1446,172 @@ QCheckBox::indicator:checked {
                            <number>0</number>
                           </property>
                           <item>
-                           <widget class="QLabel" name="startLineEditLabel">
-                            <property name="font">
-                             <font>
-                              <pointsize>10</pointsize>
-                             </font>
+                           <widget class="QFrame" name="startAddressFrame">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
                             </property>
-                            <property name="text">
-                             <string>Start address</string>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
                             </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QVBoxLayout" name="verticalLayout_12">
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QLabel" name="startLineEditLabel">
+                               <property name="font">
+                                <font>
+                                 <pointsize>10</pointsize>
+                                </font>
+                               </property>
+                               <property name="text">
+                                <string>Start address</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="AqSlaveIdLineEdit" name="startLineEdit">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
                            </widget>
                           </item>
                           <item>
-                           <widget class="AqSlaveIdLineEdit" name="startLineEdit">
-                            <property name="minimumSize">
-                             <size>
-                              <width>0</width>
-                              <height>30</height>
-                             </size>
+                           <widget class="QFrame" name="endAddressFrame">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
                             </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>16777215</width>
-                              <height>30</height>
-                             </size>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
                             </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QVBoxLayout" name="verticalLayout_13">
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QLabel" name="endLineEditLabelLabel">
+                               <property name="font">
+                                <font>
+                                 <pointsize>10</pointsize>
+                                </font>
+                               </property>
+                               <property name="text">
+                                <string>End address</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="AqSlaveIdLineEdit" name="endLineEdit">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
                            </widget>
                           </item>
                          </layout>
                         </widget>
                        </item>
-                       <item alignment="Qt::AlignTop">
-                        <widget class="QFrame" name="endAddressFrame">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="firstFindStopFrame">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <pointsize>10</pointsize>
+                       </font>
+                      </property>
+                      <property name="frameShape">
+                       <enum>QFrame::StyledPanel</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_20">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>10</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QCheckBox" name="firstFindCheckBox">
+                         <property name="font">
+                          <font>
+                           <pointsize>-1</pointsize>
+                          </font>
                          </property>
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                         <property name="text">
+                          <string>Stop with first found</string>
                          </property>
-                         <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
-                         </property>
-                         <layout class="QVBoxLayout" name="verticalLayout_13">
-                          <property name="leftMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="topMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="rightMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="bottomMargin">
-                           <number>0</number>
-                          </property>
-                          <item>
-                           <widget class="QLabel" name="endLineEditLabelLabel">
-                            <property name="font">
-                             <font>
-                              <pointsize>10</pointsize>
-                             </font>
-                            </property>
-                            <property name="text">
-                             <string>End address</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="AqSlaveIdLineEdit" name="endLineEdit">
-                            <property name="minimumSize">
-                             <size>
-                              <width>0</width>
-                              <height>30</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>16777215</width>
-                              <height>30</height>
-                             </size>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
                         </widget>
                        </item>
                       </layout>
@@ -1671,6 +1764,25 @@ QCheckBox::indicator:checked {
               </property>
               <property name="autoDefault">
                <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="stopScanBtn">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Stop scan</string>
               </property>
              </widget>
             </item>
@@ -1984,6 +2096,24 @@ QCheckBox::indicator:checked {
    <class>AqRotatingGearsWidget</class>
    <extends>QWidget</extends>
    <header location="global">AqAddDeviceRotatingGears.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqScanCheckBoxFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">AqScanSettingsWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqScanSlaveIDFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">AqScanSettingsWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqScanNetworkSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">AqScanSettingsWidgets.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
