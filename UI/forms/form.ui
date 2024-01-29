@@ -1848,7 +1848,7 @@ background-color: #1f232a;
                <property name="maximumSize">
                 <size>
                  <width>16777215</width>
-                 <height>400</height>
+                 <height>410</height>
                 </size>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2010,10 +2010,10 @@ background-color: #1f232a;
                   </property>
                  </widget>
                 </item>
-                <item alignment="Qt::AlignTop">
+                <item alignment="Qt::AlignRight|Qt::AlignTop">
                  <widget class="QFrame" name="deviceUtilsFrame">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -2027,7 +2027,7 @@ background-color: #1f232a;
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
-                    <height>150</height>
+                    <height>160</height>
                    </size>
                   </property>
                   <property name="frameShape">
@@ -2036,7 +2036,7 @@ background-color: #1f232a;
                   <property name="frameShadow">
                    <enum>QFrame::Raised</enum>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_21">
+                  <layout class="QVBoxLayout" name="verticalLayout_13">
                    <property name="spacing">
                     <number>5</number>
                    </property>
@@ -2052,7 +2052,7 @@ background-color: #1f232a;
                    <property name="bottomMargin">
                     <number>0</number>
                    </property>
-                   <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
+                   <item alignment="Qt::AlignLeft">
                     <widget class="QToolButton" name="setRtcBtn">
                      <property name="minimumSize">
                       <size>
@@ -2078,8 +2078,8 @@ background-color: #1f232a;
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2113,8 +2113,8 @@ background-color: #1f232a;
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2122,7 +2122,7 @@ background-color: #1f232a;
                      </property>
                     </widget>
                    </item>
-                   <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
+                   <item alignment="Qt::AlignLeft">
                     <widget class="QToolButton" name="calibDeviceBtn">
                      <property name="minimumSize">
                       <size>
@@ -2148,8 +2148,43 @@ background-color: #1f232a;
                      </property>
                      <property name="iconSize">
                       <size>
+                       <width>28</width>
+                       <height>28</height>
+                      </size>
+                     </property>
+                     <property name="toolButtonStyle">
+                      <enum>Qt::ToolButtonTextBesideIcon</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item alignment="Qt::AlignLeft">
+                    <widget class="QToolButton" name="setSlaveIdBtn">
+                     <property name="minimumSize">
+                      <size>
                        <width>32</width>
                        <height>32</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>195</width>
+                       <height>32</height>
+                      </size>
+                     </property>
+                     <property name="layoutDirection">
+                      <enum>Qt::RightToLeft</enum>
+                     </property>
+                     <property name="text">
+                      <string>Set slave ID</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/serialization.png</normaloff>:/images/icons/serialization.png</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2393,8 +2428,8 @@ background-color: #1f232a;
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2428,8 +2463,8 @@ background-color: #1f232a;
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
