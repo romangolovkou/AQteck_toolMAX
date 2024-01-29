@@ -92,10 +92,13 @@ class AqParamItem(QStandardItem):
             if is_error:
                 self.set_error_flag(message)
             else:
-                new_value = self.unpack(new_value)
-                self.validate(new_value)
-                self._value = new_value
-                self.synchronized = True
+                try:
+                    new_value = self.unpack(new_value)
+                    self.validate(new_value)
+                    self._value = new_value
+                    self.synchronized = True
+                except:
+                    self.synchronized = False
 
     def data_for_network(self):
         return self.pack()
