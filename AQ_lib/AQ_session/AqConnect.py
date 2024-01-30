@@ -333,14 +333,14 @@ class AqModbusConnect(AqConnect):
                         # Восстановление 16-битного числа
                         data = (high_byte << 8) | low_byte
                     # TODO: перенести костыль в функцию в расслыку широковещательного запроса
-                    if modbus_reg == 100:
-                        # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
-                        result = await self.client.write_register(modbus_reg, data, 0)
-                        if not isinstance(result, ModbusIOException):
-                            self.slave_id = data
-                    else:
-                        # Запись одного регистра
-                        result = await self.client.write_register(modbus_reg, data, self.slave_id)
+                    # if modbus_reg == 100:
+                    #     # Для регістру 64 (слейв адреса пристрою) посилаємо широкомовний запит (Broadcast)
+                    #     result = await self.client.write_register(modbus_reg, data, 0)
+                    #     if not isinstance(result, ModbusIOException):
+                    #         self.slave_id = data
+                    # else:
+                    # Запись одного регистра
+                    result = await self.client.write_register(modbus_reg, data, self.slave_id)
 
                 if isinstance(result, ModbusIOException):
                     item.confirm_writing(False, 'modbus_error')
