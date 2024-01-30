@@ -3,6 +3,7 @@
         "",
         "../../UI/forms/AqAddDeviceWindow.ui",
         "../../UI/forms/AqLeftDeviceWidget.ui",
+        "../../UI/forms/AqSetSlaveIdWinWidget.ui",
         "../../UI/forms/AqWatchListWidget.ui",
         "../../UI/forms/AqWindowTemplate.ui",
         "../../UI/forms/DeviceInfoDialog.ui",

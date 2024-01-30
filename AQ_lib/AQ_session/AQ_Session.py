@@ -165,41 +165,53 @@ class AQ_CurrentSession(QObject):
 
     def set_slave_id(self, network_settings):
         network_settings = network_settings[0]
+        client = None
 
-        if network_settings[2] == 'МВ110-24_1ТД.csv':
-            pass
-        else:
-            interface = network_settings[0]
+        if network_settings is not None:
+            interface = network_settings.get('interface', None)
             # Получаем список доступных COM-портов
             com_ports = serial.tools.list_ports.comports()
-            for port in com_ports:
-                if port.description == interface:
-                    selected_port = port.device
-                    boudrate = network_settings[3]
-                    parity = network_settings[4][:1]
-                    stopbits = network_settings[5]
-                    # client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
-                    timeout = 1.0
-                    client = ModbusSerialClient(method='rtu',
-                                                 port=selected_port,
-                                                 baudrate=boudrate,
-                                                 parity=parity,
-                                                 stopbits=stopbits,
-                                                 timeout=timeout)
+            if interface is not None:
+                for port in com_ports:
+                    if port.description == interface:
+                        selected_port = port.device
+                        boudrate = network_settings.get('boudrate', None)
+                        parity = network_settings.get('parity', None)[:1]
+                        stopbits = network_settings.get('stopbits', None)
+                        # client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
+                        timeout = 1.0
+                        if boudrate is not None and\
+                            parity is not None and\
+                            stopbits is not None:
+                            client = ModbusSerialClient(method='rtu',
+                                                         port=selected_port,
+                                                         baudrate=boudrate,
+                                                         parity=parity,
+                                                         stopbits=stopbits,
+                                                         timeout=timeout)
 
-            if network_settings[2] == 'МВ110-24_8АС.csv' or network_settings[2] == 'МВ110-24_8А.csv':
-                start_address = 30
-            else:
-                start_address = 100
+                device = network_settings.get('device', None)
+                if device is not None:
+                    if device == 'МВ110-24_8АС.csv' or device == 'МВ110-24_8А.csv':
+                        start_address = 30
+                    else:
+                        start_address = 100
 
-            register_count = 1
-            write_func = 6
-            new_slave_id = network_settings[1]
-            # Выполняем запрос
-            client.connect()
-            result = client.write_register(start_address, new_slave_id)
-            client.close()
-            if not isinstance(result, ModbusIOException):
-                self.event_manager.emit_event('set_slave_id_connect_ok')
+                register_count = 1
+                write_func = 6
+                new_slave_id = network_settings.get('address', None)
+                if new_slave_id is not None:
+                    # Выполняем запрос
+                    client.connect()
+                    result = client.write_register(start_address, new_slave_id)
+                    client.close()
+                    if not isinstance(result, ModbusIOException):
+                        self.event_manager.emit_event('set_slave_id_connect_ok')
+                    else:
+                        self.event_manager.emit_event('set_slave_id_connect_error')
+                else:
+                    self.event_manager.emit_event('set_slave_id_connect_error')
             else:
                 self.event_manager.emit_event('set_slave_id_connect_error')
+        else:
+            self.event_manager.emit_event('set_slave_id_connect_error')
