@@ -300,5 +300,7 @@
         <file>icons/AQico_silver.png</file>
         <file>icons/cat.gif</file>
         <file>icons/serialization.png</file>
+        <file>icons/pause_green_btn.png</file>
+        <file>icons/play_green_btn.png</file>
     </qresource>
 </RCC>

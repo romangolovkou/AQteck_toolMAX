@@ -14,6 +14,7 @@ from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import load_last_combobox_state, load_last_text_value, save_combobox_current_state, \
     save_current_text_value
+from AqWatchListCore import AqWatchListCore
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -25,6 +26,10 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
         self.maximizeBtnEnable = False
 
         self.name = 'Set slave ID'
+
+        self.watch_core_save_state = AqWatchListCore.is_stopped()
+        AqWatchListCore.set_pause_flag(True)
+
         self.event_manager = AQ_EventManager.get_global_event_manager()
         try:
             # Получаем текущий рабочий каталог (папку проекта)
@@ -257,3 +262,7 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
         self.ui.userMessageLabel.setText('Successfully! Response: OK')
         self.ui.userMessageLabel.setStyleSheet("color: #429061; \n")
         self.ui.userMessageLabel.show()
+
+    def close(self):
+        AqWatchListCore.set_pause_flag(self.watch_core_save_state)
+        super().close()

@@ -44,9 +44,15 @@ class AqWatchListWidget(AqDialogTemplate):
         self.ui.treeView.setModel(self.tree_model_for_view)
 
         self.ui.clearAllBtn.clicked.connect(self.ui.treeView.removeAllItems)
+        self.ui.pauseBtn.clicked.connect(lambda: AqWatchListCore.set_pause_flag(True))
+        self.ui.playBtn.clicked.connect(lambda: AqWatchListCore.set_pause_flag(False))
+        self.ui.playBtn.hide()
+        # self.ui.pauseBtn.hide()
 
         AqWatchListCore.signals.watch_item_change.connect(self.add_new_parameter)
         AqWatchListCore.signals.watch_item_remove.connect(self.remove_parameter)
+        AqWatchListCore.signals.core_paused.connect(self.watch_core_paused)
+        AqWatchListCore.signals.core_resumed.connect(self.watch_core_resumed)
 
         AqWatchListWidget._inited = True
 
@@ -93,6 +99,14 @@ class AqWatchListWidget(AqDialogTemplate):
                 index = self.tree_model_for_view.indexFromItem(child_item)
                 self.tree_model_for_view.removeRow(index.row())
                 break
+
+    def watch_core_paused(self):
+        self.ui.playBtn.show()
+        self.ui.pauseBtn.hide()
+
+    def watch_core_resumed(self):
+        self.ui.playBtn.hide()
+        self.ui.pauseBtn.show()
 
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
