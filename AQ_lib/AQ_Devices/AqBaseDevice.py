@@ -1,6 +1,8 @@
 import threading
 from abc import ABC, abstractmethod
 
+from PySide6.QtCore import Qt, QModelIndex
+
 from AqConnect import AqConnect
 from AqBaseTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
@@ -164,8 +166,16 @@ class AqBaseDevice(ABC):
         if item.get_status() == 'changed':
             self._stack_to_write.append(item)
 
-    def set_dafault_values(self):
-        self._params_list
+    def set_default_values(self):
+        for item in self._params_list:
+            param_attributes = item.data(Qt.UserRole)
+            if param_attributes is not None:
+                if not (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
+                    item.set_default_value(False)
+                    self.__add_param_to_update_stack(item)
+
+        self.update_param_callback()
+
 
     def reboot(self):
         """

@@ -33,6 +33,8 @@ class AqMainWindow(QMainWindow):
         self.ui.watchListBtn.clicked.connect(AqUiWorker.show_watch_list_window)
         self.ui.setSlaveIdBtn.clicked.connect(AqUiWorker.show_set_slave_id_window)
 
+        self.ui.setDefaultMenuBtn.clicked.connect(lambda: self.event_manager.emit_event('set_default_cur_active_device'))
+
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
         self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
 

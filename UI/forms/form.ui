@@ -1494,7 +1494,7 @@ background-color: #1f232a;
               <number>0</number>
              </property>
              <item>
-              <widget class="AqTreeViewManager" name="stackedWidget_2">
+              <widget class="AqTreeViewManager" name="stackedWidget">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -1767,9 +1767,9 @@ background-color: #1f232a;
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QToolButton" name="setDefaultMenuBtn_3">
+                 <widget class="QToolButton" name="setDefaultMenuBtn">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimumSize">
                    <size>

@@ -83,7 +83,7 @@ class AqConnect(QObject):
             request_stack = self.RequestGroupQueue.popleft()
         else:
             print("WTF????")
-            # self.set_ready_flag()
+            self.set_ready_flag()
             return
         connect_result = await self.open()
         if connect_result is True:
@@ -97,7 +97,7 @@ class AqConnect(QObject):
             self.RequestGroupQueue.clear()
         self.close()
         self.requestGroupProceedDoneCallback()
-        # self.set_ready_flag()
+        self.set_ready_flag()
 
     async def proceed_request(self, request):
         function = request.get('method', None)
