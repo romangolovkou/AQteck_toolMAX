@@ -83,8 +83,9 @@ class AqGenericModbusDevice(AqBaseDevice):
 
         for devParam in self._params_list:
             param_attributes = devParam.get_param_attributes()
-            config.saved_param_list.append({'modbus_reg': param_attributes.get('modbus_reg', 0),
-                                            'value': devParam.value})
+            if not (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
+                config.saved_param_list.append({'modbus_reg': param_attributes.get('modbus_reg', 0),
+                                                'value': devParam.value})
 
         return config
 
