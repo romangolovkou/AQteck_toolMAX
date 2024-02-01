@@ -37,7 +37,6 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
-        self.event_manager.register_event_handler('set_default_cur_active_device', self.set_default_cur_active_device)
 
     def add_new_devices(self, new_devices_list):
         self.devices.extend(new_devices_list)
@@ -76,9 +75,9 @@ class AQ_CurrentSession(QObject):
             if len(self.devices) == 0:
                 self.event_manager.emit_event('no_devices')
 
-
     def restart_device(self, device):
-        device.restart()
+        if device is not None:
+            device.reboot()
 
     def restart_current_active_device(self):
         if self.cur_active_device is not None:

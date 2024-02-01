@@ -1,7 +1,9 @@
+import struct
 import time
 
 from AqAutoDetectionItems import AqAutoDetectStringParamItem, AqAutoDetectModbusFileItem
 from AqBaseDevice import AqBaseDevice
+from AqCRC32 import Crc32
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
 from AqDeviceStrings import get_translated_string
@@ -24,11 +26,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'ip':           [0x001A, 2]
     }
 
-    # Format: 'file_name': [file_num, start_record_num, file_size (in bytes)]
+    # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only]
     _system_file = {
-        'reboot':       [0xDEAD, 0, 40],
-        'status':       [0x0001, 0, 248],
-        'default_prg':  [0xFFE0, 0, 248]  # file_size will be changed later in code
+        'reboot':       [0xDEAD, 0, 40, False],
+        'status':       [0x0001, 0, 248, True],
+        'default_prg':  [0xFFE0, 0, 248, True]  # file_size will be changed later in code
     }
 
     system_params_dict = dict()
@@ -97,7 +99,10 @@ class AqAutoDetectionDevice(AqBaseDevice):
             param_attributes['file_num'] = self._system_file[keys_list[i]][0]
             param_attributes['start_record_num'] = self._system_file[keys_list[i]][1]
             param_attributes['file_size'] = self._system_file[keys_list[i]][2] // 2
-            param_attributes['R_Only'] = 1
+            if self._system_file[keys_list[i]][3] is True:
+                param_attributes['R_Only'] = 1
+            else:
+                param_attributes['R_Only'] = 0
             param_attributes['W_Only'] = 0
             self.system_params_dict[keys_list[i]] = AqAutoDetectModbusFileItem(param_attributes)
             self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
@@ -134,7 +139,14 @@ class AqAutoDetectionDevice(AqBaseDevice):
                 self._connect.create_param_request('read_file', self._stack_to_read)
                 self._stack_to_read.clear()
 
-
+    def write_file(self, item):
+        # if len(self._request_count) == 0:
+            if item is not None:
+                self.write_parameter(item)
+            if len(self._stack_to_write) > 0:
+                # self._request_count.append(len(self._stack_to_read))
+                self._connect.create_param_request('write_file', self._stack_to_write)
+                self._stack_to_write.clear()
 
     # def __read_string(self, name):
     #     try:
@@ -149,7 +161,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     #
     #     return result_str
 
-    def __read_file(self, name):
+    def __read_file(self, name): #Now Not Use
         record_size = 124
         left_to_read = self._system_file[name][2] // 2
         encrypt_file = bytearray()
@@ -181,9 +193,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return decrypt_file
 
     def __read_default_prg(self):
-
-
-
         # Read first page from file to determine file size
         first_page = self.__sync_read_file(self.system_params_dict['default_prg'])
 
@@ -256,3 +265,25 @@ class AqAutoDetectionDevice(AqBaseDevice):
         dev_model.network_info.append(get_translated_string('byte_order_ms_str'))
         dev_model.network_info.append(get_translated_string('register_order_ls_str'))
         return dev_model
+
+    def reboot(self):
+        text = "I will restart the device now!"
+        record_data = text.encode('UTF-8')
+        item = self.system_params_dict.get('reboot', None)
+        item.value = record_data
+        self.write_file(item)
+
+        # crc = Crc32().calculate(record_data)
+        # length = len(record_data)
+        # # Выравнивание длины исходных данных
+        # pad_length = 8 - (len(record_data) % 8)
+        # padded_data = record_data + bytes([0x00] * pad_length)
+        #
+        # data_to_write = padded_data + length.to_bytes(4, byteorder='little')
+        # data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
+        #
+        # encrypted_record_data = self.encrypt_data(record_data)
+        # self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
+        # record_number = 20
+        # record_length = 0
+        # self.client.write_file_record(file_number, record_number, record_length, b'\x00')

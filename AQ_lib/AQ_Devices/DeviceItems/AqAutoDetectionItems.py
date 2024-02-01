@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt
 from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem, \
     AqModbusFileItem
+from AqCRC32 import Crc32
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes
 # from AqModbusTips import reverse_registers
@@ -159,7 +160,18 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         self.key = b'superkey'
 
     def pack(self):
-        pass
+        record_data = self.value
+        crc = Crc32().calculate(record_data)
+        length = len(record_data)
+        # Выравнивание длины исходных данных
+        pad_length = 8 - (len(record_data) % 8)
+        padded_data = record_data + bytes([0x00] * pad_length)
+
+        data_to_write = padded_data + length.to_bytes(4, byteorder='little')
+        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
+
+        encrypted_record_data = self.__encrypt_data(data_to_write)
+        return encrypted_record_data
 
     def unpack(self, data):
         decrypt_file = None
@@ -182,6 +194,13 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
 
         return decrypted_data
 
+    def __encrypt_data(self, data):
+        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.key)
+        encrypted_data = cipher.encrypt(data)
+
+        return encrypted_data
+
     def set_key(self, new_key):
         self.key = new_key
 
@@ -195,6 +214,24 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
         return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
 
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        if new_value is not None:
+            if self.value_in_device is None:
+                self.value_in_device = new_value
+            # else:
+            #     if self.value_in_device == new_value:
+            #         self.param_status = 'ok'
+            #     else:
+            self.param_status = 'changed'
+            self.synchronized = False
+            self._value = new_value
+        else:
+            self.param_status = 'error'
 
 
 class AqAutoDetectStringParamItem(AqStringParamItem, AqModbusItem):

@@ -125,6 +125,8 @@ class AqConnect(QObject):
                 request['method'] = self.write_param
             elif method == 'read_file':
                 request['method'] = self.read_file
+            elif method == 'write_file':
+                request['method'] = self.write_file
             else:
                 raise Exception('AqConnectError: unknown stack name')
 
@@ -391,6 +393,52 @@ class AqModbusConnect(AqConnect):
         request.record_number = record_number
         request.record_length = record_length
         result = self.client.read_file_record(self.slave_id, [request])
+
+        return result
+
+    async def write_file(self, item):
+        if item is not None:
+            max_record_size = 124
+            param_attributes = item.get_param_attributes()
+
+            file_num = param_attributes.get('file_num', '')
+            start_record_num = param_attributes.get('start_record_num', '')
+            left_to_write = param_attributes.get('file_size', '')
+            record_data = item.data_for_network()
+            while left_to_write > 0:
+                write_size = max_record_size if left_to_write > max_record_size else left_to_write
+                result = None
+                request = WriteFileRecordRequest(self.slave_id)
+                request.file_number = file_num
+                request.record_number = start_record_num
+                request.record_length = write_size
+                request.record_data = record_data
+
+                try:
+                    result = await self.client.write_file_record(self.slave_id, [request])
+                    start_record_num += write_size
+                    left_to_write -= write_size
+
+                except Exception as e:
+                    print(f"Error occurred: {str(e)}")
+                    item.confirm_writing(False, 'modbus_error')
+                    return
+
+            if isinstance(result, ModbusIOException):
+                item.confirm_writing(False, 'modbus_error')
+            else:
+                item.confirm_writing(True)
+
+
+    def write_file_record(self, file_number, record_number, record_length, record_data):
+        # Создание экземпляра структуры WriteFileRecordRequest
+        request = WriteFileRecordRequest(self.slave_id)
+        # Установка значений полей структуры
+        request.file_number = file_number
+        request.record_number = record_number
+        request.record_length = record_length
+        request.record_data = record_data
+        result = self.client.write_file_record(self.slave_id, [request])
 
         return result
 
