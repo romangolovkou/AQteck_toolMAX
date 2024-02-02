@@ -424,6 +424,21 @@ class AqModbusConnect(AqConnect):
                     item.confirm_writing(False, 'modbus_error')
                     return
 
+            # WARNING TODO:!!!!  !!!!!!!!
+            # Тимчасова вставка для перевірки роботи файлу ребут,
+            # незрозумілий пустий файл потрібно передати у кінці
+            request.record_number = param_attributes.get('file_size', '')
+            request.record_length = 0
+            request.record_data = b'\x00'
+            try:
+                result = await self.client.write_file_record(self.slave_id, [request])
+
+            except Exception as e:
+                print(f"Error occurred: {str(e)}")
+                item.confirm_writing(False, 'modbus_error')
+                return
+            # WARNING TODO:!!!!  !!!!!!!!
+
             if isinstance(result, ModbusIOException):
                 item.confirm_writing(False, 'modbus_error')
             else:

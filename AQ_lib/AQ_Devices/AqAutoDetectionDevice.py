@@ -273,17 +273,3 @@ class AqAutoDetectionDevice(AqBaseDevice):
         item.value = record_data
         self.write_file(item)
 
-        # crc = Crc32().calculate(record_data)
-        # length = len(record_data)
-        # # Выравнивание длины исходных данных
-        # pad_length = 8 - (len(record_data) % 8)
-        # padded_data = record_data + bytes([0x00] * pad_length)
-        #
-        # data_to_write = padded_data + length.to_bytes(4, byteorder='little')
-        # data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
-        #
-        # encrypted_record_data = self.encrypt_data(record_data)
-        # self.client.write_file_record(file_number, record_number, record_length, encrypted_record_data)
-        # record_number = 20
-        # record_length = 0
-        # self.client.write_file_record(file_number, record_number, record_length, b'\x00')
