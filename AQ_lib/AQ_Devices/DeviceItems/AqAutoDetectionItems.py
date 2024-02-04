@@ -189,7 +189,7 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
 
     def __decrypt_data(self, encrypted_data):
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.key)
+        cipher = DES.new(self.__get_hash('AQteck'), DES.MODE_CBC, self.key)
         decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
 
         return decrypted_data
@@ -210,9 +210,48 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         self.setData(attr, Qt.UserRole)
         print('aaaaa')
 
-    def __get_hash(self):
-        # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
-        return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
+    def __get_hash(self, userPass=None):
+        if userPass is None:
+            # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+            return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
+        else:
+            low = 0
+            high = 0
+
+            password_bytes = userPass.encode('cp1251')
+            password_bytes_hex = password_bytes.hex()
+
+            for i in range(0, len(password_bytes), 2):
+                # low_b = password_bytes[i]
+                # print('low_b = ' + low_b.to_bytes(5, byteorder='big', signed=True).hex())
+                low += password_bytes[i]
+                # print('low_before<<>> = ' + low.to_bytes(5, byteorder='big', signed=True).hex())
+                low -= (low << 13) | (low >> 19)
+                low = low & 0xFFFFFFFF
+                low_len = low.bit_length()
+                print('low_i = ' + low.to_bytes(5, byteorder='big', signed=True).hex())
+
+                if i + 1 >= len(password_bytes):
+                    break
+
+                high += password_bytes[i + 1]
+                high -= (high << 13) | (high >> 19)
+                high = high & 0xFFFFFFFF
+                print('high_i = ' + high.to_bytes(5, byteorder='big', signed=True).hex())
+
+            low_res = low.to_bytes(5, byteorder='big', signed=True)
+            high_res = high.to_bytes(5, byteorder='big', signed=True)
+            # res = low.to_bytes(4, byteorder='big', signed=True) + high.to_bytes(4, byteorder='big', signed=True)
+            low_res_hex = low_res.hex()
+            high_res_hex = high_res.hex()
+            res = low + high
+            print('res = ' + res.to_bytes(5, byteorder='big', signed=True).hex())
+            low = bytes.fromhex(hex(low)[2:])[::-1]
+            high = bytes.fromhex(hex(high)[2:])[::-1]
+            hash = low + high
+            return hash
+            # return b"\x9E\xE0\xBD\xDF\xA8\x98\xBA\x63"
+
 
     @property
     def value(self):

@@ -201,6 +201,20 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
         # Read full file
         full_file = self.__sync_read_file(self.system_params_dict['default_prg'])
+        # crc = int.from_bytes((first_page[8:12]), byteorder='big')
+        # crc2 = int.from_bytes((first_page[8:12]), byteorder='little')
+        # crc3 = int.from_bytes((first_page[8:12][::-1]), byteorder='big')
+        # crc4 = int.from_bytes((first_page[8:12][::-1]), byteorder='little')
+        # crc_swap = int.from_bytes(swap_bytes_at_registers(crc.to_bytes(4, byteorder='big'), 2))
+        # crc_swap2 = int.from_bytes(swap_bytes_at_registers(crc2.to_bytes(4, byteorder='big'), 2))
+        # crc_swap3 = int.from_bytes(swap_bytes_at_registers(crc3.to_bytes(4, byteorder='big'), 2))
+        # crc_swap4 = int.from_bytes(swap_bytes_at_registers(crc4.to_bytes(4, byteorder='big'), 2))
+        # crc_calculated = Crc32().calculate(full_file[12:])
+        # crc_calculated2 = Crc32().calculate(full_file[12:][::-1])
+        # crc_calculated3 = Crc32().calculate(full_file)
+        # crc_calculated4 = Crc32().calculate(full_file[::-1])
+        # crc_calculated5 = Crc32().calculate(full_file[12:12 + file_size])
+        # crc_calculated6 = Crc32().calculate(full_file[12:12 + file_size][::-1])
 
         # Ця вставка робить файл default.prg у корні проекту (було необхідно для відладки)
         filename = 'default.prg'
