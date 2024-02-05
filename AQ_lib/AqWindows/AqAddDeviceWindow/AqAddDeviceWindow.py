@@ -123,6 +123,9 @@ class AqAddDeviceWidget(AqDialogTemplate):
         # Налаштовуємо поведінку секції ScanNetwork
         self.ui.pageScanNetwork.prepare_ui()
 
+        # Підв'язуємо функцію до кліку на таблиці знайдених віджетів
+        self.ui.tableWidget.clickedRow.connect(self.clicked_on_table_widget)
+
     def change_page_by_interface_selection(self):
         selected_item = self.ui.interface_combo_box.currentText()
         if selected_item == "Ethernet":
@@ -247,12 +250,12 @@ class AqAddDeviceWidget(AqDialogTemplate):
             device = AqDeviceFabrica.DeviceCreator.from_param_dict(network_settings_list[i])
             if device is not None:
                 device_status = device.status
-                if device_status == 'ok' or device_status == 'data_error':
+                if device_status == 'ok' or device_status == 'data_error' or device_status == 'need_pass':
                     found_devices_list.append(device)
                 else:
                     self.show_connect_err_label()
-            # else:
-            #     self.show_connect_err_label()
+            else:
+                self.show_connect_err_label()
 
         return found_devices_list
 
@@ -475,8 +478,13 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.connect_err_label.move(0, self.height()-86)
         self.connect_err_label.show()
 
+    def clicked_on_table_widget(self, row):
+        if self.all_found_devices[row]._status == 'need_pass':
+            pass
+
 
 class AqAddDeviceTableWidget(QTableWidget):
+    clickedRow = Signal(int)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.horizontalHeader().setMinimumSectionSize(8)
@@ -488,11 +496,20 @@ class AqAddDeviceTableWidget(QTableWidget):
         # Убираем рамку таблицы
         self.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
                                                            QTableWidget::item { padding-left: 3px; }""")
+        self.cellClicked.connect(self.cell_clicked)
 
-    def append_device_to_table(self, row, err_flag=0):
-        if err_flag == 0:
+    def cell_clicked(self, row, col):
+        item = self.item(row, col)
+        if item:
+            self.clickedRow.emit(row)
+
+    def append_device_to_table(self, row, status='ok'):
+        if status == 'ok':
             for i in range(self.columnCount()):
                 self.item(row, i).setBackground(QColor("#429061"))
+        elif status == 'need_pass':
+            for i in range(self.columnCount()):
+                self.item(row, i).setBackground(QColor("#807c7c"))
         else:
             for i in range(self.columnCount()):
                 self.item(row, i).setBackground(QColor("#9d4d4f"))
@@ -506,6 +523,8 @@ class AqAddDeviceTableWidget(QTableWidget):
         else:
             err_flag = 1
 
+        status = device.status
+
         new_row_index = self.rowCount()
         self.setRowCount(self.rowCount() + 1)
         # Создаем элементы таблицы для каждой строки
@@ -517,6 +536,13 @@ class AqAddDeviceTableWidget(QTableWidget):
         version_item = QTableWidgetItem(device.info('version'))
         version_item.setFlags(version_item.flags() & ~Qt.ItemIsEditable)
 
+        if status == 'need_pass':
+            tip_str = 'Enter password. CLick to enter'
+            checkbox_item.setToolTip(tip_str)
+            name_item.setToolTip(tip_str)
+            address_item.setToolTip(tip_str)
+            version_item.setToolTip(tip_str)
+
         # Устанавливаем элементы таблицы
         self.setItem(new_row_index, 0, checkbox_item)
         self.setItem(new_row_index, 1, name_item)
@@ -525,7 +551,7 @@ class AqAddDeviceTableWidget(QTableWidget):
 
         # Устанавливаем чекбокс в первую колонку
         checkbox = QCheckBox()
-        if err_flag == 0:
+        if status == 'ok':
             checkbox.setChecked(True)
         else:
             checkbox.setChecked(False)
@@ -536,7 +562,7 @@ class AqAddDeviceTableWidget(QTableWidget):
         item = self.item(new_row_index, 0)
         item.setTextAlignment(Qt.AlignCenter)
 
-        self.append_device_to_table(new_row_index, err_flag)
+        self.append_device_to_table(new_row_index, status)
 
     def get_sum_of_rows_height(self):
         sum_height = 0
