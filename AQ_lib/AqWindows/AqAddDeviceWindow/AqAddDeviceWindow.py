@@ -568,7 +568,6 @@ class AqAddDeviceTableWidget(QTableWidget):
         self.append_device_to_table(new_row_index, status)
 
     def replace_device_in_row(self, device: AqBaseDevice, row: int):
-        self.removeRow(row)
         self.append_device_row(device, row)
 
 
