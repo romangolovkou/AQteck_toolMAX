@@ -1,3 +1,4 @@
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QMovie
 from PySide6.QtWidgets import QWidget
 
@@ -11,7 +12,11 @@ class DeviceInitWidget(QWidget):
         self.ui = Ui_DeviceInitWidget()
         self.ui.setupUi(self)
 
-        self.movie = QMovie(u":/images/icons/cat.gif")
+        self.ui.label_2.hide()
+
+        # self.movie = QMovie(u":/images/icons/cat.gif")
+        self.movie = QMovie('UI/icons/AQannimation.gif')
+        self.movie.setScaledSize(QSize(282, 158))
         self.ui.CatLabel.setMovie(self.movie)
 
     def start_animation(self):
