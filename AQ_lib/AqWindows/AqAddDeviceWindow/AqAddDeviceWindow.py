@@ -529,7 +529,7 @@ class AqAddDeviceTableWidget(QTableWidget):
 
         if new_row_index is None:
             new_row_index = self.rowCount()
-        self.setRowCount(self.rowCount() + 1)
+            self.setRowCount(self.rowCount() + 1)
         # Создаем элементы таблицы для каждой строки
         checkbox_item = QTableWidgetItem()
         name_item = QTableWidgetItem(device.info('name'))
