@@ -2,9 +2,9 @@ import os
 import threading
 
 import serial
-from PySide6.QtCore import Qt, QSettings, QThread, Signal, QEvent
-from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame
+from PySide6.QtCore import Qt, QSettings, QThread, Signal, QEvent, QPoint, QTimer
+from PySide6.QtGui import QColor, QFont
+from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame, QWidget, QLabel
 
 import AqBaseDevice
 import AqDeviceFabrica
@@ -14,7 +14,8 @@ from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import load_last_combobox_state, load_last_text_value, save_combobox_current_state, \
     save_current_text_value
-from AqWindowTemplate import AqDialogTemplate
+from AqWindowTemplate import AqDialogTemplate, AqWindowTemplate
+from ui_AqEnterPassWidget import Ui_AqEnterPassWidget
 
 
 class AqAddDeviceWidget(AqDialogTemplate):
@@ -23,6 +24,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui = _ui()
         self.ui.setupUi(self.content_widget)
         self.maximizeBtnEnable = False
+        self.pass_widget = None
 
         # Створюємо та скидаємо евент примусової зупинки сканування мережі
         # для секції ScanNetwork (надає змогу передчасно зупинити потік сканування)
@@ -478,13 +480,16 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.connect_err_label.move(0, self.height()-86)
         self.connect_err_label.show()
 
-    def clicked_on_table_widget(self, row):
+    def clicked_on_table_widget(self, row, pos):
         if self.all_found_devices[row]._status == 'need_pass':
-            pass
+            self.pass_widget = AqPasswordWidget(self.all_found_devices[row], row,
+                                                self.ui.tableWidget.replace_device_in_row)
+            self.pass_widget.exec()
 
 
 class AqAddDeviceTableWidget(QTableWidget):
-    clickedRow = Signal(int)
+    clickedRow = Signal(int, QPoint)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.horizontalHeader().setMinimumSectionSize(8)
@@ -501,7 +506,9 @@ class AqAddDeviceTableWidget(QTableWidget):
     def cell_clicked(self, row, col):
         item = self.item(row, col)
         if item:
-            self.clickedRow.emit(row)
+            item_rect = self.visualItemRect(item)
+            pos = self.viewport().mapTo(self.parent(), item_rect.topLeft())
+            self.clickedRow.emit(row, pos)
 
     def append_device_to_table(self, row, status='ok'):
         if status == 'ok':
@@ -517,15 +524,11 @@ class AqAddDeviceTableWidget(QTableWidget):
         new_height = self.get_sum_of_rows_height() + 30
         self.setFixedHeight(new_height)
 
-    def append_device_row(self, device: AqBaseDevice):
-        if device.status == 'ok':
-            err_flag = 0
-        else:
-            err_flag = 1
-
+    def append_device_row(self, device: AqBaseDevice, new_row_index=None):
         status = device.status
 
-        new_row_index = self.rowCount()
+        if new_row_index is None:
+            new_row_index = self.rowCount()
         self.setRowCount(self.rowCount() + 1)
         # Создаем элементы таблицы для каждой строки
         checkbox_item = QTableWidgetItem()
@@ -563,6 +566,11 @@ class AqAddDeviceTableWidget(QTableWidget):
         item.setTextAlignment(Qt.AlignCenter)
 
         self.append_device_to_table(new_row_index, status)
+
+    def replace_device_in_row(self, device: AqBaseDevice, row: int):
+        self.removeRow(row)
+        self.append_device_row(device, row)
+
 
     def get_sum_of_rows_height(self):
         sum_height = 0
@@ -607,6 +615,86 @@ class ScanNetworkThread(QThread):
     def run(self):
         try:
             result_data = self.scan_func()
+            self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
+            # По завершении успешного выполнения
+            self.finished.emit()
+        except Exception as e:
+            # В случае ошибки передаем текст ошибки обратно в главный поток
+            self.error.emit(str(e))
+
+
+class AqPasswordWidget(AqDialogTemplate):
+    def __init__(self, device, row, callback, parent=None):
+        super().__init__(parent)
+        self.device = device
+        self.current_row = row
+        self.callback = callback
+        self.password = None
+        self.ui = Ui_AqEnterPassWidget()
+        self.ui.setupUi(self.content_widget)
+        self.maximizeBtnEnable = False
+        self.minimizeBtnEnable = False
+        # self.resizeFrameEnable = [True, 5]
+        self.name = 'Enter password'
+        self.adjustSize()
+        self.ui.okBtn.clicked.connect(self.try_password)
+        self.ui.cancelBtn.clicked.connect(self.close)
+
+    def try_password(self):
+        self.password = self.ui.passLineEdit.text()
+        self.start_reinit_with_pass()
+
+    def start_reinit_with_pass(self):
+        # Запускаем функцию connect_to_device в отдельном потоке
+        self.reinit_thread = ReinitDeviceWithPassThread(lambda: self.device.reinit_device_with_pass(self.password))
+        self.reinit_thread.finished.connect(self.reinit_finished)
+        self.reinit_thread.error.connect(self.reinit_error)
+        self.reinit_thread.result_signal.connect(self.reinit_successful)
+        self.reinit_thread.start()
+
+    def reinit_successful(self, status):
+        if status == 'ok':
+            self.callback(self.device, self.current_row)
+            self.close()
+        else:
+            self.show_err_label()
+
+    def reinit_finished(self):
+        pass
+
+    def reinit_error(self):
+        pass
+
+    def show_err_label(self):
+        # Получаем координаты поля ввода относительно окна
+        rect = self.geometry()
+        pos = self.mapTo(self, rect.topRight())
+        self.err_label = QLabel('Wrong password', self)
+        self.err_label.setStyleSheet("color: #fe2d2d; background-color: transparent; border-radius: 3px;\n")
+        self.err_label.setFont(QFont("Segoe UI", 10))
+        self.err_label.move(35, 60)
+        self.err_label.show()
+
+        QTimer.singleShot(3000, self.err_label.deleteLater)
+
+    # def leaveEvent(self, event):
+    #     self.hide()
+    #     super().leaveEvent(event)
+    #     self.deleteLater()
+
+
+class ReinitDeviceWithPassThread(QThread):
+    finished = Signal()
+    error = Signal(str)
+    result_signal = Signal(object)  # Сигнал для передачи данных в главное окно
+
+    def __init__(self, reinit_func):
+        super().__init__()
+        self.reinit_func = reinit_func
+
+    def run(self):
+        try:
+            result_data = self.reinit_func()
             self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
             # По завершении успешного выполнения
             self.finished.emit()

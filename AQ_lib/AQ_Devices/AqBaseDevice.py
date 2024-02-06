@@ -61,7 +61,7 @@ class AqBaseDevice(ABC):
                 raise Exception('AqBaseDeviceError: device_tree isn`t exists')
 
         if self._status != 'need_pass':
-            self.__param_convert_tree_to_list()
+            self._param_convert_tree_to_list()
 
         # self.__verify()
 
@@ -314,12 +314,11 @@ class AqBaseDevice(ABC):
         else:
             self.write_parameter(item)
 
-    def __param_convert_tree_to_list(self):
+    def _param_convert_tree_to_list(self):
         root = self._device_tree.invisibleRootItem()
         for row in range(root.rowCount()):
             child_item = root.child(row)
             self.__convert_tree_branch_to_list(child_item)
-
 
     def __create_local_event_manager(self):
         self._local_event_manager = AQ_EventManager()

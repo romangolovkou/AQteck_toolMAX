@@ -7,6 +7,7 @@ from AqCRC32 import Crc32
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
 from AqDeviceStrings import get_translated_string
+from AqTreeViewItemModel import AqTreeItemModel
 from SystemLibrary.AqModbusTips import swap_bytes_at_registers, remove_empty_bytes, \
     reverse_registers
 
@@ -37,8 +38,10 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
     # Add to init all what we need
     def __init__(self, event_manager, connect: AqModbusConnect):
+        self._password = None
         super().__init__(event_manager, connect)
         self._default_prg = None
+        self._password = None
         self._connect = connect
 
     def init_device(self) -> bool:
@@ -56,6 +59,10 @@ class AqAutoDetectionDevice(AqBaseDevice):
         if self._default_prg == 'decrypt_err':
             self._status = 'decrypt_err'
             return False
+
+        if self._default_prg == 'need_pass':
+            self._status = 'need_pass'
+            return True
 
         self._device_tree = self.__parse_default_prg()
         if self._device_tree == 'parsing_err' or \
@@ -76,6 +83,23 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
         self._status = 'ok'
         return True
+
+    def reinit_device_with_pass(self, password):
+        self.set_password(password)
+
+        if not self.init_device():
+            raise Exception('AqBaseDeviceError: can`t initialize device')
+
+        if self._device_tree is not None and isinstance(self._device_tree, AqTreeItemModel):
+            self._device_tree.set_device(self)
+        else:
+            if self._status != 'need_pass':
+                raise Exception('AqBaseDeviceError: device_tree isn`t exists')
+
+        if self._status != 'need_pass':
+            self._param_convert_tree_to_list()
+
+        return self._status
 
     def __create_system_params(self):
         # Створюємо строкові системні ітеми
@@ -104,7 +128,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
             else:
                 param_attributes['R_Only'] = 0
             param_attributes['W_Only'] = 0
-            self.system_params_dict[keys_list[i]] = AqAutoDetectModbusFileItem(param_attributes)
+            self.system_params_dict[keys_list[i]] = AqAutoDetectModbusFileItem(param_attributes, self.get_password)
             self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
 
     def __parse_default_prg(self):
@@ -196,25 +220,14 @@ class AqAutoDetectionDevice(AqBaseDevice):
         # Read first page from file to determine file size
         first_page = self.__sync_read_file(self.system_params_dict['default_prg'])
 
+        if int.from_bytes((first_page[:3][::-1]), byteorder='big') != 0:
+            return 'need_pass'
+
         file_size = int.from_bytes((first_page[4:8][::-1]), byteorder='big')
         self.system_params_dict['default_prg'].set_file_size(file_size // 2)
 
         # Read full file
         full_file = self.__sync_read_file(self.system_params_dict['default_prg'])
-        # crc = int.from_bytes((first_page[8:12]), byteorder='big')
-        # crc2 = int.from_bytes((first_page[8:12]), byteorder='little')
-        # crc3 = int.from_bytes((first_page[8:12][::-1]), byteorder='big')
-        # crc4 = int.from_bytes((first_page[8:12][::-1]), byteorder='little')
-        # crc_swap = int.from_bytes(swap_bytes_at_registers(crc.to_bytes(4, byteorder='big'), 2))
-        # crc_swap2 = int.from_bytes(swap_bytes_at_registers(crc2.to_bytes(4, byteorder='big'), 2))
-        # crc_swap3 = int.from_bytes(swap_bytes_at_registers(crc3.to_bytes(4, byteorder='big'), 2))
-        # crc_swap4 = int.from_bytes(swap_bytes_at_registers(crc4.to_bytes(4, byteorder='big'), 2))
-        # crc_calculated = Crc32().calculate(full_file[12:])
-        # crc_calculated2 = Crc32().calculate(full_file[12:][::-1])
-        # crc_calculated3 = Crc32().calculate(full_file)
-        # crc_calculated4 = Crc32().calculate(full_file[::-1])
-        # crc_calculated5 = Crc32().calculate(full_file[12:12 + file_size])
-        # crc_calculated6 = Crc32().calculate(full_file[12:12 + file_size][::-1])
 
         # Ця вставка робить файл default.prg у корні проекту (було необхідно для відладки)
         filename = 'default.prg'
@@ -287,3 +300,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         item.value = record_data
         self.write_file(item)
 
+    def get_password(self):
+        return self._password
+
+    def set_password(self, password: str):
+        self._password = password

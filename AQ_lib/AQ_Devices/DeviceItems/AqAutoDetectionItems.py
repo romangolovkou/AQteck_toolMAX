@@ -155,9 +155,10 @@ class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
         return param_value
 
 class AqAutoDetectModbusFileItem(AqModbusFileItem):
-    def __init__(self, param_attributes):
+    def __init__(self, param_attributes, get_password=None):
         super().__init__(param_attributes)
         self.key = b'superkey'
+        self.__get_pass = get_password
 
     def pack(self):
         record_data = self.value
@@ -189,7 +190,7 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
 
     def __decrypt_data(self, encrypted_data):
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-        cipher = DES.new(self.__get_hash('AQteck'), DES.MODE_CBC, self.key)
+        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.key)
         decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
 
         return decrypted_data
@@ -210,7 +211,9 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         self.setData(attr, Qt.UserRole)
         print('aaaaa')
 
-    def __get_hash(self, userPass=None):
+    def __get_hash(self):
+        userPass = self.__get_password()
+
         if userPass is None:
             # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
             return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
@@ -236,6 +239,14 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
             high = bytes.fromhex(hex(high)[2:])[::-1]
             hash = low + high
             return hash
+
+    def __get_password(self):
+        if self.__get_pass is not None:
+            password = self.__get_pass()
+        else:
+            password = None
+
+        return password
 
 
     @property
