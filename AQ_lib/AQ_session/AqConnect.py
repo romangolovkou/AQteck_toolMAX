@@ -242,8 +242,7 @@ class AqModbusConnect(AqConnect):
                                                     baudrate=self.connect_settings.baudrate,
                                                     parity=self.connect_settings.parity[:1],
                                                     stopbits=self.connect_settings.stopbits,
-                                                    timeout=self.timeout,
-                                                    retries=0)
+                                                    timeout=self.timeout)
             self.slave_id = slave_id
         elif isinstance(self.connect_settings, AqIpConnectSettings):
             self.client = AsyncModbusTcpClient(self.connect_settings.ip)
