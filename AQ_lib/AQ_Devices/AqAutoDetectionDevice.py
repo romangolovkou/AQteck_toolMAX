@@ -1,11 +1,15 @@
+import datetime
 import struct
 import time
+
+from PySide6.QtCore import Qt
 
 from AqAutoDetectionItems import AqAutoDetectStringParamItem, AqAutoDetectModbusFileItem
 from AqBaseDevice import AqBaseDevice
 from AqCRC32 import Crc32
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
+from AqDeviceInfoModel import AqDeviceInfoModel
 from AqDeviceStrings import get_translated_string
 from AqTreeViewItemModel import AqTreeItemModel
 from SystemLibrary.AqModbusTips import swap_bytes_at_registers, remove_empty_bytes, \
@@ -143,6 +147,96 @@ class AqAutoDetectionDevice(AqBaseDevice):
             print(f"Error occurred: {str(e)}")
             return 'parsing_err'
 
+    def __parse_status_file(self, status_file):
+        data_string = status_file.decode('ANSI')
+        # Разделение строк по переводу строки
+        data_rows = data_string.split('\n')
+        data = []
+        for row in data_rows:
+            # Разделение записи на поля по символу ';'
+            fields = row.split(';')
+            data.append(fields)
+
+        return data
+
+    def __load_data_to_info_model(self, data):
+        model = AqDeviceInfoModel()
+        for i, row in enumerate(data):
+            # Додаємо тільки строки з другої по п'яту
+            if i > 0 and i < 5:
+                info_str = None
+                info_value = None
+                for j, cell_str in enumerate(row):
+                    if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
+                        if i == 4 and j == 1:
+                            value = int(cell_str, 16)
+                            value += datetime.datetime(2000, 1, 1).timestamp()
+                            datetime_obj = datetime.datetime.fromtimestamp(value)
+                            date_time_str = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
+                            info_value = date_time_str
+                        else:
+                            if j == 1:
+                                info_value = cell_str
+                            else:
+                                info_str = cell_str
+
+                model.add_general_info(info_str, info_value)
+
+            # Додаємо тільки строки з другої по п'яту
+            if i > 4:
+                break
+
+        for i, row in enumerate(data):
+            # Додаємо тільки строки з п'ятої по передостанню
+            if i > 4 and i < len(data) - 1:
+                info_str = None
+                info_value = None
+                item_by_uid = None
+                for j, cell_str in enumerate(row):
+                    if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
+                        if j == 0:
+                            # Замінюємо UID на ім'я параметру
+                            item_by_uid = self.__get_item_by_UID(int(cell_str, 16))
+                            if item_by_uid is not None:
+                                parameter_attributes = item_by_uid.get_param_attributes()
+                                name = parameter_attributes.get('name', 'err_name')
+                                info_str = name
+                            else:
+                                info_str = cell_str
+                        else:
+                            info_value = cell_str
+
+                if item_by_uid is not None:
+                    info_value = item_by_uid.value
+
+                model.add_operating_info(info_str, info_value, item_by_uid)
+
+        return model
+
+    def __get_item_by_UID(self, uid):
+        param_attributes = None
+        if self._device_tree is not None:
+            root = self._device_tree.invisibleRootItem()
+            param_attributes = self.__traverse_items_find_item_by_uid(root, uid)
+
+        return param_attributes
+
+    def __traverse_items_find_item_by_uid(self, item, uid):
+        for row in range(item.rowCount()):
+            child_item = item.child(row)
+            if child_item is not None:
+                parameter_attributes = child_item.data(Qt.UserRole)
+                if parameter_attributes is not None:
+                    if parameter_attributes.get('is_catalog', 0) == 1:
+                        item_by_uid = self.__traverse_items_find_item_by_uid(child_item, uid)
+                        if item_by_uid is not None:
+                            return item_by_uid
+                    else:
+                        if parameter_attributes.get('UID', 0) == uid:
+                            return child_item
+        # Якщо дійшли сюди, то співдпадінь немає
+        return None
+
     def __sync_read_param(self, item):
         self.read_parameters(item)
         with self._core_cv:
@@ -237,6 +331,14 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
         return full_file
 
+    def __read_status_file(self):
+        try:
+            status_file = self.__sync_read_file(self.system_params_dict['status'])
+            return status_file
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return 'decrypt_err'  # Помилка дешифрування
+
     # def __decrypt_data(self, encrypted_data):
     #     # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
     #     cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
@@ -293,6 +395,17 @@ class AqAutoDetectionDevice(AqBaseDevice):
         dev_model.network_info.append(get_translated_string('byte_order_ms_str'))
         dev_model.network_info.append(get_translated_string('register_order_ls_str'))
         return dev_model
+
+    def get_device_info_model(self):
+        model = None
+        status_file = self.__read_status_file()
+        if status_file != 'decrypt_err' and status_file != 'connect_err' and \
+                status_file != 'modbus_err':
+            data = self.__parse_status_file(status_file)
+            model = self.__load_data_to_info_model(data)
+
+        return model
+
 
     def reboot(self):
         text = "I will restart the device now!"

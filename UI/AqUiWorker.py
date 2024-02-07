@@ -14,10 +14,12 @@ from ui_DeviceParamListWindow import Ui_DeviceParamListWidget
 
 
 def show_device_info_window():
-    # device_info = AppCore.Core.session.get_current_device_info
-    dialog = AqDeviceInfoWidget(Ui_DeviceInfoDialog)
-    dialog.set_device_info_model()
-    dialog.exec()
+    if AppCore.Core.session.cur_active_device is not None:
+        # device_info = AppCore.Core.session.get_current_device_info
+        dialog = AqDeviceInfoWidget(Ui_DeviceInfoDialog)
+        info_model = AppCore.Core.session.cur_active_device.device_info_model
+        dialog.set_device_info_model(info_model)
+        dialog.exec()
 
 
 def show_add_device_window():

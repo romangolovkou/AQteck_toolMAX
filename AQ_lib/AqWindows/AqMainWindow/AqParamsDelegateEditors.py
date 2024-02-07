@@ -78,12 +78,14 @@ class AqTreeLineEdit(QLineEdit):
 
     def focusInEvent(self, event):
         # Викликається при отриманні єдітором фокусу
-        self.manager_item_handler.set_blocked(True)
+        if self.manager_item_handler is not None:
+            self.manager_item_handler.set_blocked(True)
         super().focusInEvent(event)
 
     def focusOutEvent(self, event):
         # Викликається при втраті єдітором фокусу
-        self.manager_item_handler.set_blocked(False)
+        if self.manager_item_handler is not None:
+            self.manager_item_handler.set_blocked(False)
         super().focusOutEvent(event)
 
 
