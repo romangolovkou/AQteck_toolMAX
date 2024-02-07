@@ -48,6 +48,7 @@ class AqGenericModbusDevice(AqBaseDevice):
         self._functions['read_write'] = False,
         self._functions['rtc'] = False
         self._functions['password'] = False
+        self._functions['set_slave_id'] = True
         self._functions['calibration'] = False
         self._functions['log'] = False
         self._functions['fw_update'] = False

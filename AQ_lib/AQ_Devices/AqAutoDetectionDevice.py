@@ -75,10 +75,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
         # later should be json file inside device with definitions
         self._functions['read_write'] = True,
         self._functions['rtc'] = True
-        self._functions['password'] = True
-        self._functions['calibration'] = True
-        self._functions['log'] = True
-        self._functions['fw_update'] = True
+        self._functions['password'] = False
+        self._functions['set_slave_id'] = True
+        self._functions['calibration'] = False
+        self._functions['log'] = False
+        self._functions['fw_update'] = False
         self._functions['restart'] = True
 
         self._status = 'ok'

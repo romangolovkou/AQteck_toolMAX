@@ -1,4 +1,4 @@
-from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication, Signal
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QGuiApplication, QFont
@@ -19,6 +19,7 @@ from AqWatchListCore import AqWatchListCore
 
 
 class AQ_CurrentSession(QObject):
+    cur_active_dev_changed = Signal()
     def __init__(self, event_manager, parent):
         super().__init__()
         self.parent = parent
@@ -46,6 +47,7 @@ class AQ_CurrentSession(QObject):
     def set_cur_active_device(self, device):
         if device is not None:
             self.cur_active_device = device
+            self.cur_active_dev_changed.emit()
 
     def clear_cur_active_device(self):
         self.cur_active_device = None

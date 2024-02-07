@@ -108,7 +108,17 @@ background-color: #1f232a;
 	border-right: 1px solid #8ee1c3;
 	border-top-left-radius: 12px;
 	background-color: #2c313c;
-}</string>
+}
+
+#rightMenuSubContainer QToolButton::hover {
+	color: #FFFFFF;
+	font-weight: bold;
+}
+
+#rightMenuSubContainer QToolButton::disabled {
+	color: #807c7c;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -232,7 +242,7 @@ background-color: #1f232a;
            </widget>
           </item>
           <item alignment="Qt::AlignLeft">
-           <widget class="QFrame" name="frame_3">
+           <widget class="QFrame" name="headerMenuFrame">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1919,7 +1929,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -1960,7 +1971,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2010,7 +2022,7 @@ background-color: #1f232a;
                   </property>
                  </widget>
                 </item>
-                <item alignment="Qt::AlignRight|Qt::AlignTop">
+                <item alignment="Qt::AlignTop">
                  <widget class="QFrame" name="deviceUtilsFrame">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -2074,7 +2086,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/clock.png</normaloff>:/images/icons/clock.png</iconset>
+                       <normaloff>:/images/icons/clock.png</normaloff>
+                       <disabledoff>:/images/icons/clock.png</disabledoff>:/images/icons/clock.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2109,7 +2122,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/padlock.png</normaloff>:/images/icons/padlock.png</iconset>
+                       <normaloff>:/images/icons/padlock.png</normaloff>
+                       <disabledoff>:/images/icons/padlock.png</disabledoff>:/images/icons/padlock.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2124,6 +2138,12 @@ background-color: #1f232a;
                    </item>
                    <item alignment="Qt::AlignLeft">
                     <widget class="QToolButton" name="calibDeviceBtn">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>32</width>
@@ -2144,7 +2164,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/setting.png</normaloff>:/images/icons/setting.png</iconset>
+                       <normaloff>:/images/icons/setting.png</normaloff>
+                       <disabledoff>:/images/icons/setting.png</disabledoff>:/images/icons/setting.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2159,6 +2180,12 @@ background-color: #1f232a;
                    </item>
                    <item alignment="Qt::AlignLeft">
                     <widget class="QToolButton" name="setSlaveIdBtn">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>32</width>
@@ -2179,7 +2206,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/serialization.png</normaloff>:/images/icons/serialization.png</iconset>
+                       <normaloff>:/images/icons/serialization.png</normaloff>
+                       <disabledoff>:/images/icons/serialization.png</disabledoff>:/images/icons/serialization.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2293,7 +2321,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2328,7 +2357,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2424,7 +2454,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/restore.png</normaloff>:/images/icons/restore.png</iconset>
+                       <normaloff>:/images/icons/restore.png</normaloff>
+                       <disabledoff>:/images/icons/restore.png</disabledoff>:/images/icons/restore.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2459,7 +2490,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/electricity.png</normaloff>:/images/icons/electricity.png</iconset>
+                       <normaloff>:/images/icons/electricity.png</normaloff>
+                       <disabledoff>:/images/icons/electricity.png</disabledoff>:/images/icons/electricity.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2558,7 +2590,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>

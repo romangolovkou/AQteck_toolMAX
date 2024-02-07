@@ -39,6 +39,50 @@ class AqMainWindow(QMainWindow):
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
         self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
 
+        Core.session.cur_active_dev_changed.connect(self.floating_menu_customize)
+
+        # TODO: тимчасове, потім видалити
+        self.ui.headerMenuFrame.hide()
+
+    def floating_menu_customize(self):
+        device = Core.session.cur_active_device
+        if device.func('rtc'):
+            self.ui.setRtcBtn.setEnabled(True)
+        else:
+            self.ui.setRtcBtn.setEnabled(False)
+
+        if device.func('password'):
+            self.ui.setPasswordBtn.setEnabled(True)
+        else:
+            self.ui.setPasswordBtn.setEnabled(False)
+
+        if device.func('calibration'):
+            self.ui.calibDeviceBtn.setEnabled(True)
+        else:
+            self.ui.calibDeviceBtn.setEnabled(False)
+
+        if device.func('set_slave_id'):
+            self.ui.setSlaveIdBtn.setEnabled(True)
+        else:
+            self.ui.setSlaveIdBtn.setEnabled(False)
+
+        if device.func('log'):
+            self.ui.saveLogBtn.setEnabled(True)
+            self.ui.configLogBtn.setEnabled(True)
+        else:
+            self.ui.saveLogBtn.setEnabled(False)
+            self.ui.configLogBtn.setEnabled(False)
+
+        if device.func('fw_update'):
+            self.ui.firmwareUpdBtn.setEnabled(True)
+        else:
+            self.ui.firmwareUpdBtn.setEnabled(False)
+
+        if device.func('restart'):
+            self.ui.rebootDeviceBtn.setEnabled(True)
+        else:
+            self.ui.rebootDeviceBtn.setEnabled(False)
+
     def close(self):
         super().close()
         Core.de_init()
