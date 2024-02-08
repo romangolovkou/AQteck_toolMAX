@@ -25,7 +25,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     _system_string = {
         'name':         [0xF000, 16, 3],
         'version':      [0xF010, 16, 3],
-        'serial_num':   [0xF086, 10, 3]
+        'serial_num':   [0xF084, 10, 3]
     }
     _system_param = {
         'ip':           [0x001A, 2]
