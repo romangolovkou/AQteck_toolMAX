@@ -9,7 +9,6 @@ from pymodbus.exceptions import ModbusIOException
 
 import AqUiWorker
 from AqBaseDevice import AqBaseDevice
-from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
 import pickle
 import io
 

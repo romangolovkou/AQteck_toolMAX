@@ -32,6 +32,7 @@ class AqMainWindow(QMainWindow):
         self.ui.paramListBtn.clicked.connect(AqUiWorker.show_device_param_list)
         self.ui.watchListBtn.clicked.connect(AqUiWorker.show_watch_list_window)
         self.ui.setSlaveIdBtn.clicked.connect(AqUiWorker.show_set_slave_id_window)
+        self.ui.setRtcBtn.clicked.connect(AqUiWorker.show_set_rtc)
 
         self.ui.setDefaultMenuBtn.clicked.connect(Core.session.set_default_cur_active_device)
         self.ui.rebootDeviceBtn.clicked.connect(Core.session.restart_current_active_device)
