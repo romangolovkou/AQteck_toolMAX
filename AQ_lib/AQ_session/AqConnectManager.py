@@ -71,7 +71,7 @@ class AqConnectManager(object):
         connect = None
 
         if isinstance(connect_settings, AqOfflineConnectSettings):
-            connect = AqOfflineConnect(cls.core_cv)
+            connect = AqOfflineConnect(cls.notify)
         elif isinstance(connect_settings, (AqIpConnectSettings, AqComConnectSettings)):
             locker = cls.connect_mutex.get(connect_settings.addr, None)
             if locker is None:

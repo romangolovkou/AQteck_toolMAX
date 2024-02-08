@@ -504,3 +504,7 @@ class AqOfflineConnect(AqConnect):
         result = self.client.read_file_record(self.slave_id, [request])
 
         return result
+
+    def set_ready_flag(self):
+        if len(self.RequestGroupQueue) > 0:
+            self.notify(self)

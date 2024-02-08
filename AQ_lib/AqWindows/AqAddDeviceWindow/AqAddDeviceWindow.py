@@ -172,15 +172,21 @@ class AqAddDeviceWidget(AqDialogTemplate):
     def change_device_set_by_protocol_selection(self):
         protocol = self.ui.protocol_combo_box.currentText()
         devices = AqDeviceFabrica.DeviceCreator.get_device_list_by_protocol(protocol)
+        interfaces = AqDeviceFabrica.DeviceCreator.get_interface_list()
         if len(devices) > 0:
             self.ui.device_combo_box.show()
             self.ui.device_combo_box_label.show()
         else:
+            # потрапляємо сюди якщо автодетекшн
             self.ui.device_combo_box.hide()
             self.ui.device_combo_box_label.hide()
+            interfaces.remove('Offline')
         # Добавляем имена файлов в комбобокс
         self.ui.device_combo_box.clear()
         self.ui.device_combo_box.addItems(devices)
+        # Оновлюємо доступні інтерфейси
+        self.ui.interface_combo_box.clear()
+        self.ui.interface_combo_box.addItems(interfaces)
         try:
             load_last_combobox_state(self.auto_load_settings, self.ui.device_combo_box)
         except:
