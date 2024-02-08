@@ -1,11 +1,9 @@
 import AppCore
 from AqAddDeviceWindow import AqAddDeviceWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
-from AqDeviceParamListModel import AqDeviceParamListModel
 from AqParamListWidget import AqParamListWidget
 from AqSetSlaveIdWindow import AqSetSlaveIdWindow
 from AqWatchListWindow import AqWatchListWidget
-from DeviceModels import AqDeviceInfoModel
 from ui_AqSetSlaveIdWinWidget import Ui_AqSetSlaveIdWidget
 from ui_AqWatchListWidget import Ui_AqWatchListWidget
 from ui_DeviceInfoDialog import Ui_DeviceInfoDialog
