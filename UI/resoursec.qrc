@@ -302,5 +302,7 @@
         <file>icons/serialization.png</file>
         <file>icons/pause_green_btn.png</file>
         <file>icons/play_green_btn.png</file>
+        <file>icons/arrow_down.png</file>
+        <file>icons/arrow_up.png</file>
     </qresource>
 </RCC>
