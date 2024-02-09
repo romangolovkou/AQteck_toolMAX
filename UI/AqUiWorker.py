@@ -49,4 +49,5 @@ def show_set_slave_id_window():
 def show_set_rtc():
     if AppCore.Core.session.cur_active_device is not None:
         widget = AqRtcWindow(Ui_AqRtcWidget)
+        widget.set_device_date_time(AppCore.Core.session.cur_active_device.get_device_date_time())
         widget.exec()

@@ -6,11 +6,13 @@ from PySide6.QtCore import Qt
 
 from AqAutoDetectionItems import AqAutoDetectStringParamItem, AqAutoDetectModbusFileItem
 from AqBaseDevice import AqBaseDevice
+from AqBaseTreeItems import AqParamItem
 from AqCRC32 import Crc32
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
 from AqDeviceInfoModel import AqDeviceInfoModel
 from AqDeviceStrings import get_translated_string
+from AqParser import build_item
 from AqTreeViewItemModel import AqTreeItemModel
 from SystemLibrary.AqModbusTips import swap_bytes_at_registers, remove_empty_bytes, \
     reverse_registers
@@ -28,7 +30,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'serial_num':   [0xF084, 10, 3]
     }
     _system_param = {
-        'ip':           [0x001A, 2]
+        'ip':           [0x001A, 2, 3, 'AqAutoDetectIpParamItem'],
+        'date_time':     [0xF07D, 2, 3, 'AqAutoDetectUnsignedParamItem']
     }
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only]
@@ -118,6 +121,18 @@ class AqAutoDetectionDevice(AqBaseDevice):
             param_attributes['R_Only'] = 1
             param_attributes['W_Only'] = 0
             self.system_params_dict[keys_list[i]] = AqAutoDetectStringParamItem(param_attributes)
+            self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
+
+        keys_list = list(self._system_param.keys())
+        for i in range(len(keys_list)):
+            param_attributes = dict()
+            param_attributes['name'] = keys_list[i]
+            param_attributes['modbus_reg'] = self._system_param[keys_list[i]][0]
+            param_attributes['param_size'] = 2 * self._system_param[keys_list[i]][1]
+            param_attributes['read_func'] = self._system_param[keys_list[i]][2]
+            param_attributes['R_Only'] = 1
+            param_attributes['W_Only'] = 0
+            self.system_params_dict[keys_list[i]] = build_item(self._system_param[keys_list[i]][3], param_attributes)
             self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
 
     def __create_system_files(self):
@@ -406,6 +421,13 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
         return model
 
+    def get_device_date_time(self):
+        try:
+            date_time = self.__sync_read_param(self.system_params_dict['date_time'])
+            return date_time
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return 0
 
     def reboot(self):
         text = "I will restart the device now!"

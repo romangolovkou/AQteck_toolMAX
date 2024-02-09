@@ -16,9 +16,17 @@ class AqRtcWindow(AqDialogTemplate):
         self.maximizeBtnEnable = False
 
         self.name = 'Set Date Time'
-        self.date = None
+        self._date = None
         self._time = None
         self.prepare_ui()
+
+    @property
+    def date(self):
+        return self._date
+
+    @date.setter
+    def date(self, date: datetime.date):
+        self._date = date
 
     @property
     def time(self):
@@ -41,3 +49,7 @@ class AqRtcWindow(AqDialogTemplate):
         self.date = current_datetime.date()
         self.time = current_datetime.time()
 
+    def set_device_date_time(self, date_time: int):
+        date_time += datetime(2000, 1, 1).timestamp()
+        datetime_obj = datetime.fromtimestamp(date_time)
+        self.time = datetime_obj.time()

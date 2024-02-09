@@ -2,6 +2,7 @@ from AqAutoDetectionLibrary import parse_tree, get_storage_container, get_contai
 #Імпорти нижче не видаляти, потрібні для globsls
 from AqModbusGenericItems import *
 from AqDY500Items import *
+from AqAutoDetectionItems import *
 
 
 def parse_config(configuration, conf_type=None):
