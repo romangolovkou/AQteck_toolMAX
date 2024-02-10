@@ -31,7 +31,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     }
     _system_param = {
         'ip':           [0x001A, 2, 3, 'AqAutoDetectIpParamItem'],
-        'date_time':     [0xF07D, 2, 3, 'AqAutoDetectUnsignedParamItem']
+        'date_time':     [0xF080, 2, 3, 'AqAutoDetectUnsignedParamItem']
     }
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only]
