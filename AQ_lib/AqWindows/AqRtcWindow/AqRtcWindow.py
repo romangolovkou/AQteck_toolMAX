@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from PySide6.QtCore import QDate, QObject, QModelIndex, Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QColor, QPalette
@@ -22,6 +22,7 @@ class AqRtcWindow(AqDialogTemplate):
         self.name = 'Set Date Time'
         self._date = None
         self._time = None
+        self._time_zone = None
         self.prepare_ui()
 
     @property
@@ -44,9 +45,19 @@ class AqRtcWindow(AqDialogTemplate):
         self.ui.timeWidget.time = time
         self._time = time
 
+    @property
+    def time_zone(self):
+        return self._time_zone
+
+    @time_zone.setter
+    def time_zone(self, time_shift: timezone):
+        self.ui.timeZoneComboBox.set_item_text_by_shift(time_shift)
+        self._time_zone = time_shift
+
     def prepare_ui(self):
         self.ui.timeWidget.prepare_ui()
         self.ui.syncroPcBtn.clicked.connect(self.get_pc_date_time)
+        self.ui.cancelBtn.clicked.connect(self.close)
 
         # Получаем виджет календаря
         daysLabelHeader = self.findChildren(QTableView, 'daysLabelHeader')[0]
@@ -56,17 +67,9 @@ class AqRtcWindow(AqDialogTemplate):
         daysLabelHeader.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         daysLabelHeader.horizontalHeader().setStyleSheet(
             "QHeaderView::section { background-color: #2c313c; color: #FFFFFF; border: none }")
-        # calendar_model = calendar_view.model() #self.findChild(QStandardItemModel)
-
-        # calendar_view.hideRow(0)
-        # calendar_view.hideColumn(0)
 
         self.ui.calendarWidget.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
         self.ui.calendarWidget.setHorizontalHeaderFormat(QCalendarWidget.NoHorizontalHeader)
-
-        height = self.ui.calendarWidget.height()
-
-        self.adjustSize()
 
     def get_pc_date_time(self):
         # Получаем текущую дату и время
@@ -76,14 +79,16 @@ class AqRtcWindow(AqDialogTemplate):
         self.date = current_datetime.date()
         self.time = current_datetime.time()
 
-        # Получаем список всех дочерних элементов
-        child_widgets = self.ui.calendarWidget.findChildren(QObject)
+        # # Получаем список всех дочерних элементов
+        # child_widgets = self.ui.calendarWidget.findChildren(QObject)
+        #
+        # # Выводим информацию о каждом дочернем элементе
+        # for child in child_widgets:
+        #     print(f"Type: {child.metaObject().className()}, Name: {child.objectName()}")
 
-        # Выводим информацию о каждом дочернем элементе
-        for child in child_widgets:
-            print(f"Type: {child.metaObject().className()}, Name: {child.objectName()}")
-
-    def set_device_date_time(self, date_time: int):
+    def set_device_date_time(self, date_time_dict: dict):
+        date_time = date_time_dict['date_time']
+        time_zone = date_time_dict['time_zone']
         if date_time is None:
             # TODO: Переделать на норм
             date_time = 0
@@ -91,3 +96,5 @@ class AqRtcWindow(AqDialogTemplate):
         datetime_obj = datetime.fromtimestamp(date_time)
         self.date = datetime_obj.date()
         self.time = datetime_obj.time()
+        device_timezone = timezone(timedelta(hours=(time_zone // 60)))
+        self.time_zone = device_timezone

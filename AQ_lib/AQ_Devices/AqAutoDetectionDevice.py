@@ -31,7 +31,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
     }
     _system_param = {
         'ip':           [0x001A, 2, 3, 'AqAutoDetectIpParamItem'],
-        'date_time':     [0xF080, 2, 3, 'AqAutoDetectUnsignedParamItem']
+        'date_time':    [0xF080, 2, 3, 'AqAutoDetectUnsignedParamItem'],
+        'time_zone':    [0xF082, 1, 3, 'AqAutoDetectSignedParamItem']
     }
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only]
@@ -81,7 +82,10 @@ class AqAutoDetectionDevice(AqBaseDevice):
         # into AutoDetectionDevice
         # later should be json file inside device with definitions
         self._functions['read_write'] = True,
-        self._functions['rtc'] = True
+        if self.__sync_read_param(self.system_params_dict['time_zone']) is None:
+            self._functions['rtc'] = False
+        else:
+            self._functions['rtc'] = True
         self._functions['password'] = False
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = False
@@ -424,7 +428,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
     def get_device_date_time(self):
         try:
             date_time = self.__sync_read_param(self.system_params_dict['date_time'])
-            return date_time
+            time_zone = self.__sync_read_param(self.system_params_dict['time_zone'])
+            return {'date_time': date_time, 'time_zone': time_zone}
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 0
