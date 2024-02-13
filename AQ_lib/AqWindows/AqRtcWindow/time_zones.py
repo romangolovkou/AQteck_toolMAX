@@ -305,7 +305,7 @@ time_zones_list_en = [
     '(UTC-02:00) UTC-02',
     '(UTC-01:00) Azores Standard Time',
     '(UTC-01:00) Cape Verde Standard Time',
-    '(UTC) UTC',
+    #'(UTC) UTC',
     '(UTC+00:00) GMT Standard Time',
     '(UTC+00:00) Morocco Standard Time',
     '(UTC+00:00) Greenwich Standard Time',

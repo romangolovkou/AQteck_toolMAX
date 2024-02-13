@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 
 from PySide6.QtCore import QDate, QObject, QModelIndex, Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QColor, QPalette
@@ -56,6 +56,7 @@ class AqRtcWindow(AqDialogTemplate):
 
     def prepare_ui(self):
         self.ui.timeWidget.prepare_ui()
+        self.ui.timeWidget.time_changed.connect(self.time_changed)
         self.ui.syncroPcBtn.clicked.connect(self.get_pc_date_time)
         self.ui.cancelBtn.clicked.connect(self.close)
 
@@ -70,6 +71,9 @@ class AqRtcWindow(AqDialogTemplate):
 
         self.ui.calendarWidget.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
         self.ui.calendarWidget.setHorizontalHeaderFormat(QCalendarWidget.NoHorizontalHeader)
+        self.ui.calendarWidget.selectionChanged.connect(self.selected_date_changed)
+
+        self.ui.timeZoneComboBox.currentIndexChanged.connect(self.time_zone_changed)
 
     def get_pc_date_time(self):
         # Получаем текущую дату и время
@@ -98,3 +102,32 @@ class AqRtcWindow(AqDialogTemplate):
         self.time = datetime_obj.time()
         device_timezone = timezone(timedelta(hours=(time_zone // 60)))
         self.time_zone = device_timezone
+
+    def selected_date_changed(self):
+        # Получение выбранной даты
+        selected_date = self.ui.calendarWidget.selectedDate()
+        # Преобразуем QDate в datetime.date
+        self._date = date(selected_date.year(), selected_date.month(), selected_date.day())
+
+    def time_changed(self):
+        self._time = self.ui.timeWidget.time
+
+    def time_zone_changed(self):
+        shift_str = self.ui.timeZoneComboBox.currentText()[4:10]
+        sign = shift_str[:1]
+        if sign == '+':
+            multiply = 1
+        elif sign == '-':
+            multiply = -1
+        else:
+            multiply = 1
+
+        hour = shift_str[1:3]
+        hour = int(hour) * multiply
+        minutes = shift_str[4:]
+        minutes = int(minutes) * multiply
+        new_timezone = timezone(timedelta(hours=hour, minutes=minutes))
+        self._time_zone = new_timezone
+
+    def write_new_date_time(self):
+        pass

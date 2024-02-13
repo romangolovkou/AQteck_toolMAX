@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
 
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, Signal
 from PySide6.QtWidgets import QWidget
 
 from AqTimeCellWidget import AqTimeCellWidget
@@ -16,7 +16,9 @@ class CellWidgets:
     t_sec: AqTimeCellWidget
     sec: AqTimeCellWidget
 
+
 class AqTimeWidget(QWidget):
+    time_changed = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -41,6 +43,7 @@ class AqTimeWidget(QWidget):
         self.cell_widgets.sec.set_state(new_time.second % 10)
 
         self._time = new_time
+        self.time_changed.emit()
 
     def prepare_ui(self):
         self.cell_widgets = CellWidgets(self.findChildren(AqTimeCellWidget, 't_hourWidget')[0],
