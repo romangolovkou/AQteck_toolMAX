@@ -160,6 +160,7 @@ class AqRtcWindow(AqDialogTemplate):
         self.__write_handler = handler
 
     def write_new_date_time(self):
+        self.ui.writeBtn.setEnabled(False)
         date_time = datetime.combine(self._date, self._time)
         date_dime_dict = {'date_time': date_time,
                           'time_zone': self._time_zone}
@@ -168,6 +169,8 @@ class AqRtcWindow(AqDialogTemplate):
                 self.show_success_label()
             else:
                 self.show_error_label()
+
+        self.ui.writeBtn.setEnabled(True)
 
     def show_error_label(self):
         self.ui.messageLabel.setText('Write error. Try again.')

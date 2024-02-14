@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import struct
 import time
@@ -356,9 +357,17 @@ class AqAutoDetectionDevice(AqBaseDevice):
         # Read full file
         full_file = self.__sync_read_file(self.system_params_dict['default_prg'])
 
+        # TODO: тимчасове збереження файлу (потрібно для відладки)
         # Ця вставка робить файл default.prg у корні проекту (було необхідно для відладки)
-        filename = 'default.prg'
-        with open(filename, 'wb') as file:
+        roaming_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming')
+        # Проверяем наличие папки Roaming, если её нет - создаем
+        if not os.path.exists(roaming_folder):
+            os.makedirs(roaming_folder)
+
+        filename = self._info['name'] + '_' + self._info['version'] + '_' + 'default.prg'
+        # Полный путь к файлу в папке Roaming
+        full_filepath = os.path.join(roaming_folder, filename)
+        with open(full_filepath, 'wb') as file:
             file.write(full_file)
 
         return full_file

@@ -1,3 +1,4 @@
+import os
 import struct
 
 from PySide6.QtCore import Qt
@@ -175,6 +176,20 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         return encrypted_record_data
 
     def unpack(self, data):
+        # TODO: тимчасове збереження файлу (потрібно для відладки)
+        if self.get_param_attributes()['file_num'] == 0xFFE0:
+            # Ця вставка робить файл default.prg у корні проекту (було необхідно для відладки)
+            roaming_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming')
+            # Проверяем наличие папки Roaming, если её нет - создаем
+            if not os.path.exists(roaming_folder):
+                os.makedirs(roaming_folder)
+
+            filename = 'enc_default.prg'
+            # Полный путь к файлу в папке Roaming
+            full_filepath = os.path.join(roaming_folder, filename)
+            with open(full_filepath, 'wb') as file:
+                file.write(data)
+
         decrypt_file = None
         try:
             # Перевірка на кратність 8 байтам, потрібно для DES
