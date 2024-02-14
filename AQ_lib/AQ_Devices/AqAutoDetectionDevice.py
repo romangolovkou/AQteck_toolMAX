@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import struct
 import time
 
@@ -23,16 +23,19 @@ from SystemLibrary.AqAutoDetectionLibrary import get_containers_count, \
 
 class AqAutoDetectionDevice(AqBaseDevice):
 
-    # Format: 'param_name': {start_reg, count, func}
+    # Format: 'string_name': {start_reg, count, func}
     _system_string = {
         'name':         [0xF000, 16, 3],
         'version':      [0xF010, 16, 3],
         'serial_num':   [0xF084, 10, 3]
     }
+    # Format: 'param_name': {start_reg, count, read_func, write_func, itemType, R_Only}
     _system_param = {
-        'ip':           [0x001A, 2, 3, 'AqAutoDetectIpParamItem'],
-        'date_time':    [0xF080, 2, 3, 'AqAutoDetectUnsignedParamItem'],
-        'time_zone':    [0xF082, 1, 3, 'AqAutoDetectSignedParamItem']
+        'ip':               [0x001A, 2, 3, 16, 'AqAutoDetectIpParamItem', True],
+        'date_time':        [0xF080, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'time_zone':        [0xF082, 1, 3, 16, 'AqAutoDetectSignedParamItem', False],
+        'new_time_trig':    [0xF07F, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False]
     }
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only]
@@ -134,9 +137,13 @@ class AqAutoDetectionDevice(AqBaseDevice):
             param_attributes['modbus_reg'] = self._system_param[keys_list[i]][0]
             param_attributes['param_size'] = 2 * self._system_param[keys_list[i]][1]
             param_attributes['read_func'] = self._system_param[keys_list[i]][2]
-            param_attributes['R_Only'] = 1
+            param_attributes['write_func'] = self._system_param[keys_list[i]][3]
+            if self._system_param[keys_list[i]][5] is True:
+                param_attributes['R_Only'] = 1
+            else:
+                param_attributes['R_Only'] = 0
             param_attributes['W_Only'] = 0
-            self.system_params_dict[keys_list[i]] = build_item(self._system_param[keys_list[i]][3], param_attributes)
+            self.system_params_dict[keys_list[i]] = build_item(self._system_param[keys_list[i]][4], param_attributes)
             self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
 
     def __create_system_files(self):
@@ -189,8 +196,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
                         if i == 4 and j == 1:
                             value = int(cell_str, 16)
-                            value += datetime.datetime(2000, 1, 1).timestamp()
-                            datetime_obj = datetime.datetime.fromtimestamp(value)
+                            value += datetime(2000, 1, 1).timestamp()
+                            datetime_obj = datetime.fromtimestamp(value)
                             date_time_str = datetime_obj.strftime('%d.%m.%Y %H:%M:%S')
                             info_value = date_time_str
                         else:
@@ -267,6 +274,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
         with self._core_cv:
             self._core_cv.wait()
         return item.value
+
+    def __sync_write_param(self, item):
+        self.write_parameters(item)
+        with self._core_cv:
+            self._core_cv.wait()
+        return item.get_status()
 
     def read_file(self, item):
         # if len(self._request_count) == 0:
@@ -433,6 +446,64 @@ class AqAutoDetectionDevice(AqBaseDevice):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 0
+
+    def write_device_date_time(self, date_time_dict: dict):
+        date_time = date_time_dict['date_time']
+        time_zone = date_time_dict['time_zone']
+
+        # for i in range(3):
+        #   Скидаємо у приладі триггер встановлення нового часу та дати
+        # Спочатку ставимо 1, а потім 0, щоб відпрацював механізм встановлення
+        # статусу параметру 'changed'.
+        self.system_params_dict['new_time_trig'].value = 1
+        self.system_params_dict['new_time_trig'].value = 0
+        result = self.__sync_write_param(self.system_params_dict['new_time_trig'])
+        if result != 'ok':
+            return result
+
+        #   Встановлюємо та записуємо нову дату та час у спеціальний схований параметр
+        # Спочатку ставимо all_seconds + 1, а потім all_seconds, щоб відпрацював механізм встановлення
+        # статусу параметру 'changed'.
+        # Начальный момент времени (2000-01-01 00:00:00)
+        min_limit_date = datetime(2000, 1, 1)
+        result_date_time = date_time - min_limit_date
+        all_seconds = result_date_time.total_seconds()
+        if int(all_seconds) == 0:
+            self.system_params_dict['new_date_time'].value = 1
+        else:
+            self.system_params_dict['new_date_time'].value = 0
+
+        self.system_params_dict['new_date_time'].value = int(all_seconds)
+        result = self.__sync_write_param(self.system_params_dict['new_date_time'])
+        if result != 'ok':
+            return result
+
+        #   Встановлюємо та записуємо у прилад зміщення UTC
+        min_shift = time_zone.utcoffset(None).total_seconds() / 60
+        if int(min_shift) == 0:
+            self.system_params_dict['time_zone'].value = 1
+        else:
+            self.system_params_dict['time_zone'].value = 0
+
+        self.system_params_dict['time_zone'].value = int(min_shift)
+        # Примусово ставимо статус 'changed'
+        self.system_params_dict['time_zone'].param_status = 'changed'
+        result = self.__sync_write_param(self.system_params_dict['time_zone'])
+        if result != 'ok':
+            return result
+
+        self.system_params_dict['new_time_trig'].value = 1
+        result = self.__sync_write_param(self.system_params_dict['new_time_trig'])
+        if result != 'ok':
+            return result
+
+        # Перевірка записанного
+        r_date_time = self.__sync_read_param(self.system_params_dict['date_time'])
+        r_time_zone = self.__sync_read_param(self.system_params_dict['time_zone'])
+        if (r_date_time - int(all_seconds)) < 5 and r_time_zone == int(min_shift):
+            return 'ok'
+
+        return 'error'
 
     def reboot(self):
         text = "I will restart the device now!"
