@@ -10,6 +10,7 @@ from AqConnectManager import AqConnectManager
 from AqGenericModbusLibrary import read_configuration_file
 # імпорти нижче не видаляти, потрібні для globals()
 from AqGenericModbusDevice import AqGenericModbusDevice
+from AqNPT_1K_Items import AqNPT_1K_StringParamItem
 PATH = '110_device_conf/'
 
 

@@ -3,6 +3,7 @@ from AqAutoDetectionLibrary import parse_tree, get_storage_container, get_contai
 from AqModbusGenericItems import *
 from AqDY500Items import *
 from AqAutoDetectionItems import *
+from AqNPT_1K_Items import *
 
 
 def parse_config(configuration, conf_type=None):
@@ -72,7 +73,8 @@ def parse_parameter(config_string: str):
         if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusStringParamItem' or \
                 param_type == 'AqModbusDiscretParamItem' or param_type == 'AqDY500EnumParamItem' or \
                 param_type == 'AqDY500StringParamItem' or param_type == 'AqDY500DiscretParamItem' or \
-                param_type == 'AqDY500FloatEnumParamItem':
+                param_type == 'AqDY500FloatEnumParamItem' or param_type == 'AqNPT_1K_StringParamItem' or\
+                param_type == 'AqNPT_1K_CalibResultParamItem':
             param_size = int(parts[1])
         else:
             param_size = int(parts[1]) // 8
