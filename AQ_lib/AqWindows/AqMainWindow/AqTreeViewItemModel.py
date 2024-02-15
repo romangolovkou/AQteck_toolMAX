@@ -1,6 +1,7 @@
 from PySide6.QtGui import QStandardItemModel
 
-import AqUiWorker
+# import AqUiWorker
+from TreeBranchToListConv import param_convert_tree_to_list
 
 
 class AqTreeItemModel(QStandardItemModel):
@@ -48,8 +49,11 @@ class AqTreeViewItemModel(QStandardItemModel):
                     sourse_item = param_stack[i]
                     manager_item = self.travers_find_manager_by_sourse_item(sourse_item)
                     if manager_item is not None:
-                        manager_item.show_new_value()
-                        manager_item.update_status()
+                        try:
+                            manager_item.show_new_value()
+                            manager_item.update_status()
+                        except Exception as e:
+                            print(e)
 
     def travers_find_manager_by_sourse_item(self, sourse_item):
         manager_item = None
@@ -100,19 +104,23 @@ class AqTreeViewItemModel(QStandardItemModel):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
         self.device.read_parameters(sourse_item)
-        # self.update_parameter_value(item)
 
     def write_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
         self.device.write_parameters(sourse_item)
-        # self.update_parameter_status(item)
 
     def add_parameter_to_watch_list(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
         from AqWatchListCore import AqWatchListCore
-        AqUiWorker.show_watch_list_window()
-        AqWatchListCore.addItem(self.device, sourse_item)
-
-
+        from AqUiWorker import show_watch_list_window
+        show_watch_list_window()
+        #TODO:: rework imports
+        param_attributes = sourse_item.get_param_attributes()
+        if param_attributes.get('is_catalog', 0) == 1:
+            item_list = param_convert_tree_to_list(sourse_item)
+            # for sourse_child_item in item_list:
+            AqWatchListCore.addItem(self.device, item_list)
+        else:
+            AqWatchListCore.addItem(self.device, sourse_item)

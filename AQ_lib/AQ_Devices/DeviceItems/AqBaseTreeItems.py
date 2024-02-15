@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from PySide6.QtCore import Qt, QModelIndex, QObject, Signal
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItem
 
 from AqParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
@@ -24,6 +24,7 @@ class AqParamItem(QStandardItem):
         self.param_status = None
         self.local_event_manager = None
         self.setData(param_attributes, Qt.UserRole)
+        self._is_blocked = False
 
     @property
     def value(self):
@@ -41,7 +42,6 @@ class AqParamItem(QStandardItem):
                     else:
                         self.param_status = 'changed'
                         self.synchronized = False
-                        # self.local_event_manager.emit_event('add_param_to_changed_stack', self)
                 self._value = new_value
         else:
             self.param_status = 'error'
@@ -62,6 +62,14 @@ class AqParamItem(QStandardItem):
 
         self.synchro_flag = flag
 
+    @property
+    def is_blocked(self):
+        return self._is_blocked
+
+    @is_blocked.setter
+    def is_blocked(self, state: bool):
+        self._is_blocked = state
+
     def confirm_writing(self, result: bool, message=None):
         """
         The function must be called for each writing operation.
@@ -80,13 +88,17 @@ class AqParamItem(QStandardItem):
             self.local_event_manager.emit_event('add_param_to_update_stack', self)
 
     def data_from_network(self, new_value, is_error=False, message=None):
-        if is_error:
-            self.set_error_flag(message)
-        else:
-            new_value = self.unpack(new_value)
-            self.validate(new_value)
-            self._value = new_value
-            self.synchronized = True
+        if not self.is_blocked:
+            if is_error:
+                self.set_error_flag(message)
+            else:
+                try:
+                    new_value = self.unpack(new_value)
+                    self.validate(new_value)
+                    self._value = new_value
+                    self.synchronized = True
+                except:
+                    self.synchronized = False
 
     def data_for_network(self):
         return self.pack()
@@ -116,11 +128,14 @@ class AqParamItem(QStandardItem):
         self.param_status = 'ok'
         return True
 
-    def set_default_value(self):
+    def set_default_value(self, approve_get_standard=True):
         param_attributes = self.data(Qt.UserRole)
         default_value = param_attributes.get('def_value', None)
-        if default_value is None:
-            default_value = self._get_standart_def_value()
+        if default_value is None or default_value == '':
+            if approve_get_standard is True:
+                default_value = self._get_standart_def_value()
+            else:
+                return
 
         min_limit = param_attributes.get('min_limit', None)
         if min_limit is not None:
@@ -516,3 +531,6 @@ class AqParamManagerItem(QStandardItem):
 
     def update_status(self):
         self.setData(self.sourse_item.get_status(), Qt.UserRole + 1)
+
+    def set_blocked(self, state: bool):
+        self.sourse_item.is_blocked = state

@@ -48,6 +48,7 @@ class AqGenericModbusDevice(AqBaseDevice):
         self._functions['read_write'] = False,
         self._functions['rtc'] = False
         self._functions['password'] = False
+        self._functions['set_slave_id'] = True
         self._functions['calibration'] = False
         self._functions['log'] = False
         self._functions['fw_update'] = False
@@ -69,11 +70,11 @@ class AqGenericModbusDevice(AqBaseDevice):
         return item.value
 
     def read_file(self, item):
-        if len(self._request_count) == 0:
+        # if len(self._request_count) == 0:
             if item is not None:
                 self.read_parameter(item)
             if len(self._stack_to_read) > 0:
-                self._request_count.append(len(self._stack_to_read))
+                # self._request_count.append(len(self._stack_to_read))
                 self._connect.create_param_request('read_file', self._stack_to_read)
                 self._stack_to_read.clear()
 
@@ -83,8 +84,9 @@ class AqGenericModbusDevice(AqBaseDevice):
 
         for devParam in self._params_list:
             param_attributes = devParam.get_param_attributes()
-            config.saved_param_list.append({'modbus_reg': param_attributes.get('modbus_reg', 0),
-                                            'value': devParam.value})
+            if not (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
+                config.saved_param_list.append({'modbus_reg': param_attributes.get('modbus_reg', 0),
+                                                'value': devParam.value})
 
         return config
 

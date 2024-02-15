@@ -1,4 +1,4 @@
-from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication, Signal
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QGuiApplication, QFont
@@ -9,25 +9,23 @@ from pymodbus.exceptions import ModbusIOException
 
 import AqUiWorker
 from AqBaseDevice import AqBaseDevice
-from AQ_SetSlaveIdWindow import AQ_DialogSetSlaveId
 import pickle
 import io
 
 from AqConnectManager import AqConnectManager
 from AqDeviceFabrica import DeviceCreator
+from AqWatchListCore import AqWatchListCore
 
 
 class AQ_CurrentSession(QObject):
+    cur_active_dev_changed = Signal()
     def __init__(self, event_manager, parent):
         super().__init__()
         self.parent = parent
         self.event_manager = event_manager
         self.cur_active_device = None
         self.devices = []
-        # self._watch_list_window_exist = False
-        # self.event_manager.register_event_handler("open_ParameterList", self.open_ParameterList)
-        # self.event_manager.register_event_handler("open_DeviceInfo", self.open_DeviceInfo)
-        # self.event_manager.register_event_handler("open_SetSlaveId", self.open_SetSlaveId)
+
         self.event_manager.register_event_handler("add_new_devices", self.add_new_devices)
         self.event_manager.register_event_handler("set_active_device", self.set_cur_active_device)
         self.event_manager.register_event_handler("read_params_cur_active_device", self.read_params_cur_active_device)
@@ -36,32 +34,9 @@ class AQ_CurrentSession(QObject):
         self.event_manager.register_event_handler("delete_device", self.delete_device)
         self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
         self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
-        # self.event_manager.register_event_handler('add_parameter_to_watch_list', self.add_param_to_watch_list)
         self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
-
-    # def open_ParameterList(self):
-    #     if self.cur_active_device is not None:
-    #         AqUiWorker.show_device_param_list(None)
-    #     else:
-    #         AqUiWorker.show_device_param_list(None)
-    #
-    # def open_DeviceInfo(self):
-    #     if self.cur_active_device is not None:
-    #         AqUiWorker.show_device_info_window(self.cur_active_device.device_info_model)
-    #     else:
-    #         AqUiWorker.show_device_info_window(None)
-    #
-    # def open_WatchList(self):
-    #     if self.cur_active_device is not None:
-    #         AqUiWorker.show_watch_list_window()
-    #     # else:
-    #     #     AqUiWorker.show_watch_list_window()
-    #
-    # def open_SetSlaveId(self):
-    #     self.set_slave_id_window = AQ_DialogSetSlaveId(self.event_manager, self.parent)
-    #     self.set_slave_id_window.show()
 
     def add_new_devices(self, new_devices_list):
         self.devices.extend(new_devices_list)
@@ -71,6 +46,7 @@ class AQ_CurrentSession(QObject):
     def set_cur_active_device(self, device):
         if device is not None:
             self.cur_active_device = device
+            self.cur_active_dev_changed.emit()
 
     def clear_cur_active_device(self):
         self.cur_active_device = None
@@ -90,25 +66,27 @@ class AQ_CurrentSession(QObject):
     def delete_device(self, device):
         if device is not None:
             # TODO: delete device object and do deinit inside
-            device._connect.close()
+            AqWatchListCore.removeItemByDevice(device)
+            AqConnectManager.deleteConnect(device._connect)
+            device.de_init()
+
+
             index_to_remove = self.devices.index(device)
             removed_element = self.devices.pop(index_to_remove)
             if len(self.devices) == 0:
                 self.event_manager.emit_event('no_devices')
 
-
     def restart_device(self, device):
-        device.restart()
+        if device is not None:
+            device.reboot()
 
     def restart_current_active_device(self):
         if self.cur_active_device is not None:
             self.restart_device(self.cur_active_device)
 
-    # def add_param_to_watch_list(self, item, model):
-    #     if self.watch_list_window_exist is False:
-    #         self.open_WatchList()
-    #
-    #     self.event_manager.emit_event('add_item_to_watch_list', item, model)
+    def set_default_cur_active_device(self):
+        if self.cur_active_device is not None:
+            self.cur_active_device.set_default_values()
 
     def save_device_config(self, device: AqBaseDevice):
         fname = None
@@ -166,41 +144,53 @@ class AQ_CurrentSession(QObject):
 
     def set_slave_id(self, network_settings):
         network_settings = network_settings[0]
+        client = None
 
-        if network_settings[2] == 'МВ110-24_1ТД.csv':
-            pass
-        else:
-            interface = network_settings[0]
+        if network_settings is not None:
+            interface = network_settings.get('interface', None)
             # Получаем список доступных COM-портов
             com_ports = serial.tools.list_ports.comports()
-            for port in com_ports:
-                if port.description == interface:
-                    selected_port = port.device
-                    boudrate = network_settings[3]
-                    parity = network_settings[4][:1]
-                    stopbits = network_settings[5]
-                    # client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
-                    timeout = 1.0
-                    client = ModbusSerialClient(method='rtu',
-                                                 port=selected_port,
-                                                 baudrate=boudrate,
-                                                 parity=parity,
-                                                 stopbits=stopbits,
-                                                 timeout=timeout)
+            if interface is not None:
+                for port in com_ports:
+                    if port.description == interface:
+                        selected_port = port.device
+                        boudrate = network_settings.get('boudrate', None)
+                        parity = network_settings.get('parity', None)[:1]
+                        stopbits = network_settings.get('stopbits', None)
+                        # client = AQ_modbusRTU_connect(selected_port, boudrate, parity, stopbits, 0)
+                        timeout = 1.0
+                        if boudrate is not None and\
+                            parity is not None and\
+                            stopbits is not None:
+                            client = ModbusSerialClient(method='rtu',
+                                                         port=selected_port,
+                                                         baudrate=boudrate,
+                                                         parity=parity,
+                                                         stopbits=stopbits,
+                                                         timeout=timeout)
 
-            if network_settings[2] == 'МВ110-24_8АС.csv' or network_settings[2] == 'МВ110-24_8А.csv':
-                start_address = 30
-            else:
-                start_address = 100
+                device = network_settings.get('device', None)
+                if device is not None:
+                    if device == 'МВ110-24_8АС.csv' or device == 'МВ110-24_8А.csv':
+                        start_address = 30
+                    else:
+                        start_address = 100
 
-            register_count = 1
-            write_func = 6
-            new_slave_id = network_settings[1]
-            # Выполняем запрос
-            client.connect()
-            result = client.write_register(start_address, new_slave_id)
-            client.close()
-            if not isinstance(result, ModbusIOException):
-                self.event_manager.emit_event('set_slave_id_connect_ok')
+                register_count = 1
+                write_func = 6
+                new_slave_id = network_settings.get('address', None)
+                if new_slave_id is not None:
+                    # Выполняем запрос
+                    client.connect()
+                    result = client.write_register(start_address, new_slave_id)
+                    client.close()
+                    if not isinstance(result, ModbusIOException):
+                        self.event_manager.emit_event('set_slave_id_connect_ok')
+                    else:
+                        self.event_manager.emit_event('set_slave_id_connect_error')
+                else:
+                    self.event_manager.emit_event('set_slave_id_connect_error')
             else:
                 self.event_manager.emit_event('set_slave_id_connect_error')
+        else:
+            self.event_manager.emit_event('set_slave_id_connect_error')

@@ -1,9 +1,8 @@
 from PySide6 import QtGui
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QDialog
+from PySide6.QtWidgets import QDialog
 
 from AQ_EventManager import AQ_EventManager
-from AQ_ResizeWidgets import *
+from AqResizeWidgets import *
 from ui_AqWindowTemplate import Ui_AqWindowTemplate
 
 class AqWindowTemplate(QWidget):

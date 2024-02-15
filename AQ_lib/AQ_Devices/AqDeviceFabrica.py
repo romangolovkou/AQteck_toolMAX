@@ -45,7 +45,14 @@ class DeviceCreator(object):
         devices = list()
         if protocol == 'Modbus':
             # Получаем список файлов в указанной директории
-            devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+            try:
+                devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+            except:
+                devices.clear()
+                devices.append('Not configuration catalog')
+
+            if len(devices) == 0:
+                devices.append('Not available configuration')
 
         return devices
 
@@ -71,7 +78,11 @@ class DeviceCreator(object):
 
         device_type = param_dict.get('device_type')
         if device_type == 'AqAutoDetectionDevice':
-            device = AqAutoDetectionDevice(cls.event_manager, connect)
+            try:
+                device = AqAutoDetectionDevice(cls.event_manager, connect)
+            except Exception as e:
+                print(f"{str(e)}")
+                device = None
         elif device_type == 'AqFileDescriptionDevice':
             dev_name = param_dict.get('device', None)
             configuration = read_configuration_file(dev_name)

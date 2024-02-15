@@ -15,3 +15,9 @@ class Core(object):
         AqConnectManager.init()
         DeviceCreator.init(cls.event_manager)
         AqWatchListCore.init()
+
+    @classmethod
+    def de_init(cls):
+        AqConnectManager.deinit()
+        AqWatchListCore.deinit()
+        print('AppCore is deinit')

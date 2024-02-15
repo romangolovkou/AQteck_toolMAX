@@ -9,6 +9,6 @@ Type;AqGenericModbusDevice;;;;;;;;;;
 AO 1;Analog outputs;0;1;3;6;AqModbusUnsignedParamItem 16;0;10000;mV;;
 AO 2;Analog outputs;1;1;3;6;AqModbusUnsignedParamItem 16;0;10000;mV;;
 AO 3;Analog outputs;2;1;3;6;AqModbusUnsignedParamItem 16;0;10000;mV;;
-Slave address;Communication settings;100;1;3;6;AqModbusUnsignedParamItem 8;1;255;;1;
+Slave address;Communication settings;100;1;3;-;AqModbusUnsignedParamItem 8;1;255;;1;
 Boudrate;Communication settings;101;1;3;6;AqModbusEnumParamItem 4;1;8;;2;_1=4800. None. 8. 1/2=9600. None. 8. 1/3=19200. None. 8. 1/4=38400. None. 8. 1/5=4800. Even. 8. 1/6=9600. Even. 8. 1/7=19200. Even. 8. 1/8=38400. Even. 8. 1
 !/Param_descr_area;;;;;;;;;;;

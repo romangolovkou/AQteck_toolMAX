@@ -1,8 +1,8 @@
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QMenu, QTreeView
 
-from AQ_TreeViewDelegates import AQ_NameTreeDelegate, AQ_ValueTreeDelegate
-from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget, AQ_have_error_widget
+from AqTreeViewDelegates import AqNameTreeDelegate, AqValueTreeDelegate
+from AQ_CustomWindowTemplates import AQ_have_error_widget
 
 
 
@@ -10,9 +10,9 @@ class AqTreeView(QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        name_delegate = AQ_NameTreeDelegate(self)
+        name_delegate = AqNameTreeDelegate(self)
         self.setItemDelegateForColumn(0, name_delegate)
-        value_delegate = AQ_ValueTreeDelegate(self)
+        value_delegate = AqValueTreeDelegate(self)
         self.setItemDelegateForColumn(1, value_delegate)
         # Разрешаем отображение скроллбаров
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -157,32 +157,32 @@ class AqTreeView(QTreeView):
             # Если индекс недействителен, вызывается обработчик события контекстного меню по умолчанию
             super().contextMenuEvent(event)
 
-    def show_have_error_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна
-        self.have_err_widget = AQ_have_error_widget("<html>Writing is not possible.<br>One or more parameters<br>\
-                                                        have incorrect values<html>", self.parent)
-        self.have_err_widget.move(self.parent.width() // 2 - self.have_err_widget.width() // 2,
-                                  self.parent.height() // 3 - self.have_err_widget.height() // 2)
-        self.have_err_widget.show()
-        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
-        QTimer.singleShot(4000, self.have_err_widget.deleteLater)
+    # def show_have_error_label(self):
+    #     # Получаем координаты поля ввода относительно диалогового окна
+    #     self.have_err_widget = AQ_have_error_widget("<html>Writing is not possible.<br>One or more parameters<br>\
+    #                                                     have incorrect values<html>", self.parent)
+    #     self.have_err_widget.move(self.parent.width() // 2 - self.have_err_widget.width() // 2,
+    #                               self.parent.height() // 3 - self.have_err_widget.height() // 2)
+    #     self.have_err_widget.show()
+    #     # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+    #     QTimer.singleShot(4000, self.have_err_widget.deleteLater)
+    #
+    # def show_read_error_label(self):
+    #     # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+    #     self.read_err_widget = AQ_have_error_widget("<html>Failed to read value.<br>The device is offline, connect<br>\
+    #                                                     the device and try again<html>", self.parent)
+    #     self.read_err_widget.move(self.parent.width() // 2 - self.read_err_widget.width() // 2,
+    #                               self.parent.height() // 3 - self.read_err_widget.height() // 2)
+    #     self.read_err_widget.show()
+    #     # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+    #     QTimer.singleShot(4000, self.read_err_widget.deleteLater)
 
-    def show_read_error_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
-        self.read_err_widget = AQ_have_error_widget("<html>Failed to read value.<br>The device is offline, connect<br>\
-                                                        the device and try again<html>", self.parent)
-        self.read_err_widget.move(self.parent.width() // 2 - self.read_err_widget.width() // 2,
-                                  self.parent.height() // 3 - self.read_err_widget.height() // 2)
-        self.read_err_widget.show()
-        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
-        QTimer.singleShot(4000, self.read_err_widget.deleteLater)
-
-    def show_write_error_label(self):
-        # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
-        self.write_err_widget = AQ_have_error_widget("<html>Failed to write value.<br>The device is offline, connect<br>\
-                                                        the device and try again<html>", self.parent)
-        self.write_err_widget.move(self.parent.width() // 2 - self.write_err_widget.width() // 2,
-                                   self.parent.height() // 3 - self.write_err_widget.height() // 2)
-        self.write_err_widget.show()
-        # Запускаем таймер на 4 секунды, чтобы скрыть плашку
-        QTimer.singleShot(4000, self.write_err_widget.deleteLater)
+    # def show_write_error_label(self):
+    #     # Получаем координаты поля ввода относительно диалогового окна #9d4d4f
+    #     self.write_err_widget = AQ_have_error_widget("<html>Failed to write value.<br>The device is offline, connect<br>\
+    #                                                     the device and try again<html>", self.parent)
+    #     self.write_err_widget.move(self.parent.width() // 2 - self.write_err_widget.width() // 2,
+    #                                self.parent.height() // 3 - self.write_err_widget.height() // 2)
+    #     self.write_err_widget.show()
+    #     # Запускаем таймер на 4 секунды, чтобы скрыть плашку
+    #     QTimer.singleShot(4000, self.write_err_widget.deleteLater)

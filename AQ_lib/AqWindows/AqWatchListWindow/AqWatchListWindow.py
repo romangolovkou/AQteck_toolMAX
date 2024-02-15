@@ -1,15 +1,18 @@
 import csv
 import os
 
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QModelIndex
 from PySide6.QtGui import QScreen, QStandardItem
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
 import ModbusTableDataFiller
-from AqBaseTreeItems import AqParamManagerItem
+from AqBaseDevice import AqBaseDevice
+from AqBaseTreeItems import AqParamManagerItem, AqCatalogItem
 from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
+from AqTreeView import AqTreeView
 from AqWatchListCore import AqWatchListCore
-from AqWatchListTableViewModel import AqWatchListTableViewModel
+from AqWatchListTreeViewModel import AqWatchListTreeViewModel
+from AqWatchedItem import WatchedItem
 from AqWindowTemplate import AqDialogTemplate
 from AqSettingsFunc import get_last_path, save_last_path
 from DeviceModels import AqDeviceParamListModel
@@ -37,69 +40,104 @@ class AqWatchListWidget(AqDialogTemplate):
 
         self.name = 'Watch list'
 
-        self.watch_list_table_model = AqWatchListTableViewModel()
+        self.tree_model_for_view = AqWatchListTreeViewModel()
+        self.ui.treeView.setModel(self.tree_model_for_view)
 
-        AqWatchListCore.signals.watch_item_add.connect(self.add_new_parameter)
+        self.ui.clearAllBtn.clicked.connect(self.ui.treeView.removeAllItems)
+        self.ui.pauseBtn.clicked.connect(lambda: AqWatchListCore.set_pause_flag(True))
+        self.ui.playBtn.clicked.connect(lambda: AqWatchListCore.set_pause_flag(False))
+        self.ui.playBtn.hide()
+        # self.ui.pauseBtn.hide()
+
+        AqWatchListCore.signals.watch_item_change.connect(self.add_new_parameter)
+        AqWatchListCore.signals.watch_item_remove.connect(self.remove_parameter)
+        AqWatchListCore.signals.core_paused.connect(self.watch_core_paused)
+        AqWatchListCore.signals.core_resumed.connect(self.watch_core_resumed)
 
         AqWatchListWidget._inited = True
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-        # loadDialogJsonStyle(self, self.ui)
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-
-
-        # self.ui.saveBtn.clicked.connect(self.saveToFile)
-        #
-        # self.device_str = ''.join((dev_info.name, ' S/N: ', dev_info.serial))
-        # self.ui.deviceInfoLabel.setText(self.device_str)
-        #
-        # self.ui.tableView.clear()
-        # self.ui.tableView.fillModbusData(dev_info.param_list)
-        # self.ui.infoFrame.setData(dev_info.network_info)
-        #
-        # self.ui.tableView.horizontalHeader().sectionResized.connect(self.customAdjustSize)
-        # self.customAdjustSize()
 
     def customAdjustSize(self, *args):
         self.ui.tableView.adjustSize()
         self.adjustSize()
         super().adjustSize()
 
-    def add_new_parameter(self, item):
+    def add_new_parameter(self, watchItem: WatchedItem):
+        # last_row = None
+        watch_catalog_item = None
+        row_count = self.tree_model_for_view.invisibleRootItem().rowCount()
+        for row in range(row_count):
+            # Якщо такий вотч-ітем вже додано до вікна, то видаляємо його стару версію з моделі
+            child_item = self.tree_model_for_view.invisibleRootItem().child(row)
+            if child_item.watchItem == watchItem:
+                index = self.tree_model_for_view.indexFromItem(child_item)
+                # last_row = index.row()
+                self.tree_model_for_view.removeRow(index.row())
+                break
 
+        if watchItem.isNotEmpty is True:
+            watch_catalog_item = AqWatchListCatalogItem(watchItem)
+
+            for item in watchItem.items:
+                watch_catalog_item.appendRow(self.create_new_row_for_tree_view(item))
+
+            root = self.tree_model_for_view.invisibleRootItem()
+            # if last_row is None:
+            root.appendRow(watch_catalog_item)
+            # else:
+            #     root.insertRow(last_row, watch_catalog_item)
+
+        self.ui.treeView.setModel(self.tree_model_for_view)
+        if watchItem.isNotEmpty is True and watch_catalog_item is not None:
+            self.ui.treeView.setExpanded(self.tree_model_for_view.indexFromItem(watch_catalog_item), True)
+
+    def remove_parameter(self, watchItem: WatchedItem):
+        row_count = self.tree_model_for_view.invisibleRootItem().rowCount()
+        for row in range(row_count):
+            # Якщо такий вотч-ітем вже додано до вікна, то видаляємо його стару версію з моделі
+            child_item = self.tree_model_for_view.invisibleRootItem().child(row)
+            if child_item.watchItem == watchItem:
+                index = self.tree_model_for_view.indexFromItem(child_item)
+                self.tree_model_for_view.removeRow(index.row())
+                break
+
+    def watch_core_paused(self):
+        self.ui.playBtn.show()
+        self.ui.pauseBtn.hide()
+
+    def watch_core_resumed(self):
+        self.ui.playBtn.hide()
+        self.ui.pauseBtn.show()
+
+    def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
-        if parameter_attributes is not None:
-            if parameter_attributes.get('is_catalog', 0) == 1:
-                for row in range(item.rowCount()):
-                    child_item = item.child(row)
-                    self.add_new_parameter(child_item, model)
-            else:
-                root = self.watch_list_table_model.invisibleRootItem()
-                root.appendRow(self.create_new_row_for_table_view(item, model))
+        name = parameter_attributes.get('name', 'err_name')
 
-    def create_new_row_for_table_view(self, item, model):
-        parameter_attributes = item.data(Qt.UserRole)
-        device = model.device
-        device_data = device.get_device_data()
-
-        param_item = AqWatchParamManagerItem(item.get_sourse_item(), device, model)
-
+        parameter_item = AqParamManagerItem(item)
+        parameter_item.setData(parameter_attributes, Qt.UserRole)
         value_item = QStandardItem()
-        device_item = QStandardItem()
-
+        parameter_item.setFlags(parameter_item.flags() & ~Qt.ItemIsEditable)
         value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
-        device_item.setFlags(device_item.flags() & ~Qt.ItemIsEditable)
 
-        return [param_item, value_item, device_item]
+        return [parameter_item, value_item]
+
 
 class AqWatchParamManagerItem(AqParamManagerItem):
-    def __init__(self, sourse_item, device, tree_view_model=None):
-        param_attributes = sourse_item.data(Qt.UserRole)
+    def __init__(self, sourse_item):
         super().__init__(sourse_item)
-        self.sourse_item = sourse_item
-        self.device = device
-        self.tree_view_model = tree_view_model
-        self.editor_object = None
-        self.param_status = 'ok'
-        self.setData(self.param_status, Qt.UserRole + 1)
+
+
+class AqWatchListCatalogItem(AqParamManagerItem):
+    def __init__(self, watchItem):
+        self._watchItem = watchItem
+        param_attributes = dict()
+        param_attributes['name'] = watchItem.device.name
+        param_attributes['R_Only'] = 0
+        param_attributes['W_Only'] = 0
+        param_attributes['is_catalog'] = 1
+        fake_sourse_item = AqCatalogItem(param_attributes)
+        super().__init__(fake_sourse_item)
+        self.setData(param_attributes, Qt.UserRole)
+
+    @property
+    def watchItem(self):
+        return self._watchItem

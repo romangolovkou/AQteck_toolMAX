@@ -34,6 +34,7 @@ class AqDeviceInfoWidget(AqDialogTemplate):
             raise Exception('AqDeviceInfoWidgetError: no frames to show info')
 
     def set_device_info_model(self, model: AqDeviceInfoModel):
+
         i = 1
         for item in model.general_info:
             line_edit = QLineEdit(self.ui.generalInfoFrame)
@@ -46,33 +47,54 @@ class AqDeviceInfoWidget(AqDialogTemplate):
             self.ui.generalInfoLayout.setWidget(i, QFormLayout.FieldRole, line_edit)
             i += 1
 
-    def set_device_info_model(self):
-        rowCnt1 = random.randint(2, 10)
-        rowCnt2 = random.randint(2, 10)
-
-        for i in range(1, rowCnt1):
+        i = 1
+        for item in model.operating_params_info:
             line_edit = QLineEdit(self.ui.operatingInfoFrame)
-            line_edit.isReadOnly = True
-            line_edit.setText("Generated string "+str(i))
-            self.ui.generalInfoLayout.setWidget(i, QFormLayout.LabelRole, line_edit)
-            line_edit = QLineEdit(self.ui.generalInfoFrame)
-            line_edit.isReadOnly = True
-            line_edit.setText("Generated string "+str(i))
-            self.ui.generalInfoLayout.setWidget(i, QFormLayout.FieldRole, line_edit)
-
-        for i in range(1, rowCnt2):
-            line_edit = QLineEdit(self.ui.operatingInfoFrame)
-            line_edit.isReadOnly = True
-            line_edit.setText("Generated string "+str(i))
+            line_edit.setReadOnly(True)
+            line_edit.setText(item['info_str'])
             self.ui.operatingInfoLayout.setWidget(i, QFormLayout.LabelRole, line_edit)
-            line_edit = QLineEdit(self.ui.operatingInfoFrame)
-            line_edit.isReadOnly = True
-            line_edit.setText("Generated string "+str(i))
+            if item['item'] is not None:
+                editor = item['item'].get_editor()
+                line_edit = editor(item['item'].get_param_attributes(), self.ui.operatingInfoFrame)
+                line_edit.set_value(item['info_value'])
+            else:
+                line_edit = QLineEdit(self.ui.operatingInfoFrame)
+                line_edit.setText(item['info_value'])
+            line_edit.setReadOnly(True)
             self.ui.operatingInfoLayout.setWidget(i, QFormLayout.FieldRole, line_edit)
+            i += 1
 
         self.ui.generalInfoLayout.parent().adjustSize()
         self.ui.operatingInfoLayout.parent().adjustSize()
         self.adjustSize()
+
+    # def set_device_info_model(self):
+    #     rowCnt1 = random.randint(2, 10)
+    #     rowCnt2 = random.randint(2, 10)
+    #
+    #     for i in range(1, rowCnt1):
+    #         line_edit = QLineEdit(self.ui.operatingInfoFrame)
+    #         line_edit.isReadOnly = True
+    #         line_edit.setText("Generated string "+str(i))
+    #         self.ui.generalInfoLayout.setWidget(i, QFormLayout.LabelRole, line_edit)
+    #         line_edit = QLineEdit(self.ui.generalInfoFrame)
+    #         line_edit.isReadOnly = True
+    #         line_edit.setText("Generated string "+str(i))
+    #         self.ui.generalInfoLayout.setWidget(i, QFormLayout.FieldRole, line_edit)
+    #
+    #     for i in range(1, rowCnt2):
+    #         line_edit = QLineEdit(self.ui.operatingInfoFrame)
+    #         line_edit.isReadOnly = True
+    #         line_edit.setText("Generated string "+str(i))
+    #         self.ui.operatingInfoLayout.setWidget(i, QFormLayout.LabelRole, line_edit)
+    #         line_edit = QLineEdit(self.ui.operatingInfoFrame)
+    #         line_edit.isReadOnly = True
+    #         line_edit.setText("Generated string "+str(i))
+    #         self.ui.operatingInfoLayout.setWidget(i, QFormLayout.FieldRole, line_edit)
+    #
+    #     self.ui.generalInfoLayout.parent().adjustSize()
+    #     self.ui.operatingInfoLayout.parent().adjustSize()
+    #     self.adjustSize()
 
 
 

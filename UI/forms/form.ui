@@ -108,7 +108,17 @@ background-color: #1f232a;
 	border-right: 1px solid #8ee1c3;
 	border-top-left-radius: 12px;
 	background-color: #2c313c;
-}</string>
+}
+
+#rightMenuSubContainer QToolButton::hover {
+	color: #FFFFFF;
+	font-weight: bold;
+}
+
+#rightMenuSubContainer QToolButton::disabled {
+	color: #807c7c;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -232,7 +242,7 @@ background-color: #1f232a;
            </widget>
           </item>
           <item alignment="Qt::AlignLeft">
-           <widget class="QFrame" name="frame_3">
+           <widget class="QFrame" name="headerMenuFrame">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -310,6 +320,45 @@ background-color: #1f232a;
                </property>
                <property name="text">
                 <string>Utilits</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="AppNameFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>20</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="TitleName">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>TextLabel</string>
                </property>
               </widget>
              </item>
@@ -1455,7 +1504,7 @@ background-color: #1f232a;
               <number>0</number>
              </property>
              <item>
-              <widget class="AqTreeViewManager" name="stackedWidget_2">
+              <widget class="AqTreeViewManager" name="stackedWidget">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -1728,9 +1777,9 @@ background-color: #1f232a;
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QToolButton" name="setDefaultMenuBtn_3">
+                 <widget class="QToolButton" name="setDefaultMenuBtn">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimumSize">
                    <size>
@@ -1809,7 +1858,7 @@ background-color: #1f232a;
                <property name="maximumSize">
                 <size>
                  <width>16777215</width>
-                 <height>400</height>
+                 <height>410</height>
                 </size>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -1880,7 +1929,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -1921,7 +1971,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -1974,7 +2025,7 @@ background-color: #1f232a;
                 <item alignment="Qt::AlignTop">
                  <widget class="QFrame" name="deviceUtilsFrame">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -1988,7 +2039,7 @@ background-color: #1f232a;
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
-                    <height>150</height>
+                    <height>160</height>
                    </size>
                   </property>
                   <property name="frameShape">
@@ -1997,7 +2048,7 @@ background-color: #1f232a;
                   <property name="frameShadow">
                    <enum>QFrame::Raised</enum>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_21">
+                  <layout class="QVBoxLayout" name="verticalLayout_13">
                    <property name="spacing">
                     <number>5</number>
                    </property>
@@ -2013,7 +2064,7 @@ background-color: #1f232a;
                    <property name="bottomMargin">
                     <number>0</number>
                    </property>
-                   <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
+                   <item alignment="Qt::AlignLeft">
                     <widget class="QToolButton" name="setRtcBtn">
                      <property name="minimumSize">
                       <size>
@@ -2035,12 +2086,13 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/clock.png</normaloff>:/images/icons/clock.png</iconset>
+                       <normaloff>:/images/icons/clock.png</normaloff>
+                       <disabledoff>:/images/icons/clock.png</disabledoff>:/images/icons/clock.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2070,12 +2122,13 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/padlock.png</normaloff>:/images/icons/padlock.png</iconset>
+                       <normaloff>:/images/icons/padlock.png</normaloff>
+                       <disabledoff>:/images/icons/padlock.png</disabledoff>:/images/icons/padlock.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2083,8 +2136,14 @@ background-color: #1f232a;
                      </property>
                     </widget>
                    </item>
-                   <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
+                   <item alignment="Qt::AlignLeft">
                     <widget class="QToolButton" name="calibDeviceBtn">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>32</width>
@@ -2105,12 +2164,55 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/setting.png</normaloff>:/images/icons/setting.png</iconset>
+                       <normaloff>:/images/icons/setting.png</normaloff>
+                       <disabledoff>:/images/icons/setting.png</disabledoff>:/images/icons/setting.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
+                       <width>28</width>
+                       <height>28</height>
+                      </size>
+                     </property>
+                     <property name="toolButtonStyle">
+                      <enum>Qt::ToolButtonTextBesideIcon</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item alignment="Qt::AlignLeft">
+                    <widget class="QToolButton" name="setSlaveIdBtn">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
                        <width>32</width>
                        <height>32</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>195</width>
+                       <height>32</height>
+                      </size>
+                     </property>
+                     <property name="layoutDirection">
+                      <enum>Qt::RightToLeft</enum>
+                     </property>
+                     <property name="text">
+                      <string>Set slave ID</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../resoursec.qrc">
+                       <normaloff>:/images/icons/serialization.png</normaloff>
+                       <disabledoff>:/images/icons/serialization.png</disabledoff>:/images/icons/serialization.png</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2219,7 +2321,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2254,7 +2357,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2350,12 +2454,13 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/restore.png</normaloff>:/images/icons/restore.png</iconset>
+                       <normaloff>:/images/icons/restore.png</normaloff>
+                       <disabledoff>:/images/icons/restore.png</disabledoff>:/images/icons/restore.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2385,12 +2490,13 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/electricity.png</normaloff>:/images/icons/electricity.png</iconset>
+                       <normaloff>:/images/icons/electricity.png</normaloff>
+                       <disabledoff>:/images/icons/electricity.png</disabledoff>:/images/icons/electricity.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -2484,7 +2590,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
+                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>

@@ -8,9 +8,8 @@
 ## IMPORTS
 ########################################################################
 import os
-import __main__
 
-from AQ_ResizeWidgets import *
+from AqResizeWidgets import *
 from AppCore import Core
 ########################################################################
 ## COMPILE SASS
@@ -46,13 +45,12 @@ from qtpy import QtWidgets, QtGui, QtCore
 from qtpy.QtCore import *
 from qtpy.QtGui import *
 from qtpy.QtWidgets import *
-from qtpy.QtCore import Signal
-
 
 # JSON FOR READING THE JSON STYLESHEET
 import json
 
-from . QCustomQPushButton import applyAnimationThemeStyle, applyButtonShadow, iconify, applyCustomAnimationThemeStyle, applyStylesFromColor
+from . QCustomQPushButton import applyAnimationThemeStyle, applyButtonShadow, iconify, applyCustomAnimationThemeStyle
+
 
 class QMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):

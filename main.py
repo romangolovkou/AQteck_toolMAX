@@ -6,7 +6,6 @@ from PySide6.QtWidgets import QApplication, QSplashScreen
 
 import console_app
 import console_help_functions
-from AQ_MainWindow import AQ_MainWindow
 from AppCore import Core
 from AqMainWindow import AqMainWindow
 
