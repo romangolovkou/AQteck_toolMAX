@@ -192,6 +192,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
         except:
             self.ui.device_combo_box.setCurrentIndex(0)
 
+        self.change_page_by_interface_selection()
+
     def find_button_clicked(self):
         # Декативуємо кнопку для запобігання подвійного натискання до завершення пошуку
         self.ui.findBtn.setEnabled(False)
@@ -232,7 +234,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.scan_thread = ScanNetworkThread(self.scan_network)
         self.scan_thread.finished.connect(self.search_finished)
         self.scan_thread.error.connect(self.search_error)
-        self.scan_thread.result_signal.connect(self.search_successful)
+        self.scan_thread.result_signal.connect(self.scan_successful)
         self.scan_thread.start()
 
     def search_finished(self):
@@ -248,8 +250,16 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.RotatingGearsWidget.stop()
 
     def search_successful(self, found_devices):
-        self.add_devices_to_table_widget(found_devices)
-        self.add_found_devices_to_all_list(found_devices)
+        if len(found_devices) > 0:
+            self.add_devices_to_table_widget(found_devices)
+            self.add_found_devices_to_all_list(found_devices)
+
+    def scan_successful(self, found_devices):
+        if len(found_devices) > 0:
+            self.add_devices_to_table_widget(found_devices)
+            self.add_found_devices_to_all_list(found_devices)
+        else:
+            self.ui.pageScanNetwork.show_not_found_error()
 
     def connect_to_device(self):
         found_devices_list = []

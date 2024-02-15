@@ -152,6 +152,11 @@ class AqScanNetworkSettingsWidget(QWidget):
             elif seconds > 0:
                 self.user_message_label.setText(f"Possible search time {seconds} seconds")
 
+            self.user_message_label.setStyleSheet("color: #D0D0D0; \n")
             self.user_message_label.show()
         else:
             self.user_message_label.hide()
+
+    def show_not_found_error(self):
+        self.user_message_label.setStyleSheet("color: #fe2d2d; \n")
+        self.user_message_label.setText("Not match anything")
