@@ -1,0 +1,16 @@
+!Device_descr_area;;;;;;;;;;;;
+Name;НПТ-1К;;;;;;;;;;;
+Type;AqGenericModbusDevice;;;;;;;;;;;
+!/Device_descr_area;;;;;;;;;;;;
+!System_params;;;;;;;;;;;;
+!/System_params;;;;;;;;;;;;
+Имя парметра;Каталог;Номер регистра/бита;Кол-во регистров/битов;Функция чтения;Функция записи;Тип данных;Минимальное значение;Максимальное значение;Ед. Изм;Значение по умолчанию;строки (только для enum и xtype_to_float);Множитель (только для xtype_to_float)
+!Param_descr_area;;;;;;;;;;;;
+Name;Other;4096;2;3;-;AqNPT_1K_StringParamItem 4;;;;;;
+Version;Other;4098;2;3;-;AqNPT_1K_StringParamItem 4;;;;;;
+struct conf;Other;256;24;3;16;AqNPT_1K_StringParamItem 48;;;;;;
+Команда калибровки;Other;0;4;3;16;AqNPT_1K_StringParamItem 8;;;;;;
+Результат калибровки;Other;512;6;3;-;AqNPT_1K_CalibResultParamItem 12;;;;;;
+struct oper;Other;1024;29;3;-;AqNPT_1K_StringParamItem 58;;;;;;
+srtuct ustr;Other;8192;42;3;-;AqNPT_1K_StringParamItem 84;;;;;;
+!/Param_descr_area;;;;;;;;;;;;
