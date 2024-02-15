@@ -45,7 +45,14 @@ class DeviceCreator(object):
         devices = list()
         if protocol == 'Modbus':
             # Получаем список файлов в указанной директории
-            devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+            try:
+                devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+            except:
+                devices.clear()
+                devices.append('Not configuration catalog')
+
+            if len(devices) == 0:
+                devices.append('Not available configuration')
 
         return devices
 
@@ -71,7 +78,11 @@ class DeviceCreator(object):
 
         device_type = param_dict.get('device_type')
         if device_type == 'AqAutoDetectionDevice':
-            device = AqAutoDetectionDevice(cls.event_manager, connect)
+            try:
+                device = AqAutoDetectionDevice(cls.event_manager, connect)
+            except Exception as e:
+                print(f"{str(e)}")
+                device = None
         elif device_type == 'AqFileDescriptionDevice':
             dev_name = param_dict.get('device', None)
             configuration = read_configuration_file(dev_name)
@@ -99,7 +110,7 @@ class DeviceCreator(object):
                 return AqIpConnectSettings(_ip=ip)
             else:
                 return None
-        # Then if is there some COM setttings
+        # Then if is there some COM settings
         elif param_dict.get('interface_type', False) == 'com':
             interface = param_dict.get('interface', None)
             # Получаем список доступных COM-портов
@@ -129,16 +140,3 @@ class DeviceCreator(object):
             device.init_parameters()
 
         cls.event_manager.emit_event('add_new_devices', devices)
-
-    #
-    # @classmethod
-    # def add_device(cls, devices: list):
-    #     cls.add_thread = threading.Thread(target=cls.add_device2, args=[devices])
-    #     cls.add_thread.start()
-    #
-    # @classmethod
-    # def add_device2(cls, devices: list):
-    #     for i in range(len(devices)):
-    #         devices[-1].init_parameters()
-    #
-    #     cls.event_manager.emit_event('add_new_devices', devices)

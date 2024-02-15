@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AqWatchListWidget</class>
+ <widget class="QWidget" name="AqWatchListWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>275</width>
+    <height>250</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">* {
+	border: none;
+	padding: 0;
+	margin: 0;
+	color: #fff;
+}
+
+#AqWatchListWidget {
+	background-color: #2c313c;
+}
+
+QLabel {
+	min-height: 30px;
+	font-size: 12pt;
+}
+
+QLineEdit{
+	background-color: transparent;
+}
+
+QPushButton {
+	border: 1px solid #637A7B;
+}
+
+QPushButton {
+	 border-left: 1px solid #9ef1d3;
+	border-top: 1px solid #9ef1d3;
+ 	border-bottom: 1px solid #5bb192;
+	border-right: 1px solid #5bb192;
+ 	color: #D0D0D0;
+	background-color: #2b2d30;
+	border-radius: 4px;
+}
+
+QPushButton:hover {
+	background-color: #3c3e41;
+}
+QPushButton:pressed {
+	 background-color: #429061;
+}
+
+QTreeView {                                
+   color: #D0D0D0;
+}
+
+QTreeView::item {
+	border: 1px solid #2b2d30;
+}
+
+#treeView::item:!focus { 
+    background-color: #2b2d30; 
+	color: #D0D0D0;
+}
+
+#treeView{ 
+    background-color: #16191d;
+	color: #D0D0D0;
+}
+
+QHeaderView::section {
+    border: 1px solid #1e1f22;
+    color: #D0D0D0;
+    background-color: #2b2d30;
+    padding-left: 6px;
+}
+
+QScrollBar:vertical {
+    background: #1e1f22;
+    width: 10px;  /* Ширина вертикального скроллбара */
+}
+
+QScrollBar:horizontal {
+    background: #1e1f22;
+	height: 10px;  /* Высота горизонтального скроллбара */
+}
+
+QMenu {
+     color: #D0D0D0;
+}
+
+QMenu::item:selected {
+	background-color: #3a3a3a;
+    color: #FFFFFF;
+}
+
+ QMenu::item:disabled {
+    color: #808080; /* Цвет для неактивных действий */
+}
+
+#playBtn, #pauseBtn{
+	border: none;
+	background-color: transparent;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="headerFrame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>10</number>
+      </property>
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>10</number>
+      </property>
+      <item alignment="Qt::AlignLeft">
+       <widget class="QPushButton" name="playBtn">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../resoursec.qrc">
+          <normaloff>:/images/icons/play_green_btn.png</normaloff>:/images/icons/play_green_btn.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignLeft">
+       <widget class="QPushButton" name="pauseBtn">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../resoursec.qrc">
+          <normaloff>:/images/icons/pause_green_btn.png</normaloff>:/images/icons/pause_green_btn.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignRight">
+       <widget class="QPushButton" name="clearAllBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Clear all</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="tableFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="AqWatchTreeView" name="treeView">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AqWatchTreeView</class>
+   <extends>QTreeView</extends>
+   <header location="global">AqWatchTreeView.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../resoursec.qrc"/>
+ </resources>
+ <connections/>
+</ui>

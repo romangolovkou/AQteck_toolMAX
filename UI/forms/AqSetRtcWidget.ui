@@ -1,0 +1,887 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AqRtcWidget</class>
+ <widget class="QWidget" name="AqRtcWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>392</width>
+    <height>474</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">* {
+	border: none;
+	background-color: transparent;
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	color: #fff;
+}
+
+#toolboxFrame {
+	border-top-right-radius: 10px;
+	border-top-left-radius: 10px;
+	background-color: rgba(47, 72, 88, 180);
+	border: none;
+}
+
+#mainFrame {
+	background-color: #2c313c;
+}
+
+#closeBtn {
+	border-top-right-radius: 10px;
+	border-right: 1px solid #D0D0D0;
+	background-color: #2c313c;
+}
+
+#icon {
+	border-top-left-radius: 10px;
+	border-left: 1px solid #D0D0D0;
+	background-color: rgba(47, 72, 88, 0);
+}
+
+#title_text{
+	border-top:transparent; 
+	border-bottom: 1px solid #637A7B;
+}
+
+QComboBox{
+	border-left: 1px solid #9ef1d3; 
+	border-top: 1px solid #9ef1d3; 
+    border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192; 
+	background-color: #2b2d30; 
+	border-radius: 4px; 
+	padding-left: 4px;
+}
+
+#mainWidget QPushButton {
+	 border-left: 1px solid #9ef1d3;
+	border-top: 1px solid #9ef1d3;
+ 	border-bottom: 1px solid #5bb192;
+	border-right: 1px solid #5bb192;
+ 	color: #D0D0D0;
+	background-color: #2b2d30;
+	border-radius: 4px;
+}
+
+#mainWidget QPushButton:hover {
+	background-color: #3c3e41;
+}
+#mainWidget QPushButton:pressed {
+	 background-color: #429061;
+}
+
+
+QLineEdit{
+border-left: 1px solid #9ef1d3; 
+border-top: 1px solid #9ef1d3; 
+border-bottom: 1px solid #5bb192; 
+border-right: 1px solid #5bb192;
+background-color: #2b2d30; 
+border-radius: 4px; 
+}
+
+#tableWidget
+QHeaderView::section { background-color: transparent;}
+QHeaderView { background-color: #2b2d30;}
+QTableWidget { border: none; }
+QTableWidget::item { padding-left: 3px; }
+
+QRadioButton {
+    font-size: 12px;
+    color: #D0D0D0;
+    background-color: #2b2d30;
+    padding: 1px;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+}
+
+#deviceRadioBtn{
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+#scanRadioBtn{
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	border-left: 0px solid #9ef1d3;
+}
+
+QRadioButton:hover {
+   background-color: #3c3e41;
+}
+
+QRadioButton::indicator {
+    width: 0px;
+    height: 0px;
+	background-color: transparent;
+}
+
+QRadioButton:checked {
+    background-color: #429061;
+}
+
+#settingFrame{
+	color: #D0D0D0;
+    background-color: #2b2d30;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+	padding: 0px;
+}
+#parityFrame{
+	color: #D0D0D0;
+    background-color: #2b2d30;
+    border-top: 1px solid #9ef1d3;
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+	padding-left: 6px;
+}
+#stopbitsFrame{
+	color: #D0D0D0;
+    background-color: #2b2d30;
+    border-top: 1px solid #9ef1d3;
+    border-bottom-right-radius: 5px;
+	padding-left: 6px;
+}
+
+QCheckBox {
+    font-size: 12px; /* Размер шрифта */
+    color: #D0D0D0; /* Цвет текста */
+    /*background-color: lightgray; /* Цвет фона */
+    padding: 0px; /* Внутренний отступ */
+    /*border: 2px solid darkgray; /* Обводка */
+    /*border-radius: 5px; /* Скругление углов */
+}
+
+QCheckBox::indicator {
+    width: 10px;
+    height: 10px;
+	border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+	border-radius: 5px;
+}
+
+QCheckBox::indicator:checked {
+	image: url(UI/icons/check-mark.png);
+    background-color: #5bb192; /* Цвет фона при выборе */
+    /*border-color: darkgreen; /* Цвет обводки при выборе */
+}
+
+#slaveIdWarningMsgLabel{
+	color: #fe2d2d;
+}
+
+#label {
+	border: 1px solid #FF0000;
+}
+
+QCalendarWidget {
+    background-color: #FF0000;  /* Цвет фона для навигационной панели */
+}
+
+QCalendarWidget QToolButton {
+    color: #FFFFFF;  /* Цвет текста кнопок */
+}
+
+QCalendarWidget QAbstractItemView:enabled {
+    selection-background-color: #429061;  /* Цвет фона для выбранных дней */
+    selection-color: #FFFFFF;  /* Цвет текста для выбранных дней */
+	selection-border-radius: 8px;
+}
+
+QCalendarWidget QAbstractItemView:disabled {
+    color: #807c7c;  /* Цвет текста для отключенных ячеек */
+}
+
+#qt_calendar_calendarview{
+	outline: 0px;
+    background-color: #2c313c;
+}
+
+/* Верхняя область навигации                            */
+#qt_calendar_navigationbar {
+    background-color: #2b2d30;
+    min-height: 30px;
+}
+
+QCalendarWidget QToolButton::menu-indicator {
+    image: none;       /* Удалите маленькую стрелку под выбором месяца !!! */
+    subcontrol-position: right center;                /* Право по центру */
+}
+
+#qt_calendar_yearbutton, #qt_calendar_monthbutton {
+    color: white;
+    margin-left: 5px;
+	margin-right: 5px;
+    min-width: 50px;
+    border-radius: 30px;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item alignment="Qt::AlignTop">
+    <widget class="QFrame" name="mainFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="spacing">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QCalendarWidget" name="calendarWidget">
+        <property name="navigationBarVisible">
+         <bool>true</bool>
+        </property>
+        <property name="dateEditEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="daysLabelHeader">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>20</height>
+         </size>
+        </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>50</number>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>Пн</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Вт</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Ср</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Чт</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Пт</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Сб</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Нд</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <widget class="AqTimeWidget" name="timeWidget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="AqTimeCellWidget" name="t_hourWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="t_hour_plusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_up.png</normaloff>:/images/icons/arrow_up.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="t_hour_numberLabel">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="t_hour_minusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_down.png</normaloff>:/images/icons/arrow_down.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="AqTimeCellWidget" name="hourWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="hour_plusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_up.png</normaloff>:/images/icons/arrow_up.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="hour_numberLabel">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="hour_minusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_down.png</normaloff>:/images/icons/arrow_down.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="separatorLeft">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>10</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>10</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="AqTimeCellWidget" name="t_minWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="t_min_plusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_up.png</normaloff>:/images/icons/arrow_up.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="t_min_numberLabel">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="t_min_minusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_down.png</normaloff>:/images/icons/arrow_down.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="AqTimeCellWidget" name="minWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="min_plusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_up.png</normaloff>:/images/icons/arrow_up.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="min_numberLabel">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="min_minusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_down.png</normaloff>:/images/icons/arrow_down.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="separatorRight">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>10</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>10</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="AqTimeCellWidget" name="t_secWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="t_sec_plusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_up.png</normaloff>:/images/icons/arrow_up.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="t_sec_numberLabel">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="t_sec_minusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_down.png</normaloff>:/images/icons/arrow_down.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="AqTimeCellWidget" name="secWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="sec_plusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_up.png</normaloff>:/images/icons/arrow_up.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="sec_numberLabel">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>100</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="sec_minusBtn">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resoursec.qrc">
+                <normaloff>:/images/icons/arrow_down.png</normaloff>:/images/icons/arrow_down.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="AqTimeZoneComboBox" name="timeZoneComboBox">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="syncroPcBtn">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Syncronize with PC</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item alignment="Qt::AlignRight">
+          <widget class="QLabel" name="messageLabel">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="buttonFrame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="writeBtn">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Write Date/Time</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cancelBtn">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Cancel</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AqTimeZoneComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">AqTimeZoneComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AqTimeCellWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">AqTimeCellWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqTimeWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">AqTimeWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../resoursec.qrc"/>
+ </resources>
+ <connections/>
+</ui>

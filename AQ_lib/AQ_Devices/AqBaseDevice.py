@@ -1,16 +1,15 @@
 import threading
 from abc import ABC, abstractmethod
 
-from pymodbus.client import serial
-import serial.tools.list_ports
+from PySide6.QtCore import Qt, QModelIndex
 
 from AqConnect import AqConnect
-from AQ_CustomTreeItems import AqParamItem
+from AqBaseTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
-from AqIsValidIpFunc import is_valid_ip
-from AQ_TreeViewItemModel import AQ_TreeItemModel
+from AqTreeViewItemModel import AqTreeItemModel
 from AqDeviceConfig import AqDeviceConfig
 from AqDeviceInfoModel import AqDeviceInfoModel
+from AqDeviceParamListModel import AqDeviceParamListModel
 
 
 class AqBaseDevice(ABC):
@@ -21,16 +20,17 @@ class AqBaseDevice(ABC):
         self._connect = connect
         self._params_list = list()
         self._update_param_stack = list()
-        self._request_count = list()
         self._stack_to_read = list()
         self._stack_to_write = list()
         self._core_cv = threading.Condition()
+        self.__create_local_event_manager()
+        self._connect.setRequestGroupProceedDoneCallback(self.update_param_callback)
 
         self._info = {
-            'name':             None,
-            'version':          None,
+            'name':             '',
+            'version':          '',
             'serial_num':       None,
-            'address':          None
+            'address':          ''
         }
 
         self._functions = {
@@ -46,7 +46,7 @@ class AqBaseDevice(ABC):
         self._status = None
         self._is_inited = False
 
-        if self._connect is not None and self._connect.open():
+        if self._connect is not None:
             self._info['address'] = self._connect.address_string()
         else:
             raise Exception('AqBaseDeviceError: can`t open connect')
@@ -54,13 +54,15 @@ class AqBaseDevice(ABC):
         if not self.init_device():
             raise Exception('AqBaseDeviceError: can`t initialize device')
 
-        if self._device_tree is not None and isinstance(self._device_tree, AQ_TreeItemModel):
+        if self._device_tree is not None and isinstance(self._device_tree, AqTreeItemModel):
             self._device_tree.set_device(self)
         else:
-            raise Exception('AqBaseDeviceError: device_tree isn`t exists')
+            if self._status != 'need_pass':
+                raise Exception('AqBaseDeviceError: device_tree isn`t exists')
 
-        self.__param_convert_tree_to_list()
-        self.__create_local_event_manager()
+        if self._status != 'need_pass':
+            self._param_convert_tree_to_list()
+
         # self.__verify()
 
     @property
@@ -78,6 +80,10 @@ class AqBaseDevice(ABC):
     @property
     def is_inited(self):
         return self._is_inited
+
+    @property
+    def name(self):
+        return self._info['name']
 
     def func(self, name: str):
         return self._functions[name]
@@ -102,64 +108,76 @@ class AqBaseDevice(ABC):
     #         with self._core_cv:
     #             self._core_cv.notify()
 
+    def de_init(self):
+        self._connect.close()
+        self._clear_existing_requests()
+
+    def _clear_existing_requests(self):
+        self._connect.clear_existing_requests()
+
     def init_parameters(self):
-        self._event_manager.register_event_handler('current_device_data_updated', self.init_complete)
+        self._event_manager.register_event_handler('current_device_data_updated', self.init_complete, True)
         self.read_parameters(self._params_list)
 
     def init_complete(self, *args):
-        self._is_inited = True
+        if args[0] == self:
+            self._is_inited = True
 
     def read_parameters(self, items=None):
-        if len(self._request_count) == 0:
-            if items is None:
-                root = self._device_tree.invisibleRootItem()
-                for row in range(root.rowCount()):
-                    child_item = root.child(row)
-                    self.__read_item(child_item)
-            else:
-                if isinstance(items, AqParamItem):
-                    items = [items]
-                for i in range(len(items)):
-                    self.__read_item(items[i])
+        if items is None:
+            root = self._device_tree.invisibleRootItem()
+            for row in range(root.rowCount()):
+                child_item = root.child(row)
+                self.__read_item(child_item)
+        else:
+            if isinstance(items, AqParamItem):
+                items = [items]
+            for i in range(len(items)):
+                self.__read_item(items[i])
 
-            self._request_count.append(len(self._stack_to_read))
+        if len(self._stack_to_read) > 0:
+            print('AqBaseDevice: Device: '
+                  + self.info('name') + ' addr: '
+                  + self.info('address')
+                  + ' maked request. Request size = '
+                  + str(len(self._stack_to_read)))
             self._connect.create_param_request('read', self._stack_to_read)
             self._stack_to_read.clear()
 
     def write_parameters(self, items=None):
-        if len(self._request_count) == 0:
-            if items is None:
-                root = self.device_tree.invisibleRootItem()
-                for row in range(root.rowCount()):
-                    child_item = root.child(row)
-                    self.__write_item(child_item)
-            else:
-                if isinstance(items, AqParamItem):
-                    items = [items]
-                for i in range(len(items)):
-                    self.__write_item(items[i])
+        if items is None:
+            root = self.device_tree.invisibleRootItem()
+            for row in range(root.rowCount()):
+                child_item = root.child(row)
+                self.__write_item(child_item)
+        else:
+            if isinstance(items, AqParamItem):
+                items = [items]
+            for i in range(len(items)):
+                self.__write_item(items[i])
 
-            self._request_count.append(len(self._stack_to_write))
+        if len(self._stack_to_write) > 0:
             self._connect.create_param_request('write', self._stack_to_write)
             self._stack_to_write.clear()
-
-    # @abstractmethod
-    # def read_parameter(self, item):
-    #     """Read parameter from device"""
-    #     return NotImplementedError
 
     def read_parameter(self, item):
         """Read parameter from device"""
         self._stack_to_read.append(item)
 
-    # @abstractmethod
-    # def write_parameter(self, item):
-    #     """Read parameter from device"""
-    #     return NotImplementedError
-
     def write_parameter(self, item):
         if item.get_status() == 'changed':
             self._stack_to_write.append(item)
+
+    def set_default_values(self):
+        for item in self._params_list:
+            param_attributes = item.data(Qt.UserRole)
+            if param_attributes is not None:
+                if not (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
+                    item.set_default_value(False)
+                    self.__add_param_to_update_stack(item)
+
+        self.update_param_callback()
+
 
     def reboot(self):
         """
@@ -195,6 +213,13 @@ class AqBaseDevice(ABC):
         dev_model.add_general_info("Version", self._info['version'])
         return dev_model
 
+    def get_device_param_list_model(self):
+        dev_model = AqDeviceParamListModel()
+        dev_model.name = self.info('name')
+        dev_model.serial = self.info('serial_num') if self.info('serial_num') is not None else "no serial number"
+        dev_model.param_list = self._params_list
+        return dev_model
+
     @abstractmethod
     def get_configuration(self) -> AqDeviceConfig:
         """
@@ -222,10 +247,12 @@ class AqBaseDevice(ABC):
     def __add_param_to_update_stack(self, item):
         if item not in self._update_param_stack:
             self._update_param_stack.append(item)
-            if len(self._update_param_stack) == self._request_count[0]:
-                self._request_count.pop(0)
-                self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-                self._update_param_stack.clear()
+
+    def update_param_callback(self):
+        self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        with self._core_cv:
+            self._core_cv.notify()
+        self._update_param_stack.clear()
 
     def __convert_tree_branch_to_list(self, item):
         param_attributes = item.get_param_attributes()
@@ -236,6 +263,7 @@ class AqBaseDevice(ABC):
                 self.__convert_tree_branch_to_list(child_item)
         else:
             self._params_list.append(item)
+            item.set_local_event_manager(self._local_event_manager)
 
     @abstractmethod
     def init_device(self) -> bool:
@@ -286,7 +314,7 @@ class AqBaseDevice(ABC):
         else:
             self.write_parameter(item)
 
-    def __param_convert_tree_to_list(self):
+    def _param_convert_tree_to_list(self):
         root = self._device_tree.invisibleRootItem()
         for row in range(root.rowCount()):
             child_item = root.child(row)
@@ -294,8 +322,5 @@ class AqBaseDevice(ABC):
 
     def __create_local_event_manager(self):
         self._local_event_manager = AQ_EventManager()
-
-        for item in self._params_list:
-            item.set_local_event_manager(self._local_event_manager)
 
         self._local_event_manager.register_event_handler('add_param_to_update_stack', self.__add_param_to_update_stack)

@@ -1,0 +1,72 @@
+{
+  "QMainWindow": [
+    {
+      "tittle": "AQteck tool MAX",
+      "icon": "UI/icons/AQico_silver.png",
+      "frameless": true,
+      "transluscentBg": true,
+      "sizeGrip": "sizeGrip",
+	  "resizeFrameEnable": true,
+	  "resizeFrameWidth": 5,
+      "navigation": [
+        {
+          "minimize": "minimizeBtn",
+          "close": "closeBtn",
+          "restore": [
+            {
+              "buttonName": "maximizeBtn",
+              "normalIcon": "UI/icons/feather/square.svg",
+              "maximizedIcon": "UI/icons/feather/copy.svg"
+            }
+          ],
+          "moveWindow": "headerContainer",
+          "tittleBar": "headerContainer"
+        }
+      ]
+    }
+  ],
+  "QCustomSlideMenu": [
+    {
+      "name": "rightMenuContainer",
+      "defaultSize": [
+        {
+          "width": 45,
+          "height": 400
+        }
+      ],
+      "collapsedSize": [
+        {
+          "width": 45,
+          "height": 400
+        }
+      ],
+      "expandedSize": [
+        {
+          "width": 150,
+          "height": 400
+        }
+      ],
+      "menuTransitionAnimation": [
+        {
+          "animationDuration": 100,
+          "animationEasingCurve": "Linear",
+		  "hoverExpand": true
+        }
+      ],
+	  "floatPosition": [
+        {
+          "relativeTo": "mainContainer",
+          "position": "center-right",
+          "shadow": [
+            {
+              "color": "#000",
+              "blurRadius": 20,
+              "xOffset": 0,
+              "yOffset": 0
+            }
+          ]
+        }
+      ]
+    }
+	]
+}

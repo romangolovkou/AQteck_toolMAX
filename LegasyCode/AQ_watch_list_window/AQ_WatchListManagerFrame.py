@@ -1,8 +1,8 @@
-from PySide6.QtCore import Qt, QSettings
-from PySide6.QtGui import QStandardItem, QFont, QStandardItemModel, QColor
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QFileDialog, QTableView, QLineEdit
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QStandardItem
+from PySide6.QtWidgets import QFrame, QVBoxLayout
 
-from AQ_CustomTreeItems import AqParamManagerItem
+from AqBaseTreeItems import AqParamManagerItem
 from AQ_WatchListTableView import AQ_WatchListTableView
 from AQ_WatchListTableViewItemModel import AQ_WatchListTableViewItemModel
 

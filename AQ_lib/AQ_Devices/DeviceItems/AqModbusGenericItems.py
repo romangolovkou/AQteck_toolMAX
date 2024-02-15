@@ -1,9 +1,8 @@
 import struct
 
-from AQ_CustomTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
+from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, AqUnsignedToFloatParamItem, \
     AqFloatEnumParamItem, AqBitParamItem
-from AqParamsDelegateEditors import AqEnumTreeComboBox, AqEnumROnlyTreeLineEdit
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes
 
@@ -12,6 +11,7 @@ from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empt
 
 class AqModbusEnumParamItem(AqEnumParamItem, AqModbusItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'enum'
         super().__init__(param_attributes)
 
     def pack(self):
@@ -44,6 +44,7 @@ class AqModbusEnumParamItem(AqEnumParamItem, AqModbusItem):
 
 class AqModbusUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'unsigned'
         super().__init__(param_attributes)
 
     def pack(self):
@@ -68,6 +69,8 @@ class AqModbusUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
         byte_array = bytes.fromhex(hex_string)
         if self.param_size == 1:
             param_value = struct.unpack('>H', byte_array)[0]
+
+        #TODO: have bug
         elif self.param_size == 2:
             param_value = struct.unpack('>H', byte_array)[0]
         elif self.param_size == 4:
@@ -84,6 +87,7 @@ class AqModbusUnsignedParamItem(AqUnsignedParamItem, AqModbusItem):
 
 class AqModbusSignedParamItem(AqSignedParamItem, AqModbusItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'signed'
         super().__init__(param_attributes)
 
     def pack(self):
@@ -99,6 +103,8 @@ class AqModbusSignedParamItem(AqSignedParamItem, AqModbusItem):
             raise Exception('AQ_ModbusSignedParamItemError: param size is incorrect')
         # Разбиваем упакованные данные на 16-битные значения (2 байта)
         registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
+
     def unpack(self, data):
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in data.registers)
@@ -119,6 +125,7 @@ class AqModbusSignedParamItem(AqSignedParamItem, AqModbusItem):
 
 class AqModbusFloatParamItem(AqFloatParamItem, AqModbusItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'float'
         super().__init__(param_attributes)
 
     def pack(self):
@@ -149,6 +156,7 @@ class AqModbusFloatParamItem(AqFloatParamItem, AqModbusItem):
 
 class AqModbusStringParamItem(AqStringParamItem, AqModbusItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'string'
         super().__init__(param_attributes)
 
     def pack(self):
@@ -177,6 +185,7 @@ class AqModbusStringParamItem(AqStringParamItem, AqModbusItem):
 
 class AqModbusDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'date_time'
         super().__init__(param_attributes)
 
     def pack(self):
@@ -199,22 +208,26 @@ class AqModbusDateTimeParamItem(AqDateTimeParamItem, AqModbusItem):
 
 class AqModbusSignedToFloatParamItem(AqSignedToFloatParamItem, AqModbusSignedParamItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'signed_to_float'
         super().__init__(param_attributes)
 
 
 class AqModbusUnsignedToFloatParamItem(AqUnsignedToFloatParamItem, AqModbusUnsignedParamItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'unsigned_to_float'
         super().__init__(param_attributes)
 
 
 class AqModbusFloatEnumParamItem(AqFloatEnumParamItem, AqModbusEnumParamItem):
     def __init__(self, param_attributes):
+        param_attributes['type'] = 'float_to_enum'
         super().__init__(param_attributes)
 
 
 class AqModbusDiscretParamItem(AqBitParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         param_attributes['param_size'] = 1
+        param_attributes['type'] = 'discret_bit'
         super().__init__(param_attributes)
 
     def pack(self):

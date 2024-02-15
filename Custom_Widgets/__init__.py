@@ -8,14 +8,15 @@
 ## IMPORTS
 ########################################################################
 import os
-import __main__
 
+from AqResizeWidgets import *
+from AppCore import Core
 ########################################################################
 ## COMPILE SASS
 ########################################################################
 from .Qss import SassCompiler
 CompileStyleSheet = SassCompiler.CompileStyleSheet
-from .Qss.SvgToPngIcons import NewIconsGenerator
+# from .Qss.SvgToPngIcons import NewIconsGenerator
 
 from .QCustomQPushButtonGroup import QCustomQPushButtonGroup
 
@@ -44,13 +45,12 @@ from qtpy import QtWidgets, QtGui, QtCore
 from qtpy.QtCore import *
 from qtpy.QtGui import *
 from qtpy.QtWidgets import *
-from qtpy.QtCore import Signal
-
 
 # JSON FOR READING THE JSON STYLESHEET
 import json
 
-from . QCustomQPushButton import applyAnimationThemeStyle, applyButtonShadow, iconify, applyCustomAnimationThemeStyle, applyStylesFromColor
+from . QCustomQPushButton import applyAnimationThemeStyle, applyButtonShadow, iconify, applyCustomAnimationThemeStyle
+
 
 class QMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -58,6 +58,71 @@ class QMainWindow(QtWidgets.QMainWindow):
 
         self.clickPosition = None  # Initialize clickPosition attribute
 
+    #######################################################################
+    # Add mouse events to the window
+    #######################################################################
+    def create_resize_frame(self, resizeFrameWidth):
+        Core.event_manager.register_event_handler('resize_' + self.objectName(), self.resize_MainWindow)
+        # # Создаем виджеты для изменения размеров окна
+        if resizeFrameWidth is not None and resizeFrameWidth and isinstance(resizeFrameWidth, int):
+            if resizeFrameWidth < 2 or resizeFrameWidth > 15:
+                print(self.objectName() + 'Error: "resizeFrameWidth" must below 2 to 15. Current value = '\
+                      + str(resizeFrameWidth))
+                if resizeFrameWidth < 2:
+                    resizeFrameWidth = 2
+                else:
+                    resizeFrameWidth = 15
+                print('Value changed! "resizeFrameWidth" = ' + str(resizeFrameWidth))
+            self.resizeLineWidth = resizeFrameWidth
+        else:
+            print('resizeFrameWidth is "None" or not "int"')
+            print('Was setted default resizeFrameWidth = 5')
+            self.resizeLineWidth = 5
+
+        self.resizeWidthR_widget = resizeWidthR_Qwidget(Core.event_manager, self)
+        self.resizeWidthL_widget = resizeWidthL_Qwidget(Core.event_manager, self)
+        self.resizeHeigthLow_widget = resizeHeigthLow_Qwidget(Core.event_manager, self)
+        self.resizeHeigthTop_widget = resizeHeigthTop_Qwidget(Core.event_manager, self)
+        self.resizeDiag_BotRigth_widget = resizeDiag_BotRigth_Qwidget(Core.event_manager, self)
+        self.resizeDiag_BotLeft_widget = resizeDiag_BotLeft_Qwidget(Core.event_manager, self)
+        self.resizeDiag_TopLeft_widget = resizeDiag_TopLeft_Qwidget(Core.event_manager, self)
+        self.resizeDiag_TopRigth_widget = resizeDiag_TopRigth_Qwidget(Core.event_manager, self)
+
+    def resize_MainWindow(self, pos_x, pos_y, width, height):
+        if pos_x == '%':
+            pos_x = self.pos().x()
+        if pos_y == '%':
+            pos_y = self.pos().y()
+        if width == '%':
+            width = self.width()
+        if height == '%':
+            height = self.height()
+
+        self.setGeometry(pos_x, pos_y, width, height)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        if hasattr(self, 'resizeFrameEnable'):
+            if self.resizeFrameEnable is True:
+                self.resizeWidthR_widget.setGeometry(self.width() - self.resizeLineWidth,
+                                                     self.resizeLineWidth, self.resizeLineWidth,
+                                                     self.height() - (self.resizeLineWidth * 2))
+                self.resizeWidthL_widget.setGeometry(0, self.resizeLineWidth, self.resizeLineWidth,
+                                                     self.height() - (self.resizeLineWidth * 2))
+                self.resizeHeigthLow_widget.setGeometry(self.resizeLineWidth, self.height() - self.resizeLineWidth,
+                                                        self.width() - (self.resizeLineWidth * 2),
+                                                        self.resizeLineWidth)
+                self.resizeHeigthTop_widget.setGeometry(self.resizeLineWidth, 0,
+                                                        self.width() - (self.resizeLineWidth * 2),
+                                                        self.resizeLineWidth)
+                self.resizeDiag_BotRigth_widget.move(self.width() - self.resizeLineWidth,
+                                                     self.height() - self.resizeLineWidth)
+                self.resizeDiag_TopLeft_widget.move(0, 0)
+                self.resizeDiag_TopRigth_widget.move(self.width() - self.resizeLineWidth, 0)
+                self.resizeDiag_BotLeft_widget.move(0, self.height() - self.resizeLineWidth)
+
+        event.accept()
 
     #######################################################################
     # Add mouse events to the window
@@ -99,6 +164,9 @@ class QMainWindow(QtWidgets.QMainWindow):
         # If window is maxmized
         if self.isMaximized():
             self.showNormal()
+            if hasattr(self, "floatingWidgets"):
+                for x in self.floatingWidgets:
+                    x.paintEvent(None)
 
         else:
             self.showMaximized()
@@ -690,6 +758,7 @@ def applyJsonStyle(self, ui, data):
                     shadowYOffset = ""
                     floatMenu = False
                     autoHide = True
+                    hoverExpand = False
 
                     if "floatPosition" in QCustomSlideMenu:
                         floatMenu = True
@@ -777,6 +846,9 @@ def applyJsonStyle(self, ui, data):
                                 collapsingAnimationEasingCurve = returnAnimationEasingCurve(menuTransitionAnimation["animationEasingCurve"])
                                 expandingAnimationEasingCurve = returnAnimationEasingCurve(menuTransitionAnimation["animationEasingCurve"])
 
+                            if "hoverExpand" in menuTransitionAnimation:
+                                hoverExpand = menuTransitionAnimation["hoverExpand"]
+
                             if "whenCollapsing" in menuTransitionAnimation:
                                 for whenCollapsing in menuTransitionAnimation["whenCollapsing"]:
                                     if "animationDuration" in whenCollapsing:
@@ -835,7 +907,8 @@ def applyJsonStyle(self, ui, data):
                         shadowBlurRadius    = shadowBlurRadius,
                         shadowXOffset   = shadowXOffset,
                         shadowYOffset   = shadowYOffset,
-                        autoHide = autoHide
+                        autoHide = autoHide,
+                        hoverExpand = hoverExpand
                     )
 
                     if "toggleButton" in QCustomSlideMenu:
@@ -930,6 +1003,19 @@ def applyJsonStyle(self, ui, data):
                 #################################################################################
                 if hasattr(self.ui, str(QMainWindow["sizeGrip"])):
                     QSizeGrip(getattr(self.ui, str(QMainWindow["sizeGrip"])))
+
+            if "resizeFrameEnable" in QMainWindow and QMainWindow["resizeFrameEnable"]:
+                #######################################################################
+                ## # Activate and set width resize frame
+                ########################################################################
+                self.resizeFrameEnable = QMainWindow["resizeFrameEnable"]
+                if self.resizeFrameEnable is True:
+                    if "resizeFrameWidth" in QMainWindow and QMainWindow["resizeFrameWidth"]:
+                        resizeFrameWidth = QMainWindow["resizeFrameWidth"]
+                    else:
+                        resizeFrameWidth = None
+
+                    self.create_resize_frame(resizeFrameWidth)
 
             if "shadow" in QMainWindow:
                 #######################################################################

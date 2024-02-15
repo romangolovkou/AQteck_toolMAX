@@ -4,8 +4,8 @@ from datetime import datetime
 
 from PySide6.QtCore import Qt
 
-from AQ_TreeViewItemModel import AQ_TreeItemModel
-from AQ_CustomTreeItems import AqParamItem, AqCatalogItem, AqEnumParamItem, AqUnsignedParamItem, \
+# from AQ_TreeViewItemModel import AQ_TreeItemModel
+from AqBaseTreeItems import AqParamItem, AqCatalogItem, AqEnumParamItem, AqUnsignedParamItem, \
     AqSignedParamItem, AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, \
     AqUnsignedToFloatParamItem, AqFloatEnumParamItem
 

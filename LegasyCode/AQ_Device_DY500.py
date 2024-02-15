@@ -3,21 +3,16 @@ import socket
 import struct
 
 from Crypto.Cipher import DES
-from PySide6.QtCore import QObject, Qt
-from PySide6.QtGui import QFont, QGuiApplication
-from PySide6.QtWidgets import QWidget, QFrame, QLabel
+from PySide6.QtCore import Qt
 from pymodbus.client import serial
 import serial.tools.list_ports
 
-from AQ_CustomTreeItems import AqParamItem, AqCatalogItem
+from AqBaseTreeItems import AqParamItem, AqCatalogItem
 from AQ_Device import AQ_Device
 from AQ_EventManager import AQ_EventManager
 from AQ_TreeViewItemModel import AQ_TreeItemModel
 from AqIsValidIpFunc import is_valid_ip
-from AqConnect import AqModbusConnect
-from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, get_conteiners_count, get_containers_offset, \
-    get_storage_container, parse_tree, reverse_modbus_registers, get_item_by_type, swap_modbus_registers
-from AQ_CustomWindowTemplates import AQ_wait_progress_bar_widget
+from AQ_ParseFunc import swap_modbus_bytes, remove_empty_bytes, reverse_modbus_registers, get_item_by_type
 
 
 class AQ_Device_Config:

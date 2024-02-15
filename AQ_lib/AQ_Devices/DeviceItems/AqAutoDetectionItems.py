@@ -1,10 +1,17 @@
+import os
 import struct
 
-from AQ_CustomTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
-    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem
+from PySide6.QtCore import Qt
+
+from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
+    AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem, \
+    AqModbusFileItem
+from AqCRC32 import Crc32
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes
 # from AqModbusTips import reverse_registers
+
+from Crypto.Cipher import DES
 
 
 # TODO: сделать модбас итем зависящий от функции
@@ -24,7 +31,6 @@ class AqAutoDetectEnumParamItem(AqEnumParamItem, AqModbusItem):
             registers = struct.unpack('H', packed_data)
         else:
             raise Exception('AqAutoDetectEnumParamItemError: "param_size" is incorrect')
-
 
         return registers
 
@@ -149,10 +155,139 @@ class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
 
         return param_value
 
+class AqAutoDetectModbusFileItem(AqModbusFileItem):
+    def __init__(self, param_attributes, get_password=None):
+        super().__init__(param_attributes)
+        self.key = b'superkey'
+        self.__get_pass = get_password
+
+    def pack(self):
+        record_data = self.value
+        crc = Crc32().calculate(record_data)
+        length = len(record_data)
+        # Выравнивание длины исходных данных
+        pad_length = 8 - (len(record_data) % 8)
+        padded_data = record_data + bytes([0x00] * pad_length)
+
+        data_to_write = padded_data + length.to_bytes(4, byteorder='little')
+        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
+
+        encrypted_record_data = self.__encrypt_data(data_to_write)
+        return encrypted_record_data
+
+    def unpack(self, data):
+        # TODO: тимчасове збереження файлу (потрібно для відладки)
+        if self.get_param_attributes()['file_num'] == 0xFFE0:
+            # Ця вставка робить файл default.prg у корні проекту (було необхідно для відладки)
+            roaming_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming')
+            # Проверяем наличие папки Roaming, если её нет - создаем
+            if not os.path.exists(roaming_folder):
+                os.makedirs(roaming_folder)
+
+            filename = 'enc_default.prg'
+            # Полный путь к файлу в папке Roaming
+            full_filepath = os.path.join(roaming_folder, filename)
+            with open(full_filepath, 'wb') as file:
+                file.write(data)
+
+        decrypt_file = None
+        try:
+            # Перевірка на кратність 8 байтам, потрібно для DES
+            if (len(data) % 8) > 0:
+                padding = 8 - (len(data) % 8)
+                data = data + bytes([padding] * padding)
+            decrypt_file = self.__decrypt_data(data)
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return 'decrypt_err'  # Помилка дешифрування
+
+        return decrypt_file
+
+    def __decrypt_data(self, encrypted_data):
+        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.key)
+        decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
+
+        return decrypted_data
+
+    def __encrypt_data(self, data):
+        # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
+        cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.key)
+        encrypted_data = cipher.encrypt(data)
+
+        return encrypted_data
+
+    def set_key(self, new_key):
+        self.key = new_key
+
+    def set_file_size(self, new_file_size):
+        attr = self.get_param_attributes()
+        attr['file_size'] = new_file_size
+        self.setData(attr, Qt.UserRole)
+        print('aaaaa')
+
+    def __get_hash(self):
+        userPass = self.__get_password()
+
+        if userPass is None:
+            # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
+            return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
+        else:
+            low = 0
+            high = 0
+
+            password_bytes = userPass.encode('cp1251')
+
+            for i in range(0, len(password_bytes), 2):
+                low += password_bytes[i]
+                low -= (low << 13) | (low >> 19)
+                low = low & 0xFFFFFFFF
+
+                if i + 1 >= len(password_bytes):
+                    break
+
+                high += password_bytes[i + 1]
+                high -= (high << 13) | (high >> 19)
+                high = high & 0xFFFFFFFF
+
+            low = bytes.fromhex(hex(low)[2:])[::-1]
+            high = bytes.fromhex(hex(high)[2:])[::-1]
+            hash = low + high
+            return hash
+
+    def __get_password(self):
+        if self.__get_pass is not None:
+            password = self.__get_pass()
+        else:
+            password = None
+
+        return password
+
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        if new_value is not None:
+            if self.value_in_device is None:
+                self.value_in_device = new_value
+            # else:
+            #     if self.value_in_device == new_value:
+            #         self.param_status = 'ok'
+            #     else:
+            self.param_status = 'changed'
+            self.synchronized = False
+            self._value = new_value
+        else:
+            self.param_status = 'error'
+
 
 class AqAutoDetectStringParamItem(AqStringParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)
+        self.value = ''
 
     def pack(self):
         text_bytes = self.value.encode('ANSI')
