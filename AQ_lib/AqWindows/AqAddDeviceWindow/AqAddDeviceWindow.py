@@ -9,7 +9,6 @@ from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame,
 import AqBaseDevice
 import AqDeviceFabrica
 from AQ_EventManager import AQ_EventManager
-from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import load_last_combobox_state, load_last_text_value, save_combobox_current_state, \

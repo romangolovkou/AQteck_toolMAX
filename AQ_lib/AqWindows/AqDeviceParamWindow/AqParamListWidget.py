@@ -6,7 +6,6 @@ from PySide6.QtGui import QScreen
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
 import ModbusTableDataFiller
-from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 from AqWindowTemplate import AqDialogTemplate
 from AqSettingsFunc import get_last_path, save_last_path
 from DeviceModels import AqDeviceParamListModel

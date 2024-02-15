@@ -281,13 +281,13 @@ QPushButton:pressed {
   <customwidget>
    <class>AqParamListInfoFrame</class>
    <extends>QFrame</extends>
-   <header location="global">AqDeviceParamWindow.AqParamListWidget.h</header>
+   <header location="global">AqParamListWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AqParamListTableWidget</class>
    <extends>QTableWidget</extends>
-   <header location="global">AqDeviceParamWindow.AqParamListWidget.h</header>
+   <header location="global">AqParamListWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -8,7 +8,6 @@ from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidg
 import ModbusTableDataFiller
 from AqBaseDevice import AqBaseDevice
 from AqBaseTreeItems import AqParamManagerItem, AqCatalogItem
-from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 from AqTreeView import AqTreeView
 from AqWatchListCore import AqWatchListCore
 from AqWatchListTreeViewModel import AqWatchListTreeViewModel

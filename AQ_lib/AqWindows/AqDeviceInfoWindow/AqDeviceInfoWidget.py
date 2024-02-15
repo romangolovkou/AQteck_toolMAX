@@ -5,7 +5,6 @@ from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
 
 from AqWindowTemplate import AqDialogTemplate
 from DeviceModels import AqDeviceInfoModel
-from AqCustomDialogWindow import QDialog, loadDialogJsonStyle
 
 
 class AqDeviceInfoWidget(AqDialogTemplate):
