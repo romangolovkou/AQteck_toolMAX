@@ -9,7 +9,7 @@ Type;AqGenericModbusDevice;;;;;;;;;;;
 Name;Other;4096;2;3;-;AqNPT_1K_StringParamItem 4;;;;;;
 Version;Other;4098;2;3;-;AqNPT_1K_StringParamItem 4;;;;;;
 struct conf;Other;256;24;3;16;AqNPT_1K_StringParamItem 48;;;;;;
-Команда калибровки;Other;0;4;3;16;AqNPT_1K_StringParamItem 8;;;;;;
+Команда калибровки;Other;0;4;3;16;AqNPT_1K_CalibrCommandParamItem 8;;;;;;
 Результат калибровки;Other;512;6;3;-;AqNPT_1K_CalibResultParamItem 12;;;;;;
 struct oper;Other;1024;29;3;-;AqNPT_1K_StringParamItem 58;;;;;;
 srtuct ustr;Other;8192;42;3;-;AqNPT_1K_StringParamItem 84;;;;;;
