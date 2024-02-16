@@ -56,8 +56,12 @@ class AqNPT_1K_CalibResultParamItem(AqStringParamItem, AqModbusItem):
         res_hex_string = hex_string[16:]
 
         byte_array = bytes.fromhex(res_hex_string)
+        param_2_byte_array = bytes.fromhex(param_2_hex_string)
+        param_1_byte_array = bytes.fromhex(param_1_hex_string)
 
         param_value = int.from_bytes(byte_array, byteorder='big', signed=False)
+        param_2_param_value = struct.unpack('f', param_2_byte_array)[0]
+        param_1_param_value = struct.unpack('f', param_1_byte_array)[0]
 
         if param_value == 1:
             text = 'калибровка не завершена'
@@ -80,6 +84,7 @@ class AqNPT_1K_CalibResultParamItem(AqStringParamItem, AqModbusItem):
                 text = res_str
 
 
+        text = str(param_2_param_value)+ '_' + str(param_1_param_value) + '_' + text
         reg_count = self.param_size // 2
         # byte_array = swap_bytes_at_registers(byte_array, reg_count)
         # Расшифровуем в строку
