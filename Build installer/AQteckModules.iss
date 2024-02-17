@@ -6,8 +6,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{D168F49F-8732-43FA-84B2-74DA10D1237B}
 AppName=AQteckModules
-AppVersion=0.16
-;AppVerName=AQteckModules 0.1
+AppVersion=0.01
+;AppVerName=AQteckModules v0.01
 AppPublisher=AQteck
 DefaultDirName={autopf}..\dist\AQteckModules
 ChangesAssociations=yes

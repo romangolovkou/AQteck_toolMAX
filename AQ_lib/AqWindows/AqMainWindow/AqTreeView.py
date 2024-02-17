@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import QMenu, QTreeView
+from PySide6.QtWidgets import QMenu, QTreeView, QHeaderView
 
 from AqTreeViewDelegates import AqNameTreeDelegate, AqValueTreeDelegate
 from AQ_CustomWindowTemplates import AQ_have_error_widget
@@ -50,7 +50,7 @@ class AqTreeView(QTreeView):
         # Получение количества колонок в модели
         column_count = model.columnCount()
         for column in range(column_count):
-            self.setColumnWidth(column, 200)
+            self.setColumnWidth(column, self.width()//column_count)
 
         root = model.invisibleRootItem()
         self.traverse_items_show_delegate(root)

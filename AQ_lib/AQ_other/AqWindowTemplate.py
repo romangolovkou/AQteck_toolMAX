@@ -29,6 +29,7 @@ class AqWindowTemplate(QWidget):
 class AqDialogTemplate(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setWindowIcon(QtGui.QIcon("UI/icons/AQico_silver.png"))
         self._window_name = ''
         self.ui_title = Ui_AqWindowTemplate()
         self.ui_title.setupUi(self)
@@ -56,6 +57,7 @@ class AqDialogTemplate(QDialog):
     def name(self, name):
         self._window_name = name
         self.ui_title.headertext.setText(name)
+        self.setWindowTitle(name)
 
     @property
     def minimizeBtnEnable(self):
