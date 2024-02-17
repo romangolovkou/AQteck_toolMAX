@@ -26,7 +26,8 @@ class AqMainWindow(QMainWindow):
         except:
             version_str = 'unknown version'
 
-        self.ui.TitleName.setText(self.windowTitle() + ' ' + version_str)
+        self.ui.TitleName.setText(self.windowTitle())
+        self.ui.versionLabel.setText('Version ' + version_str)
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
         self.ui.deviceInfoBtn.clicked.connect(AqUiWorker.show_device_info_window)
         self.ui.paramListBtn.clicked.connect(AqUiWorker.show_device_param_list)

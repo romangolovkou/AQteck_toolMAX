@@ -252,6 +252,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
         if len(found_devices) > 0:
             self.add_devices_to_table_widget(found_devices)
             self.add_found_devices_to_all_list(found_devices)
+        else:
+            self.show_connect_err_label()
 
     def scan_successful(self, found_devices):
         if len(found_devices) > 0:
@@ -271,8 +273,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
                     found_devices_list.append(device)
                 else:
                     self.show_connect_err_label()
-            else:
-                self.show_connect_err_label()
+            # else:
+            #     self.show_connect_err_label()
 
         return found_devices_list
 

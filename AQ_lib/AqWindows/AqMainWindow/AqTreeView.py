@@ -47,10 +47,12 @@ class AqTreeView(QTreeView):
 
     def setModel(self, model):
         super().setModel(model)
+        first_col_width = 180
         # Получение количества колонок в модели
         column_count = model.columnCount()
         for column in range(column_count):
-            self.setColumnWidth(column, self.width()//column_count)
+            col_width = first_col_width if column == 0 else (self.width() - first_col_width)//(column_count - 1)
+            self.setColumnWidth(column, col_width)
 
         root = model.invisibleRootItem()
         self.traverse_items_show_delegate(root)
