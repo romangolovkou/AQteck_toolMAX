@@ -22,7 +22,7 @@ a = Analysis(
                 'UI/forms',
                 'Custom_Widgets',
                 'Custom_Widgets/Qss'],
-    binaries=[],
+    binaries=[('Version.txt', '.')],
     datas=[('Icons', 'Icons'),
             ('110_device_conf', '110_device_conf'),
             ('UI/icons', 'UI/icons'),
