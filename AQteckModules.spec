@@ -43,7 +43,7 @@ exe = EXE(
     a.zipfiles,
     [],
     exclude_binaries=True,
-    name='AQteckModules',
+    name='AQteck tool MAX',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -66,5 +66,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='AQteckModules',
+    name='AQteck tool MAX',
 )
