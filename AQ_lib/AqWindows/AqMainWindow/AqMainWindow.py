@@ -17,8 +17,6 @@ class AqMainWindow(QMainWindow):
 
         loadJsonStyle(self, self.ui)
 
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
         self.event_manager = AQ_EventManager.get_global_event_manager()
         try:
             with open(version_path, 'r') as file:
