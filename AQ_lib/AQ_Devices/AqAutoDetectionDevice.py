@@ -51,7 +51,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
     # Add to init all what we need
     def __init__(self, event_manager, connect: AqModbusConnect):
         self._password = None
-        super().__init__(event_manager, connect)
+        try:
+            super().__init__(event_manager, connect)
+        except:
+            self._status = 'data_error'
+            print('bad_device')
         self._default_prg = None
         self._password = None
         self._connect = connect
