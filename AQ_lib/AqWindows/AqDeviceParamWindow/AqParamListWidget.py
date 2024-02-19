@@ -51,8 +51,12 @@ class AqParamListWidget(AqDialogTemplate):
         try:
             # Получаем текущий рабочий каталог (папку проекта)
             project_path = os.getcwd()
+            roaming_path = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming')
+            # Проверяем наличие папки Roaming, если её нет - создаем
+            if not os.path.exists(roaming_path):
+                os.makedirs(roaming_path)
             # Объединяем путь к папке проекта с именем файла настроек
-            settings_path = os.path.join(project_path, "auto_load_settings.ini")
+            settings_path = os.path.join(roaming_path, "auto_load_settings.ini")
             # Используем полученный путь в QSettings
             self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
         except:

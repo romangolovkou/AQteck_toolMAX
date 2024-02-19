@@ -365,6 +365,16 @@ class AqAutoDetectionDevice(AqBaseDevice):
             os.makedirs(roaming_folder)
 
         filename = self._info['name'] + '_' + self._info['version'] + '_' + 'default.prg'
+
+        for file in os.listdir(roaming_folder):
+            if 'enc_default' in file:
+                old_path = os.path.join(roaming_folder, file)
+                new_path = os.path.join(roaming_folder, file.replace('enc_default', self._info['name'] + '_' + self._info['version'] + '_' + 'enc_default.prg'))
+                try:
+                    os.rename(old_path, new_path)
+                    print(f'Файл {old_path} переименован в {new_path}')
+                except OSError as e:
+                    print(f'Ошибка переименования файла {old_path}: {e}')
         # Полный путь к файлу в папке Roaming
         full_filepath = os.path.join(roaming_folder, filename)
         with open(full_filepath, 'wb') as file:

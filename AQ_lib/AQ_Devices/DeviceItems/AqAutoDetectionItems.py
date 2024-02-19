@@ -184,6 +184,15 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
             if not os.path.exists(roaming_folder):
                 os.makedirs(roaming_folder)
 
+            for file in os.listdir(roaming_folder):
+                if '_default' in file:
+                    remove_path = os.path.join(roaming_folder, file)
+                    try:
+                        os.remove(remove_path)
+                        print(f'Файл {remove_path} удален.')
+                    except OSError as e:
+                        print(f'Ошибка удаления файла {remove_path}: {e}')
+
             filename = 'enc_default.prg'
             # Полный путь к файлу в папке Roaming
             full_filepath = os.path.join(roaming_folder, filename)
