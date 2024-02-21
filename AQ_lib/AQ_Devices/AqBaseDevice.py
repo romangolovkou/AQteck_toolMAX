@@ -57,10 +57,12 @@ class AqBaseDevice(ABC):
         if self._device_tree is not None and isinstance(self._device_tree, AqTreeItemModel):
             self._device_tree.set_device(self)
         else:
-            if self._status != 'need_pass':
+            if self._status != 'need_pass' and self._status != 'decrypt_err'\
+                    and self._status != 'parsing_err':
                 raise Exception('AqBaseDeviceError: device_tree isn`t exists')
 
-        if self._status != 'need_pass':
+        if self._status != 'need_pass' and self._status != 'decrypt_err'\
+                and self._status != 'parsing_err':
             self._param_convert_tree_to_list()
 
         # self.__verify()
