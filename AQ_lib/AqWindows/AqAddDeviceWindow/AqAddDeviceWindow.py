@@ -273,7 +273,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
             device = AqDeviceFabrica.DeviceCreator.from_param_dict(network_settings_list[i])
             if device is not None:
                 device_status = device.status
-                if device_status == 'ok' or device_status == 'data_error' or device_status == 'need_pass':
+                if device_status == 'ok' or device_status == 'decrypt_err'\
+                        or device_status == 'parsing_err' or device_status == 'need_pass':
                     found_devices_list.append(device)
                 else:
                     self.show_connect_err_label()

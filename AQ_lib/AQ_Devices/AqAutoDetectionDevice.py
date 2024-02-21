@@ -51,11 +51,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     # Add to init all what we need
     def __init__(self, event_manager, connect: AqModbusConnect):
         self._password = None
-        try:
-            super().__init__(event_manager, connect)
-        except:
-            self._status = 'data_error'
-            print('bad_device')
+        super().__init__(event_manager, connect)
         self._default_prg = None
         self._password = None
         self._connect = connect
@@ -74,7 +70,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
         if self._default_prg == 'decrypt_err':
             self._status = 'decrypt_err'
-            return False
+            return True
 
         if self._default_prg == 'need_pass':
             self._status = 'need_pass'
@@ -84,7 +80,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         if self._device_tree == 'parsing_err' or \
                 self._device_tree is None:
             self._status = 'parsing_err'
-            return False
+            return True
 
         # TODO: describe rules to chache which functions are supported
         # into AutoDetectionDevice
