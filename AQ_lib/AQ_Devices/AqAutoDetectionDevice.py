@@ -90,7 +90,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
             self._functions['rtc'] = False
         else:
             self._functions['rtc'] = True
-        self._functions['password'] = False
+        self._functions['password'] = True
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = False
         self._functions['log'] = False

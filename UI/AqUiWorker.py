@@ -3,8 +3,10 @@ from AqAddDeviceWindow import AqAddDeviceWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
 from AqParamListWidget import AqParamListWidget
 from AqRtcWindow import AqRtcWindow
+from AqSetPasswordWidget import AqSetPasswordWindow
 from AqSetSlaveIdWindow import AqSetSlaveIdWindow
 from AqWatchListWindow import AqWatchListWidget
+from ui_AqSetPasswordWidget import Ui_AqSetPasswordWidget
 from ui_AqSetRtcWidget import Ui_AqRtcWidget
 from ui_AqSetSlaveIdWinWidget import Ui_AqSetSlaveIdWidget
 from ui_AqWatchListWidget import Ui_AqWatchListWidget
@@ -51,4 +53,10 @@ def show_set_rtc():
         widget = AqRtcWindow(Ui_AqRtcWidget)
         widget.set_device_date_time(AppCore.Core.session.cur_active_device.get_device_date_time())
         widget.set_write_handler(AppCore.Core.session.cur_active_device.write_device_date_time)
+        widget.exec()
+
+def show_set_password():
+    if AppCore.Core.session.cur_active_device is not None:
+        widget = AqSetPasswordWindow(Ui_AqSetPasswordWidget)
+        widget.load_password(AppCore.Core.session.cur_active_device.get_password())
         widget.exec()
