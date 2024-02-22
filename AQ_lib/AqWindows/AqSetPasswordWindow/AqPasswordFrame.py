@@ -1,4 +1,4 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QTimer
 from PySide6.QtWidgets import QFrame, QLabel, QPushButton, QLineEdit, QRadioButton
 
 
@@ -19,6 +19,7 @@ class AqPasswordFrame(QFrame):
         self.resetBtn = None
         self.createBtn = None
         self.changeBtn = None
+        self.cancelBtn = None
         self.createRadioBtn = None
         self.resetRadioBtn = None
         self.currentPassLineEdit = None
@@ -37,6 +38,7 @@ class AqPasswordFrame(QFrame):
         self.resetBtn = self.findChild(QPushButton, 'resetBtn')
         self.createBtn = self.findChild(QPushButton, 'createBtn')
         self.changeBtn = self.findChild(QPushButton, 'changeBtn')
+        self.cancelBtn = self.findChild(QPushButton, 'cancelBtn')
         self.createRadioBtn = self.findChild(QRadioButton, 'createRadioBtn')
         self.resetRadioBtn = self.findChild(QRadioButton, 'resetRadioBtn')
         self.currentPassLineEdit = self.findChild(QLineEdit, 'currentPassLineEdit')
@@ -76,6 +78,11 @@ class AqPasswordFrame(QFrame):
         self.newPassLineFrame.prepare_ui()
         self.rNewPassLineFrame.prepare_ui()
 
+        self.createBtn.clicked.connect(self.create_btn_clicked)
+        self.changeBtn.clicked.connect(self.change_btn_clicked)
+        self.resetBtn.clicked.connect(self.reset_btn_clicked)
+        self.cancelBtn.clicked.connect(self.close)
+
     def load_password(self, new_pass):
         self._password = new_pass
         self.createRadioBtn.setChecked(True)
@@ -97,12 +104,6 @@ class AqPasswordFrame(QFrame):
                 self.show_change_if()
 
         self.uiChanged.emit()
-
-        # new_height = self.ui.headerFrame.sizeHint().height() + \
-        #     self.ui.centerFrame.sizeHint().height() + \
-        #     self.ui.footerFrame.sizeHint().height() + self.ui_title.toolboxFrame.height() + 20
-        # self.setMinimumHeight(new_height)
-        # self.resize_MainWindow('%', '%', '%', new_height)
         
     def show_reset_if(self):
         self.currentPassLabel.show()
@@ -139,4 +140,51 @@ class AqPasswordFrame(QFrame):
         self.resetBtn.hide()
         self.createBtn.hide()
         self.changeBtn.show()
+
+    def check_password_correct(self, user_pass):
+        if user_pass == self._password:
+            return True
+        else:
+            return False
+
+    def check_passwords_match(self):
+        new_pass = self.newPassLineFrame.text()
+        r_new_pass = self.rNewPassLineFrame.text()
+        if new_pass is not None and new_pass != '' and \
+            r_new_pass is not None and r_new_pass != '':
+            if new_pass == r_new_pass:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def create_btn_clicked(self):
+        if self.check_passwords_match():
+            pass
+        else:
+            self.show_not_match_pass_label()
+
+    def change_btn_clicked(self):
+        if self.check_password_correct(self.currentPassLineFrame.text()):
+            if self.check_passwords_match():
+                pass
+            else:
+                self.show_not_match_pass_label()
+        else:
+            self.show_incorrect_pass_label()
+
+    def reset_btn_clicked(self):
+        if self.check_password_correct(self.currentPassLineFrame.text()):
+            pass
+        else:
+            self.show_incorrect_pass_label()
+
+    def show_incorrect_pass_label(self):
+        self.wrongPassLabel.show()
+        QTimer.singleShot(3000, self.wrongPassLabel.hide)
+
+    def show_not_match_pass_label(self):
+        self.notMatchLabel.show()
+        QTimer.singleShot(3000, self.notMatchLabel.hide)
         

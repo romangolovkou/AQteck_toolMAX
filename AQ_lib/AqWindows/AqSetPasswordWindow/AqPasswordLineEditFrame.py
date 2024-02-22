@@ -19,3 +19,6 @@ class AqPasswordLineEditFrame(QFrame):
             self.passLineEdit.setEchoMode(QLineEdit.Normal)
         else:
             self.passLineEdit.setEchoMode(QLineEdit.Password)
+
+    def text(self):
+        return self.passLineEdit.text()

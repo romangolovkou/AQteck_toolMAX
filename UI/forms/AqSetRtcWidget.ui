@@ -66,7 +66,7 @@ QComboBox{
 	border-top: 1px solid #9ef1d3;
  	border-bottom: 1px solid #5bb192;
 	border-right: 1px solid #5bb192;
- 	color: #D0D0D0;
+ 	color: #FFFFFF;
 	background-color: #2b2d30;
 	border-radius: 4px;
 }
