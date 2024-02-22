@@ -4,7 +4,7 @@ import threading
 import serial
 from PySide6.QtCore import Qt, QSettings, QThread, Signal, QEvent, QPoint, QTimer
 from PySide6.QtGui import QColor, QFont
-from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame, QWidget, QLabel
+from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame, QWidget, QLabel, QLineEdit
 
 import AqBaseDevice
 import AqDeviceFabrica
@@ -660,6 +660,7 @@ class AqPasswordWidget(AqDialogTemplate):
         self.adjustSize()
         self.ui.okBtn.clicked.connect(self.try_password)
         self.ui.cancelBtn.clicked.connect(self.close)
+        self.ui.passLineFrame.prepare_ui()
 
     def try_password(self):
         self.password = self.ui.passLineEdit.text()
