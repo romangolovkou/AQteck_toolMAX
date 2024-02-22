@@ -536,3 +536,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
     def set_password(self, password: str):
         self._password = password
+
+    def write_password(self, new_password):
+

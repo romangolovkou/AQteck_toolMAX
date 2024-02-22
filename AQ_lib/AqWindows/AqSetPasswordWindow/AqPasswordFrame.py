@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QFrame, QLabel, QPushButton, QLineEdit, QRadioButt
 
 class AqPasswordFrame(QFrame):
     uiChanged = Signal()
+    newPasswordReady = Signal(str)
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -161,14 +162,14 @@ class AqPasswordFrame(QFrame):
 
     def create_btn_clicked(self):
         if self.check_passwords_match():
-            pass
+            self.newPasswordReady.emit(self.newPassLineFrame.text())
         else:
             self.show_not_match_pass_label()
 
     def change_btn_clicked(self):
         if self.check_password_correct(self.currentPassLineFrame.text()):
             if self.check_passwords_match():
-                pass
+                self.newPasswordReady.emit(self.newPassLineFrame.text())
             else:
                 self.show_not_match_pass_label()
         else:
@@ -176,7 +177,7 @@ class AqPasswordFrame(QFrame):
 
     def reset_btn_clicked(self):
         if self.check_password_correct(self.currentPassLineFrame.text()):
-            pass
+            self.newPasswordReady.emit('')
         else:
             self.show_incorrect_pass_label()
 

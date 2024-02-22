@@ -58,5 +58,5 @@ def show_set_rtc():
 def show_set_password():
     if AppCore.Core.session.cur_active_device is not None:
         widget = AqSetPasswordWindow(Ui_AqSetPasswordWidget)
-        widget.load_password(AppCore.Core.session.cur_active_device.get_password())
+        widget.set_working_device(AppCore.Core.session.cur_active_device)
         widget.exec()
