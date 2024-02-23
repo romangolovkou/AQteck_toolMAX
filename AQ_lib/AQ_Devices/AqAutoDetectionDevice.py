@@ -43,6 +43,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     _system_file = {
         'reboot':       [0xDEAD, 0, 40, False],
         'status':       [0x0001, 0, 248, True],
+        'password':     [0x0010, 0, 248, False],
         'default_prg':  [0xFFE0, 0, 248, True]  # file_size will be changed later in code
     }
 
@@ -538,4 +539,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._password = password
 
     def write_password(self, new_password):
-
+        record_data = new_password.encode('1251')
+        item = self.system_params_dict.get('password', None)
+        item.value = record_data
+        file_size = (len(record_data) // 2) + (len(record_data) % 2)
+        if file_size == 0:
+            # Для порожньої строки (Скидання паролю)
+            file_size = 4
+        item.set_file_size(file_size)
+        self.write_file(item)

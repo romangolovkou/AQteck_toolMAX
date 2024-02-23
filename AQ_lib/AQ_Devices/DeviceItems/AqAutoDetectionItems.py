@@ -233,7 +233,7 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         attr = self.get_param_attributes()
         attr['file_size'] = new_file_size
         self.setData(attr, Qt.UserRole)
-        print('aaaaa')
+        print(f'new_file_size: {new_file_size}')
 
     def __get_hash(self):
         userPass = self.__get_password()
