@@ -430,7 +430,7 @@ class AqModbusConnect(AqConnect):
             # незрозумілий пустий файл потрібно передати у кінці
             request.record_number = param_attributes.get('file_size', '')
             request.record_length = 0
-            request.record_data = b'\x00'
+            request.record_data = b'' #b'\x00\x00'
             try:
                 result = await self.client.write_file_record(self.slave_id, [request])
 
