@@ -22,6 +22,7 @@ class AqSetPasswordWindow(AqDialogTemplate):
         self.ui.passwordFrame.prepare_ui()
         self.ui.passwordFrame.uiChanged.connect(self.resize_by_ui_changed)
         self.ui.passwordFrame.newPasswordReady.connect(self.write_new_password)
+        self.ui.passwordFrame.close_signal.connect(self.close)
 
     def set_working_device(self, device: AqBaseDevice):
         self._workingDevice = device

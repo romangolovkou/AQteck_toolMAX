@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QFrame, QLabel, QPushButton, QLineEdit, QRadioButt
 class AqPasswordFrame(QFrame):
     uiChanged = Signal()
     newPasswordReady = Signal(str)
+    close_signal = Signal()
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -82,7 +83,7 @@ class AqPasswordFrame(QFrame):
         self.createBtn.clicked.connect(self.create_btn_clicked)
         self.changeBtn.clicked.connect(self.change_btn_clicked)
         self.resetBtn.clicked.connect(self.reset_btn_clicked)
-        self.cancelBtn.clicked.connect(self.close)
+        self.cancelBtn.clicked.connect(self.close_signal.emit)
 
     def load_password(self, new_pass):
         self._password = new_pass
