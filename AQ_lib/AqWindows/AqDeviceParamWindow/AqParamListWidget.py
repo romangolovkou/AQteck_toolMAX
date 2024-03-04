@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidg
 import ModbusTableDataFiller
 from AqWindowTemplate import AqDialogTemplate
 from AqSettingsFunc import get_last_path, save_last_path
-from DeviceModels import AqDeviceParamListModel
+from AqDeviceParamListModel import AqDeviceParamListModel
 
 
 class AqParamListWidget(AqDialogTemplate):

@@ -15,10 +15,8 @@ from AqDeviceInfoModel import AqDeviceInfoModel
 from AqDeviceStrings import get_translated_string
 from AqParser import build_item
 from AqTreeViewItemModel import AqTreeItemModel
-from SystemLibrary.AqModbusTips import swap_bytes_at_registers, remove_empty_bytes, \
-    reverse_registers
 
-from SystemLibrary.AqAutoDetectionLibrary import get_containers_count, \
+from AqAutoDetectionLibrary import get_containers_count, \
     get_containers_offset, get_storage_container, parse_tree
 
 
