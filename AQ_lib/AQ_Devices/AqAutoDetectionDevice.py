@@ -13,7 +13,7 @@ from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
 from AqDeviceInfoModel import AqDeviceInfoModel
 from AqDeviceStrings import get_translated_string
-from AqParser import build_item
+from AqParser import build_item, build_file_item
 from AqTreeViewItemModel import AqTreeItemModel
 
 from AqAutoDetectionLibrary import get_containers_count, \
@@ -37,12 +37,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False]
     }
 
-    # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only]
+    # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only, File Type]
     _system_file = {
-        'reboot':       [0xDEAD, 0, 40, False],
-        'status':       [0x0001, 0, 248, True],
-        'password':     [0x0010, 0, 248, False],
-        'default_prg':  [0xFFE0, 0, 248, True]  # file_size will be changed later in code
+        'reboot':       [0xDEAD, 0, 40, False, 'AqAutoDetectModbusFileItem'],
+        'status':       [0x0001, 0, 248, True, 'AqAutoDetectModbusFileItem'],
+        'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem'],
+        'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem']  # file_size will be changed later in code
     }
 
     system_params_dict = dict()
@@ -159,7 +159,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
             else:
                 param_attributes['R_Only'] = 0
             param_attributes['W_Only'] = 0
-            self.system_params_dict[keys_list[i]] = AqAutoDetectModbusFileItem(param_attributes, self.get_password)
+            self.system_params_dict[keys_list[i]] = build_file_item(self._system_file[keys_list[i]][4],
+                                                                    param_attributes, self.get_password)
             self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
 
     def __parse_default_prg(self):

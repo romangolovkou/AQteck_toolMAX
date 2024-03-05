@@ -172,7 +172,7 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         data_to_write = padded_data + length.to_bytes(4, byteorder='little')
         data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
 
-        encrypted_record_data = self.__encrypt_data(data_to_write)
+        encrypted_record_data = self._encrypt_data(data_to_write)
         return encrypted_record_data
 
     def unpack(self, data):
@@ -219,7 +219,7 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
 
         return decrypted_data
 
-    def __encrypt_data(self, data):
+    def _encrypt_data(self, data):
         # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
         cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.key)
         encrypted_data = cipher.encrypt(data)
@@ -291,6 +291,25 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
             self._value = new_value
         else:
             self.param_status = 'error'
+
+
+class AqAutoDetectPasswordFileItem(AqAutoDetectModbusFileItem):
+    def __init__(self, param_attributes, get_password=None):
+        super().__init__(param_attributes, get_password)
+
+    def pack(self):
+        record_data = self.value
+        crc = Crc32().calculate(record_data)
+        length = len(record_data)
+        # Выравнивание длины исходных данных
+        pad_length = 8 - (len(record_data) % 8)
+        padded_data = record_data + bytes([0x00] * pad_length)
+
+        # data_to_write = padded_data + length.to_bytes(4, byteorder='little')
+        # data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
+
+        encrypted_record_data = self._encrypt_data(padded_data)
+        return encrypted_record_data
 
 
 class AqAutoDetectStringParamItem(AqStringParamItem, AqModbusItem):

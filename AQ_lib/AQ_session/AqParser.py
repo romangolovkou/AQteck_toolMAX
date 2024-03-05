@@ -125,9 +125,18 @@ def parse_parameter(config_string: str):
         return 'parsing_err'
 
 
-def build_item(item_class: str, param_attributes: dict):
+def build_item(item_class: str, param_attributes: dict, ):
     try:
         param_item = globals()[str(item_class)](param_attributes)
+        return param_item
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        raise Exception(e)
+
+
+def build_file_item(item_class: str, param_attributes: dict, pass_handler):
+    try:
+        param_item = globals()[str(item_class)](param_attributes, pass_handler)
         return param_item
     except Exception as e:
         print(f"Error occurred: {str(e)}")
