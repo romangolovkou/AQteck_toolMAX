@@ -428,6 +428,8 @@ class AqModbusConnect(AqConnect):
             # WARNING TODO:!!!!  !!!!!!!!
             # Тимчасова вставка для перевірки роботи файлу ребут,
             # незрозумілий пустий файл потрібно передати у кінці
+            #
+            # Update: Порожній файл передається в кінці запису будь якого файлу!
             request.record_number = param_attributes.get('file_size', '')
             request.record_length = 0
             request.record_data = b'' #b'\x00\x00'
