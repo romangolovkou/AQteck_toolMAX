@@ -135,7 +135,7 @@ class AqConnect(QObject):
             # Формируем запрос
             request_stack.append(request)
 
-        if method == 'write':
+        if method == 'write' or method == 'write_file':
             self.RequestGroupQueue.appendleft(request_stack)
         else:
             self.RequestGroupQueue.append(request_stack)
@@ -423,7 +423,7 @@ class AqModbusConnect(AqConnect):
                 except Exception as e:
                     print(f"Error occurred: {str(e)}")
                     item.confirm_writing(False, 'modbus_error')
-                    return
+                    return 'error'
 
             # WARNING TODO:!!!!  !!!!!!!!
             # Тимчасова вставка для перевірки роботи файлу ребут,
