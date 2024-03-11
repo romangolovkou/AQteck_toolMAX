@@ -110,6 +110,17 @@ background-color: #1f232a;
 	background-color: #2c313c;
 }
 
+#footerMessageLabel{
+	border-radius: 15px;
+	border-top: 1px solid #101010;
+	border-left: 1px solid #101010;
+	border-right: 1px solid #101010;
+	border-bottom: 1px solid #101010;
+	background-color: #000000;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 #rightMenuSubContainer QToolButton::hover {
 	color: #FFFFFF;
 	font-weight: bold;
@@ -1511,6 +1522,11 @@ background-color: #1f232a;
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="currentIndex">
                 <number>0</number>
                </property>
@@ -1762,6 +1778,76 @@ background-color: #1f232a;
                    <enum>Qt::ToolButtonTextOnly</enum>
                   </property>
                  </widget>
+                </item>
+                <item>
+                 <widget class="AqFooterMessageFrame" name="AqMessageFrame">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_12">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>15</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item alignment="Qt::AlignLeft">
+                    <widget class="QLabel" name="footerMessageLabel">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>600</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>11</pointsize>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                 <item>
                  <spacer name="horizontalSpacer">
@@ -2645,6 +2731,12 @@ background-color: #1f232a;
    <class>QCustomSlideMenu</class>
    <extends>QWidget</extends>
    <header location="global">QCustomSlideMenu.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AqFooterMessageFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">AqFooterMessageFrame.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

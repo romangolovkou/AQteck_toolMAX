@@ -13,8 +13,9 @@ from AqDeviceParamListModel import AqDeviceParamListModel
 
 
 class AqBaseDevice(ABC):
-    def __init__(self, event_manager, connect: AqConnect):
+    def __init__(self, event_manager, message_manager, connect: AqConnect):
         self._event_manager = event_manager
+        self._message_manager = message_manager
         self._local_event_manager = None
         self._device_tree = None
         self._connect = connect
@@ -253,6 +254,7 @@ class AqBaseDevice(ABC):
 
     def update_param_callback(self):
         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        self._message_manager.send_message('main_footer_message', 'Read/Write OK')
         with self._core_cv:
             self._core_cv.notify()
         self._update_param_stack.clear()

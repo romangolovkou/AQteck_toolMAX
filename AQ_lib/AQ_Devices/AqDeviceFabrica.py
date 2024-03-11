@@ -16,10 +16,12 @@ PATH = '110_device_conf/'
 
 class DeviceCreator(object):
     event_manager = None
+    message_manager = None
     com_ports =None
     @classmethod
-    def init(cls, _event_manager):
+    def init(cls, _event_manager, _message_manager):
         cls.event_manager = _event_manager
+        cls.message_manager = _message_manager
 
     @classmethod
     def get_protocol_list(cls):
@@ -80,7 +82,7 @@ class DeviceCreator(object):
         device_type = param_dict.get('device_type')
         if device_type == 'AqAutoDetectionDevice':
             try:
-                device = AqAutoDetectionDevice(cls.event_manager, connect)
+                device = AqAutoDetectionDevice(cls.event_manager, cls.message_manager, connect)
             except Exception as e:
                 print(f"{str(e)}")
                 device = None
