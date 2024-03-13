@@ -1,4 +1,4 @@
-from PySide6.QtCore import QCoreApplication, Signal
+from PySide6.QtCore import QCoreApplication
 
 import AqUiWorker
 from Custom_Widgets import QMainWindow, loadJsonStyle
@@ -10,8 +10,6 @@ version_path = "version.txt"
 
 
 class AqMainWindow(QMainWindow):
-
-    message_signal = Signal(str)
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -46,11 +44,6 @@ class AqMainWindow(QMainWindow):
 
         # TODO: тимчасове, потім видалити
         self.ui.headerMenuFrame.hide()
-
-        self.ui.AqMessageFrame.prepare_ui()
-        Core.message_manager.register_address_handler('main_footer_message', self.message_signal.emit)
-        self.ui.firmwareUpdBtn.clicked.connect(lambda: Core.message_manager.send_message('main_footer_message', 'hello test hello test hello test hello test'))
-        self.message_signal.connect(self.ui.AqMessageFrame.show_message)
 
     def floating_menu_customize(self):
         device = Core.session.cur_active_device
