@@ -150,7 +150,8 @@ class AqBaseDevice(ABC):
                 self._message_require_stack.append({'method': 'read', 'stack': self._stack_to_read.copy()})
             self._stack_to_read.clear()
 
-    def write_parameters(self, items=None):
+    def write_parameters(self, items=None, message_feedback_flag=False):
+        from AppCore import Core
         if items is None:
             root = self.device_tree.invisibleRootItem()
             for row in range(root.rowCount()):
@@ -164,7 +165,12 @@ class AqBaseDevice(ABC):
 
         if len(self._stack_to_write) > 0:
             self._connect.create_param_request('write', self._stack_to_write)
+            if message_feedback_flag:
+                self._message_require_stack.append({'method': 'write', 'stack': self._stack_to_write.copy()})
             self._stack_to_write.clear()
+        else:
+            Core.message_manager.send_main_message("Warning", f'{self.name} no has changed params to write. '
+                                                              f'Please read params, set new value and try again.')
 
     def read_parameter(self, item):
         """Read parameter from device"""
@@ -266,10 +272,12 @@ class AqBaseDevice(ABC):
                             msg_status = 'error'
                             break
 
+                    method = str(msg_require['method'])
                     if msg_status == 'ok':
-                        Core.message_manager.send_main_message("Success", f'{self.name}  Read successful')
+                        method = msg_require['method']
+                        Core.message_manager.send_main_message("Success", f'{self.name}  {method.capitalize()} successful')
                     else:
-                        Core.message_manager.send_main_message("Error", f'{self.name}  Read failed. One or more params can`t read')
+                        Core.message_manager.send_main_message("Error", f'{self.name}  {method.capitalize()} failed. One or more params can`t {method}')
 
                     self._message_require_stack.remove(msg_require)
         with self._core_cv:

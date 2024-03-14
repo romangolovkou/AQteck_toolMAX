@@ -57,7 +57,7 @@ class AQ_CurrentSession(QObject):
 
     def write_params_cur_active_device(self):
         if self.cur_active_device is not None:
-            self.cur_active_device.write_parameters()
+            self.cur_active_device.write_parameters(message_feedback_flag=True)
 
     def delete_cur_active_device(self):
         if self.cur_active_device is not None:
