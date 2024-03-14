@@ -53,7 +53,7 @@ class AQ_CurrentSession(QObject):
 
     def read_params_cur_active_device(self):
         if self.cur_active_device is not None:
-            self.cur_active_device.read_parameters()
+            self.cur_active_device.read_parameters(message_feedback_flag=True)
 
     def write_params_cur_active_device(self):
         if self.cur_active_device is not None:

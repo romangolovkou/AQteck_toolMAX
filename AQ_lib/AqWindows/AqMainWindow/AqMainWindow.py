@@ -1,7 +1,10 @@
-from PySide6.QtCore import QCoreApplication
+from functools import partial
+
+from PySide6.QtCore import QCoreApplication, Signal
 
 import AqUiWorker
 from Custom_Widgets import QMainWindow, loadJsonStyle
+from Custom_Widgets.QCustomModals import QCustomModals
 from AQ_EventManager import AQ_EventManager
 from AppCore import Core
 from ui_form import Ui_MainWindow
@@ -10,6 +13,8 @@ version_path = "version.txt"
 
 
 class AqMainWindow(QMainWindow):
+    message_signal = Signal(str, str)
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -44,6 +49,25 @@ class AqMainWindow(QMainWindow):
 
         # TODO: тимчасове, потім видалити
         self.ui.headerMenuFrame.hide()
+        self.ui.firmwareUpdBtn.clicked.connect(self.test_modal)
+
+        self.message_signal.connect(partial(Core.message_manager.show_message, self))
+        Core.message_manager.subscribe(self.message_signal.emit)
+
+
+
+    def test_modal(self):
+        myModal = QCustomModals.InformationModal(
+            title="Updating dashboard",
+            parent=self,
+            position='bottom-center',
+            closeIcon="Icons/Close.png",
+            modalIcon="UI/icons/AQico_silver.png",
+            description="Refreshing dashboard information",
+            isClosable=True,
+            duration=3000
+        )
+        myModal.show()
 
     def floating_menu_customize(self):
         device = Core.session.cur_active_device

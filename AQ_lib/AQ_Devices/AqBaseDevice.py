@@ -22,6 +22,7 @@ class AqBaseDevice(ABC):
         self._update_param_stack = list()
         self._stack_to_read = list()
         self._stack_to_write = list()
+        self._message_require_stack = list()
         self._core_cv = threading.Condition()
         self.__create_local_event_manager()
         self._connect.setRequestGroupProceedDoneCallback(self.update_param_callback)
@@ -126,7 +127,7 @@ class AqBaseDevice(ABC):
         if args[0] == self:
             self._is_inited = True
 
-    def read_parameters(self, items=None):
+    def read_parameters(self, items=None, message_feedback_flag=False):
         if items is None:
             root = self._device_tree.invisibleRootItem()
             for row in range(root.rowCount()):
@@ -145,6 +146,8 @@ class AqBaseDevice(ABC):
                   + ' maked request. Request size = '
                   + str(len(self._stack_to_read)))
             self._connect.create_param_request('read', self._stack_to_read)
+            if message_feedback_flag:
+                self._message_require_stack.append({'method': 'read', 'stack': self._stack_to_read.copy()})
             self._stack_to_read.clear()
 
     def write_parameters(self, items=None):
@@ -252,7 +255,23 @@ class AqBaseDevice(ABC):
             self._update_param_stack.append(item)
 
     def update_param_callback(self):
+        from AppCore import Core
         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        if len(self._message_require_stack) > 0:
+            for msg_require in self._message_require_stack:
+                if self._update_param_stack[::-1] == msg_require['stack']:
+                    msg_status = 'ok'
+                    for param in self._update_param_stack:
+                        if param.get_status() != 'ok':
+                            msg_status = 'error'
+                            break
+
+                    if msg_status == 'ok':
+                        Core.message_manager.send_main_message("Success", f'{self.name}  Read successful')
+                    else:
+                        Core.message_manager.send_main_message("Error", f'{self.name}  Read failed. One or more params can`t read')
+
+                    self._message_require_stack.remove(msg_require)
         with self._core_cv:
             self._core_cv.notify()
         self._update_param_stack.clear()
