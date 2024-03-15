@@ -145,9 +145,8 @@ class AqBaseDevice(ABC):
                   + self.info('address')
                   + ' maked request. Request size = '
                   + str(len(self._stack_to_read)))
-            self._connect.create_param_request('read', self._stack_to_read)
-            if message_feedback_flag:
-                self._message_require_stack.append({'method': 'read', 'stack': self._stack_to_read.copy()})
+            self._connect.create_param_request('read', self._stack_to_read,
+                                               message_feedback_flag=message_feedback_flag)
             self._stack_to_read.clear()
 
     def write_parameters(self, items=None, message_feedback_flag=False):
@@ -164,9 +163,8 @@ class AqBaseDevice(ABC):
                 self.__write_item(items[i])
 
         if len(self._stack_to_write) > 0:
-            self._connect.create_param_request('write', self._stack_to_write)
-            if message_feedback_flag:
-                self._message_require_stack.append({'method': 'write', 'stack': self._stack_to_write.copy()})
+            self._connect.create_param_request('write', self._stack_to_write,
+                                               message_feedback_flag=message_feedback_flag)
             self._stack_to_write.clear()
         else:
             Core.message_manager.send_main_message("Warning", f'{self.name} no has changed params to write. '
@@ -260,26 +258,39 @@ class AqBaseDevice(ABC):
         if item not in self._update_param_stack:
             self._update_param_stack.append(item)
 
-    def update_param_callback(self):
+    def update_param_callback(self, message_feedback_flag=False, method=None):
         from AppCore import Core
         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-        if len(self._message_require_stack) > 0:
-            for msg_require in self._message_require_stack:
-                if self._update_param_stack[::-1] == msg_require['stack']:
-                    msg_status = 'ok'
-                    for param in self._update_param_stack:
-                        if param.get_status() != 'ok':
-                            msg_status = 'error'
-                            break
+        if message_feedback_flag:
+            if len(self._update_param_stack) > 0:
+                msg_status = 'ok'
+                for param in self._update_param_stack:
+                    if param.get_status() != 'ok':
+                        msg_status = 'error'
+                        break
 
-                    method = str(msg_require['method'])
+                modal_type = "Success" if msg_status == 'ok' else "Error"
+
+                if method == 'read_param':
                     if msg_status == 'ok':
-                        method = msg_require['method']
-                        Core.message_manager.send_main_message("Success", f'{self.name}  {method.capitalize()} successful')
+                        Core.message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Read successful')
                     else:
-                        Core.message_manager.send_main_message("Error", f'{self.name}  {method.capitalize()} failed. One or more params can`t {method}')
+                        Core.message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Read failed. One or more params failed')
+                elif method == 'write_param':
+                    if msg_status == 'ok':
+                        Core.message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Write successful')
+                    else:
+                        Core.message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Write failed. One or more params failed')
+                elif method == 'read_file' or method == 'write_file':
+                    file_item = self._update_param_stack[0]
+                    Core.message_manager.send_main_message(modal_type, f'{self.name}. {file_item.get_msg_string()}')
+                else:
+                    Core.message_manager.send_main_message("Warning", 'Unknown operation')
 
-                    self._message_require_stack.remove(msg_require)
         with self._core_cv:
             self._core_cv.notify()
         self._update_param_stack.clear()

@@ -37,12 +37,18 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False]
     }
 
-    # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only, File Type]
+
+    #Create message srtings for files if need (for show in modal message).
+    #Must be dict vs keys 'ok', 'error', and other if need.
+    reboot_msg_dict = {'ok': 'Successfully reboot',
+                       'error': 'Reboot failed. Please try again.'}
+
+    # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only, File Type, message_dict]
     _system_file = {
-        'reboot':       [0xDEAD, 0, 40, False, 'AqAutoDetectModbusFileItem'],
-        'status':       [0x0001, 0, 248, True, 'AqAutoDetectModbusFileItem'],
-        'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem'],
-        'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem']  # file_size will be changed later in code
+        'reboot':       [0xDEAD, 0, 40, False, 'AqAutoDetectModbusFileItem', reboot_msg_dict],
+        'status':       [0x0001, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem', None],
+        'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None]  # file_size will be changed later in code
     }
 
     system_params_dict = dict()
@@ -160,7 +166,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
                 param_attributes['R_Only'] = 0
             param_attributes['W_Only'] = 0
             self.system_params_dict[keys_list[i]] = build_file_item(self._system_file[keys_list[i]][4],
-                                                                    param_attributes, self.get_password)
+                                                                    param_attributes, self.get_password,
+                                                                    self._system_file[keys_list[i]][5])
             self.system_params_dict[keys_list[i]].set_local_event_manager(self._local_event_manager)
 
     def __parse_default_prg(self):
@@ -283,22 +290,18 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return item.get_status()
 
     def read_file(self, item):
-        # if len(self._request_count) == 0:
-            if item is not None:
-                self.read_parameter(item)
-            if len(self._stack_to_read) > 0:
-                # self._request_count.append(len(self._stack_to_read))
-                self._connect.create_param_request('read_file', self._stack_to_read)
-                self._stack_to_read.clear()
+        if item is not None:
+            self.read_parameter(item)
+        if len(self._stack_to_read) > 0:
+            self._connect.create_param_request('read_file', self._stack_to_read)
+            self._stack_to_read.clear()
 
-    def write_file(self, item):
-        # if len(self._request_count) == 0:
-            if item is not None:
-                self.write_parameter(item)
-            if len(self._stack_to_write) > 0:
-                # self._request_count.append(len(self._stack_to_read))
-                self._connect.create_param_request('write_file', self._stack_to_write)
-                self._stack_to_write.clear()
+    def write_file(self, item, message_feedback_flag=False):
+        if item is not None:
+            self.write_parameter(item)
+        if len(self._stack_to_write) > 0:
+            self._connect.create_param_request('write_file', self._stack_to_write, message_feedback_flag)
+            self._stack_to_write.clear()
 
     # def __read_string(self, name):
     #     try:
@@ -313,36 +316,36 @@ class AqAutoDetectionDevice(AqBaseDevice):
     #
     #     return result_str
 
-    def __read_file(self, name): #Now Not Use
-        record_size = 124
-        left_to_read = self._system_file[name][2] // 2
-        encrypt_file = bytearray()
-
-        record_number = self._system_file[name][1]
-        while left_to_read:
-            read_size = record_size if left_to_read > record_size else left_to_read
-            try:
-                result = self._connect.read_file_record(self._system_file[name][0], record_number, read_size)
-            except Exception as e:
-                print(f"Error occurred: {str(e)}")
-                self._status = 'connect_err'
-                return None
-            record_number += read_size
-            left_to_read -= read_size
-            encrypt_file += result.records[0].record_data
-
-        try:
-            # Перевірка на кратність 8 байтам, потрібно для DES
-            if (len(encrypt_file) % 8) > 0:
-                padding = 8 - (len(encrypt_file) % 8)
-                encrypt_file = encrypt_file + bytes([padding] * padding)
-            decrypt_file = self.__decrypt_data(encrypt_file)
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            self._status = 'decrypt_err'
-            return None  # Помилка дешифрування
-
-        return decrypt_file
+    # def __read_file(self, name): #Now Not Use
+    #     record_size = 124
+    #     left_to_read = self._system_file[name][2] // 2
+    #     encrypt_file = bytearray()
+    #
+    #     record_number = self._system_file[name][1]
+    #     while left_to_read:
+    #         read_size = record_size if left_to_read > record_size else left_to_read
+    #         try:
+    #             result = self._connect.read_file_record(self._system_file[name][0], record_number, read_size)
+    #         except Exception as e:
+    #             print(f"Error occurred: {str(e)}")
+    #             self._status = 'connect_err'
+    #             return None
+    #         record_number += read_size
+    #         left_to_read -= read_size
+    #         encrypt_file += result.records[0].record_data
+    #
+    #     try:
+    #         # Перевірка на кратність 8 байтам, потрібно для DES
+    #         if (len(encrypt_file) % 8) > 0:
+    #             padding = 8 - (len(encrypt_file) % 8)
+    #             encrypt_file = encrypt_file + bytes([padding] * padding)
+    #         decrypt_file = self.__decrypt_data(encrypt_file)
+    #     except Exception as e:
+    #         print(f"Error occurred: {str(e)}")
+    #         self._status = 'decrypt_err'
+    #         return None  # Помилка дешифрування
+    #
+    #     return decrypt_file
 
     def __read_default_prg(self):
         # Read first page from file to determine file size
@@ -529,7 +532,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         record_data = text.encode('UTF-8')
         item = self.system_params_dict.get('reboot', None)
         item.value = record_data
-        self.write_file(item)
+        self.write_file(item, message_feedback_flag=True)
 
     def get_password(self):
         return self._password

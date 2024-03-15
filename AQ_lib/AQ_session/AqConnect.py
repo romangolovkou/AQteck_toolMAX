@@ -12,6 +12,7 @@ from pymodbus.pdu import ModbusResponse, ExceptionResponse
 
 from AQ_EventManager import AQ_EventManager
 from AqIsValidIpFunc import is_valid_ip
+from AqMessageManager import AqMessageManager
 
 
 class AqConnect(QObject):
@@ -22,6 +23,7 @@ class AqConnect(QObject):
         self.notify = notify
         self.requestGroupProceedDoneCallback = None
         self.RequestGroupQueue = deque()
+        self.message_manager = AqMessageManager.get_global_message_manager()
 
     @abstractmethod
     async def open(self):
@@ -80,11 +82,14 @@ class AqConnect(QObject):
 
     async def proceedOneRequestGroup(self):
         if len(self.RequestGroupQueue) > 0:
-            request_stack = self.RequestGroupQueue.popleft()
+            request_dict = self.RequestGroupQueue.popleft()
+            request_stack = request_dict['request_stack']
+            req_settings = request_dict['settings']
         else:
             print("WTF????")
             self.set_ready_flag()
             return
+        method = None if len(request_stack) == 0 else request_stack[0]['method'].__name__
         connect_result = await self.open()
         if connect_result is True:
             for i in range(len(request_stack)):
@@ -95,8 +100,13 @@ class AqConnect(QObject):
                 request = request_stack.pop()
                 self.proceed_failed_request(request)
             self.RequestGroupQueue.clear()
+            if req_settings.get('msg_feedback', False):
+                self.message_manager.send_main_message("Error", 'Can`t connect to device. '
+                                                                'Please check network settings and try again.')
         self.close()
-        self.requestGroupProceedDoneCallback()
+        self.requestGroupProceedDoneCallback(message_feedback_flag=req_settings.get('msg_feedback', False),
+                                             method=method)
+
         self.set_ready_flag()
 
     async def proceed_request(self, request):
@@ -115,8 +125,10 @@ class AqConnect(QObject):
         elif function.__name__ == 'write_param':
             item.confirm_writing(False, 'modbus_error')
 
-    def create_param_request(self, method, stack):
+    def create_param_request(self, method, stack, message_feedback_flag=False):
         request_stack = list()
+        req_settings_dict = dict()
+        request_dict = dict()
         for i in range(len(stack)):
             request = dict()
             if method == 'read':
@@ -135,10 +147,16 @@ class AqConnect(QObject):
             # Формируем запрос
             request_stack.append(request)
 
+        if message_feedback_flag:
+            req_settings_dict['msg_feedback'] = True
+
+        request_dict['settings'] = req_settings_dict
+        request_dict['request_stack'] = request_stack
+
         if method == 'write' or method == 'write_file':
-            self.RequestGroupQueue.appendleft(request_stack)
+            self.RequestGroupQueue.appendleft(request_dict)
         else:
-            self.RequestGroupQueue.append(request_stack)
+            self.RequestGroupQueue.append(request_dict)
 
         self.set_ready_flag()
 

@@ -156,10 +156,12 @@ class AqAutoDetectFloatParamItem(AqFloatParamItem, AqModbusItem):
         return param_value
 
 class AqAutoDetectModbusFileItem(AqModbusFileItem):
-    def __init__(self, param_attributes, get_password=None):
+    def __init__(self, param_attributes, get_password=None, msg_dict=None):
         super().__init__(param_attributes)
         self.key = b'superkey'
         self.__get_pass = get_password
+        self._msg_dict = msg_dict
+        self._msg_string = None
 
     def pack(self):
         record_data = self.value
@@ -292,10 +294,23 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         else:
             self.param_status = 'error'
 
+    def confirm_writing(self, result: bool, message=None):
+        """
+        The function must be called for each writing operation.
+        :param result: True - success writing, False - writing fail.
+        :param message: If need - error message.
+        :return:
+        """
+        super().confirm_writing(result, message)
+        self._msg_string = self._msg_dict.get(self.param_status, None)
+
+    def get_msg_string(self):
+        return self._msg_string
+
 
 class AqAutoDetectPasswordFileItem(AqAutoDetectModbusFileItem):
-    def __init__(self, param_attributes, get_password=None):
-        super().__init__(param_attributes, get_password)
+    def __init__(self, param_attributes, get_password=None, msg_dict=None):
+        super().__init__(param_attributes, get_password, msg_dict)
 
     def pack(self):
         record_data = self.value

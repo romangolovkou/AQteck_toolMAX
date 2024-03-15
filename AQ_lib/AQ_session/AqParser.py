@@ -134,9 +134,9 @@ def build_item(item_class: str, param_attributes: dict, ):
         raise Exception(e)
 
 
-def build_file_item(item_class: str, param_attributes: dict, pass_handler):
+def build_file_item(item_class: str, param_attributes: dict, pass_handler, msg_dict: dict):
     try:
-        param_item = globals()[str(item_class)](param_attributes, pass_handler)
+        param_item = globals()[str(item_class)](param_attributes, pass_handler, msg_dict)
         return param_item
     except Exception as e:
         print(f"Error occurred: {str(e)}")
