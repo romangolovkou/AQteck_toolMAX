@@ -5,7 +5,7 @@ import time
 
 from PySide6.QtCore import Qt
 
-from AqAutoDetectionItems import AqAutoDetectStringParamItem, AqAutoDetectModbusFileItem
+from AqAutoDetectionItems import AqAutoDetectStringParamItem, AqAutoDetectModbusFileItem, AqAutoDetectPasswordFileItem
 from AqBaseDevice import AqBaseDevice
 from AqBaseTreeItems import AqParamItem
 from AqCRC32 import Crc32
@@ -41,13 +41,15 @@ class AqAutoDetectionDevice(AqBaseDevice):
     #Create message srtings for files if need (for show in modal message).
     #Must be dict vs keys 'ok', 'error', and other if need.
     reboot_msg_dict = {'ok': 'Successfully reboot',
-                       'error': 'Reboot failed. Please try again.'}
+                       'error': 'Reboot failed. Please try again'}
+    password_msg_dict = {'ok': 'Password settings successfully updated',
+                         'error': 'Can`t write new password settings. Please try again'}
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only, File Type, message_dict]
     _system_file = {
         'reboot':       [0xDEAD, 0, 40, False, 'AqAutoDetectModbusFileItem', reboot_msg_dict],
         'status':       [0x0001, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
-        'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem', None],
+        'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem', password_msg_dict],
         'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None]  # file_size will be changed later in code
     }
 
@@ -303,49 +305,44 @@ class AqAutoDetectionDevice(AqBaseDevice):
             self._connect.create_param_request('write_file', self._stack_to_write, message_feedback_flag)
             self._stack_to_write.clear()
 
-    # def __read_string(self, name):
-    #     try:
-    #         # Выполняем запрос
-    #         response = self._connect.read_param(self.system_params_dict[name])
-    #     except Exception as e:
-    #         print(f"Error occurred: {str(e)}")
-    #         self._status = 'connect_err'
-    #         return None
-    #
-    #     result_str = self.system_params_dict[name].value
-    #
-    #     return result_str
+    def update_param_callback(self, message_feedback_flag=False, method=None):
+        self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        if message_feedback_flag:
+            if len(self._update_param_stack) > 0:
+                msg_status = 'ok'
+                for param in self._update_param_stack:
+                    if param.get_status() != 'ok':
+                        msg_status = 'error'
+                        break
 
-    # def __read_file(self, name): #Now Not Use
-    #     record_size = 124
-    #     left_to_read = self._system_file[name][2] // 2
-    #     encrypt_file = bytearray()
-    #
-    #     record_number = self._system_file[name][1]
-    #     while left_to_read:
-    #         read_size = record_size if left_to_read > record_size else left_to_read
-    #         try:
-    #             result = self._connect.read_file_record(self._system_file[name][0], record_number, read_size)
-    #         except Exception as e:
-    #             print(f"Error occurred: {str(e)}")
-    #             self._status = 'connect_err'
-    #             return None
-    #         record_number += read_size
-    #         left_to_read -= read_size
-    #         encrypt_file += result.records[0].record_data
-    #
-    #     try:
-    #         # Перевірка на кратність 8 байтам, потрібно для DES
-    #         if (len(encrypt_file) % 8) > 0:
-    #             padding = 8 - (len(encrypt_file) % 8)
-    #             encrypt_file = encrypt_file + bytes([padding] * padding)
-    #         decrypt_file = self.__decrypt_data(encrypt_file)
-    #     except Exception as e:
-    #         print(f"Error occurred: {str(e)}")
-    #         self._status = 'decrypt_err'
-    #         return None  # Помилка дешифрування
-    #
-    #     return decrypt_file
+                modal_type = "Success" if msg_status == 'ok' else "Error"
+
+                if method == 'read_param':
+                    if msg_status == 'ok':
+                        self._message_manager.send_main_message(modal_type,
+                                                                f'{self.name}. Read successful')
+                    else:
+                        self._message_manager.send_main_message(modal_type,
+                                                                f'{self.name}. Read failed. One or more params failed')
+                elif method == 'write_param':
+                    if msg_status == 'ok':
+                        self._message_manager.send_main_message(modal_type,
+                                                                f'{self.name}. Write successful')
+                    else:
+                        self._message_manager.send_main_message(modal_type,
+                                                                f'{self.name}. Write failed. One or more params failed')
+                elif method == 'read_file' or method == 'write_file':
+                    file_item = self._update_param_stack[0]
+                    self._message_manager.send_main_message(modal_type, f'{self.name}. {file_item.get_msg_string()}')
+                    #TODO: Тимчасовий костиль видалення хендлеру оновлення паролю у випадку успішної зміни.
+                    self._event_manager.unregister_event_handler('current_device_data_updated',
+                                                                 self.update_new_password_callback)
+                else:
+                    self._message_manager.send_main_message("Warning", 'Unknown operation')
+
+        with self._core_cv:
+            self._core_cv.notify()
+        self._update_param_stack.clear()
 
     def __read_default_prg(self):
         # Read first page from file to determine file size
@@ -392,28 +389,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
-
-    # def __decrypt_data(self, encrypted_data):
-    #     # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-    #     cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
-    #     decrypted_data = cipher.decrypt(encrypted_data)  # encrypted_data - зашифрованные данные
-    #
-    #     return decrypted_data
-    #
-    # def __encrypt_data(self, data):
-    #     # Используется стандарт шифроdания DES CBC(Cipher Block Chain)
-    #     cipher = DES.new(self.__get_hash(), DES.MODE_CBC, self.__get_key())
-    #     encrypted_data = cipher.encrypt(data)
-    #
-    #     return encrypted_data
-    #
-    # def __get_key(self):
-    #     # return self._info['password'] if self._info['password'] else b'superkey'
-    #     return self.info('password') if self.info('password') else b'superkey'
-    #
-    # def __get_hash(self):
-    #     # Ключ это свапнутая версия EMPTY_HASH из исходников котейнерной, в ПО контейнерной оригинал 0x24556FA7FC46B223
-    #     return b"\x23\xB2\x46\xFC\xA7\x6F\x55\x24"  # 0x23B246FCA76F5524"
 
     def get_configuration(self) -> AqDeviceConfig:
         config = AqDeviceConfig()
@@ -538,17 +513,25 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return self._password
 
     def set_password(self, password: str):
-        self._password = password
+        self._password = str(password)
 
     def write_password(self, new_password):
         record_data = new_password.encode('1251')
         item = self.system_params_dict.get('password', None)
         item.value = record_data
-        file_size = (len(record_data) // 2) + (len(record_data) % 2)
-        if file_size == 0:
-            # Для порожньої строки (Скидання паролю)
-            file_size = 4
-        else:
-            file_size = 8
+        file_size = None
         item.set_file_size(file_size)
-        self.write_file(item)
+
+        self._event_manager.register_event_handler('current_device_data_updated',
+                                                   self.update_new_password_callback)
+
+        self.write_file(item, message_feedback_flag=True)
+
+    def update_new_password_callback(self, device, item_stack):
+        if device == self:
+            if len(item_stack) == 1:
+                if isinstance(item_stack[0], AqAutoDetectPasswordFileItem):
+                    pass_file_item = item_stack[0]
+                    if pass_file_item.get_status() == 'ok':
+                        new_password = str(item_stack[0].value)[2:]
+                        self.set_password(new_password)

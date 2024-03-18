@@ -1,6 +1,7 @@
 import AppCore
 from AqAddDeviceWindow import AqAddDeviceWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
+from AqMessageManager import AqMessageManager
 from AqParamListWidget import AqParamListWidget
 from AqRtcWindow import AqRtcWindow
 from AqSetPasswordWidget import AqSetPasswordWindow
@@ -20,8 +21,11 @@ def show_device_info_window():
         # device_info = AppCore.Core.session.get_current_device_info
         dialog = AqDeviceInfoWidget(Ui_DeviceInfoDialog)
         info_model = AppCore.Core.session.cur_active_device.device_info_model
-        dialog.set_device_info_model(info_model)
-        dialog.exec()
+        if info_model is not None:
+            dialog.set_device_info_model(info_model)
+            dialog.exec()
+        else:
+            AqMessageManager.get_global_message_manager().send_main_message('Error', 'Can`t read device info')
 
 
 def show_add_device_window():

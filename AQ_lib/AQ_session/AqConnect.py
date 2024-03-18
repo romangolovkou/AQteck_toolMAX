@@ -424,6 +424,11 @@ class AqModbusConnect(AqConnect):
             start_record_num = param_attributes.get('start_record_num', '')
             left_to_write = param_attributes.get('file_size', '')
             record_data = item.data_for_network()
+            if left_to_write is None:
+                left_to_write = len(record_data)//2 + len(record_data) % 2
+
+            last_record_number = left_to_write
+
             while left_to_write > 0:
                 write_size = max_record_size if left_to_write > max_record_size else left_to_write
                 result = None
@@ -448,7 +453,7 @@ class AqModbusConnect(AqConnect):
             # незрозумілий пустий файл потрібно передати у кінці
             #
             # Update: Порожній файл передається в кінці запису будь якого файлу!
-            request.record_number = param_attributes.get('file_size', '')
+            request.record_number = last_record_number #param_attributes.get('file_size', '')
             request.record_length = 0
             request.record_data = b'' #b'\x00\x00'
             try:

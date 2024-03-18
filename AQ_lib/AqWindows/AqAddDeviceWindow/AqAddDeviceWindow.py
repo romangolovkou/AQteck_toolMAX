@@ -663,8 +663,12 @@ class AqPasswordWidget(AqDialogTemplate):
         self.ui.passLineFrame.prepare_ui()
 
     def try_password(self):
+        self.ui.okBtn.setEnabled(False)
         self.password = self.ui.passLineEdit.text()
-        self.start_reinit_with_pass()
+        if self.password != '':
+            self.start_reinit_with_pass()
+        else:
+            self.show_err_label()
 
     def start_reinit_with_pass(self):
         # Запускаем функцию connect_to_device в отдельном потоке
@@ -675,6 +679,7 @@ class AqPasswordWidget(AqDialogTemplate):
         self.reinit_thread.start()
 
     def reinit_successful(self, status):
+        self.ui.okBtn.setEnabled(True)
         if status == 'ok':
             self.callback(self.device, self.current_row)
             self.close()
@@ -682,9 +687,11 @@ class AqPasswordWidget(AqDialogTemplate):
             self.show_err_label()
 
     def reinit_finished(self):
+        self.ui.okBtn.setEnabled(True)
         pass
 
     def reinit_error(self):
+        self.ui.okBtn.setEnabled(True)
         pass
 
     def show_err_label(self):

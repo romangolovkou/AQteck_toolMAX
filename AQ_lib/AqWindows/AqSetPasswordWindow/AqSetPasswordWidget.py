@@ -38,3 +38,4 @@ class AqSetPasswordWindow(AqDialogTemplate):
 
     def write_new_password(self, new_password):
         self._workingDevice.write_password(new_password)
+        self.close()

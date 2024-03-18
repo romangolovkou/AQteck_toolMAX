@@ -262,17 +262,10 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
                 high = high & 0xFFFFFFFF
 
             low = hex(low)[2:]
-            if len(low) < 2:
-                low = '0' + low
+            low = low.zfill(8)
             low = bytes.fromhex(low)[::-1]
             high = hex(high)[2:]
-            if len(high) < 2:
-                # Вставка для вирівнювання строки для
-                # подальшого перетворення у гекс-байти
-                # (повинно мати розмір 4 байти)
-                # Проблема існує тільки коли пароль має довжину
-                # в 1 символ
-                high = '0000000' + high
+            high = high.zfill(8)
             high = bytes.fromhex(high)[::-1]
             hash = low + high
             return hash
