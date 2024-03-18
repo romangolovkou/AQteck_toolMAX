@@ -261,8 +261,19 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
                 high -= (high << 13) | (high >> 19)
                 high = high & 0xFFFFFFFF
 
-            low = bytes.fromhex(hex(low)[2:])[::-1]
-            high = bytes.fromhex(hex(high)[2:])[::-1]
+            low = hex(low)[2:]
+            if len(low) < 2:
+                low = '0' + low
+            low = bytes.fromhex(low)[::-1]
+            high = hex(high)[2:]
+            if len(high) < 2:
+                # Вставка для вирівнювання строки для
+                # подальшого перетворення у гекс-байти
+                # (повинно мати розмір 4 байти)
+                # Проблема існує тільки коли пароль має довжину
+                # в 1 символ
+                high = '0000000' + high
+            high = bytes.fromhex(high)[::-1]
             hash = low + high
             return hash
 
@@ -302,7 +313,8 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         :return:
         """
         super().confirm_writing(result, message)
-        self._msg_string = self._msg_dict.get(self.param_status, None)
+        if self._msg_dict is not None:
+            self._msg_string = self._msg_dict.get(self.param_status, None)
 
     def get_msg_string(self):
         return self._msg_string
@@ -314,16 +326,18 @@ class AqAutoDetectPasswordFileItem(AqAutoDetectModbusFileItem):
 
     def pack(self):
         record_data = self.value
-        crc = Crc32().calculate(record_data)
+        crc = Crc32().calculate(record_data) & 0xFFFFFFFF
         length = len(record_data)
         # Выравнивание длины исходных данных
         pad_length = 8 - (len(record_data) % 8)
         padded_data = record_data + bytes([0x00] * pad_length)
+        data_to_write = padded_data
 
-        # data_to_write = padded_data + length.to_bytes(4, byteorder='little')
-        # data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
+        if record_data != b'':
+            data_to_write = padded_data + length.to_bytes(4, byteorder='little')
+            data_to_write = data_to_write + crc.to_bytes(4, byteorder='little')
 
-        encrypted_record_data = self._encrypt_data(padded_data)
+        encrypted_record_data = self._encrypt_data(data_to_write)
         return encrypted_record_data
 
 

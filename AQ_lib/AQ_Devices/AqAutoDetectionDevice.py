@@ -548,5 +548,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         if file_size == 0:
             # Для порожньої строки (Скидання паролю)
             file_size = 4
+        else:
+            file_size = 8
         item.set_file_size(file_size)
         self.write_file(item)
