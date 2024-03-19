@@ -429,7 +429,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         model = None
         status_file = self.__read_status_file()
         if status_file != 'decrypt_err' and status_file != 'connect_err' and \
-                status_file != 'modbus_err':
+                status_file != 'modbus_err' and status_file is not None:
             data = self.__parse_status_file(status_file)
             model = self.__load_data_to_info_model(data)
 
