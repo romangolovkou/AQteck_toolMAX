@@ -8,10 +8,6 @@ from AqWindowTemplate import AqDialogTemplate
 
 
 class AqRtcWindow(AqDialogTemplate):
-    """
-    Widget require ui.generalInfoFrame and ui.operatingInfoFrame for work
-    Check names at your generated Ui
-    """
 
     def __init__(self, _ui, parent=None):
         super().__init__(parent)

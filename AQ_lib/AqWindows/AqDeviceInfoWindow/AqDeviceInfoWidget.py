@@ -4,7 +4,7 @@ from PySide6.QtGui import QStandardItemModel, QStandardItem
 from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
 
 from AqWindowTemplate import AqDialogTemplate
-from DeviceModels import AqDeviceInfoModel
+from AqDeviceInfoModel import AqDeviceInfoModel
 
 
 class AqDeviceInfoWidget(AqDialogTemplate):

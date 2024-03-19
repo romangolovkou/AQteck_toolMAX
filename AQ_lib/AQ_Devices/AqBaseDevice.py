@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt, QModelIndex
 from AqConnect import AqConnect
 from AqBaseTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
+from AqMessageManager import AqMessageManager
 from AqTreeViewItemModel import AqTreeItemModel
 from AqDeviceConfig import AqDeviceConfig
 from AqDeviceInfoModel import AqDeviceInfoModel
@@ -16,12 +17,14 @@ class AqBaseDevice(ABC):
     def __init__(self, event_manager, connect: AqConnect):
         self._event_manager = event_manager
         self._local_event_manager = None
+        self._message_manager = AqMessageManager.get_global_message_manager()
         self._device_tree = None
         self._connect = connect
         self._params_list = list()
         self._update_param_stack = list()
         self._stack_to_read = list()
         self._stack_to_write = list()
+        self._message_require_stack = list()
         self._core_cv = threading.Condition()
         self.__create_local_event_manager()
         self._connect.setRequestGroupProceedDoneCallback(self.update_param_callback)
@@ -126,7 +129,7 @@ class AqBaseDevice(ABC):
         if args[0] == self:
             self._is_inited = True
 
-    def read_parameters(self, items=None):
+    def read_parameters(self, items=None, message_feedback_flag=False):
         if items is None:
             root = self._device_tree.invisibleRootItem()
             for row in range(root.rowCount()):
@@ -144,10 +147,11 @@ class AqBaseDevice(ABC):
                   + self.info('address')
                   + ' maked request. Request size = '
                   + str(len(self._stack_to_read)))
-            self._connect.create_param_request('read', self._stack_to_read)
+            self._connect.create_param_request('read', self._stack_to_read,
+                                               message_feedback_flag=message_feedback_flag)
             self._stack_to_read.clear()
 
-    def write_parameters(self, items=None):
+    def write_parameters(self, items=None, message_feedback_flag=False):
         if items is None:
             root = self.device_tree.invisibleRootItem()
             for row in range(root.rowCount()):
@@ -160,8 +164,12 @@ class AqBaseDevice(ABC):
                 self.__write_item(items[i])
 
         if len(self._stack_to_write) > 0:
-            self._connect.create_param_request('write', self._stack_to_write)
+            self._connect.create_param_request('write', self._stack_to_write,
+                                               message_feedback_flag=message_feedback_flag)
             self._stack_to_write.clear()
+        else:
+            self._message_manager.send_main_message("Warning", f'{self.name} no has changed params to write. '
+                                                              f'Please read params, set new value and try again.')
 
     def read_parameter(self, item):
         """Read parameter from device"""
@@ -251,8 +259,38 @@ class AqBaseDevice(ABC):
         if item not in self._update_param_stack:
             self._update_param_stack.append(item)
 
-    def update_param_callback(self):
+    def update_param_callback(self, message_feedback_flag=False, method=None):
         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
+        if message_feedback_flag:
+            if len(self._update_param_stack) > 0:
+                msg_status = 'ok'
+                for param in self._update_param_stack:
+                    if param.get_status() != 'ok':
+                        msg_status = 'error'
+                        break
+
+                modal_type = "Success" if msg_status == 'ok' else "Error"
+
+                if method == 'read_param':
+                    if msg_status == 'ok':
+                        self._message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Read successful')
+                    else:
+                        self._message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Read failed. One or more params failed')
+                elif method == 'write_param':
+                    if msg_status == 'ok':
+                        self._message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Write successful')
+                    else:
+                        self._message_manager.send_main_message(modal_type,
+                                                               f'{self.name}. Write failed. One or more params failed')
+                # elif method == 'read_file' or method == 'write_file':
+                #     file_item = self._update_param_stack[0]
+                #     self._message_manager.send_main_message(modal_type, f'{self.name}. {file_item.get_msg_string()}')
+                # else:
+                #     self._message_manager.send_main_message("Warning", 'Unknown operation')
+
         with self._core_cv:
             self._core_cv.notify()
         self._update_param_stack.clear()

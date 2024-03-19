@@ -169,7 +169,8 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                     current_catalog_levels[level].setFlags(Qt.ItemIsEnabled)
                     catalogs.append(current_catalog_levels[level])  # Добавление каталога в конец массива
                     # Создаем элементы внутри второго каталога
-                    root_item.appendRow(current_catalog_levels[level])
+                    if current_catalog_levels[level].rowCount() > 0:
+                        root_item.appendRow(current_catalog_levels[level])
                     del current_catalog_levels[-1]
                     catalog_cnt += 1
                     row_count = 0
@@ -450,7 +451,7 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         pos += 1
         param_attributes['ext_modul_prio'] = ext_modul_prio
         return pos
-    elif ID == 0x81 or ID == 0x82 or ID == 0x83 or ID == 0x84:
+    elif 0x81 <= ID <= 0x84:
         # Ім'я параметру
         name_length = param_descr[pos]
         parameter_name_b = param_descr[pos + 1:pos + 1 + name_length]
@@ -458,11 +459,12 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         pos = pos + 1 + name_length
         param_attributes['name'] = parameter_name
         return pos
-    elif ID == 0xD0 or ID == 0xD1 or ID == 0xD2 or ID == 0xD3 or ID == 0xD4:
+    elif 0xD0 <= ID <= 0xD4:
         # Посилання на ім'я вузла на різних мовах (невідомий дескриптор, поки що, пропускаємо)
         pos = pos + 2
         return pos
-    elif ID == 0x20 or ID == 0x21 or ID == 0x22 or ID == 0x23:
+    # elif ID == 0x20 or ID == 0x21 or ID == 0x22 or ID == 0x23 or ID == 0x24:
+    elif 0x20 <= ID <= 0x24:
         # Ім'я параметра для зовнішнього представлення MQTT та ін.
         mqtt_name_length = param_descr[pos]
         mqtt_parameter_name_b = param_descr[pos + 1:pos + 1 + mqtt_name_length]

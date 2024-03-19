@@ -17,6 +17,7 @@ a = Analysis(
                 'AQ_lib/AqWindows/AqWatchListWindow',
                 'AQ_lib/AqWindows/AqAddDeviceWindow',
                 'AQ_lib/AqWindows/AqRtcWindow',
+                'AQ_lib/AqWindows/AqSetPasswordWindow',
                 'AQ_lib/AqWindows/AqSetSlaveIdWindow',
                 'UI',
                 'UI/forms',

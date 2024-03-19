@@ -13,8 +13,6 @@ from AqWatchListCore import AqWatchListCore
 from AqWatchListTreeViewModel import AqWatchListTreeViewModel
 from AqWatchedItem import WatchedItem
 from AqWindowTemplate import AqDialogTemplate
-from AqSettingsFunc import get_last_path, save_last_path
-from DeviceModels import AqDeviceParamListModel
 
 
 class AqWatchListWidget(AqDialogTemplate):
