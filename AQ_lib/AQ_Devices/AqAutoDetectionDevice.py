@@ -513,7 +513,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return self._password
 
     def set_password(self, password: str):
-        self._password = str(password)
+        self._password = str(password) if str(password) != '' else None
 
     def write_password(self, new_password):
         record_data = new_password.encode('1251')
@@ -533,5 +533,5 @@ class AqAutoDetectionDevice(AqBaseDevice):
                 if isinstance(item_stack[0], AqAutoDetectPasswordFileItem):
                     pass_file_item = item_stack[0]
                     if pass_file_item.get_status() == 'ok':
-                        new_password = str(item_stack[0].value)[2:]
+                        new_password = item_stack[0].value.decode('cp1251')
                         self.set_password(new_password)
