@@ -1,12 +1,14 @@
 import AppCore
 from AqAddDeviceWindow import AqAddDeviceWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
+from AqGateway.AqGatewayWindow import AqGatewayWindow
 from AqMessageManager import AqMessageManager
 from AqParamListWidget import AqParamListWidget
 from AqRtcWindow import AqRtcWindow
 from AqSetPasswordWidget import AqSetPasswordWindow
 from AqSetSlaveIdWindow import AqSetSlaveIdWindow
 from AqWatchListWindow import AqWatchListWidget
+from ui_AqGatewayWindow import Ui_AqGatewayWidget
 from ui_AqSetPasswordWidget import Ui_AqSetPasswordWidget
 from ui_AqSetRtcWidget import Ui_AqRtcWidget
 from ui_AqSetSlaveIdWinWidget import Ui_AqSetSlaveIdWidget
@@ -64,3 +66,7 @@ def show_set_password():
         widget = AqSetPasswordWindow(Ui_AqSetPasswordWidget)
         widget.set_working_device(AppCore.Core.session.cur_active_device)
         widget.exec()
+
+def show_gateway():
+    widget = AqGatewayWindow(Ui_AqGatewayWidget)
+    widget.exec()

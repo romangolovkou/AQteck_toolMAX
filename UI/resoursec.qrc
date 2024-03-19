@@ -307,5 +307,7 @@
         <file>icons/arrow_left.png</file>
         <file>icons/arrow_right.png</file>
         <file>icons/key_eye.png</file>
+        <file>icons/master_eth_gateway.png</file>
+        <file>icons/master_rs_gateway.png</file>
     </qresource>
 </RCC>

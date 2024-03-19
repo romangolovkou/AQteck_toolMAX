@@ -3,6 +3,7 @@
         "",
         "../../UI/forms/AqAddDeviceWindow.ui",
         "../../UI/forms/AqEnterPassWidget.ui",
+        "../../UI/forms/AqGatewayWindow.ui",
         "../../UI/forms/AqLeftDeviceWidget.ui",
         "../../UI/forms/AqSetPasswordWidget.ui",
         "../../UI/forms/AqSetRtcWidget.ui",
