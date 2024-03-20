@@ -31,19 +31,19 @@
       "defaultSize": [
         {
           "width": 45,
-          "height": 400
+          "height": 420
         }
       ],
       "collapsedSize": [
         {
           "width": 45,
-          "height": 400
+          "height": 420
         }
       ],
       "expandedSize": [
         {
           "width": 150,
-          "height": 400
+          "height": 420
         }
       ],
       "menuTransitionAnimation": [

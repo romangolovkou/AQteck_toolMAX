@@ -1864,7 +1864,7 @@ background-color: #1f232a;
                <property name="maximumSize">
                 <size>
                  <width>16777215</width>
-                 <height>500</height>
+                 <height>420</height>
                 </size>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_24">
