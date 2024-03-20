@@ -1849,16 +1849,22 @@ background-color: #1f232a;
              </property>
              <item>
               <widget class="QWidget" name="rightMenuSubContainer" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>410</height>
+                 <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
                  <width>16777215</width>
-                 <height>420</height>
+                 <height>500</height>
                 </size>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2039,7 +2045,7 @@ background-color: #1f232a;
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
-                    <height>140</height>
+                    <height>200</height>
                    </size>
                   </property>
                   <property name="frameShape">
@@ -2316,7 +2322,7 @@ background-color: #1f232a;
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
-                    <height>200</height>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="frameShape">
@@ -2452,6 +2458,12 @@ background-color: #1f232a;
                 </item>
                 <item>
                  <widget class="QFrame" name="firmwareFrame">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
                   <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
