@@ -165,7 +165,10 @@ QRadioButton:disabled {
    color: #606060;
 }
 
-
+#tableWidget
+QHeaderView::section { background-color: #2b2d30;}
+QTableWidget { border: none; }
+QTableWidget::item { padding-left: 3px; }
 
 </string>
   </property>
@@ -185,8 +188,8 @@ QRadioButton:disabled {
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item>
-    <widget class="QFrame" name="mainWidget">
+   <item alignment="Qt::AlignTop">
+    <widget class="AqGatewayFrame" name="mainWidget">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -264,7 +267,7 @@ QRadioButton:disabled {
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>60</height>
+          <height>70</height>
          </size>
         </property>
         <property name="frameShape">
@@ -287,7 +290,7 @@ QRadioButton:disabled {
           <number>0</number>
          </property>
          <property name="bottomMargin">
-          <number>0</number>
+          <number>9</number>
          </property>
          <item>
           <widget class="QLabel" name="choseMasterTextLabel">
@@ -392,7 +395,34 @@ QRadioButton:disabled {
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="QTableWidget" name="tableWidget">
+          <widget class="AqGatewayTableWidget" name="tableWidget">
+           <property name="minimumSize">
+            <size>
+             <width>512</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>512</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <attribute name="horizontalHeaderCascadingSectionResizes">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderMinimumSectionSize">
+            <number>0</number>
+           </attribute>
+           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
            <column>
             <property name="text">
              <string>#</string>
@@ -445,14 +475,37 @@ QRadioButton:disabled {
           <number>0</number>
          </property>
          <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="saveButton">
+          <widget class="QPushButton" name="saveBtn">
+           <property name="minimumSize">
+            <size>
+             <width>70</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Save</string>
            </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="cancelButton">
+          <widget class="QPushButton" name="cancelBtn">
+           <property name="minimumSize">
+            <size>
+             <width>70</width>
+             <height>25</height>
+            </size>
+           </property>
            <property name="text">
             <string>Cancel</string>
            </property>
@@ -466,6 +519,19 @@ QRadioButton:disabled {
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AqGatewayTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header location="global">AqGatewayWindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AqGatewayFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">AqGatewayWindow.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resoursec.qrc"/>
  </resources>
