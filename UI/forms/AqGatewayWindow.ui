@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>449</height>
+    <height>649</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -82,15 +82,6 @@ QPushButton:hover {
 }
 QPushButton:pressed {
 	 background-color: #429061;
-}
-
-QLineEdit{
-border-left: 1px solid #9ef1d3; 
-border-top: 1px solid #9ef1d3; 
-border-bottom: 1px solid #5bb192; 
-border-right: 1px solid #5bb192;
-background-color: #2b2d30; 
-border-radius: 4px; 
 }
 
 QCheckBox {
@@ -396,16 +387,22 @@ QTableWidget::item { padding-left: 3px; }
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
           <widget class="AqGatewayTableWidget" name="tableWidget">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="minimumSize">
             <size>
              <width>512</width>
-             <height>0</height>
+             <height>300</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>512</width>
-             <height>16777215</height>
+             <height>300</height>
             </size>
            </property>
            <attribute name="horizontalHeaderCascadingSectionResizes">
@@ -413,6 +410,9 @@ QTableWidget::item { padding-left: 3px; }
            </attribute>
            <attribute name="horizontalHeaderMinimumSectionSize">
             <number>0</number>
+           </attribute>
+           <attribute name="horizontalHeaderDefaultSectionSize">
+            <number>70</number>
            </attribute>
            <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
             <bool>false</bool>
@@ -435,6 +435,11 @@ QTableWidget::item { padding-left: 3px; }
            </column>
            <column>
             <property name="text">
+             <string/>
+            </property>
+           </column>
+           <column>
+            <property name="text">
              <string>ip</string>
             </property>
            </column>
@@ -448,13 +453,29 @@ QTableWidget::item { padding-left: 3px; }
              <string>Slave ID</string>
             </property>
            </column>
+           <column>
+            <property name="text">
+             <string/>
+            </property>
+           </column>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
-      <item alignment="Qt::AlignRight">
+      <item>
        <widget class="QFrame" name="buttonFrame">
+        <property name="minimumSize">
+         <size>
+          <width>512</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <hintingpreference>PreferDefaultHinting</hintingpreference>
+         </font>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -462,8 +483,11 @@ QTableWidget::item { padding-left: 3px; }
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
          <property name="leftMargin">
-          <number>0</number>
+          <number>9</number>
          </property>
          <property name="topMargin">
           <number>0</number>
@@ -472,43 +496,110 @@ QTableWidget::item { padding-left: 3px; }
           <number>9</number>
          </property>
          <property name="bottomMargin">
-          <number>0</number>
+          <number>9</number>
          </property>
-         <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="saveBtn">
-           <property name="minimumSize">
-            <size>
-             <width>70</width>
-             <height>25</height>
-            </size>
+         <item alignment="Qt::AlignLeft">
+          <widget class="QFrame" name="addBtnFrame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Save</string>
-           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="leftMargin">
+             <number>9</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item alignment="Qt::AlignLeft">
+             <widget class="QPushButton" name="addDeviceBtn">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Add device</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="cancelBtn">
-           <property name="minimumSize">
-            <size>
-             <width>70</width>
-             <height>25</height>
-            </size>
+         <item>
+          <widget class="QFrame" name="saveCancelBtnFrame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
            </property>
-           <property name="text">
-            <string>Cancel</string>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
            </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>9</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="saveBtn">
+              <property name="minimumSize">
+               <size>
+                <width>70</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Save</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cancelBtn">
+              <property name="minimumSize">
+               <size>
+                <width>70</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Cancel</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>

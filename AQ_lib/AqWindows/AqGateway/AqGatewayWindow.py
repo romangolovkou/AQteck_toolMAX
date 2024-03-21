@@ -1,6 +1,12 @@
-from PySide6.QtCore import Signal, QPoint, Qt
-from PySide6.QtWidgets import QTableWidget, QFrame, QPushButton, QRadioButton, QStackedWidget, QWidget, QTableWidgetItem
+import ipaddress
 
+from PySide6.QtCore import Signal, QPoint, Qt, QTimer
+from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtWidgets import QTableWidget, QFrame, QPushButton, QRadioButton, QStackedWidget, QWidget, \
+    QTableWidgetItem, QLineEdit, QLabel
+
+from AqIsValidIpFunc import is_valid_ip
+from AqLineEditTemplates import AqSlaveIdLineEdit, AqIpLineEdit
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -19,15 +25,19 @@ class AqGatewayWindow(AqDialogTemplate):
         # Устанавливаем ширину столбцов в таблице справа
         cur_width = self.ui.tableWidget.width()
         self.ui.tableWidget.setColumnWidth(0, int(cur_width * 0.05))
-        self.ui.tableWidget.setColumnWidth(1, int(cur_width * 0.15))
-        self.ui.tableWidget.setColumnWidth(2, int(cur_width * 0.5))
-        self.ui.tableWidget.setColumnWidth(3, int(cur_width * 0.15))
-        self.ui.tableWidget.setColumnWidth(4, int(cur_width * 0.15))
+        self.ui.tableWidget.setColumnWidth(1, int(cur_width * 0.18))
+        self.ui.tableWidget.setColumnWidth(2, int(cur_width * 0.08))
+        self.ui.tableWidget.setColumnWidth(3, int(cur_width * 0.28))
+        self.ui.tableWidget.setColumnWidth(4, int(cur_width * 0.18))
+        self.ui.tableWidget.setColumnWidth(5, int(cur_width * 0.18))
+        self.ui.tableWidget.setColumnWidth(6, int(cur_width * 0.05))
         self.ui.tableFrame.hide()
+        self.ui.addDeviceBtn.hide()
 
         self.ui.mainWidget.prepare_ui()
 
         self.ui.mainWidget.uiChanged.connect(self.custom_resize)
+        self.ui.mainWidget.close_signal.connect(self.close)
 
     def custom_resize(self):
         self.resize(self.width(), self.ui.mainWidget.sizeHint().height())
@@ -45,6 +55,7 @@ class AqGatewayFrame(QFrame):
         self.cancelBtn = None
         self.ethRadioBtn = None
         self.rsRadioBtn = None
+        self.addDeviceBtn = None
         self.stackedWidget = None
         self.tableFrame = None
         self.tableWidget = None
@@ -56,6 +67,7 @@ class AqGatewayFrame(QFrame):
         self.cancelBtn = self.findChild(QPushButton, 'cancelBtn')
         self.ethRadioBtn = self.findChild(QRadioButton, 'ethRadioBtn')
         self.rsRadioBtn = self.findChild(QRadioButton, 'rsRadioBtn')
+        self.addDeviceBtn = self.findChild(QPushButton, 'addDeviceBtn')
         self.stackedWidget = self.findChild(QStackedWidget, 'stackedWidget')
         self.tableWidget = self.findChild(QTableWidget, 'tableWidget')
         self.tableFrame = self.findChild(QFrame, 'tableFrame')
@@ -67,7 +79,9 @@ class AqGatewayFrame(QFrame):
             self.cancelBtn,
             self.ethRadioBtn,
             self.rsRadioBtn,
+            self.addDeviceBtn,
             self.stackedWidget,
+            self.tableFrame,
             self.tableWidget,
             self.masterRsPage,
             self.masterEthPage
@@ -75,13 +89,14 @@ class AqGatewayFrame(QFrame):
 
         for i in self.main_ui_elements:
             if i is None:
-                raise Exception(self.objectName() + ' Error: lost UI element: ')
+                raise Exception(self.objectName() + ' Error: lost UI element')
 
         self.ethRadioBtn.clicked.connect(self.change_ui_by_selected_mode)
         self.rsRadioBtn.clicked.connect(self.change_ui_by_selected_mode)
 
         self.saveBtn.clicked.connect(self.save_btn_clicked)
         self.cancelBtn.clicked.connect(self.close_signal.emit)
+        self.addDeviceBtn.clicked.connect(self.tableWidget.append_row)
 
     def change_ui_by_selected_mode(self):
         if self.rsRadioBtn.isChecked():
@@ -95,12 +110,14 @@ class AqGatewayFrame(QFrame):
         widget = getattr(self, "masterRsPage")
         self.stackedWidget.setCurrentWidget(widget)
         self.tableFrame.show()
+        self.addDeviceBtn.show()
 
 
     def show_eth_master_if(self):
         self.tableFrame.hide()
         widget = getattr(self, "masterEthPage")
         self.stackedWidget.setCurrentWidget(widget)
+        self.addDeviceBtn.hide()
 
     def save_btn_clicked(self):
         pass
@@ -118,78 +135,142 @@ class AqGatewayTableWidget(QTableWidget):
         self.horizontalHeader().setStyleSheet(
             "QHeaderView::section { background-color: #2b2d30; color: #D0D0D0; border: 1px solid #1e1f22; }")
         # Убираем рамку таблицы
-        self.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0;}
-                                                           QTableWidget::item { padding-left: 3px; }""")
+        self.setStyleSheet("""QTableWidget { border: none; color: #D0D0D0; background-color: #16191d;}
+                            QTableWidget::item { padding-left: 3px; }
+                            QTableWidget::item:!focus {
+                            background-color: transparent; 
+                            }""")
         self.cellClicked.connect(self.cell_clicked)
 
     def cell_clicked(self, row, col):
-        item = self.item(row, col)
-        if item:
-            item_rect = self.visualItemRect(item)
-            pos = self.viewport().mapTo(self.parent(), item_rect.topLeft())
-            self.clickedRow.emit(row, pos)
+        if col == 6:
+            self.removeRow(row)
+            self.refresh_row_numbers()
 
-    def append_device_to_table(self, row, status='ok'):
-        if status == 'ok':
-            for i in range(self.columnCount()):
-                self.item(row, i).setBackground(QColor("#429061"))
-        elif status == 'need_pass':
-            for i in range(self.columnCount()):
-                self.item(row, i).setBackground(QColor("#807c7c"))
-        else:
-            for i in range(self.columnCount()):
-                self.item(row, i).setBackground(QColor("#9d4d4f"))
-
-        new_height = self.get_sum_of_rows_height() + 30
-        self.setFixedHeight(new_height)
+        self.clickedRow.emit(row, col)
 
     def append_row(self):
         # if new_row_index is None:
-        #     new_row_index = self.rowCount()
-        #     self.setRowCount(self.rowCount() + 1)
+        new_row_index = self.rowCount()
+        self.setRowCount(self.rowCount() + 1)
         # Создаем элементы таблицы для каждой строки
-        number_item = QTableWidgetItem(str(self.rowCount() + 1))
-        number_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
-        address_item = QTableWidgetItem(device.info('address'))
-        address_item.setFlags(address_item.flags() & ~Qt.ItemIsEditable)
-        version_item = QTableWidgetItem(device.info('version'))
-        version_item.setFlags(version_item.flags() & ~Qt.ItemIsEditable)
+        # number_item = QTableWidgetItem(str(new_row_index + 1))
+        # number_item.setFlags(number_item.flags() & ~Qt.ItemIsEditable)
+        number_item = QLineEdit(str(new_row_index + 1))
+        number_item.setReadOnly(True)
+        # in_slave_id_item = QTableWidgetItem(str(new_row_index + 1))
+        in_slave_id_item = AqSlaveIdGatewayLineEdit(self)
+        in_slave_id_item.setText(str(new_row_index + 1))
+        in_slave_id_item.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        if status == 'need_pass':
-            tip_str = 'Enter password. CLick to enter'
-            checkbox_item.setToolTip(tip_str)
-            name_item.setToolTip(tip_str)
-            address_item.setToolTip(tip_str)
-            version_item.setToolTip(tip_str)
+        decor_label_item = QLabel()
+        # Додаємо декоративну іконку
+        decor_label_item.setPixmap(QPixmap('UI/icons/arrow_right_blue.png').scaled(self.columnWidth(2)*0.75, 10))
+
+        if new_row_index == 0:
+            prev_ip = '192.168.1.100'
+        else:
+            prev_ip = self.cellWidget(new_row_index - 1, 3).text()
+            if is_valid_ip(prev_ip):
+                ip_int = int(ipaddress.ip_address(prev_ip))
+                prev_ip = str(ipaddress.ip_address(ip_int + 1))
+            else:
+                prev_ip = '192.168.1.100'
+
+        # out_ip_address_item = QTableWidgetItem(prev_ip)
+        out_ip_address_item = AqIpGatewayLineEdit(self)
+        out_ip_address_item.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        out_ip_address_item.setText(prev_ip)
+        out_ip_port_item = AqSlaveIdLineEdit(self)
+        out_ip_port_item.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        out_ip_port_item.setText('502')
+        # out_slave_id = QTableWidgetItem('1')
+        out_slave_id_item = AqSlaveIdGatewayLineEdit(self)
+        out_slave_id_item.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        out_slave_id_item.setText('1')
+        delete_btn_item = QTableWidgetItem()
+        # Додаємо іконку видалити
+        icon = QIcon('UI/icons/trash.png')
+        # item = self.item(new_row_index, 6)
+        delete_btn_item.setIcon(icon)
 
         # Устанавливаем элементы таблицы
-        self.setItem(new_row_index, 0, checkbox_item)
-        self.setItem(new_row_index, 1, name_item)
-        self.setItem(new_row_index, 2, address_item)
-        self.setItem(new_row_index, 3, version_item)
+        self.setCellWidget(new_row_index, 0, number_item)
+        self.setCellWidget(new_row_index, 1, in_slave_id_item)
+        self.setCellWidget(new_row_index, 2, decor_label_item)
+        self.setCellWidget(new_row_index, 3, out_ip_address_item)
+        self.setCellWidget(new_row_index, 4, out_ip_port_item)
+        self.setCellWidget(new_row_index, 5, out_slave_id_item)
+        self.setItem(new_row_index, 6, delete_btn_item)
 
-        # Устанавливаем чекбокс в первую колонку
-        checkbox = QCheckBox()
-        if status == 'ok':
-            checkbox.setChecked(True)
-        else:
-            checkbox.setChecked(False)
-            checkbox.setEnabled(False)
-
-        checkbox.setStyleSheet("QCheckBox { background-color: transparent; border: none;}")
-        self.setCellWidget(new_row_index, 0, checkbox)
-        item = self.item(new_row_index, 0)
-        item.setTextAlignment(Qt.AlignCenter)
-
-        self.append_device_to_table(new_row_index, status)
-    #
-    # def replace_device_in_row(self, device: AqBaseDevice, row: int):
-    #     self.append_device_row(device, row)
-
-
-    def get_sum_of_rows_height(self):
-        sum_height = 0
+    def refresh_row_numbers(self):
         for i in range(self.rowCount()):
-            sum_height += self.rowHeight(i)
+            self.cellWidget(i, 0).setText(str(i + 1))
 
-        return sum_height
+
+class AqSlaveIdGatewayLineEdit(AqSlaveIdLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def err_blink(self):
+        if self.anim_cnt < 34:
+            self.anim_cnt += 1
+            if self.anim_cnt < 18:
+                self.color_code = self.color_code + 0xA
+            else:
+                self.color_code = self.color_code - 0xA
+
+            hex_string = format(self.color_code, 'x')
+            self.setStyleSheet("background-color: #{}2d30; \n".format(hex_string))
+        else:
+            self.anim_cnt = 0
+            self.color_code = 0x2b
+            self.setStyleSheet("background-color: transparent; \n")
+            self.red_blink_timer.stop()
+
+    def show_err_label(self):
+        pass
+        # # Получаем координаты поля ввода относительно диалогового окна
+        # rect = self.geometry()
+        # pos = self.mapTo(self, rect.topRight())
+        # self.err_label = QLabel('Invalid value, <br> valid (0...247)', self.parent())
+        # self.err_label.setStyleSheet("color: #fe2d2d; \n")
+        # self.err_label.setFixedSize(100, 35)
+        # self.err_label.move(pos.x() - 90, pos.y() - 35)
+        # self.err_label.show()
+        # # Устанавливаем задержку в 2 секунды и затем удаляем метку
+        # QTimer.singleShot(3000, self.err_label.deleteLater)
+
+
+class AqIpGatewayLineEdit(AqIpLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def err_blink(self):
+        if self.anim_cnt < 34:
+            self.anim_cnt += 1
+            if self.anim_cnt < 18:
+                self.color_code = self.color_code + 0xA
+            else:
+                self.color_code = self.color_code - 0xA
+
+            hex_string = format(self.color_code, 'x')
+            self.setStyleSheet("background-color: #{}2d30;\n".format(hex_string))
+        else:
+            self.anim_cnt = 0
+            self.color_code = 0x2b
+            self.setStyleSheet("background-color: transparent;\n")
+            self.red_blink_timer.stop()
+
+    def show_err_label(self):
+        pass
+        # # Получаем координаты поля ввода относительно диалогового окна
+        # rect = self.geometry()
+        # pos = self.mapTo(self, rect.topRight())
+        # self.err_label = QLabel('Invalid value, valid (0...255)', self.parent())
+        # self.err_label.setStyleSheet("color: #fe2d2d; background-color: #200000; padding: 3px;\n")
+        # # self.err_label.setFixedSize(190, 12)
+        # self.err_label.move(pos.x() - 150, pos.y() - 15)
+        # self.err_label.show()
+        # # Устанавливаем задержку в 2 секунды и затем удаляем метку
+        # QTimer.singleShot(3000, self.err_label.deleteLater)
