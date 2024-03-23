@@ -88,3 +88,6 @@ class AqWatchListTreeViewModel(QStandardItemModel):
         for row in range(root.rowCount()):
             child_item = root.child(row)
             self.update_parameter_status(child_item)
+
+    # def de_init(self):
+    #     self.event_manager.unregister_event_handler('current_device_data_updated', self.update_params_values)

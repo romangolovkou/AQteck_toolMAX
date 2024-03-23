@@ -116,7 +116,8 @@ class AqBaseDevice(ABC):
     def de_init(self):
         self._connect.close()
         self._clear_existing_requests()
-        self._event_manager.unregister_event_handler('current_device_data_updated', self.init_complete)
+        self._event_manager.unregister_event_handler('current_device_data_updated',
+                                                     self.init_complete)
 
     def _clear_existing_requests(self):
         self._connect.clear_existing_requests()
