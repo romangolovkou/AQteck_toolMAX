@@ -124,3 +124,6 @@ class AqTreeViewItemModel(QStandardItemModel):
             AqWatchListCore.addItem(self.device, item_list)
         else:
             AqWatchListCore.addItem(self.device, sourse_item)
+
+    def de_init(self):
+        self.event_manager.unregister_event_handler('current_device_data_updated', self.update_params_values)

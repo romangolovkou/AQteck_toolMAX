@@ -41,8 +41,6 @@ class AqTreeViewManager(QStackedWidget):
             tree_view.setModel(device_view_tree_model)
             self.devices_views[new_devices_list[i]] = tree_view
             self.addWidget(tree_view)
-            # self.update_device_values(new_devices_list[i])
-            # self.show()
 
     def set_active_device_tree(self, device: AqBaseDevice):
         self.active_device = device
@@ -76,6 +74,7 @@ class AqTreeViewManager(QStackedWidget):
         tree_view = self.devices_views.get(device, None)
         if tree_view is not None:
             self.removeWidget(tree_view)
+            tree_view.model().de_init()
             tree_view.deleteLater()
 
     def update_device_values(self, device: AqBaseDevice):
