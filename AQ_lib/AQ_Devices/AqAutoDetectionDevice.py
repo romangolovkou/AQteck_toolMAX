@@ -40,7 +40,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
     #Create message srtings for files if need (for show in modal message).
     #Must be dict vs keys 'ok', 'error', and other if need.
-    reboot_msg_dict = {'ok': 'Successfully reboot',
+    reboot_msg_dict = {'ok': 'Rebooted successfully',
                        'error': 'Reboot failed. Please try again'}
     password_msg_dict = {'ok': 'Password settings successfully updated',
                          'error': 'Can`t write new password settings. Please try again'}

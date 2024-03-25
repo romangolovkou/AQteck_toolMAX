@@ -109,7 +109,7 @@ QCheckBox::indicator:checked {
     /*border-color: darkgreen; /* Цвет обводки при выборе */
 }
 
-QRadioButton {
+/*QRadioButton {
     font-size: 16px;
     color: #FFFFFF;
     background-color: #2b2d30;
@@ -154,12 +154,16 @@ QRadioButton:checked {
 QRadioButton:disabled {
    background-color: #2b2d30;
    color: #606060;
-}
+}*/
 
 #tableWidget
 QHeaderView::section { background-color: #2b2d30;}
 QTableWidget { border: none; }
 QTableWidget::item { padding-left: 3px; }
+
+QRadioButton, #rtuRadioBtn {
+    /* Не указываем кастомные стили для этой радиокнопки, она будет использовать дефолтные стили */
+}
 
 </string>
   </property>
@@ -260,6 +264,54 @@ QTableWidget::item { padding-left: 3px; }
           <width>16777215</width>
           <height>70</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QRadioButton {
+    font-size: 16px;
+    color: #FFFFFF;
+    background-color: #2b2d30;
+    padding: 1px;
+	padding-bottom: 3px;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+}
+
+#ethRadioBtn{
+	border-top-left-radius: 13px;
+	border-bottom-left-radius: 13px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+#rsRadioBtn{
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-top-right-radius: 13px;
+	border-bottom-right-radius: 13px;
+	border-left: 0px solid #9ef1d3;
+}
+
+QRadioButton:hover {
+   background-color: #3c3e41;
+}
+
+QRadioButton::indicator {
+    width: 0px;
+    height: 0px;
+	background-color: transparent;
+}
+
+QRadioButton:checked {
+    background-color: #429061;
+}
+
+QRadioButton:disabled {
+   background-color: #2b2d30;
+   color: #606060;
+}</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -377,6 +429,109 @@ QTableWidget::item { padding-left: 3px; }
        </widget>
       </item>
       <item>
+       <widget class="QFrame" name="setOutProtocolFrame">
+        <property name="styleSheet">
+         <string notr="true">QRadioButton::indicator {
+	width: 15px;
+	height: 15px;
+    image: url(UI/icons/radioBtnBlue_unchecked.png);
+}
+
+QRadioButton::indicator:checked {
+	width: 15px;
+	height: 15px;
+    image: url(UI/icons/radioBtnBlue_checked.png);
+}</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QFrame" name="frame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="choseProtocolLabel">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Select out protocol:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignLeft">
+          <widget class="QFrame" name="outProtocolBtnFrame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QRadioButton" name="rtuRadioBtn">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>RTU</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="asciiRadioBtn">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>ASCII</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <widget class="QFrame" name="tableFrame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -439,7 +594,7 @@ QTableWidget::item { padding-left: 3px; }
            </column>
            <column>
             <property name="text">
-             <string>Slave ID</string>
+             <string>(IN) Slave ID</string>
             </property>
            </column>
            <column>
@@ -449,17 +604,17 @@ QTableWidget::item { padding-left: 3px; }
            </column>
            <column>
             <property name="text">
-             <string>ip</string>
+             <string>ip (OUT)</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>port</string>
+             <string>port (OUT)</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>Slave ID</string>
+             <string>Slave ID (OUT)</string>
             </property>
            </column>
            <column>
