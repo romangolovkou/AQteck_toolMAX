@@ -31,6 +31,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     # Format: 'param_name': {start_reg, count, read_func, write_func, itemType, R_Only}
     _system_param = {
         'ip':               [0x001A, 2, 3, 16, 'AqAutoDetectIpParamItem', True],
+        # For TIME container (RTC)
         'date_time':        [0xF080, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
         'time_zone':        [0xF082, 1, 3, 16, 'AqAutoDetectSignedParamItem', False],
         'new_time_trig':    [0xF07F, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
@@ -98,6 +99,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         else:
             self._functions['rtc'] = True
         self._functions['password'] = True
+        self._functions['gateway'] = self.__check_ugm_container()
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = False
         self._functions['log'] = False
@@ -249,6 +251,18 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
         return model
 
+    def __check_ugm_container(self):
+        regs = [1540] #rs485_MODE
+        for i in range(31):
+            regs.append(1024 + i*16) #R1-R31 (rules for gateway)
+
+        for reg in regs:
+            item = self.__get_item_by_modbus_reg(reg)
+            if not isinstance(item, AqParamItem):
+                return False
+
+        return True
+
     def __get_item_by_UID(self, uid):
         param_attributes = None
         if self._device_tree is not None:
@@ -269,6 +283,30 @@ class AqAutoDetectionDevice(AqBaseDevice):
                             return item_by_uid
                     else:
                         if parameter_attributes.get('UID', 0) == uid:
+                            return child_item
+        # Якщо дійшли сюди, то співдпадінь немає
+        return None
+
+    def __get_item_by_modbus_reg(self, modbus_reg):
+        param_attributes = None
+        if self._device_tree is not None:
+            root = self._device_tree.invisibleRootItem()
+            param_attributes = self.__traverse_items_find_item_by_modbus_reg(root, modbus_reg)
+
+        return param_attributes
+
+    def __traverse_items_find_item_by_modbus_reg(self, item, modbus_reg):
+        for row in range(item.rowCount()):
+            child_item = item.child(row)
+            if child_item is not None:
+                parameter_attributes = child_item.data(Qt.UserRole)
+                if parameter_attributes is not None:
+                    if parameter_attributes.get('is_catalog', 0) == 1:
+                        item_by_uid = self.__traverse_items_find_item_by_modbus_reg(child_item, modbus_reg)
+                        if item_by_uid is not None:
+                            return item_by_uid
+                    else:
+                        if parameter_attributes.get('modbus_reg', 0) == modbus_reg:
                             return child_item
         # Якщо дійшли сюди, то співдпадінь немає
         return None

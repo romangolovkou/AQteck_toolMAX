@@ -61,6 +61,7 @@ class AqGatewayFrame(QFrame):
         self.tableWidget = None
         self.masterRsPage = None
         self.masterEthPage = None
+        self.protocolFrame = None
 
     def prepare_ui(self):
         self.saveBtn = self.findChild(QPushButton, 'saveBtn')
@@ -73,6 +74,7 @@ class AqGatewayFrame(QFrame):
         self.tableFrame = self.findChild(QFrame, 'tableFrame')
         self.masterRsPage = self.findChild(QWidget, 'masterRsPage')
         self.masterEthPage = self.findChild(QWidget, 'masterEthPage')
+        self.protocolFrame = self.findChild(QWidget, 'protocolFrame')
 
         self.main_ui_elements = [
             self.saveBtn,
@@ -84,7 +86,8 @@ class AqGatewayFrame(QFrame):
             self.tableFrame,
             self.tableWidget,
             self.masterRsPage,
-            self.masterEthPage
+            self.masterEthPage,
+            self.protocolFrame
         ]
 
         for i in self.main_ui_elements:
@@ -110,6 +113,7 @@ class AqGatewayFrame(QFrame):
         widget = getattr(self, "masterRsPage")
         self.stackedWidget.setCurrentWidget(widget)
         self.tableFrame.show()
+        self.protocolFrame.hide()
         self.addDeviceBtn.show()
 
 
@@ -117,6 +121,7 @@ class AqGatewayFrame(QFrame):
         self.tableFrame.hide()
         widget = getattr(self, "masterEthPage")
         self.stackedWidget.setCurrentWidget(widget)
+        self.protocolFrame.show()
         self.addDeviceBtn.hide()
 
     def save_btn_clicked(self):
