@@ -61,12 +61,15 @@ def show_set_rtc():
         widget.set_write_handler(AppCore.Core.session.cur_active_device.write_device_date_time)
         widget.exec()
 
+
 def show_set_password():
     if AppCore.Core.session.cur_active_device is not None:
         widget = AqSetPasswordWindow(Ui_AqSetPasswordWidget)
         widget.set_working_device(AppCore.Core.session.cur_active_device)
         widget.exec()
 
+
 def show_gateway():
     widget = AqGatewayWindow(Ui_AqGatewayWidget)
+    widget.set_working_device(AppCore.Core.session.cur_active_device)
     widget.exec()

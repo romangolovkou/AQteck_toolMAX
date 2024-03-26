@@ -287,6 +287,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
         # Якщо дійшли сюди, то співдпадінь немає
         return None
 
+    def get_item_by_modbus_reg(self, modbus_reg):
+        for item in self._params_list:
+            parameter_attributes = item.data(Qt.UserRole)
+            if parameter_attributes.get('modbus_reg', 0) == modbus_reg:
+                return item
+
     def __get_item_by_modbus_reg(self, modbus_reg):
         param_attributes = None
         if self._device_tree is not None:

@@ -18,6 +18,8 @@ class AqGatewayWindow(AqDialogTemplate):
         self.ui.setupUi(self.content_widget)
         self.maximizeBtnEnable = False
 
+        self.device = None
+
         self.name = 'Gateway'
         self.prepare_ui()
 
@@ -42,6 +44,9 @@ class AqGatewayWindow(AqDialogTemplate):
     def custom_resize(self):
         self.resize(self.width(), self.ui.mainWidget.sizeHint().height())
 
+    def set_working_device(self, device):
+        self.ui.mainWidget.set_working_device(device)
+
 
 class AqGatewayFrame(QFrame):
     uiChanged = Signal()
@@ -55,6 +60,8 @@ class AqGatewayFrame(QFrame):
         self.cancelBtn = None
         self.ethRadioBtn = None
         self.rsRadioBtn = None
+        self.rtuRadioBtn = None
+        self.asciiRadioBtn = None
         self.addDeviceBtn = None
         self.stackedWidget = None
         self.tableFrame = None
@@ -63,11 +70,15 @@ class AqGatewayFrame(QFrame):
         self.masterEthPage = None
         self.protocolFrame = None
 
+        self.device = None
+
     def prepare_ui(self):
         self.saveBtn = self.findChild(QPushButton, 'saveBtn')
         self.cancelBtn = self.findChild(QPushButton, 'cancelBtn')
         self.ethRadioBtn = self.findChild(QRadioButton, 'ethRadioBtn')
         self.rsRadioBtn = self.findChild(QRadioButton, 'rsRadioBtn')
+        self.rtuRadioBtn = self.findChild(QRadioButton, 'rtuRadioBtn')
+        self.asciiRadioBtn = self.findChild(QRadioButton, 'asciiRadioBtn')
         self.addDeviceBtn = self.findChild(QPushButton, 'addDeviceBtn')
         self.stackedWidget = self.findChild(QStackedWidget, 'stackedWidget')
         self.tableWidget = self.findChild(QTableWidget, 'tableWidget')
@@ -81,6 +92,8 @@ class AqGatewayFrame(QFrame):
             self.cancelBtn,
             self.ethRadioBtn,
             self.rsRadioBtn,
+            self.rtuRadioBtn,
+            self.asciiRadioBtn,
             self.addDeviceBtn,
             self.stackedWidget,
             self.tableFrame,
@@ -100,6 +113,9 @@ class AqGatewayFrame(QFrame):
         self.saveBtn.clicked.connect(self.save_btn_clicked)
         self.cancelBtn.clicked.connect(self.close_signal.emit)
         self.addDeviceBtn.clicked.connect(self.tableWidget.append_row)
+
+    def set_working_device(self, device):
+        self.device = device
 
     def change_ui_by_selected_mode(self):
         if self.rsRadioBtn.isChecked():
@@ -125,7 +141,35 @@ class AqGatewayFrame(QFrame):
         self.addDeviceBtn.hide()
 
     def save_btn_clicked(self):
+        if self.ethRadioBtn.isChecked():
+            self._write_eth_master()
+        elif self.rsRadioBtn.isChecked():
+            self._write_rs_master()
+        else:
+            pass
+
+    def _write_rs_master(self):
         pass
+
+    def _write_eth_master(self):
+        items_to_write = list()
+        # rs485 mode
+        item = self.device.get_item_by_modbus_reg(1540)
+        item.value = 0
+        items_to_write.append(item)
+        # Rules starting at R1
+        item = self.device.get_item_by_modbus_reg(1024)
+        PROT = 'R' if self.rtuRadioBtn.isChecked() else 'A'
+        rule_string = f'7:0:G:40:0:S:{PROT}'
+        item.value = rule_string
+        items_to_write.append(item)
+        # in eth_master mode other rules as 0
+        for i in range(30):
+            item = self.device.get_item_by_modbus_reg(1040 + i*16) #R2-R31 (rules for gateway)
+            item.value = ''
+            items_to_write.append(item)
+
+        self.device.write_parameters(items_to_write)
 
 
 class AqGatewayTableWidget(QTableWidget):
