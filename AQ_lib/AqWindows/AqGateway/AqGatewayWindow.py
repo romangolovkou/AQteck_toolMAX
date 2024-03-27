@@ -176,7 +176,9 @@ class AqGatewayFrame(QFrame):
         # для зручності розгортаємо порядок
         items_to_write = items_to_write[::-1]
 
-        self.device.write_parameters(items_to_write)
+        self.device.write_parameters(items_to_write, message_feedback_flag=True)
+
+        self.close_signal.emit()
 
 
 class AqGatewayTableWidget(QTableWidget):
