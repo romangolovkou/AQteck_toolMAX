@@ -156,18 +156,25 @@ class AqGatewayFrame(QFrame):
         # rs485 mode
         item = self.device.get_item_by_modbus_reg(1540)
         item.value = 0
+        item.param_status = 'changed'
         items_to_write.append(item)
         # Rules starting at R1
         item = self.device.get_item_by_modbus_reg(1024)
         PROT = 'R' if self.rtuRadioBtn.isChecked() else 'A'
         rule_string = f'7:0:G:40:0:S:{PROT}'
-        item.value = rule_string
+        item.value = zero_fill_str(rule_string, item.param_size)
+        item.param_status = 'changed'
         items_to_write.append(item)
         # in eth_master mode other rules as 0
         for i in range(30):
             item = self.device.get_item_by_modbus_reg(1040 + i*16) #R2-R31 (rules for gateway)
-            item.value = ''
+            rule_string = ''
+            item.value = zero_fill_str(rule_string, item.param_size)
+            item.param_status = 'changed'
             items_to_write.append(item)
+
+        # для зручності розгортаємо порядок
+        items_to_write = items_to_write[::-1]
 
         self.device.write_parameters(items_to_write)
 
@@ -345,3 +352,10 @@ class AqPortGatewayLineEdit(AqSlaveIdGatewayLineEdit):
         self.min_limit = 0
         self.max_limit = 65535
         self.max_str_len = 5
+
+
+def zero_fill_str(string, size):
+    for count in range(size - len(string)):
+        string += '\x00'
+
+    return string
