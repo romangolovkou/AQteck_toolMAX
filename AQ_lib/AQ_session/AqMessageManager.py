@@ -21,7 +21,12 @@ class AqMessageManager(QObject):
         must be QObject as parent for GUI mode.
         :return:
         """
-        self._subscribers.append(subscriber)
+        if subscriber not in self._subscribers:
+            self._subscribers.append(subscriber)
+
+    def de_subscribe(self, subscriber):
+        if subscriber in self._subscribers:
+            self._subscribers.remove(subscriber)
 
     def send_main_message(self, modal_type, descr_text: str):
         for subscriber in self._subscribers:

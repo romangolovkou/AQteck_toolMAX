@@ -11,6 +11,10 @@ class AqSlaveIdLineEdit(QLineEdit):
         self.anim_cnt = 0
         self.color_code = 0x2b  # Берется из цвета background-color, первые два символа после # соответствуют RED
 
+        self.min_limit = 0
+        self.max_limit = 247
+        self.max_str_len = 3
+
     def err_blink(self):
         if self.anim_cnt < 34:
             self.anim_cnt += 1
@@ -58,7 +62,7 @@ class AqSlaveIdLineEdit(QLineEdit):
             str_copy = self.text()
             str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
             slave_id = int(str_copy)  # Преобразуем подстроку в целое число
-            if slave_id < 248 and len(str_copy) < 4:
+            if self.min_limit <= slave_id <= self.max_limit and len(str_copy) <= self.max_str_len:
                 self.insert(text)
                 self.setCursorPosition(cursor_position + 1)
                 return

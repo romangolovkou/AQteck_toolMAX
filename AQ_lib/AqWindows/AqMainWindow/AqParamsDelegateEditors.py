@@ -35,7 +35,7 @@ class AqTreeLineEdit(QLineEdit):
 
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        if text != '':
+        if text != '' and text is not None:
             value = int(text)
         else:
             value = None

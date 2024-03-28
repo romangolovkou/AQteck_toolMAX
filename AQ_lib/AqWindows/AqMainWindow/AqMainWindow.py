@@ -38,6 +38,7 @@ class AqMainWindow(QMainWindow):
         self.ui.setSlaveIdBtn.clicked.connect(AqUiWorker.show_set_slave_id_window)
         self.ui.setRtcBtn.clicked.connect(AqUiWorker.show_set_rtc)
         self.ui.setPasswordBtn.clicked.connect(AqUiWorker.show_set_password)
+        self.ui.gatewayBtn.clicked.connect(AqUiWorker.show_gateway)
 
         self.ui.setDefaultMenuBtn.clicked.connect(Core.session.set_default_cur_active_device)
         self.ui.rebootDeviceBtn.clicked.connect(Core.session.restart_current_active_device)
