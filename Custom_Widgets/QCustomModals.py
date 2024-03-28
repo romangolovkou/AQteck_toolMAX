@@ -180,7 +180,8 @@ class QCustomModals:
                 luminance = 0.2126 * background_color.red() + 0.7152 * background_color.green() + 0.0722 * background_color.blue()
 
                 # Determine if the background color is dark or light
-                if luminance < 128:
+                # if luminance < 128: #original
+                if luminance < 255: #255 Custom value for only dark theme
                     # Dark background
                     self.isDark = True
                 else:
