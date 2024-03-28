@@ -56,6 +56,7 @@ class AqGatewayWindow(AqDialogTemplate):
         self.resize(self.width(), self.ui.mainWidget.sizeHint().height())
 
     def set_working_device(self, device):
+        self.device = device
         self.ui.mainWidget.set_working_device(device)
 
     def close(self):
@@ -67,6 +68,7 @@ class AqGatewayFrame(QFrame):
     uiChanged = Signal()
     close_signal = Signal()
     message_signal = Signal(str, str)
+    pattern = r'^\w{1,2}:\d:[0-9A-F]{1,2}:[A-F0-9]{8}:[0-9A-F]{1,3}:[0-9A-F]{1,2}:[A-Z]$'
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -132,6 +134,26 @@ class AqGatewayFrame(QFrame):
 
     def set_working_device(self, device):
         self.device = device
+        # Встановлення поточних правил у тейбл віджет
+        for i in range(31):
+            item = self.device.get_item_by_modbus_reg(1024 + i*16)
+            if re.match(self.pattern, item.value):
+                rule = item.value.split(':')
+                if rule[0] != '40':
+                    return
+
+                in_slave_id = int(rule[2], 16)
+                out_ip = socket.inet_ntoa(bytes.fromhex(rule[3]))
+                out_port = int(rule[4], 16)
+                out_slave_id = int(rule[5], 16)
+
+                self.tableWidget.append_row(in_slave_id=in_slave_id,
+                                            out_ip=out_ip,
+                                            out_port=out_port,
+                                            out_slave_id=out_slave_id)
+            else:
+                return
+
 
     def change_ui_by_selected_mode(self):
         if self.rsRadioBtn.isChecked():
@@ -176,11 +198,11 @@ class AqGatewayFrame(QFrame):
         item.param_status = 'changed'
         items_to_write.append(item)
         # Rules starting at R1
-        pattern = r'^\w{1,2}:\d:[0-9A-F]{1,2}:[A-F0-9]{8}:[0-9A-F]{1,3}:[0-9A-F]{1,2}:[A-Z]$'
+        # pattern = r'^\w{1,2}:\d:[0-9A-F]{1,2}:[A-F0-9]{8}:[0-9A-F]{1,3}:[0-9A-F]{1,2}:[A-Z]$'
         rules_list = list()
         for i in range(31):
             rule_string = self._get_rule_string_from_table(i)
-            if rule_string is not None and re.match(pattern, rule_string):
+            if rule_string is not None and re.match(self.pattern, rule_string):
                 rules_list.append(rule_string)
             else:
                 rules_list.append('')
@@ -325,7 +347,7 @@ class AqGatewayTableWidget(QTableWidget):
 
         self.clickedRow.emit(row, col)
 
-    def append_row(self):
+    def append_row(self, in_slave_id: int = None, out_ip=None, out_port=None, out_slave_id=None):
         # if new_row_index is None:
         new_row_index = self.rowCount()
         if new_row_index == 31:
@@ -336,24 +358,28 @@ class AqGatewayTableWidget(QTableWidget):
         # number_item.setFlags(number_item.flags() & ~Qt.ItemIsEditable)
         number_item = QLineEdit(str(new_row_index + 1))
         number_item.setReadOnly(True)
+
         # in_slave_id_item = QTableWidgetItem(str(new_row_index + 1))
         in_slave_id_item = AqSlaveIdGatewayLineEdit(self)
-        in_slave_id_item.setText(str(new_row_index + 1))
+        in_slave_id_item.setText(str(new_row_index + 1 if in_slave_id is None else in_slave_id))
         in_slave_id_item.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         decor_label_item = QLabel()
         # Додаємо декоративну іконку
         decor_label_item.setPixmap(QPixmap('UI/icons/arrow_right_blue.png').scaled(self.columnWidth(2)*0.75, 10))
 
-        if new_row_index == 0:
-            prev_ip = '192.168.1.100'
-        else:
-            prev_ip = self.cellWidget(new_row_index - 1, self.out_ip_col).text()
-            if is_valid_ip(prev_ip):
-                ip_int = int(ipaddress.ip_address(prev_ip))
-                prev_ip = str(ipaddress.ip_address(ip_int + 1))
-            else:
+        if out_ip is None:
+            if new_row_index == 0:
                 prev_ip = '192.168.1.100'
+            else:
+                prev_ip = self.cellWidget(new_row_index - 1, self.out_ip_col).text()
+                if is_valid_ip(prev_ip):
+                    ip_int = int(ipaddress.ip_address(prev_ip))
+                    prev_ip = str(ipaddress.ip_address(ip_int + 1))
+                else:
+                    prev_ip = '192.168.1.100'
+        else:
+            prev_ip = out_ip
 
         # out_ip_address_item = QTableWidgetItem(prev_ip)
         out_ip_address_item = AqIpGatewayLineEdit(self)
@@ -361,11 +387,11 @@ class AqGatewayTableWidget(QTableWidget):
         out_ip_address_item.setText(prev_ip)
         out_ip_port_item = AqPortGatewayLineEdit(self)
         out_ip_port_item.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        out_ip_port_item.setText('502')
+        out_ip_port_item.setText('502' if out_port is None else str(out_port))
         # out_slave_id = QTableWidgetItem('1')
         out_slave_id_item = AqSlaveIdGatewayLineEdit(self)
         out_slave_id_item.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        out_slave_id_item.setText('1')
+        out_slave_id_item.setText('1' if out_slave_id is None else str(out_slave_id))
         delete_btn_item = QTableWidgetItem()
         # Додаємо іконку видалити
         icon = QIcon('UI/icons/trash.png')
