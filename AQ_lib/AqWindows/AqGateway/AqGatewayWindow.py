@@ -1,4 +1,7 @@
 import ipaddress
+import re
+import socket
+from functools import partial
 
 from PySide6.QtCore import Signal, QPoint, Qt, QTimer
 from PySide6.QtGui import QPixmap, QIcon
@@ -7,10 +10,12 @@ from PySide6.QtWidgets import QTableWidget, QFrame, QPushButton, QRadioButton, Q
 
 from AqIsValidIpFunc import is_valid_ip
 from AqLineEditTemplates import AqSlaveIdLineEdit, AqIpLineEdit
+from AqMessageManager import AqMessageManager
 from AqWindowTemplate import AqDialogTemplate
 
 
 class AqGatewayWindow(AqDialogTemplate):
+    message_signal = Signal(str, str)
 
     def __init__(self, _ui, parent=None):
         super().__init__(parent)
@@ -19,6 +24,7 @@ class AqGatewayWindow(AqDialogTemplate):
         self.maximizeBtnEnable = False
 
         self.device = None
+        self._message_manager = AqMessageManager.get_global_message_manager()
 
         self.name = 'Gateway'
         self.prepare_ui()
@@ -41,16 +47,26 @@ class AqGatewayWindow(AqDialogTemplate):
         self.ui.mainWidget.uiChanged.connect(self.custom_resize)
         self.ui.mainWidget.close_signal.connect(self.close)
 
+        self.message_signal.connect(partial(self._message_manager.show_message, self))
+        self._message_manager.subscribe(self.message_signal.emit)
+
+        self.ui.mainWidget.message_signal.connect(self._message_manager.send_main_message)
+
     def custom_resize(self):
         self.resize(self.width(), self.ui.mainWidget.sizeHint().height())
 
     def set_working_device(self, device):
         self.ui.mainWidget.set_working_device(device)
 
+    def close(self):
+        self._message_manager.de_subscribe(self.message_signal.emit)
+        super().close()
+
 
 class AqGatewayFrame(QFrame):
     uiChanged = Signal()
     close_signal = Signal()
+    message_signal = Signal(str, str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -141,21 +157,53 @@ class AqGatewayFrame(QFrame):
         self.addDeviceBtn.hide()
 
     def save_btn_clicked(self):
+        if self.tableWidget.rowCount() < 1:
+            self.message_signal.emit('Error', 'Empty table')
+            return
         if self.ethRadioBtn.isChecked():
             self._write_eth_master()
         elif self.rsRadioBtn.isChecked():
             self._write_rs_master()
         else:
-            pass
+            self.message_signal.emit('Error', 'Incorrect rule')
+            return
 
     def _write_rs_master(self):
-        pass
+        items_to_write = list()
+        # rs485 mode
+        item = self.device.get_item_by_modbus_reg(1540)
+        item.value = 1  # slave mode
+        item.param_status = 'changed'
+        items_to_write.append(item)
+        # Rules starting at R1
+        pattern = r'^\w{1,2}:\d:[0-9A-F]{1,2}:[A-F0-9]{8}:[0-9A-F]{1,3}:[0-9A-F]{1,2}:[A-Z]$'
+        rules_list = list()
+        for i in range(31):
+            rule_string = self._get_rule_string_from_table(i)
+            if rule_string is not None and re.match(pattern, rule_string):
+                rules_list.append(rule_string)
+            else:
+                rules_list.append('')
+
+        for i in range(31):
+            item = self.device.get_item_by_modbus_reg(1024 + i*16) #R1-R31 (rules for gateway)
+            rule_string = rules_list[i]
+            item.value = zero_fill_str(rule_string, item.param_size)
+            item.param_status = 'changed'
+            items_to_write.append(item)
+
+        # для зручності розгортаємо порядок
+        items_to_write = items_to_write[::-1]
+
+        self.device.write_parameters(items_to_write, message_feedback_flag=True)
+
+        # self.close_signal.emit()
 
     def _write_eth_master(self):
         items_to_write = list()
         # rs485 mode
         item = self.device.get_item_by_modbus_reg(1540)
-        item.value = 0
+        item.value = 0  # master mode
         item.param_status = 'changed'
         items_to_write.append(item)
         # Rules starting at R1
@@ -178,11 +226,72 @@ class AqGatewayFrame(QFrame):
 
         self.device.write_parameters(items_to_write, message_feedback_flag=True)
 
-        self.close_signal.emit()
+        # self.close_signal.emit()
+
+    def _get_rule_string_from_table(self, row):
+        # З таблиці беремо тільки для режиму RS-master тому строка з правилом
+        # завжди починаеться з коду вхідного інтерфейсу - RS485
+        #
+        # Загальний формат строки правила:
+        #        v<-----------Вхідний пакет----------------->vv<-----------Вихідний пакет-------------------------------------------->v
+        #        'код_вх_інтерфейсу:код_вх_порту:вх_слейв_айді:код_вих_інтерфейсу:код_вих_порту:вих_слейв_айді:вих_протокол(RTU/ASCII/TCP)'
+        #
+        # коди вхідних інтерфейсів
+        # 0х27 - Сервісний для зв'язку з конфігуратором
+        # 0х40 - RS485
+        # 0х06 - Ethernet
+        # у строку додаємо без приставки 0х
+        # також є вхідний порт який завжди буде 0 (було зроблено про запас, не застосовується)
+
+        rule_string = '40:0:'
+        rule_dict = self.tableWidget.get_row_values(row)
+        if rule_dict is None:
+            return None
+
+        # Додаємо код вхідного слейв айді
+        # 0х00-0хFF - слейв айді у форматі гекс
+        # G - Приймати пакети від будь якого слейв айді
+        in_slave_id = hex(int(rule_dict['in_slave_id']))[2:]
+        rule_string += f'{in_slave_id.upper()}:'
+
+        # Код вихідного інтерфейсу
+        # 0х40 - RS485
+        # ip-адреса у форматі гекс (приклад: 0x0A0219D2, оріг - 10.2.25.210) - Ethernet
+        # 0x00 - доступ до регістрів шлюзу
+        out_ip = rule_dict['out_ip']
+        out_ip = socket.inet_aton(out_ip).hex()
+        rule_string += f'{out_ip.upper()}:'
+
+        # Код вихідного порту У форматі гекс
+        out_port = hex(int(rule_dict['out_port']))[2:]
+        rule_string += f'{out_port.upper()}:'
+
+        # Код вихідного слейв айді У форматі гекс
+        # 0х00-0хFF - слейв айді у форматі гекс
+        # S - не міняти слейв айді вхідного пакету (використати вхідний слейв айді)
+        out_slave_id = hex(int(rule_dict['out_slave_id']))[2:]
+        rule_string += f'{out_slave_id.upper()}:'
+
+        # Вихідний протокол
+        # A - ASCII
+        # P - TCP
+        # R - RTU
+        # у цій функции додаємо тільки P - TCP
+        rule_string += 'P'
+
+        return rule_string
 
 
 class AqGatewayTableWidget(QTableWidget):
     clickedRow = Signal(int, QPoint)
+
+    row_number_col = 0
+    in_slave_id_col = 1
+    decor_arrow_col = 2
+    out_ip_col = 3
+    out_port_col = 4
+    out_slave_id_col = 5
+    delete_btn_col = 6
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -239,7 +348,7 @@ class AqGatewayTableWidget(QTableWidget):
         if new_row_index == 0:
             prev_ip = '192.168.1.100'
         else:
-            prev_ip = self.cellWidget(new_row_index - 1, 3).text()
+            prev_ip = self.cellWidget(new_row_index - 1, self.out_ip_col).text()
             if is_valid_ip(prev_ip):
                 ip_int = int(ipaddress.ip_address(prev_ip))
                 prev_ip = str(ipaddress.ip_address(ip_int + 1))
@@ -265,20 +374,31 @@ class AqGatewayTableWidget(QTableWidget):
         delete_btn_item.setTextAlignment(Qt.AlignCenter)
 
         # Устанавливаем элементы таблицы
-        self.setCellWidget(new_row_index, 0, number_item)
-        self.setCellWidget(new_row_index, 1, in_slave_id_item)
-        self.setCellWidget(new_row_index, 2, decor_label_item)
-        self.setCellWidget(new_row_index, 3, out_ip_address_item)
-        self.setCellWidget(new_row_index, 4, out_ip_port_item)
-        self.setCellWidget(new_row_index, 5, out_slave_id_item)
-        self.setItem(new_row_index, 6, delete_btn_item)
+        self.setCellWidget(new_row_index, self.row_number_col, number_item)
+        self.setCellWidget(new_row_index, self.in_slave_id_col, in_slave_id_item)
+        self.setCellWidget(new_row_index, self.decor_arrow_col, decor_label_item)
+        self.setCellWidget(new_row_index, self.out_ip_col, out_ip_address_item)
+        self.setCellWidget(new_row_index, self.out_port_col, out_ip_port_item)
+        self.setCellWidget(new_row_index, self.out_slave_id_col, out_slave_id_item)
+        self.setItem(new_row_index, self.delete_btn_col, delete_btn_item)
 
     def refresh_row_numbers(self):
         for i in range(self.rowCount()):
-            self.cellWidget(i, 0).setText(str(i + 1))
+            self.cellWidget(i, self.row_number_col).setText(str(i + 1))
 
     def on_vertical_scrollbar_range_changed(self, minimum, maximum):
         pass
+
+    def get_row_values(self, row):
+        if row >= self.rowCount():
+            return None
+        row_dict = dict()
+        row_dict['in_slave_id'] = self.cellWidget(row, self.in_slave_id_col).text()
+        row_dict['out_ip'] = self.cellWidget(row, self.out_ip_col).text()
+        row_dict['out_port'] = self.cellWidget(row, self.out_port_col).text()
+        row_dict['out_slave_id'] = self.cellWidget(row, self.out_slave_id_col).text()
+
+        return row_dict
 
 class AqSlaveIdGatewayLineEdit(AqSlaveIdLineEdit):
     def __init__(self, parent=None):
