@@ -192,8 +192,10 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.interface_combo_box.addItems(interfaces)
         try:
             load_last_combobox_state(self.auto_load_settings, self.ui.device_combo_box)
+            load_last_combobox_state(self.auto_load_settings, self.ui.interface_combo_box)
         except:
             self.ui.device_combo_box.setCurrentIndex(0)
+            self.ui.interface_combo_box.setCurrentIndex(0)
 
         self.change_page_by_interface_selection()
 
