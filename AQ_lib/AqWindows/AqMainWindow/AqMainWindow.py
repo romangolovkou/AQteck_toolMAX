@@ -50,25 +50,11 @@ class AqMainWindow(QMainWindow):
 
         # TODO: тимчасове, потім видалити
         self.ui.headerMenuFrame.hide()
-        self.ui.firmwareUpdBtn.clicked.connect(self.test_modal)
 
         self.message_signal.connect(partial(Core.message_manager.show_message, self))
         Core.message_manager.subscribe(self.message_signal.emit)
 
-
-
-    def test_modal(self):
-        myModal = QCustomModals.InformationModal(
-            title="Updating dashboard",
-            parent=self,
-            position='bottom-center',
-            closeIcon="Icons/Close.png",
-            modalIcon="UI/icons/AQico_silver.png",
-            description="Refreshing dashboard information",
-            isClosable=True,
-            duration=3000
-        )
-        myModal.show()
+        # Відключення кнопок утіліт до відображення першого девайсу
 
     def floating_menu_customize(self):
         device = Core.session.cur_active_device
@@ -85,6 +71,13 @@ class AqMainWindow(QMainWindow):
         else:
             self.ui.setPasswordBtn.setEnabled(False)
             self.ui.setPasswordBtn.setToolTip('Not available for this device')
+
+        if device.func('gateway'):
+            self.ui.gatewayBtn.setEnabled(True)
+            self.ui.gatewayBtn.setToolTip(None)
+        else:
+            self.ui.gatewayBtn.setEnabled(False)
+            self.ui.gatewayBtn.setToolTip('Not available for this device')
 
         if device.func('calibration'):
             self.ui.calibDeviceBtn.setEnabled(True)
