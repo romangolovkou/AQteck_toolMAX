@@ -70,6 +70,7 @@ def show_set_password():
 
 
 def show_gateway():
-    widget = AqGatewayWindow(Ui_AqGatewayWidget)
-    widget.set_working_device(AppCore.Core.session.cur_active_device)
-    widget.exec()
+    if AppCore.Core.session.cur_active_device is not None:
+        widget = AqGatewayWindow(Ui_AqGatewayWidget)
+        widget.set_working_device(AppCore.Core.session.cur_active_device)
+        widget.exec()
