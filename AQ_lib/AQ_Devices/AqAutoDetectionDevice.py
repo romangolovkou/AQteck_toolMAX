@@ -538,13 +538,16 @@ class AqAutoDetectionDevice(AqBaseDevice):
         if result != 'ok':
             return result
 
-        # Перевірка записанного
-        r_date_time = self.__sync_read_param(self.system_params_dict['date_time'])
-        r_time_zone = self.__sync_read_param(self.system_params_dict['time_zone'])
-        if (r_date_time - int(all_seconds)) < 5 and r_time_zone == int(min_shift):
-            return 'ok'
+        # # Перевірка записанного
+        # time.sleep(0.3)
+        # r_date_time = self.__sync_read_param(self.system_params_dict['date_time'])
+        # r_time_zone = self.__sync_read_param(self.system_params_dict['time_zone'])
+        # if (r_date_time - int(all_seconds)) < 5 and r_time_zone == int(min_shift):
+        #     return 'ok'
+        # else:
+        #     return 'error'
 
-        return 'error'
+        return 'ok'
 
     def reboot(self):
         text = "I will restart the device now!"

@@ -1,13 +1,16 @@
 from datetime import datetime, timedelta, timezone, date, time
+from functools import partial
 
-from PySide6.QtCore import QDate, QObject, QModelIndex, Qt
+from PySide6.QtCore import QDate, QObject, QModelIndex, Qt, Signal
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QColor, QPalette
 from PySide6.QtWidgets import QWidget, QCalendarWidget, QTableView, QHeaderView, QTableWidget
 
+from AqMessageManager import AqMessageManager
 from AqWindowTemplate import AqDialogTemplate
 
 
 class AqRtcWindow(AqDialogTemplate):
+    message_signal = Signal(str, str)
 
     def __init__(self, _ui, parent=None):
         super().__init__(parent)
@@ -20,6 +23,8 @@ class AqRtcWindow(AqDialogTemplate):
         self._time = None
         self._time_zone = None
         self.__write_handler = None
+
+        self._message_manager = AqMessageManager.get_global_message_manager()
         self.prepare_ui()
 
     @property
@@ -77,6 +82,9 @@ class AqRtcWindow(AqDialogTemplate):
         self.ui.calendarWidget.selectionChanged.connect(self.selected_date_changed)
 
         self.ui.timeZoneComboBox.currentIndexChanged.connect(self.time_zone_changed)
+
+        self.message_signal.connect(partial(self._message_manager.show_message, self))
+        self._message_manager.subscribe(self.message_signal.emit)
 
     def get_pc_date_time(self):
         # Получаем текущую дату и время
@@ -169,12 +177,18 @@ class AqRtcWindow(AqDialogTemplate):
         self.ui.writeBtn.setEnabled(True)
 
     def show_error_label(self):
-        self.ui.messageLabel.setText('Write error. Try again.')
-        self.ui.messageLabel.setStyleSheet("color: #fe2d2d; \n")
+        # self.ui.messageLabel.setText('Write error. Try again.')
+        # self.ui.messageLabel.setStyleSheet("color: #fe2d2d; \n")
+        self._message_manager.send_main_message('Error', 'Write error. Try again.')
 
     def show_success_label(self):
-        self.ui.messageLabel.setText('Successfully! Response: OK')
-        self.ui.messageLabel.setStyleSheet("color: #429061; \n")
+        # self.ui.messageLabel.setText('Successfully! Response: OK')
+        # self.ui.messageLabel.setStyleSheet("color: #429061; \n")
+        self._message_manager.send_main_message('Success', 'Successfully! Response: OK')
 
     def hide_message(self):
         self.ui.messageLabel.setText('')
+
+    def close(self):
+        self._message_manager.de_subscribe(self.message_signal.emit)
+        super().close()
