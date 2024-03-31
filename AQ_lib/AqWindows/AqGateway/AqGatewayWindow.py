@@ -179,12 +179,12 @@ class AqGatewayFrame(QFrame):
         self.addDeviceBtn.hide()
 
     def save_btn_clicked(self):
-        if self.tableWidget.rowCount() < 1:
-            self.message_signal.emit('Error', 'Empty table')
-            return
         if self.ethRadioBtn.isChecked():
             self._write_eth_master()
         elif self.rsRadioBtn.isChecked():
+            if self.tableWidget.rowCount() < 1:
+                self.message_signal.emit('Error', 'Empty table')
+                return
             self._write_rs_master()
         else:
             self.message_signal.emit('Error', 'Incorrect rule')
