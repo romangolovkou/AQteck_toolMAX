@@ -60,6 +60,10 @@ class AqMessageManager(QObject):
                 subscriber(modal_type, descr_text)
 
     def show_message(self, parent, modal_type, descr_text: str):
+        existed_modal = parent.findChild(QCustomModals.BaseModal)
+        if existed_modal is not None:
+            existed_modal.close()
+
         kwargs = {
             "title": modal_type,
             "description": descr_text,
