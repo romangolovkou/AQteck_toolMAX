@@ -342,16 +342,16 @@ class AqAutoDetectionDevice(AqBaseDevice):
             self._connect.create_param_request('read_file', self._stack_to_read)
             self._stack_to_read.clear()
 
-    def write_file(self, item, message_feedback_flag=False):
+    def write_file(self, item, message_feedback_address=False):
         if item is not None:
             self.write_parameter(item)
         if len(self._stack_to_write) > 0:
-            self._connect.create_param_request('write_file', self._stack_to_write, message_feedback_flag)
+            self._connect.create_param_request('write_file', self._stack_to_write, message_feedback_address)
             self._stack_to_write.clear()
 
-    def update_param_callback(self, message_feedback_flag=False, method=None):
+    def update_param_callback(self, message_feedback_address=False, method=None):
         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-        if message_feedback_flag:
+        if message_feedback_address:
             if len(self._update_param_stack) > 0:
                 msg_status = 'ok'
                 for param in self._update_param_stack:
@@ -363,26 +363,26 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
                 if method == 'read_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(message_feedback_address, modal_type,
                                                                 f'{self.name}. Read successful')
                     else:
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(message_feedback_address, modal_type,
                                                                 f'{self.name}. Read failed. One or more params failed')
                 elif method == 'write_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(message_feedback_address, modal_type,
                                                                 f'{self.name}. Write successful')
                     else:
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(message_feedback_address, modal_type,
                                                                 f'{self.name}. Write failed. One or more params failed')
                 elif method == 'read_file' or method == 'write_file':
                     file_item = self._update_param_stack[0]
-                    self._message_manager.send_main_message(modal_type, f'{self.name}. {file_item.get_msg_string()}')
+                    self._message_manager.send_message(message_feedback_address, modal_type, f'{self.name}. {file_item.get_msg_string()}')
                     #TODO: Тимчасовий костиль видалення хендлеру оновлення паролю у випадку успішної зміни.
                     self._event_manager.unregister_event_handler('current_device_data_updated',
                                                                  self.update_new_password_callback)
                 else:
-                    self._message_manager.send_main_message("Warning", 'Unknown operation')
+                    self._message_manager.send_message(message_feedback_address, "Warning", 'Unknown operation')
 
         with self._core_cv:
             self._core_cv.notify()
@@ -554,7 +554,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         record_data = text.encode('UTF-8')
         item = self.system_params_dict.get('reboot', None)
         item.value = record_data
-        self.write_file(item, message_feedback_flag=True)
+        self.write_file(item, message_feedback_address='main')
 
     def get_password(self):
         return self._password
@@ -572,7 +572,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._event_manager.register_event_handler('current_device_data_updated',
                                                    self.update_new_password_callback)
 
-        self.write_file(item, message_feedback_flag=True)
+        self.write_file(item, message_feedback_address='main')
 
     def update_new_password_callback(self, device, item_stack):
         if device == self:

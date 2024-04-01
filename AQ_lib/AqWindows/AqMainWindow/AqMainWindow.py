@@ -52,7 +52,7 @@ class AqMainWindow(QMainWindow):
         self.ui.headerMenuFrame.hide()
 
         self.message_signal.connect(partial(Core.message_manager.show_message, self))
-        Core.message_manager.subscribe(self.message_signal.emit)
+        Core.message_manager.subscribe('main', self.message_signal.emit)
 
         # Відключення кнопок утіліт до відображення першого девайсу
 

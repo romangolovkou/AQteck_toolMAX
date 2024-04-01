@@ -84,7 +84,7 @@ class AqRtcWindow(AqDialogTemplate):
         self.ui.timeZoneComboBox.currentIndexChanged.connect(self.time_zone_changed)
 
         self.message_signal.connect(partial(self._message_manager.show_message, self))
-        self._message_manager.subscribe(self.message_signal.emit)
+        self._message_manager.subscribe('rtc', self.message_signal.emit)
 
     def get_pc_date_time(self):
         # Получаем текущую дату и время
@@ -179,16 +179,16 @@ class AqRtcWindow(AqDialogTemplate):
     def show_error_label(self):
         # self.ui.messageLabel.setText('Write error. Try again.')
         # self.ui.messageLabel.setStyleSheet("color: #fe2d2d; \n")
-        self._message_manager.send_main_message('Error', 'Write error. Try again.')
+        self._message_manager.send_message('rtc', 'Error', 'Write error. Try again.')
 
     def show_success_label(self):
         # self.ui.messageLabel.setText('Successfully! Response: OK')
         # self.ui.messageLabel.setStyleSheet("color: #429061; \n")
-        self._message_manager.send_main_message('Success', 'Successfully! Response: OK')
+        self._message_manager.send_message('rtc', 'Success', 'Successfully! Response: OK')
 
     def hide_message(self):
         self.ui.messageLabel.setText('')
 
     def close(self):
-        self._message_manager.de_subscribe(self.message_signal.emit)
+        self._message_manager.de_subscribe(self.message_signal.emit, 'rtc')
         super().close()

@@ -100,11 +100,11 @@ class AqConnect(QObject):
                 request = request_stack.pop()
                 self.proceed_failed_request(request)
             self.RequestGroupQueue.clear()
-            if req_settings.get('msg_feedback', False):
-                self.message_manager.send_main_message("Error", 'Can`t connect to device. '
+            if req_settings.get('msg_feedback_address', False):
+                self.message_manager.send_message("Error", 'Can`t connect to device. '
                                                                 'Please check network settings and try again.')
         self.close()
-        self.requestGroupProceedDoneCallback(message_feedback_flag=req_settings.get('msg_feedback', False),
+        self.requestGroupProceedDoneCallback(message_feedback_address=req_settings.get('msg_feedback_address', False),
                                              method=method)
 
         self.set_ready_flag()
@@ -125,7 +125,7 @@ class AqConnect(QObject):
         elif function.__name__ == 'write_param':
             item.confirm_writing(False, 'modbus_error')
 
-    def create_param_request(self, method, stack, message_feedback_flag=False):
+    def create_param_request(self, method, stack, message_feedback_address=False):
         request_stack = list()
         req_settings_dict = dict()
         request_dict = dict()
@@ -147,8 +147,8 @@ class AqConnect(QObject):
             # Формируем запрос
             request_stack.append(request)
 
-        if message_feedback_flag:
-            req_settings_dict['msg_feedback'] = True
+        if message_feedback_address:
+            req_settings_dict['msg_feedback_address'] = message_feedback_address
 
         request_dict['settings'] = req_settings_dict
         request_dict['request_stack'] = request_stack

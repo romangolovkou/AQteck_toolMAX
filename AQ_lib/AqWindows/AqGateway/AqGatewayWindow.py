@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QTableWidget, QFrame, QPushButton, QRadioButton, Q
 from AqIsValidIpFunc import is_valid_ip
 from AqLineEditTemplates import AqSlaveIdLineEdit, AqIpLineEdit
 from AqMessageManager import AqMessageManager
+from AqModbusTips import remove_empty_bytes
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -48,9 +49,9 @@ class AqGatewayWindow(AqDialogTemplate):
         self.ui.mainWidget.close_signal.connect(self.close)
 
         self.message_signal.connect(partial(self._message_manager.show_message, self))
-        self._message_manager.subscribe(self.message_signal.emit)
+        self._message_manager.subscribe('gateway', self.message_signal.emit)
 
-        self.ui.mainWidget.message_signal.connect(self._message_manager.send_main_message)
+        self.ui.mainWidget.message_signal.connect(self._message_manager.send_message)
 
     def custom_resize(self):
         self.resize(self.width(), self.ui.mainWidget.sizeHint().height())
@@ -60,14 +61,14 @@ class AqGatewayWindow(AqDialogTemplate):
         self.ui.mainWidget.set_working_device(device)
 
     def close(self):
-        self._message_manager.de_subscribe(self.message_signal.emit)
+        self._message_manager.de_subscribe(self.message_signal.emit, 'gateway')
         super().close()
 
 
 class AqGatewayFrame(QFrame):
     uiChanged = Signal()
     close_signal = Signal()
-    message_signal = Signal(str, str)
+    message_signal = Signal(str, str, str)
     pattern = r'^\w{1,2}:\d:[0-9A-F]{1,2}:[A-F0-9]{8}:[0-9A-F]{1,3}:[0-9A-F]{1,2}:[A-Z]$'
 
     def __init__(self, parent=None):
@@ -137,7 +138,7 @@ class AqGatewayFrame(QFrame):
         # Встановлення поточних правил у тейбл віджет
         for i in range(31):
             item = self.device.get_item_by_modbus_reg(1024 + i*16)
-            if re.match(self.pattern, item.value):
+            if re.match(self.pattern, remove_empty_bytes(item.value)):
                 rule = item.value.split(':')
                 if rule[0] != '40':
                     return
@@ -183,11 +184,11 @@ class AqGatewayFrame(QFrame):
             self._write_eth_master()
         elif self.rsRadioBtn.isChecked():
             if self.tableWidget.rowCount() < 1:
-                self.message_signal.emit('Error', 'Empty table')
+                self.message_signal.emit('gateway', 'Error', 'Empty table')
                 return
             self._write_rs_master()
         else:
-            self.message_signal.emit('Error', 'Incorrect rule')
+            self.message_signal.emit('gateway', 'Error', 'Incorrect rule')
             return
 
     def _write_rs_master(self):
@@ -217,7 +218,7 @@ class AqGatewayFrame(QFrame):
         # для зручності розгортаємо порядок
         items_to_write = items_to_write[::-1]
 
-        self.device.write_parameters(items_to_write, message_feedback_flag=True)
+        self.device.write_parameters(items_to_write, message_feedback_address='gateway')
 
         # self.close_signal.emit()
 
@@ -246,7 +247,7 @@ class AqGatewayFrame(QFrame):
         # для зручності розгортаємо порядок
         items_to_write = items_to_write[::-1]
 
-        self.device.write_parameters(items_to_write, message_feedback_flag=True)
+        self.device.write_parameters(items_to_write, message_feedback_address='gateway')
 
         # self.close_signal.emit()
 

@@ -130,7 +130,7 @@ class AqBaseDevice(ABC):
         if args[0] == self:
             self._is_inited = True
 
-    def read_parameters(self, items=None, message_feedback_flag=False):
+    def read_parameters(self, items=None, message_feedback_address=False):
         if items is None:
             root = self._device_tree.invisibleRootItem()
             for row in range(root.rowCount()):
@@ -149,10 +149,10 @@ class AqBaseDevice(ABC):
                   + ' maked request. Request size = '
                   + str(len(self._stack_to_read)))
             self._connect.create_param_request('read', self._stack_to_read,
-                                               message_feedback_flag=message_feedback_flag)
+                                               message_feedback_address=message_feedback_address)
             self._stack_to_read.clear()
 
-    def write_parameters(self, items=None, message_feedback_flag=False):
+    def write_parameters(self, items=None, message_feedback_address=False):
         if items is None:
             root = self.device_tree.invisibleRootItem()
             for row in range(root.rowCount()):
@@ -166,10 +166,10 @@ class AqBaseDevice(ABC):
 
         if len(self._stack_to_write) > 0:
             self._connect.create_param_request('write', self._stack_to_write,
-                                               message_feedback_flag=message_feedback_flag)
+                                               message_feedback_address=message_feedback_address)
             self._stack_to_write.clear()
         else:
-            self._message_manager.send_main_message("Warning", f'{self.name} no has changed params to write. '
+            self._message_manager.send_message(message_feedback_address, "Warning", f'{self.name} no has changed params to write. '
                                                               f'Please read params, set new value and try again.')
 
     def read_parameter(self, item):
@@ -260,9 +260,9 @@ class AqBaseDevice(ABC):
         if item not in self._update_param_stack:
             self._update_param_stack.append(item)
 
-    def update_param_callback(self, message_feedback_flag=False, method=None):
+    def update_param_callback(self, message_feedback_address=False, method=None):
         self._event_manager.emit_event('current_device_data_updated', self, self._update_param_stack)
-        if message_feedback_flag:
+        if message_feedback_address:
             if len(self._update_param_stack) > 0:
                 msg_status = 'ok'
                 for param in self._update_param_stack:
@@ -274,17 +274,17 @@ class AqBaseDevice(ABC):
 
                 if method == 'read_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(modal_type,
                                                                f'{self.name}. Read successful')
                     else:
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(modal_type,
                                                                f'{self.name}. Read failed. One or more params failed')
                 elif method == 'write_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(modal_type,
                                                                f'{self.name}. Write successful')
                     else:
-                        self._message_manager.send_main_message(modal_type,
+                        self._message_manager.send_message(modal_type,
                                                                f'{self.name}. Write failed. One or more params failed')
                 # elif method == 'read_file' or method == 'write_file':
                 #     file_item = self._update_param_stack[0]

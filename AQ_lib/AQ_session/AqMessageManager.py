@@ -10,27 +10,54 @@ class AqMessageManager(QObject):
 
     _global_instance = None
     _subscribers = list()
+    _mailboxes = dict()
 
     def __init__(self):
         super().__init__()
 
-    def subscribe(self, subscriber):
+    # def subscribe(self, subscriber):
+    #     """
+    #     Subscribe for all messages.
+    #     :param subscriber: Must be callback-function for console mode or
+    #     must be QObject as parent for GUI mode.
+    #     :return:
+    #     """
+    #     if subscriber not in self._subscribers:
+    #         self._subscribers.append(subscriber)
+
+    def subscribe(self, mailbox_address, subscriber):
         """
-        Subscribe for all messages.
+        Subscribe for custom message (key-address).
+        :param mailbox_address: address-string for select receiver
         :param subscriber: Must be callback-function for console mode or
         must be QObject as parent for GUI mode.
         :return:
         """
-        if subscriber not in self._subscribers:
-            self._subscribers.append(subscriber)
+        if mailbox_address not in self._mailboxes:
+            self._mailboxes[mailbox_address] = list()
 
-    def de_subscribe(self, subscriber):
-        if subscriber in self._subscribers:
-            self._subscribers.remove(subscriber)
+        if subscriber not in self._mailboxes[mailbox_address]:
+            self._mailboxes[mailbox_address].append(subscriber)
 
-    def send_main_message(self, modal_type, descr_text: str):
-        for subscriber in self._subscribers:
-            subscriber(modal_type, descr_text)
+    def de_subscribe(self, subscriber, mailbox_address=None):
+        if mailbox_address is None:
+            if subscriber in self._subscribers:
+                self._subscribers.remove(subscriber)
+        else:
+            if mailbox_address in self._mailboxes:
+                self._mailboxes[mailbox_address].remove(subscriber)
+                if len(self._mailboxes[mailbox_address]) == 0:
+                    del self._mailboxes[mailbox_address]
+
+    # def send_message(self, modal_type, descr_text: str):
+    #     for subscriber in self._subscribers:
+    #         subscriber(modal_type, descr_text)
+
+    def send_message(self, mailbox_address, modal_type, descr_text: str):
+        subscribers = self._mailboxes.get(mailbox_address, None)
+        if subscribers is not None:
+            for subscriber in subscribers:
+                subscriber(modal_type, descr_text)
 
     def show_message(self, parent, modal_type, descr_text: str):
         kwargs = {
