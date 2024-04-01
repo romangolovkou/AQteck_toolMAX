@@ -27,7 +27,7 @@ def show_device_info_window():
             dialog.set_device_info_model(info_model)
             dialog.exec()
         else:
-            AqMessageManager.get_global_message_manager().send_main_message('Error', 'Can`t read device info')
+            AqMessageManager.get_global_message_manager().send_message('Error', 'Can`t read device info')
 
 
 def show_add_device_window():
