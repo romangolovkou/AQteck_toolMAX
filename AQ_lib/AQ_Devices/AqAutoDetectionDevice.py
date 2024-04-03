@@ -26,7 +26,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     _system_string = {
         'name':         [0xF000, 16, 3],
         'version':      [0xF010, 16, 3],
-        'serial_num':   [0xF084, 10, 3]
+        'serial_num':   [0xF084, 16, 3]
     }
     # Format: 'param_name': {start_reg, count, read_func, write_func, itemType, R_Only}
     _system_param = {
