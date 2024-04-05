@@ -1,4 +1,5 @@
 import os
+import threading
 from datetime import datetime
 import struct
 import time
@@ -51,7 +52,9 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'reboot':       [0xDEAD, 0, 40, False, 'AqAutoDetectModbusFileItem', reboot_msg_dict],
         'status':       [0x0001, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
         'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem', password_msg_dict],
-        'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None]  # file_size will be changed later in code
+        'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],  # file_size will be changed later in code
+        'arch_header':  [0x4000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None]
     }
 
     system_params_dict = dict()
@@ -555,6 +558,14 @@ class AqAutoDetectionDevice(AqBaseDevice):
         item = self.system_params_dict.get('reboot', None)
         item.value = record_data
         self.write_file(item, message_feedback_address='main')
+
+    def read_archive(self):
+        self.read_archive_thread = threading.Thread(target=self.read_archive_thread)
+        self.read_archive_thread.daemon = True
+        self.read_archive_thread.start()
+
+    def read_archive_thread(self):
+        pass
 
     def get_password(self):
         return self._password
