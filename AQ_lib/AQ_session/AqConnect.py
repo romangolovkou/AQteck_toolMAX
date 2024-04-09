@@ -101,7 +101,7 @@ class AqConnect(QObject):
                 self.proceed_failed_request(request)
             self.RequestGroupQueue.clear()
             if req_settings.get('msg_feedback_address', False):
-                self.message_manager.send_message("Error", 'Can`t connect to device. '
+                self.message_manager.send_message('main', "Error", 'Can`t connect to device. '
                                                                 'Please check network settings and try again.')
         self.close()
         self.requestGroupProceedDoneCallback(message_feedback_address=req_settings.get('msg_feedback_address', False),
