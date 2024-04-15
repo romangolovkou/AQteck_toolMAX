@@ -45,10 +45,11 @@ class AqGenericModbusDevice(AqBaseDevice):
         # TODO: describe rules to chache which functions are supported
         # into AutoDetectionDevice
         # later should be json file inside device with definitions
-        self._functions['read_write'] = False,
+        self._functions['read_write'] = False
         self._functions['rtc'] = False
         self._functions['password'] = False
         self._functions['set_slave_id'] = True
+        self._functions['gateway'] = False
         self._functions['calibration'] = False
         self._functions['log'] = False
         self._functions['fw_update'] = False

@@ -274,17 +274,17 @@ class AqBaseDevice(ABC):
 
                 if method == 'read_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_message(modal_type,
+                        self._message_manager.send_message('main', modal_type,
                                                                f'{self.name}. Read successful')
                     else:
-                        self._message_manager.send_message(modal_type,
+                        self._message_manager.send_message('main', modal_type,
                                                                f'{self.name}. Read failed. One or more params failed')
                 elif method == 'write_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_message(modal_type,
+                        self._message_manager.send_message('main', modal_type,
                                                                f'{self.name}. Write successful')
                     else:
-                        self._message_manager.send_message(modal_type,
+                        self._message_manager.send_message('main', modal_type,
                                                                f'{self.name}. Write failed. One or more params failed')
                 # elif method == 'read_file' or method == 'write_file':
                 #     file_item = self._update_param_stack[0]
