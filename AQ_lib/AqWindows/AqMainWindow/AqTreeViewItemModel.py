@@ -103,12 +103,12 @@ class AqTreeViewItemModel(QStandardItemModel):
     def read_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
-        self.device.read_parameters(sourse_item, message_feedback_address=True)
+        self.device.read_parameters(sourse_item, message_feedback_address='main')
 
     def write_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
-        self.device.write_parameters(sourse_item, message_feedback_address=True)
+        self.device.write_parameters(sourse_item, message_feedback_address='main')
 
     def add_parameter_to_watch_list(self, index):
         item = self.itemFromIndex(index)
