@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-04-17T14:32:08.470Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="tCPfsL5D3hKpHizZgnkc" version="24.2.5" type="github">
+<mxfile host="app.diagrams.net" modified="2024-04-17T14:33:31.122Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="A2fdkck8Zk1BaDaYS-cR" version="24.2.5" type="github">
   <diagram name="Загальна структурна схема" id="vz1vgDOsMvOrpUwdZbvc">
-    <mxGraphModel dx="699" dy="1906" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1188" dy="3240" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -88,7 +88,7 @@
             <mxPoint x="1096" y="1569" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="deVT8PtZJ74LpzowGz-3-23" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1.014;exitY=0.631;exitDx=0;exitDy=0;exitPerimeter=0;startWidth=50.5137912385073;startSize=12.98139534883721;width=61.395348837209305;strokeColor=#007FFF;fillColor=#007FFF;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-20">
+        <mxCell id="deVT8PtZJ74LpzowGz-3-23" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1.014;exitY=0.631;exitDx=0;exitDy=0;exitPerimeter=0;startWidth=50.5137912385073;startSize=11.48235294117647;width=35.294117647058826;strokeColor=#007FFF;fillColor=#007FFF;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-20">
           <mxGeometry width="100" height="100" relative="1" as="geometry">
             <mxPoint x="950" y="1630" as="sourcePoint" />
             <mxPoint x="1533.3333333333333" y="1560" as="targetPoint" />
