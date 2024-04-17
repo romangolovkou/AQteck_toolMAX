@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-04-17T13:15:28.891Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="TDTUNb3whfdN4CdnYmLy" version="24.2.5" type="github">
+<mxfile host="app.diagrams.net" modified="2024-04-17T13:19:11.347Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="Qq4a3qAU3F8h49exnxRJ" version="24.2.5" type="github">
   <diagram name="Страница — 1" id="vz1vgDOsMvOrpUwdZbvc">
     <mxGraphModel dx="990" dy="2700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -12,6 +12,19 @@
         </mxCell>
         <mxCell id="deVT8PtZJ74LpzowGz-3-3" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;AqMainWindow / __init__()&lt;/b&gt;&lt;/span&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Load json style&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;prepare UI elements&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;subscribe in message manager&lt;br&gt;(with address &#39;main&#39;)&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=5;" vertex="1" parent="1">
           <mxGeometry x="30" y="513" width="350" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="deVT8PtZJ74LpzowGz-3-4" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;AqCurrentSession&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;get global event manager&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;register event handlers&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="470" y="250" width="300" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="deVT8PtZJ74LpzowGz-3-5" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.886;exitY=0.536;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="339.0999999999999" y="362.9200000000001" as="sourcePoint" />
+            <mxPoint x="470" y="306" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="430" y="363" />
+              <mxPoint x="430" y="306" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
