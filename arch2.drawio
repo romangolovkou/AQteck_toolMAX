@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-04-17T15:20:00.920Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="4uoCNUUGGeEe0-eoua1j" version="24.2.5" type="github">
+<mxfile host="app.diagrams.net" modified="2024-04-17T15:22:34.791Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="_Ckk_VL7tQtwdAeU2kAD" version="24.2.5" type="github">
   <diagram name="Загальна структурна схема" id="vz1vgDOsMvOrpUwdZbvc">
-    <mxGraphModel dx="4624" dy="8100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3139" dy="4050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -88,7 +88,7 @@
             <mxPoint x="1096" y="1569" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="deVT8PtZJ74LpzowGz-3-23" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1.014;exitY=0.631;exitDx=0;exitDy=0;exitPerimeter=0;startWidth=50.5137912385073;startSize=11.48235294117647;width=35.294117647058826;strokeColor=#007FFF;fillColor=#007FFF;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-20">
+        <mxCell id="deVT8PtZJ74LpzowGz-3-23" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1.014;exitY=0.631;exitDx=0;exitDy=0;exitPerimeter=0;startWidth=50.5137912385073;startSize=11.48235294117647;width=35.294117647058826;strokeColor=#007FFF;fillColor=#007FFF;endWidth=50.5137912385073;endSize=8.633333333333333;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-20">
           <mxGeometry width="100" height="100" relative="1" as="geometry">
             <mxPoint x="950" y="1630" as="sourcePoint" />
             <mxPoint x="1533.3333333333333" y="1560" as="targetPoint" />
@@ -167,12 +167,33 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="deVT8PtZJ74LpzowGz-3-41" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;AqEventManager&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Global event manager.&lt;br&gt;Releases call method by key from registered handlers&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=5;" vertex="1" parent="1">
-          <mxGeometry x="-612" y="1636" width="250" height="210" as="geometry" />
+          <mxGeometry x="-646" y="1600" width="250" height="210" as="geometry" />
         </mxCell>
-        <mxCell id="deVT8PtZJ74LpzowGz-3-42" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.47;exitY=1.031;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.576;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-27" target="deVT8PtZJ74LpzowGz-3-41">
+        <mxCell id="deVT8PtZJ74LpzowGz-3-42" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.374;exitY=1.019;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.576;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-27" target="deVT8PtZJ74LpzowGz-3-41">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-630" y="2000" as="sourcePoint" />
             <mxPoint x="-240" y="1620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="deVT8PtZJ74LpzowGz-3-43" value="&lt;font size=&quot;1&quot; style=&quot;&quot;&gt;&lt;b style=&quot;font-size: 18px;&quot;&gt;Add found devices&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-270" y="1700" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="deVT8PtZJ74LpzowGz-3-44" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.155;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-20" target="deVT8PtZJ74LpzowGz-3-43">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-270" y="1650" as="sourcePoint" />
+            <mxPoint x="-220" y="1600" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="141" y="1745" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="deVT8PtZJ74LpzowGz-3-45" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.838;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-43" target="deVT8PtZJ74LpzowGz-3-27">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-270" y="1650" as="sourcePoint" />
+            <mxPoint x="-220" y="1600" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-330" y="1745" />
+            </Array>
           </mxGeometry>
         </mxCell>
       </root>
