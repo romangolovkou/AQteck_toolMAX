@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-04-17T16:04:22.947Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="DGzB-KAy0j7rg46VWhjg" version="24.2.5" type="github">
+<mxfile host="app.diagrams.net" modified="2024-04-17T16:05:38.182Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="lcxu6IrYm66RgCXJGOsk" version="24.2.5" type="github">
   <diagram name="Загальна структурна схема" id="vz1vgDOsMvOrpUwdZbvc">
-    <mxGraphModel dx="2353" dy="1906" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2397" dy="2025" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -265,7 +265,7 @@
             <mxPoint x="1010" y="2840" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="deVT8PtZJ74LpzowGz-3-68" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;AqNessageManager&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Global message manager.&lt;br&gt;Releases send message to certanly address(key) and can show message in different modal types&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FF99CC;strokeColor=#FF3399;strokeWidth=5;" vertex="1" parent="1">
+        <mxCell id="deVT8PtZJ74LpzowGz-3-68" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;AqMessageManager&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Global message manager.&lt;br&gt;Releases send message to certanly address(key) and can show message in different modal types&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FF99CC;strokeColor=#FF3399;strokeWidth=5;" vertex="1" parent="1">
           <mxGeometry x="160" y="3030" width="330" height="210" as="geometry" />
         </mxCell>
         <mxCell id="deVT8PtZJ74LpzowGz-3-70" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.56;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-65" target="deVT8PtZJ74LpzowGz-3-68">
