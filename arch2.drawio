@@ -1,5 +1,5 @@
-<mxfile host="app.diagrams.net" modified="2024-04-17T13:33:20.467Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="Dobtv5QqDsDwZA1HH1-r" version="24.2.5" type="github">
-  <diagram name="Страница — 1" id="vz1vgDOsMvOrpUwdZbvc">
+<mxfile host="app.diagrams.net" modified="2024-04-17T13:44:03.081Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="5p4c7d6vgk-oE9c5gxd9" version="24.2.5" type="github">
+  <diagram name="Загальна структурна схема" id="vz1vgDOsMvOrpUwdZbvc">
     <mxGraphModel dx="990" dy="2700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -7,7 +7,7 @@
         <mxCell id="deVT8PtZJ74LpzowGz-3-1" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Main start&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;1&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;2&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" vertex="1" parent="1">
           <mxGeometry x="10" y="160" width="390" height="590" as="geometry" />
         </mxCell>
-        <mxCell id="deVT8PtZJ74LpzowGz-3-2" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;AppCore / Core.Init()&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Create global event manager&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Create global message manager&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Create current session&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Init connect manager&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Init watch list Core&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=5;" vertex="1" parent="1">
+        <mxCell id="deVT8PtZJ74LpzowGz-3-2" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;AppCore / Core.Init()&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Create global event manager&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Create global message manager&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Create current session&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Init connect manager&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Init DeviceCreator&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Init watch list Core&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=5;" vertex="1" parent="1">
           <mxGeometry x="30" y="242" width="350" height="220" as="geometry" />
         </mxCell>
         <mxCell id="deVT8PtZJ74LpzowGz-3-3" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;AqMainWindow / __init__()&lt;/b&gt;&lt;/span&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Load json style&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;prepare UI elements&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;subscribe in message manager&lt;br&gt;(with address &#39;main&#39;)&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=5;" vertex="1" parent="1">
@@ -18,37 +18,37 @@
         </mxCell>
         <mxCell id="deVT8PtZJ74LpzowGz-3-5" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.886;exitY=0.536;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="339.0999999999999" y="362.9200000000001" as="sourcePoint" />
-            <mxPoint x="470" y="306" as="targetPoint" />
+            <mxPoint x="339.0999999999999" y="351.9200000000001" as="sourcePoint" />
+            <mxPoint x="470" y="295" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="430" y="363" />
-              <mxPoint x="430" y="306" />
+              <mxPoint x="430" y="352" />
+              <mxPoint x="430" y="295" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="deVT8PtZJ74LpzowGz-3-6" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;AqConnectManager.__init__()&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Create and start new daemon Thread (connect manager corefunc)&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="470" y="370" width="300" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="deVT8PtZJ74LpzowGz-3-7" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.886;exitY=0.627;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="deVT8PtZJ74LpzowGz-3-6">
+        <mxCell id="deVT8PtZJ74LpzowGz-3-7" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.886;exitY=0.627;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="341.0999999999999" y="380.94000000000005" as="sourcePoint" />
-            <mxPoint x="441" y="891" as="targetPoint" />
+            <mxPoint x="341.0999999999999" y="373.94000000000005" as="sourcePoint" />
+            <mxPoint x="470" y="428" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="430" y="381" />
-              <mxPoint x="430" y="435" />
+              <mxPoint x="430" y="374" />
+              <mxPoint x="430" y="428" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="deVT8PtZJ74LpzowGz-3-8" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;AqWatchListCore.__init__()&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;Create and start new Thread (WatchList corefunc)&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="470" y="513" width="300" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="deVT8PtZJ74LpzowGz-3-9" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.886;exitY=0.718;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="deVT8PtZJ74LpzowGz-3-8">
+        <mxCell id="deVT8PtZJ74LpzowGz-3-9" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.886;exitY=0.718;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="340.0999999999999" y="403.9600000000005" as="sourcePoint" />
-            <mxPoint x="470" y="595.6500000000001" as="targetPoint" />
+            <mxPoint x="340.0999999999999" y="415.9600000000005" as="sourcePoint" />
+            <mxPoint x="470" y="590" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="420" y="404" />
-              <mxPoint x="420" y="578" />
+              <mxPoint x="420" y="416" />
+              <mxPoint x="420" y="590" />
             </Array>
           </mxGeometry>
         </mxCell>
