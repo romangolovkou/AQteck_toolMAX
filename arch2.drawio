@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-04-18T15:28:00.051Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="VH1g4zxORoglB8gJYxV2" version="24.2.5" type="github">
+<mxfile host="app.diagrams.net" modified="2024-04-18T15:39:30.581Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="MdX6FyLQkg99kdO-n30T" version="24.2.5" type="github">
   <diagram name="Загальна структурна схема" id="vz1vgDOsMvOrpUwdZbvc">
     <mxGraphModel dx="2734" dy="2945" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -329,6 +329,42 @@
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="1381.82" y="1550" as="sourcePoint" />
             <mxPoint x="1724.82" y="2265" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-20" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.612;exitY=0.001;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="gwlKlmARlM2soJMAm2r3-12" target="gwlKlmARlM2soJMAm2r3-18">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1800" y="2510" as="sourcePoint" />
+            <mxPoint x="1950" y="2150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-21" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Set pause&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="2180" width="290" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-22" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;auto_load_settings.ini&lt;/font&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="2060" y="2330" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-23" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.991;exitY=0.135;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gwlKlmARlM2soJMAm2r3-14" target="gwlKlmARlM2soJMAm2r3-22">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1950" y="2700" as="sourcePoint" />
+            <mxPoint x="2000" y="2650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-24" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;AqEventManager&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Global event manager.&lt;br&gt;Releases call method by key from registered handlers&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=5;" vertex="1" parent="1">
+          <mxGeometry x="2060" y="2520" width="250" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-25" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.991;exitY=0.135;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1990" y="2630" as="sourcePoint" />
+            <mxPoint x="2060" y="2630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-26" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Very custom thing&lt;br&gt;for china modules.&lt;br&gt;Use hardcode and direct call pymodbus methods!&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="2770" width="260" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="gwlKlmARlM2soJMAm2r3-27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1.023;entryY=0.934;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="gwlKlmARlM2soJMAm2r3-26" target="gwlKlmARlM2soJMAm2r3-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1890" y="2660" as="sourcePoint" />
+            <mxPoint x="1920" y="2870" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
