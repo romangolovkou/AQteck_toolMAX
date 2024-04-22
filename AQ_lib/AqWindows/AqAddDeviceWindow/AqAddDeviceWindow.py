@@ -31,12 +31,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.scan_stop_event.setAccepted(False)
 
         self.name = 'Add devices'
-        # loadDialogJsonStyle(self, self.ui)
-        # self.setObjectName("AqAddDeviceWindow")
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
         self.event_manager = AQ_EventManager.get_global_event_manager()
-        # getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
         try:
             # Получаем текущий рабочий каталог (папку проекта)
             project_path = os.getcwd()

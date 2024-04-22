@@ -17,7 +17,7 @@ from AqDeviceFabrica import DeviceCreator
 from AqWatchListCore import AqWatchListCore
 
 
-class AQ_CurrentSession(QObject):
+class AqCurrentSession(QObject):
     cur_active_dev_changed = Signal()
     def __init__(self, event_manager, parent):
         super().__init__()
