@@ -1935,13 +1935,12 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
-                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/device_info.png</normaloff>:/images/icons/device_info.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">
@@ -1977,8 +1976,7 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
-                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/parameter_list.png</normaloff>:/images/icons/parameter_list.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2045,7 +2043,7 @@ background-color: #1f232a;
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
-                    <height>200</height>
+                    <height>220</height>
                    </size>
                   </property>
                   <property name="frameShape">
@@ -2170,8 +2168,7 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/serialization.png</normaloff>
-                       <disabledoff>:/images/icons/serialization.png</disabledoff>:/images/icons/serialization.png</iconset>
+                       <normaloff>:/images/icons/gateway.png</normaloff>:/images/icons/gateway.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2254,8 +2251,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/serialization.png</normaloff>
-                       <disabledoff>:/images/icons/serialization.png</disabledoff>:/images/icons/serialization.png</iconset>
+                       <normaloff>:/images/icons/set_slave_id.png</normaloff>
+                       <disabledoff>:/images/icons/serialization.png</disabledoff>:/images/icons/set_slave_id.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2369,8 +2366,8 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
-                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/archive.png</normaloff>
+                       <disabledoff>:/images/icons/archive.png</disabledoff>:/images/icons/archive.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -2644,13 +2641,12 @@ background-color: #1f232a;
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
-                       <normaloff>:/images/icons/AQico_translucent.png</normaloff>
-                       <disabledoff>:/images/icons/AQico_translucent.png</disabledoff>:/images/icons/AQico_translucent.png</iconset>
+                       <normaloff>:/images/icons/serialization.png</normaloff>:/images/icons/serialization.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>32</width>
-                       <height>32</height>
+                       <width>28</width>
+                       <height>28</height>
                       </size>
                      </property>
                      <property name="toolButtonStyle">

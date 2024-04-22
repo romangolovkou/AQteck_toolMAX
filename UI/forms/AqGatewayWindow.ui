@@ -209,6 +209,12 @@ QRadioButton, #rtuRadioBtn {
       </property>
       <item>
        <widget class="QFrame" name="pictureFrame">
+        <property name="maximumSize">
+         <size>
+          <width>530</width>
+          <height>243</height>
+         </size>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -218,6 +224,9 @@ QRadioButton, #rtuRadioBtn {
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QStackedWidget" name="stackedWidget">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
            <widget class="QWidget" name="masterEthPage">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
@@ -228,6 +237,9 @@ QRadioButton, #rtuRadioBtn {
                <property name="pixmap">
                 <pixmap resource="../resoursec.qrc">:/images/icons/master_eth_gateway.png</pixmap>
                </property>
+               <property name="scaledContents">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -235,12 +247,15 @@ QRadioButton, #rtuRadioBtn {
            <widget class="QWidget" name="masterRsPage">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QLabel" name="materRsPicLabel">
+              <widget class="QLabel" name="masterRsPicLabel">
                <property name="text">
                 <string/>
                </property>
                <property name="pixmap">
                 <pixmap resource="../resoursec.qrc">:/images/icons/master_rs_gateway.png</pixmap>
+               </property>
+               <property name="scaledContents">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
