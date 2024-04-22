@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-04-22T12:23:20.010Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" etag="hW_nk7pebIMGXWEPXcPk" version="24.2.7" type="github">
+<mxfile host="app.diagrams.net" modified="2024-04-22T12:36:33.456Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" etag="vpg5fiDfXL78iNhQ0Pks" version="24.2.7" type="github">
   <diagram name="Загальна структурна схема" id="vz1vgDOsMvOrpUwdZbvc">
-    <mxGraphModel dx="5614" dy="10800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3351" dy="4629" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -439,6 +439,17 @@
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="2201" y="3860" as="sourcePoint" />
             <mxPoint x="2290" y="3490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0iWx4O1t_I6CARbUT8B_-15" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#007FFF;strokeWidth=12;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="deVT8PtZJ74LpzowGz-3-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="2681" y="1430" as="sourcePoint" />
+            <mxPoint x="2430" y="3200" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1860" y="1160" />
+              <mxPoint x="2560" y="1730" />
+              <mxPoint x="2550" y="3070" />
+            </Array>
           </mxGeometry>
         </mxCell>
       </root>
