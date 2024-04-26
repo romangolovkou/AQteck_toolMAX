@@ -27,12 +27,12 @@ class AqMainWindow(QMainWindow):
         self.event_manager = AQ_EventManager.get_global_event_manager()
         try:
             with open(version_path, 'r') as file:
-                version_str = file.read()
+                self.version_str = file.read()
         except:
-            version_str = 'unknown version'
+            self.version_str = 'unknown'
 
         self.ui.TitleName.setText(self.windowTitle())
-        self.ui.versionLabel.setText('Version ' + version_str)
+        # self.ui.versionLabel.setText(QCoreApplication.translate("Custom context", u"Version", None))
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
         self.ui.langComboBox.currentTextChanged.connect(AqTranslateManager.set_current_lang)
         self.ui.deviceInfoBtn.clicked.connect(AqUiWorker.show_device_info_window)
@@ -45,7 +45,7 @@ class AqMainWindow(QMainWindow):
 
         self.ui.setDefaultMenuBtn.clicked.connect(Core.session.set_default_cur_active_device)
         self.ui.rebootDeviceBtn.clicked.connect(Core.session.restart_current_active_device)
-        self.ui.saveLogBtn.clicked.connect(Core.session.read_archive_cur_active_device)
+        # self.ui.saveLogBtn.clicked.connect(Core.session.read_archive_cur_active_device)
 
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
         self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
@@ -58,10 +58,14 @@ class AqMainWindow(QMainWindow):
         self.message_signal.connect(partial(Core.message_manager.show_message, self))
         Core.message_manager.subscribe('main', self.message_signal.emit)
 
+        self.retranslate()
+
         # Відключення кнопок утіліт до відображення першого девайсу
 
     def retranslate(self):
         self.ui.retranslateUi(self)
+        tr_string = QCoreApplication.translate("Custom context", u"Version", None)
+        self.ui.versionLabel.setText(tr_string + ' ' + self.version_str)
 
     def floating_menu_customize(self):
         device = Core.session.cur_active_device

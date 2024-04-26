@@ -970,4 +970,11 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>Custom context</name>
+    <message>
+        <source>Version</source>
+        <translation>Версія</translation>
+    </message>
+</context>
 </TS>

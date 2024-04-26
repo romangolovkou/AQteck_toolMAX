@@ -1747,6 +1747,12 @@ QCheckBox::indicator:checked {
             </property>
             <item alignment="Qt::AlignLeft">
              <widget class="QPushButton" name="findBtn">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>100</width>
