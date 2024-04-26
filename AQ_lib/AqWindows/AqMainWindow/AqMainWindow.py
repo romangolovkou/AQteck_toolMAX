@@ -3,6 +3,7 @@ from functools import partial
 from PySide6.QtCore import QCoreApplication, Signal
 
 import AqUiWorker
+from AqTranslateManager import AqTranslateManager
 from Custom_Widgets import QMainWindow, loadJsonStyle
 from Custom_Widgets.QCustomModals import QCustomModals
 from AQ_EventManager import AQ_EventManager
@@ -19,6 +20,7 @@ class AqMainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        AqTranslateManager.subscribe(self.retranslate)
 
         loadJsonStyle(self, self.ui)
 
@@ -32,6 +34,7 @@ class AqMainWindow(QMainWindow):
         self.ui.TitleName.setText(self.windowTitle())
         self.ui.versionLabel.setText('Version ' + version_str)
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
+        self.ui.langComboBox.currentTextChanged.connect(AqTranslateManager.set_current_lang)
         self.ui.deviceInfoBtn.clicked.connect(AqUiWorker.show_device_info_window)
         self.ui.paramListBtn.clicked.connect(AqUiWorker.show_device_param_list)
         self.ui.watchListBtn.clicked.connect(AqUiWorker.show_watch_list_window)
@@ -42,6 +45,7 @@ class AqMainWindow(QMainWindow):
 
         self.ui.setDefaultMenuBtn.clicked.connect(Core.session.set_default_cur_active_device)
         self.ui.rebootDeviceBtn.clicked.connect(Core.session.restart_current_active_device)
+        self.ui.saveLogBtn.clicked.connect(Core.session.read_archive_cur_active_device)
 
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
         self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
@@ -55,6 +59,9 @@ class AqMainWindow(QMainWindow):
         Core.message_manager.subscribe('main', self.message_signal.emit)
 
         # Відключення кнопок утіліт до відображення першого девайсу
+
+    def retranslate(self):
+        self.ui.retranslateUi(self)
 
     def floating_menu_customize(self):
         device = Core.session.cur_active_device

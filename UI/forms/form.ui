@@ -358,7 +358,7 @@ background-color: #1f232a;
                 </font>
                </property>
                <property name="text">
-                <string>TextLabel</string>
+                <string>AQteck tool MAX</string>
                </property>
               </widget>
              </item>
@@ -377,6 +377,53 @@ background-color: #1f232a;
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QFrame" name="langBtnFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QComboBox" name="langComboBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>30</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="duplicatesEnabled">
+                <bool>false</bool>
+               </property>
+               <item>
+                <property name="text">
+                 <string>EN</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>UA</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item>
            <widget class="QFrame" name="frame_2">
