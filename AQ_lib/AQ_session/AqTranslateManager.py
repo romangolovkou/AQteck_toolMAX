@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, QTranslator, Signal
+from PySide6.QtCore import QObject, QTranslator, Signal, QCoreApplication
 
 from AqMessageManager import AqMessageManager
 
@@ -34,3 +34,8 @@ class AqTranslateManager(QObject):
     @classmethod
     def subscribe(cls, retrans_method):
         cls._retranslate_subscribers.append(retrans_method)
+
+    @classmethod
+    def tr(cls, origin_text):
+        translate_text = QCoreApplication.translate('Custom context', origin_text, None)
+        return translate_text

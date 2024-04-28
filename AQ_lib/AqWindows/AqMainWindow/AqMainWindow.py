@@ -64,7 +64,8 @@ class AqMainWindow(QMainWindow):
 
     def retranslate(self):
         self.ui.retranslateUi(self)
-        tr_string = QCoreApplication.translate("Custom context", u"Version", None)
+        # tr_string = QCoreApplication.translate("Custom context", u"Version", None)
+        tr_string = AqTranslateManager.tr('Version')
         self.ui.versionLabel.setText(tr_string + ' ' + self.version_str)
 
     def floating_menu_customize(self):
