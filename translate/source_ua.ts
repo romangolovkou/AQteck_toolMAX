@@ -1000,5 +1000,13 @@
         <source>Version</source>
         <translation>Версія</translation>
     </message>
+    <message>
+        <source>Successfully! Response: OK</source>
+        <translation>Успішно!</translation>
+    </message>
+    <message>
+        <source>Connect error. Slave ID not set.</source>
+        <translation>Помилка! ID не встановлено.</translation>
+    </message>
 </context>
 </TS>

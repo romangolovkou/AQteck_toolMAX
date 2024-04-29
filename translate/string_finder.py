@@ -2,7 +2,7 @@ import os
 import re
 
 def find_patterns_in_py_files(directory, pattern):
-    matching_parts = []
+    matching_parts = set()
 
     # Рекурсивно обходим все файлы в указанной директории
     for root, dirs, files in os.walk(directory):
@@ -14,7 +14,7 @@ def find_patterns_in_py_files(directory, pattern):
                     for line in lines:
                         matches = re.findall(pattern, line)  # Ищем все совпадения шаблона в строке
                         for match in matches:
-                            matching_parts.append(match)
+                            matching_parts.add(match)
 
     return matching_parts
 

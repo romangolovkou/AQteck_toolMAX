@@ -13,6 +13,7 @@ from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import load_last_combobox_state, load_last_text_value, save_combobox_current_state, \
     save_current_text_value
+from AqTranslateManager import AqTranslateManager
 from AqWatchListCore import AqWatchListCore
 from AqWindowTemplate import AqDialogTemplate
 
@@ -54,6 +55,9 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
 
         # Викликаємо заповнення комбобоксу девайсів
         self.change_device_set_by_protocol_selection()
+
+        # subscribe to translator
+        AqTranslateManager.subscribe(self.retranslate)
 
 
     def prepare_ui_objects(self):
@@ -250,7 +254,7 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
         # self.connect_err_label = AqAddDeviceConnectErrorLabel(self.width(), 50, self.ui.mainWidget)
         # self.connect_err_label.move(0, self.height()-86)
         # self.connect_err_label.show()
-        self.ui.userMessageLabel.setText('Connect error. Slave ID not set.')
+        self.ui.userMessageLabel.setText(AqTranslateManager.tr('Connect error. Slave ID not set.'))
         self.ui.userMessageLabel.setStyleSheet("color: #fe2d2d; \n")
         self.ui.userMessageLabel.show()
 
@@ -262,10 +266,15 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
         # self.success_label_widget.show()
         # # Запускаем таймер на 4 секунды, чтобы скрыть плашку
         # QTimer.singleShot(4000, self.success_label_widget.deleteLater)
-        self.ui.userMessageLabel.setText('Successfully! Response: OK')
+        self.ui.userMessageLabel.setText(AqTranslateManager.tr('Successfully! Response: OK'))
         self.ui.userMessageLabel.setStyleSheet("color: #429061; \n")
         self.ui.userMessageLabel.show()
 
+    def retranslate(self):
+        self.ui.userMessageLabel.setText(AqTranslateManager.tr('Successfully! Response: OK'))
+        self.ui.userMessageLabel.setText(AqTranslateManager.tr('Connect error. Slave ID not set.'))
+
     def close(self):
         AqWatchListCore.set_pause_flag(self.watch_core_save_state)
+        AqTranslateManager.de_subscribe(self.retranslate)
         super().close()
