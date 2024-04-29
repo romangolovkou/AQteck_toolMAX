@@ -973,6 +973,30 @@
 <context>
     <name>Custom context</name>
     <message>
+        <source>Name</source>
+        <translation>Ім&apos;я параметру</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation>Значення</translation>
+    </message>
+    <message>
+        <source>Lower limit</source>
+        <translation>Мін. значення</translation>
+    </message>
+    <message>
+        <source>Upper limit</source>
+        <translation>Макс. значення</translation>
+    </message>
+    <message>
+        <source>Unit</source>
+        <translation>Од. виміру</translation>
+    </message>
+    <message>
+        <source>Default value</source>
+        <translation>За замовчуванням</translation>
+    </message>
+    <message>
         <source>Version</source>
         <translation>Версія</translation>
     </message>
