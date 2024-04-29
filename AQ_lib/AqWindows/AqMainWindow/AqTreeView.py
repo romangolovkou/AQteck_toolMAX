@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QMenu, QTreeView, QHeaderView
 
+from AqTranslateManager import AqTranslateManager
 from AqTreeViewDelegates import AqNameTreeDelegate, AqValueTreeDelegate
 from AQ_CustomWindowTemplates import AQ_have_error_widget
 
@@ -110,14 +111,14 @@ class AqTreeView(QTreeView):
                     # # Подключаем обработчик события выбора действия
                     # action_watch.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
                     # Добавляем действие в контекстное меню
-                    action_read = context_menu.addAction("Read parameters")
+                    action_read = context_menu.addAction(AqTranslateManager.tr("Read parameters"))
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.model().read_parameter(index))
                     if self.traverse_items_R_Only_catalog_check(item) > 0:
-                        action_write = context_menu.addAction("Write parameters")
+                        action_write = context_menu.addAction(AqTranslateManager.tr("Write parameters"))
                         # Подключаем обработчик события выбора действия
                         action_write.triggered.connect(lambda: self.model().write_parameter(index))
-                    action_add_to_watch_list = context_menu.addAction("Add to watch list")
+                    action_add_to_watch_list = context_menu.addAction(AqTranslateManager.tr("Add to watch list"))
                     action_add_to_watch_list.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
                     # # Показываем контекстное меню
                     context_menu.exec(event.globalPos())
@@ -143,14 +144,14 @@ class AqTreeView(QTreeView):
                     # # Подключаем обработчик события выбора действия
                     # action_watch.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
                     # Добавляем действие в контекстное меню
-                    action_read = context_menu.addAction("Read parameter")
+                    action_read = context_menu.addAction(AqTranslateManager.tr("Read parameter"))
                     # Подключаем обработчик события выбора действия
                     action_read.triggered.connect(lambda: self.model().read_parameter(index))
                     if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
-                        action_write = context_menu.addAction("Write parameter")
+                        action_write = context_menu.addAction(AqTranslateManager.tr("Write parameter"))
                         # Подключаем обработчик события выбора действия
                         action_write.triggered.connect(lambda: self.model().write_parameter(index))
-                    action_add_to_watch_list = context_menu.addAction("Add to watch list")
+                    action_add_to_watch_list = context_menu.addAction(AqTranslateManager.tr("Add to watch list"))
                     action_add_to_watch_list.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
 
                     # Показываем контекстное меню

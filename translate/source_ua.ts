@@ -1008,5 +1008,37 @@
         <source>Connect error. Slave ID not set.</source>
         <translation>Помилка! ID не встановлено.</translation>
     </message>
+    <message>
+        <source>Load configuration</source>
+        <translation>Завантажити конфігурацію</translation>
+    </message>
+    <message>
+        <source>Write parameter</source>
+        <translation>Записати параметр</translation>
+    </message>
+    <message>
+        <source>Write parameters</source>
+        <translation>Записати параметри</translation>
+    </message>
+    <message>
+        <source>Save configuration</source>
+        <translation>Зберегти конфігурацію</translation>
+    </message>
+    <message>
+        <source>Add to watch list</source>
+        <translation>Додати до відстеження</translation>
+    </message>
+    <message>
+        <source>Read parameter</source>
+        <translation>Прочитати параметр</translation>
+    </message>
+    <message>
+        <source>Read parameters</source>
+        <translation>Прочитати параметри</translation>
+    </message>
+    <message>
+        <source>Delete device</source>
+        <translation>Видалити пристрій</translation>
+    </message>
 </context>
 </TS>

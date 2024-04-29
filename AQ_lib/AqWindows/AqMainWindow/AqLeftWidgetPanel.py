@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QMenu
 import AqUiWorker
 from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
+from AqTranslateManager import AqTranslateManager
 from ui_AqLeftDeviceWidget import Ui_AqLeftDeviceWidget
 
 from PySide6.QtCore import Qt, Signal
@@ -142,11 +143,11 @@ class AqLeftDeviceWidget(QWidget):
                                        }
                                    """)
         # Добавляем действие в контекстное меню
-        action_read = context_menu.addAction("Read parameters")
-        action_write = context_menu.addAction("Write parameters")
-        action_delete = context_menu.addAction("Delete device")
-        action_save_config = context_menu.addAction("Save configuration")
-        action_load_config = context_menu.addAction("Load configuration")
+        action_read = context_menu.addAction(AqTranslateManager.tr("Read parameters"))
+        action_write = context_menu.addAction(AqTranslateManager.tr("Write parameters"))
+        action_delete = context_menu.addAction(AqTranslateManager.tr("Delete device"))
+        action_save_config = context_menu.addAction(AqTranslateManager.tr("Save configuration"))
+        action_load_config = context_menu.addAction(AqTranslateManager.tr("Load configuration"))
         # Подключаем обработчик события выбора действия
         action_read.triggered.connect(lambda: self.device.read_parameters(message_feedback_address='main'))
         action_write.triggered.connect(lambda: self.device.write_parameters(message_feedback_address='main'))
