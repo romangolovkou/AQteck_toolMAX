@@ -6,8 +6,8 @@ from PySide6.QtGui import QScreen
 from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
 import ModbusTableDataFiller
+from AqSettingsFunc import AqSettingsManager
 from AqWindowTemplate import AqDialogTemplate
-from AqSettingsFunc import get_last_path, save_last_path
 from AqDeviceParamListModel import AqDeviceParamListModel
 
 
@@ -66,7 +66,7 @@ class AqParamListWidget(AqDialogTemplate):
         # Сохраняем данные в файл CSV
         def_name = self.device_str.replace('S/N:','').replace(' ', '_') + '.csv'
         # Начальный путь для диалога
-        initial_path = get_last_path(self.auto_load_settings, 'param_list_csv_path')
+        initial_path = AqSettingsManager.get_last_path('param_list_csv_path')
         if initial_path == '':
             initial_path = "C:/"
         self.file_dialog = QFileDialog(self)
@@ -93,7 +93,7 @@ class AqParamListWidget(AqDialogTemplate):
                     writer.writerow(row_data)
             # Извлекаем путь к каталогу
             directory_path = os.path.dirname(filename)
-            save_last_path(self.auto_load_settings, 'param_list_csv_path', directory_path)
+            AqSettingsManager.save_last_path('param_list_csv_path', directory_path)
 
 
 class AqParamListInfoFrame(QFrame):

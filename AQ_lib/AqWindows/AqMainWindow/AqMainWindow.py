@@ -3,6 +3,7 @@ from functools import partial
 from PySide6.QtCore import QCoreApplication, Signal
 
 import AqUiWorker
+from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
 from Custom_Widgets import QMainWindow, loadJsonStyle
 from Custom_Widgets.QCustomModals import QCustomModals
@@ -34,7 +35,8 @@ class AqMainWindow(QMainWindow):
         self.ui.TitleName.setText(self.windowTitle())
         # self.ui.versionLabel.setText(QCoreApplication.translate("Custom context", u"Version", None))
         getattr(self.ui, "closeBtn").clicked.connect(lambda: self.close())
-        self.ui.langComboBox.currentTextChanged.connect(AqTranslateManager.set_current_lang)
+        self.ui.langComboBox.currentTextChanged.connect(self.lang_change)
+        AqSettingsManager.load_last_combobox_state(self.ui.langComboBox)
         self.ui.deviceInfoBtn.clicked.connect(AqUiWorker.show_device_info_window)
         self.ui.paramListBtn.clicked.connect(AqUiWorker.show_device_param_list)
         self.ui.watchListBtn.clicked.connect(AqUiWorker.show_watch_list_window)
@@ -67,6 +69,10 @@ class AqMainWindow(QMainWindow):
         # tr_string = QCoreApplication.translate("Custom context", u"Version", None)
         tr_string = AqTranslateManager.tr('Version')
         self.ui.versionLabel.setText(tr_string + ' ' + self.version_str)
+
+    def lang_change(self, lang):
+        AqSettingsManager.save_combobox_current_state(self.ui.langComboBox)
+        AqTranslateManager.set_current_lang(lang)
 
     def floating_menu_customize(self):
         device = Core.session.cur_active_device

@@ -1,11 +1,9 @@
 from PySide6.QtCore import QObject, QTranslator, Signal, QCoreApplication
 
-from AqMessageManager import AqMessageManager
-
 
 class AqTranslateManager(QObject):
 
-    _current_lang = 'UA'
+    _current_lang = 'EN'
 
     _available_langs = {'EN', 'UA'}
 

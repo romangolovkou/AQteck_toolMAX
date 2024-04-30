@@ -3,6 +3,7 @@ from AQ_Session import AqCurrentSession
 from AqConnectManager import AqConnectManager
 from AqDeviceFabrica import DeviceCreator
 from AqMessageManager import AqMessageManager
+from AqSettingsFunc import AqSettingsManager
 from AqWatchListCore import AqWatchListCore
 
 
@@ -17,6 +18,7 @@ class Core(object):
         AqConnectManager.init()
         DeviceCreator.init(cls.event_manager)
         AqWatchListCore.init()
+        AqSettingsManager.init()
 
     @classmethod
     def de_init(cls):

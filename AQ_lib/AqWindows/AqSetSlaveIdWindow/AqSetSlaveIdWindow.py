@@ -1,18 +1,7 @@
-import os
-import threading
-
 import serial
-from PySide6.QtCore import Qt, QSettings, QThread, Signal, QEvent, QTimer
-from PySide6.QtGui import QColor, QFont
-from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame, QWidget, QLabel
-
-import AqBaseDevice
 import AqDeviceFabrica
 from AQ_EventManager import AQ_EventManager
-from AqIsValidIpFunc import is_valid_ip
-from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
-from AqSettingsFunc import load_last_combobox_state, load_last_text_value, save_combobox_current_state, \
-    save_current_text_value
+from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
 from AqWatchListCore import AqWatchListCore
 from AqWindowTemplate import AqDialogTemplate
@@ -31,19 +20,6 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
         AqWatchListCore.set_pause_flag(True)
 
         self.event_manager = AQ_EventManager.get_global_event_manager()
-        try:
-            # Получаем текущий рабочий каталог (папку проекта)
-            project_path = os.getcwd()
-            roaming_path = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming')
-            # Проверяем наличие папки Roaming, если её нет - создаем
-            if not os.path.exists(roaming_path):
-                os.makedirs(roaming_path)
-            # Объединяем путь к папке проекта с именем файла настроек
-            settings_path = os.path.join(roaming_path, "auto_load_settings.ini")
-            # Используем полученный путь в QSettings
-            self.auto_load_settings = QSettings(settings_path, QSettings.IniFormat)
-        except:
-            print('File "auto_load_settings.ini" not found')
 
         self.selected_devices_list = []
         # Рєєструємо обробники подій
@@ -97,15 +73,10 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
         self.ui.interface_combo_box.addItems(com_ports_list)
 
         # Встановлюємо попередне обране значення, якщо воно існує
-        if self.auto_load_settings is not None:
-            # load_last_combobox_state(self.auto_load_settings, self.ui.protocol_combo_box)
-            # load_last_combobox_state(self.auto_load_settings, self.ui.device_combo_box)
-            # load_last_combobox_state(self.auto_load_settings, self.ui.interface_combo_box)
-            # load_last_text_value(self.auto_load_settings, self.ui.ip_line_edit)
-            load_last_combobox_state(self.auto_load_settings, self.ui.boudrate_combo_box)
-            load_last_combobox_state(self.auto_load_settings, self.ui.parity_combo_box)
-            load_last_combobox_state(self.auto_load_settings, self.ui.stopbits_combo_box)
-            load_last_text_value(self.auto_load_settings, self.ui.slave_id_line_edit)
+        AqSettingsManager.load_last_combobox_state(self.ui.boudrate_combo_box)
+        AqSettingsManager.load_last_combobox_state(self.ui.parity_combo_box)
+        AqSettingsManager.load_last_combobox_state(self.ui.stopbits_combo_box)
+        AqSettingsManager.load_last_text_value(self.ui.slave_id_line_edit)
 
     def change_device_set_by_protocol_selection(self):
         protocol = self.ui.protocol_combo_box.currentText()

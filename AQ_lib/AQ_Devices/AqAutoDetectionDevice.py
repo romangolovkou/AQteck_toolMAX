@@ -15,6 +15,7 @@ from AqConnect import AqModbusConnect
 from AqDeviceInfoModel import AqDeviceInfoModel
 from AqDeviceStrings import get_translated_string
 from AqParser import build_item, build_file_item
+from AqTranslateManager import AqTranslateManager
 from AqTreeViewItemModel import AqTreeItemModel
 
 from AqAutoDetectionLibrary import get_containers_count, \
@@ -42,10 +43,10 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
     #Create message srtings for files if need (for show in modal message).
     #Must be dict vs keys 'ok', 'error', and other if need.
-    reboot_msg_dict = {'ok': 'Rebooted successfully',
-                       'error': 'Reboot failed. Please try again'}
-    password_msg_dict = {'ok': 'Password settings successfully updated',
-                         'error': 'Can`t write new password settings. Please try again'}
+    reboot_msg_dict = {'ok': AqTranslateManager.tr('Rebooted successfully'),
+                       'error': AqTranslateManager.tr('Reboot failed. Please try again')}
+    password_msg_dict = {'ok': AqTranslateManager.tr('Password settings successfully updated'),
+                         'error': AqTranslateManager.tr('Can`t write new password settings. Please try again')}
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only, File Type, message_dict]
     _system_file = {
@@ -367,17 +368,17 @@ class AqAutoDetectionDevice(AqBaseDevice):
                 if method == 'read_param':
                     if msg_status == 'ok':
                         self._message_manager.send_message(message_feedback_address, modal_type,
-                                                                f'{self.name}. Read successful')
+                                                           f'{self.name}. ' + AqTranslateManager.tr('Read successful'))
                     else:
                         self._message_manager.send_message(message_feedback_address, modal_type,
-                                                                f'{self.name}. Read failed. One or more params failed')
+                                                                f'{self.name}. ' + AqTranslateManager.tr('Read failed. One or more params failed'))
                 elif method == 'write_param':
                     if msg_status == 'ok':
                         self._message_manager.send_message(message_feedback_address, modal_type,
-                                                                f'{self.name}. Write successful')
+                                                                f'{self.name}. ' + AqTranslateManager.tr('Write successful'))
                     else:
                         self._message_manager.send_message(message_feedback_address, modal_type,
-                                                                f'{self.name}. Write failed. One or more params failed')
+                                                                f'{self.name}. ' + AqTranslateManager.tr('Write failed. One or more params failed'))
                 elif method == 'read_file' or method == 'write_file':
                     file_item = self._update_param_stack[0]
                     self._message_manager.send_message(message_feedback_address, modal_type, f'{self.name}. {file_item.get_msg_string()}')

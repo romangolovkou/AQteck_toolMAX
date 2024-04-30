@@ -1040,5 +1040,41 @@
         <source>Delete device</source>
         <translation>Видалити пристрій</translation>
     </message>
+    <message>
+        <source>Read successful</source>
+        <translation>Успішно прочитано</translation>
+    </message>
+    <message>
+        <source>Can`t write new password settings. Please try again</source>
+        <translation>Не вдалося записати пароль. Спробуйте ще раз</translation>
+    </message>
+    <message>
+        <source>Reboot failed. Please try again</source>
+        <translation>Не вдалося перезавантажити. Спробуйте ще раз</translation>
+    </message>
+    <message>
+        <source>Read failed. One or more params failed</source>
+        <translation>Помилка. Один або більше параметрів не вдалося прочитати</translation>
+    </message>
+    <message>
+        <source>Password settings successfully updated</source>
+        <translation>Нові налаштування паролю успішно записані</translation>
+    </message>
+    <message>
+        <source>Rebooted successfully</source>
+        <translation>Пристрій перезавантажено</translation>
+    </message>
+    <message>
+        <source>Write failed. One or more params failed</source>
+        <translation>Помилка. Один або більше параметрів не вдалося записати</translation>
+    </message>
+    <message>
+        <source>Write successful</source>
+        <translation>Успішно записано</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Видалити</translation>
+    </message>
 </context>
 </TS>
