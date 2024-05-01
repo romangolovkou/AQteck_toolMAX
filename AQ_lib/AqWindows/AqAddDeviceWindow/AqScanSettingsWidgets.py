@@ -2,13 +2,15 @@ from PySide6.QtCore import Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QFrame, QCheckBox, QLabel, QLineEdit, QWidget
 
+from AqTranslateManager import AqTranslateManager
+
 
 class AqScanCheckBoxFrame(QFrame):
     clicked_signal = Signal()
     def __init__(self, parent):
         super().__init__(parent)
         self.child_buttons = None
-        self.warning_label = QLabel('Check something!', self.parent())
+        self.warning_label = QLabel(AqTranslateManager.tr('Check something!'), self.parent())
         self.warning_label.setStyleSheet("color: #fe2d2d; \n")
         self.warning_label.setFixedSize(100, 20)
         self.warning_label.hide()
@@ -57,7 +59,7 @@ class AqScanSlaveIDFrame(QFrame):
         self.startLineEdit = None
         self.endLineEdit = None
         self.slaveIdWarningMsgLabel = None
-        self.warning_label = QLabel('End address cannot be less than start address!', self)
+        self.warning_label = QLabel(AqTranslateManager.tr('End address cannot be less than start address!'), self)
         self.warning_label.setStyleSheet("color: #fe2d2d; \n")
         self.warning_label.setFont(QFont('Segoe UI', 10))
         self.warning_label.setFixedSize(250, 20)
@@ -146,11 +148,17 @@ class AqScanNetworkSettingsWidget(QWidget):
             minutes = remaining_seconds // 60
             seconds = remaining_seconds % 60
             if hours > 0:
-                self.user_message_label.setText(f"Possible search time {hours} hours {minutes} minutes {seconds} seconds")
+                self.user_message_label.setText(AqTranslateManager.tr("Possible search time") +
+                                                f' {hours} ' + AqTranslateManager.tr("hours") +
+                                                f' {minutes} ' + AqTranslateManager.tr('minutes') +
+                                                f' {seconds} ' + AqTranslateManager.tr('seconds'))
             elif minutes > 0:
-                self.user_message_label.setText(f"Possible search time {minutes} minutes {seconds} seconds")
+                self.user_message_label.setText(AqTranslateManager.tr("Possible search time") +
+                                                f' {minutes} ' + AqTranslateManager.tr('minutes') +
+                                                f' {seconds} ' + AqTranslateManager.tr('seconds'))
             elif seconds > 0:
-                self.user_message_label.setText(f"Possible search time {seconds} seconds")
+                self.user_message_label.setText(AqTranslateManager.tr("Possible search time") +
+                                                f' {seconds} ' + AqTranslateManager.tr('seconds'))
 
             self.user_message_label.setStyleSheet("color: #D0D0D0; \n")
             self.user_message_label.show()
@@ -159,4 +167,4 @@ class AqScanNetworkSettingsWidget(QWidget):
 
     def show_not_found_error(self):
         self.user_message_label.setStyleSheet("color: #fe2d2d; \n")
-        self.user_message_label.setText("Not match anything")
+        self.user_message_label.setText(AqTranslateManager.tr("Not match anything"))

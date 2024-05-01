@@ -3,15 +3,15 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget
 
 from AQ_CustomWindowTemplates import AQ_Label
+from AqTranslateManager import AqTranslateManager
 
 
 class AqAddDeviceConnectErrorLabel(QWidget):
     def __init__(self, width, height, parent=None):
         super().__init__(parent)
         self.setGeometry(0, 0, width, height)
-        self.connect_err_label = AQ_Label("<html>The connection to device could not be established.<br>"
-                                         "Check the connection lines and network parameters and repeat "
-                                         "the search.<html>", self)
+        self.connect_err_label = AQ_Label(AqTranslateManager.tr("The connection to device could not be established.") + '\n' +
+                                          AqTranslateManager.tr("Check the connection lines and network parameters and repeat the search."), self)
         self.connect_err_label.setStyleSheet("background-color: #9d2d30; color: #D0D0D0; \n")
         self.connect_err_label.setFont(QFont("Verdana", 12))  # Задаем шрифт и размер
         self.connect_err_label.setAlignment(Qt.AlignCenter)

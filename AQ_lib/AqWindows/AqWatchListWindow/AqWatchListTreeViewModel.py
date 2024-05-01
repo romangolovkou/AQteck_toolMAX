@@ -15,6 +15,11 @@ class AqWatchListTreeViewModel(QStandardItemModel):
         self.setColumnCount(2)
         self.setHorizontalHeaderLabels([AqTranslateManager.tr("Name"),
                                         AqTranslateManager.tr("Value")])
+        AqTranslateManager.subscribe(self.retranslate)
+
+    def retranslate(self):
+        self.setHorizontalHeaderLabels([AqTranslateManager.tr("Name"),
+                                        AqTranslateManager.tr("Value")])
 
     def update_parameter_value(self, manager_item):
         manager_item.show_new_value()

@@ -12,6 +12,7 @@ from AQ_EventManager import AQ_EventManager
 from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import AqSettingsManager
+from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate, AqWindowTemplate
 from ui_AqEnterPassWidget import Ui_AqEnterPassWidget
 
@@ -544,7 +545,7 @@ class AqAddDeviceTableWidget(QTableWidget):
         version_item.setFlags(version_item.flags() & ~Qt.ItemIsEditable)
 
         if status == 'need_pass':
-            tip_str = 'Enter password. CLick to enter'
+            tip_str = AqTranslateManager.tr('Enter password. CLick to enter')
             checkbox_item.setToolTip(tip_str)
             name_item.setToolTip(tip_str)
             address_item.setToolTip(tip_str)
@@ -680,7 +681,7 @@ class AqPasswordWidget(AqDialogTemplate):
         # Получаем координаты поля ввода относительно окна
         rect = self.geometry()
         pos = self.mapTo(self, rect.topRight())
-        self.err_label = QLabel('Wrong password', self)
+        self.err_label = QLabel(AqTranslateManager.tr('Wrong password'), self)
         self.err_label.setStyleSheet("color: #fe2d2d; background-color: transparent; border-radius: 3px;\n")
         self.err_label.setFont(QFont("Segoe UI", 10))
         self.err_label.move(35, 60)

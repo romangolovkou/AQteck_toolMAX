@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidg
 import ModbusTableDataFiller
 from AqBaseDevice import AqBaseDevice
 from AqBaseTreeItems import AqParamManagerItem, AqCatalogItem
+from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqWatchListCore import AqWatchListCore
 from AqWatchListTreeViewModel import AqWatchListTreeViewModel
@@ -52,6 +53,7 @@ class AqWatchListWidget(AqDialogTemplate):
         AqWatchListCore.signals.core_resumed.connect(self.watch_core_resumed)
 
         AqWatchListWidget._inited = True
+        AqTranslateManager.subscribe(lambda: self.ui.retranslateUi(self))
 
     def customAdjustSize(self, *args):
         self.ui.tableView.adjustSize()

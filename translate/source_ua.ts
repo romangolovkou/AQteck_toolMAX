@@ -244,7 +244,7 @@
     <message>
         <location filename="../UI/forms/AqGatewayWindow.ui" line="367"/>
         <source>Select who`s the master in the network</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть майстера в мережі</translation>
     </message>
     <message>
         <location filename="../UI/forms/AqGatewayWindow.ui" line="415"/>
@@ -1075,6 +1075,90 @@
     <message>
         <source>Remove</source>
         <translation>Видалити</translation>
+    </message>
+    <message>
+        <source>hours</source>
+        <translation>годин</translation>
+    </message>
+    <message>
+        <source>seconds</source>
+        <translation>секунд</translation>
+    </message>
+    <message>
+        <source>End address cannot be less than start address!</source>
+        <translation>Кінцева адреса не може бути менша за початкову!</translation>
+    </message>
+    <message>
+        <source>Not match anything</source>
+        <translation>Нічого не знайдено</translation>
+    </message>
+    <message>
+        <source>Possible search time</source>
+        <translation>Можливий час пошуку</translation>
+    </message>
+    <message>
+        <source>Wrong password</source>
+        <translation>Невірний пароль</translation>
+    </message>
+    <message>
+        <source>Enter password. CLick to enter</source>
+        <translation>Введіть пароль. Натисніть щоб почати</translation>
+    </message>
+    <message>
+        <source>Check something!</source>
+        <translation>Оберіть щось!</translation>
+    </message>
+    <message>
+        <source>minutes</source>
+        <translation>хвилин</translation>
+    </message>
+    <message>
+        <source>Unknown operation</source>
+        <translation>Невідома операція</translation>
+    </message>
+    <message>
+        <source>Protocol: Modbus</source>
+        <translation>Протокол: Modbus</translation>
+    </message>
+    <message>
+        <source>Byte order: Least significant byte first</source>
+        <translation>Порядок байтів: Молодшим вперед</translation>
+    </message>
+    <message>
+        <source>Please read params, set new value and try again.</source>
+        <translation>Будь ласка прочитайте параметри, встановіть нові значення та спробуйте ще раз.</translation>
+    </message>
+    <message>
+        <source>Byte order: Most significant byte first</source>
+        <translation>Порядок байтів: Старшим вперед</translation>
+    </message>
+    <message>
+        <source>Can`t connect to device.</source>
+        <translation>Неможливо під&apos;єднатися.</translation>
+    </message>
+    <message>
+        <source>Please check network settings and try again.</source>
+        <translation>Будь ласка перевірте налаштування та спробуйте ще раз.</translation>
+    </message>
+    <message>
+        <source>no has changed params to write.</source>
+        <translation>Немає нових значень для запису.</translation>
+    </message>
+    <message>
+        <source>Register order: Least significant byte first</source>
+        <translation>Порядок регістрів: Молодшим вперед</translation>
+    </message>
+    <message>
+        <source>Write error. Try again.</source>
+        <translation>Не вдалося записати. Спробуйте ще раз</translation>
+    </message>
+    <message>
+        <source>Check the connection lines and network parameters and repeat the search.</source>
+        <translation>Перевірте налаштування та лінії з&apos;єднання, та спробуйте ще раз.</translation>
+    </message>
+    <message>
+        <source>The connection to device could not be established.</source>
+        <translation>З&apos;єднання з пристроєм не встановлено.</translation>
     </message>
 </context>
 </TS>
