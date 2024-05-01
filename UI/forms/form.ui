@@ -108,6 +108,8 @@ background-color: #1f232a;
 	border-right: 1px solid #8ee1c3;
 	border-top-left-radius: 12px;
 	background-color: #2c313c;
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
 #rightMenuSubContainer QToolButton::hover {
@@ -397,13 +399,13 @@ background-color: #1f232a;
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>30</width>
+                 <width>35</width>
                  <height>20</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>30</width>
+                 <width>35</width>
                  <height>20</height>
                 </size>
                </property>

@@ -1,11 +1,9 @@
-from PySide6.QtCore import QObject, QTranslator, Signal
-
-from AqMessageManager import AqMessageManager
+from PySide6.QtCore import QObject, QTranslator, Signal, QCoreApplication
 
 
 class AqTranslateManager(QObject):
 
-    _current_lang = 'UA'
+    _current_lang = 'EN'
 
     _available_langs = {'EN', 'UA'}
 
@@ -33,4 +31,15 @@ class AqTranslateManager(QObject):
 
     @classmethod
     def subscribe(cls, retrans_method):
-        cls._retranslate_subscribers.append(retrans_method)
+        if retrans_method not in cls._retranslate_subscribers:
+            cls._retranslate_subscribers.append(retrans_method)
+
+    @classmethod
+    def de_subscribe(cls, retrans_method):
+        if retrans_method in cls._retranslate_subscribers:
+            cls._retranslate_subscribers.remove(retrans_method)
+
+    @classmethod
+    def tr(cls, origin_text):
+        translate_text = QCoreApplication.translate('Custom context', origin_text, None)
+        return translate_text

@@ -700,6 +700,12 @@ QRadioButton::indicator:checked {
             </property>
             <item alignment="Qt::AlignLeft">
              <widget class="QPushButton" name="addDeviceBtn">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>100</width>
@@ -708,7 +714,7 @@ QRadioButton::indicator:checked {
               </property>
               <property name="maximumSize">
                <size>
-                <width>100</width>
+                <width>120</width>
                 <height>25</height>
                </size>
               </property>

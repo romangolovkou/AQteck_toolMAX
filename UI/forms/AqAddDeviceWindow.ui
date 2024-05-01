@@ -87,6 +87,8 @@ QComboBox{
  	color: #D0D0D0;
 	background-color: #2b2d30;
 	border-radius: 4px;
+	padding-left: 6px;
+	padding-right: 6px;
 }
 
 #mainWidget QPushButton:hover {
@@ -1747,6 +1749,12 @@ QCheckBox::indicator:checked {
             </property>
             <item alignment="Qt::AlignLeft">
              <widget class="QPushButton" name="findBtn">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>100</width>
@@ -1755,7 +1763,7 @@ QCheckBox::indicator:checked {
               </property>
               <property name="maximumSize">
                <size>
-                <width>100</width>
+                <width>120</width>
                 <height>30</height>
                </size>
               </property>
@@ -1777,7 +1785,7 @@ QCheckBox::indicator:checked {
               </property>
               <property name="maximumSize">
                <size>
-                <width>100</width>
+                <width>120</width>
                 <height>30</height>
                </size>
               </property>
@@ -1953,7 +1961,7 @@ QCheckBox::indicator:checked {
               </property>
               <property name="maximumSize">
                <size>
-                <width>100</width>
+                <width>120</width>
                 <height>30</height>
                </size>
               </property>

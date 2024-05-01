@@ -7,6 +7,7 @@ from AqParamListWidget import AqParamListWidget
 from AqRtcWindow import AqRtcWindow
 from AqSetPasswordWidget import AqSetPasswordWindow
 from AqSetSlaveIdWindow import AqSetSlaveIdWindow
+from AqTranslateManager import AqTranslateManager
 from AqWatchListWindow import AqWatchListWidget
 from ui_AqGatewayWindow import Ui_AqGatewayWidget
 from ui_AqSetPasswordWidget import Ui_AqSetPasswordWidget
@@ -27,7 +28,7 @@ def show_device_info_window():
             dialog.set_device_info_model(info_model)
             dialog.exec()
         else:
-            AqMessageManager.get_global_message_manager().send_message('main', 'Error', 'Can`t read device info')
+            AqMessageManager.get_global_message_manager().send_message('main', 'Error', AqTranslateManager.tr('Can`t read device info'))
 
 
 def show_add_device_window():

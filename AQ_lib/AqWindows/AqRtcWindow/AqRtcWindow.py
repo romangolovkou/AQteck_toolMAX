@@ -6,6 +6,7 @@ from PySide6.QtGui import QStandardItemModel, QStandardItem, QColor, QPalette
 from PySide6.QtWidgets import QWidget, QCalendarWidget, QTableView, QHeaderView, QTableWidget
 
 from AqMessageManager import AqMessageManager
+from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -179,12 +180,12 @@ class AqRtcWindow(AqDialogTemplate):
     def show_error_label(self):
         # self.ui.messageLabel.setText('Write error. Try again.')
         # self.ui.messageLabel.setStyleSheet("color: #fe2d2d; \n")
-        self._message_manager.send_message('rtc', 'Error', 'Write error. Try again.')
+        self._message_manager.send_message('rtc', 'Error', AqTranslateManager.tr('Write error. Try again.'))
 
     def show_success_label(self):
         # self.ui.messageLabel.setText('Successfully! Response: OK')
         # self.ui.messageLabel.setStyleSheet("color: #429061; \n")
-        self._message_manager.send_message('rtc', 'Success', 'Successfully! Response: OK')
+        self._message_manager.send_message('rtc', 'Success', AqTranslateManager.tr('Successfully! Response: OK'))
 
     def hide_message(self):
         self.ui.messageLabel.setText('')
