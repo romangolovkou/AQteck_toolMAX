@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QMenu
 
+from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqWatchListCore import AqWatchListCore
 
@@ -33,7 +34,7 @@ class AqWatchTreeView(AqTreeView):
                                             color: #808080; /* Цвет для неактивных действий */
                                         }
                                     """)
-                action_delete = context_menu.addAction("Remove")
+                action_delete = context_menu.addAction(AqTranslateManager.tr("Remove"))
                 # Подключаем обработчик события выбора действия
                 action_delete.triggered.connect(lambda: self.removeItem(item))
                 # # Показываем контекстное меню

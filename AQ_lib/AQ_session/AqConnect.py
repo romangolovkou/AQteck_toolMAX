@@ -13,6 +13,7 @@ from pymodbus.pdu import ModbusResponse, ExceptionResponse
 from AQ_EventManager import AQ_EventManager
 from AqIsValidIpFunc import is_valid_ip
 from AqMessageManager import AqMessageManager
+from AqTranslateManager import AqTranslateManager
 
 
 class AqConnect(QObject):
@@ -39,47 +40,6 @@ class AqConnect(QObject):
     def write_param(self, item):
         pass
 
-    # async def proceedRequestGroup(self, param_request_stack):
-    #     connect_result = await self.open()
-    #     if connect_result is True:
-    #         for i in range(len(param_request_stack)):
-    #             request = param_request_stack.pop()
-    #             if request['method'] == self.write_param:
-    #                 print('!!!!write_check!!!!')
-    #             await self.proceed_request(request)
-    #     else:
-    #         for i in range(len(param_request_stack)):
-    #             request = param_request_stack.pop()
-    #             if request['method'] == self.write_param:
-    #                 print('!!!!Failed_write_check!!!!')
-    #             self.proceed_failed_request(request)
-    #
-    #         self.RequestGroupQueue.clear()
-    #     self.close()
-    #     self.requestGroupProceedDoneCallback()
-
-    # async def proceedRequestGroup(self, param_request_stack):
-    #
-    #     if len(param_request_stack) == 1:
-    #         print('!!!!write_check_2!!!!')
-    #     connect_result = await self.open()
-    #     if connect_result is True:
-    #         for i in range(len(param_request_stack)):
-    #             request = param_request_stack.pop()
-    #             if request['method'] == self.write_param:
-    #                 print('!!!!write_check!!!!')
-    #             await self.proceed_request(request)
-    #     else:
-    #         for i in range(len(param_request_stack)):
-    #             request = param_request_stack.pop()
-    #             if request['method'] == self.write_param:
-    #                 print('!!!!Failed_write_check!!!!')
-    #             self.proceed_failed_request(request)
-    #
-    #         self.RequestGroupQueue.clear()
-    #     self.close()
-    #     self.requestGroupProceedDoneCallback()
-
     async def proceedOneRequestGroup(self):
         if len(self.RequestGroupQueue) > 0:
             request_dict = self.RequestGroupQueue.popleft()
@@ -101,8 +61,8 @@ class AqConnect(QObject):
                 self.proceed_failed_request(request)
             self.RequestGroupQueue.clear()
             if req_settings.get('msg_feedback_address', False):
-                self.message_manager.send_message("Error", 'Can`t connect to device. '
-                                                                'Please check network settings and try again.')
+                self.message_manager.send_message('main', "Error", AqTranslateManager.tr('Can`t connect to device.') + " " +
+                                                  AqTranslateManager.tr('Please check network settings and try again.'))
         self.close()
         self.requestGroupProceedDoneCallback(message_feedback_address=req_settings.get('msg_feedback_address', False),
                                              method=method)

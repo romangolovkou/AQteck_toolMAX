@@ -7,6 +7,7 @@ from AqConnect import AqConnect
 from AqBaseTreeItems import AqParamItem
 from AQ_EventManager import AQ_EventManager
 from AqMessageManager import AqMessageManager
+from AqTranslateManager import AqTranslateManager
 from AqTreeViewItemModel import AqTreeItemModel
 from AqDeviceConfig import AqDeviceConfig
 from AqDeviceInfoModel import AqDeviceInfoModel
@@ -169,8 +170,9 @@ class AqBaseDevice(ABC):
                                                message_feedback_address=message_feedback_address)
             self._stack_to_write.clear()
         else:
-            self._message_manager.send_message(message_feedback_address, "Warning", f'{self.name} no has changed params to write. '
-                                                              f'Please read params, set new value and try again.')
+            self._message_manager.send_message(message_feedback_address, "Warning", f'{self.name} ' +
+                                               AqTranslateManager.tr('no has changed params to write.') + ' ' +
+                                               AqTranslateManager.tr('Please read params, set new value and try again.'))
 
     def read_parameter(self, item):
         """Read parameter from device"""
@@ -274,18 +276,18 @@ class AqBaseDevice(ABC):
 
                 if method == 'read_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_message(modal_type,
-                                                               f'{self.name}. Read successful')
+                        self._message_manager.send_message('main', modal_type,
+                                                               f'{self.name}. ' + AqTranslateManager.tr('Read successful'))
                     else:
-                        self._message_manager.send_message(modal_type,
-                                                               f'{self.name}. Read failed. One or more params failed')
+                        self._message_manager.send_message('main', modal_type,
+                                                               f'{self.name}. ' + AqTranslateManager.tr('Read failed. One or more params failed'))
                 elif method == 'write_param':
                     if msg_status == 'ok':
-                        self._message_manager.send_message(modal_type,
-                                                               f'{self.name}. Write successful')
+                        self._message_manager.send_message('main', modal_type,
+                                                               f'{self.name}. ' + AqTranslateManager.tr('Write successful'))
                     else:
-                        self._message_manager.send_message(modal_type,
-                                                               f'{self.name}. Write failed. One or more params failed')
+                        self._message_manager.send_message('main', modal_type,
+                                                               f'{self.name}. ' + AqTranslateManager.tr('Write failed. One or more params failed'))
                 # elif method == 'read_file' or method == 'write_file':
                 #     file_item = self._update_param_stack[0]
                 #     self._message_manager.send_main_message(modal_type, f'{self.name}. {file_item.get_msg_string()}')

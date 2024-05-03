@@ -1,6 +1,8 @@
 import getopt
 import sys
 import time
+
+from PySide6.QtCore import QTranslator, QLocale
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QSplashScreen
 
@@ -8,12 +10,19 @@ import console_app
 import console_help_functions
 from AppCore import Core
 from AqMainWindow import AqMainWindow
+from AqTranslateManager import AqTranslateManager
+
+cur_lang = 'UA'
 
 if __name__ == '__main__':
     # Program started without advanced command
     Core.init()
     if len(sys.argv) == 1:
         app = QApplication(sys.argv)
+        AqTranslateManager.init(app)
+        # translator = QTranslator(app)
+        # if translator.load('translate/ua.qm'):
+        #     app.installTranslator(translator)
         splash = QSplashScreen(QPixmap("Icons/Splash3.png"))
         splash.show()
 

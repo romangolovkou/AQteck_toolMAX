@@ -52,6 +52,8 @@ QPushButton {
  	color: #D0D0D0;
 	background-color: #2b2d30;
 	border-radius: 4px;
+	padding-left: 6px;
+	padding-right: 6px;
 }
 
 QPushButton:hover {
@@ -194,20 +196,20 @@ QMenu::item:selected {
       <item alignment="Qt::AlignRight">
        <widget class="QPushButton" name="clearAllBtn">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>70</width>
+          <width>0</width>
           <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>70</width>
+          <width>100</width>
           <height>25</height>
          </size>
         </property>

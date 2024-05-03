@@ -302,37 +302,37 @@ QCalendarWidget QToolButton::menu-indicator {
         </attribute>
         <column>
          <property name="text">
-          <string>Пн</string>
+          <string>Mon</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Вт</string>
+          <string>Tue</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Ср</string>
+          <string>Wed</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Чт</string>
+          <string>Thu</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Пт</string>
+          <string>Fri</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Сб</string>
+          <string>Sat</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Нд</string>
+          <string>Sun</string>
          </property>
         </column>
        </widget>

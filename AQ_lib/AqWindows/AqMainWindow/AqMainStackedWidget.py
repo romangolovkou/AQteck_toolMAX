@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QStackedWidget
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
+from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqTreeViewItemModel import AqTreeViewItemModel
 from DeviceNotInitedWifget import DeviceInitWidget
@@ -91,9 +92,6 @@ class AqTreeViewManager(QStackedWidget):
         device_tree = device.device_tree
         if device_tree is not None:
             tree_model_for_view = AqTreeViewItemModel(device, self.event_manager)
-            tree_model_for_view.setColumnCount(6)
-            tree_model_for_view.setHorizontalHeaderLabels(
-                                            ["Name", "Value", "Lower limit", "Upper limit", "Unit", "Default value"])
             donor_root_item = device_tree.invisibleRootItem()
             new_root_item = tree_model_for_view.invisibleRootItem()
             self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item)

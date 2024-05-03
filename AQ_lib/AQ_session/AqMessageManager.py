@@ -15,16 +15,6 @@ class AqMessageManager(QObject):
     def __init__(self):
         super().__init__()
 
-    # def subscribe(self, subscriber):
-    #     """
-    #     Subscribe for all messages.
-    #     :param subscriber: Must be callback-function for console mode or
-    #     must be QObject as parent for GUI mode.
-    #     :return:
-    #     """
-    #     if subscriber not in self._subscribers:
-    #         self._subscribers.append(subscriber)
-
     def subscribe(self, mailbox_address, subscriber):
         """
         Subscribe for custom message (key-address).
@@ -48,10 +38,6 @@ class AqMessageManager(QObject):
                 self._mailboxes[mailbox_address].remove(subscriber)
                 if len(self._mailboxes[mailbox_address]) == 0:
                     del self._mailboxes[mailbox_address]
-
-    # def send_message(self, modal_type, descr_text: str):
-    #     for subscriber in self._subscribers:
-    #         subscriber(modal_type, descr_text)
 
     def send_message(self, mailbox_address, modal_type, descr_text: str):
         subscribers = self._mailboxes.get(mailbox_address, None)

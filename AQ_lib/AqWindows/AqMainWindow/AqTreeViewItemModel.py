@@ -1,5 +1,6 @@
 from PySide6.QtGui import QStandardItemModel
 
+from AqTranslateManager import AqTranslateManager
 # import AqUiWorker
 from TreeBranchToListConv import param_convert_tree_to_list
 
@@ -22,6 +23,14 @@ class AqTreeViewItemModel(QStandardItemModel):
         self.device = device
         self.event_manager = event_manager
         self.event_manager.register_event_handler('current_device_data_updated', self.update_params_values, True)
+        self.setColumnCount(6)
+        self.setHorizontalHeaderLabels([AqTranslateManager.tr("Name"),
+                                       AqTranslateManager.tr("Value"),
+                                       AqTranslateManager.tr("Lower limit"),
+                                       AqTranslateManager.tr("Upper limit"),
+                                       AqTranslateManager.tr("Unit"),
+                                       AqTranslateManager.tr("Default value")])
+        AqTranslateManager.subscribe(self.retranslate)
 
     def update_parameter_value(self, manager_item):
         manager_item.show_new_value()
@@ -103,12 +112,12 @@ class AqTreeViewItemModel(QStandardItemModel):
     def read_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
-        self.device.read_parameters(sourse_item, message_feedback_address=True)
+        self.device.read_parameters(sourse_item, message_feedback_address='main')
 
     def write_parameter(self, index):
         item = self.itemFromIndex(index)
         sourse_item = item.get_sourse_item()
-        self.device.write_parameters(sourse_item, message_feedback_address=True)
+        self.device.write_parameters(sourse_item, message_feedback_address='main')
 
     def add_parameter_to_watch_list(self, index):
         item = self.itemFromIndex(index)
@@ -127,3 +136,12 @@ class AqTreeViewItemModel(QStandardItemModel):
 
     def de_init(self):
         self.event_manager.unregister_event_handler('current_device_data_updated', self.update_params_values)
+        AqTranslateManager.de_subscribe(self.retranslate)
+
+    def retranslate(self):
+        self.setHorizontalHeaderLabels([AqTranslateManager.tr("Name"),
+                                        AqTranslateManager.tr("Value"),
+                                        AqTranslateManager.tr("Lower limit"),
+                                        AqTranslateManager.tr("Upper limit"),
+                                        AqTranslateManager.tr("Unit"),
+                                        AqTranslateManager.tr("Default value")])
