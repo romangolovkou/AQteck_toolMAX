@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>530</width>
-    <height>649</height>
+    <height>725</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -364,7 +364,7 @@ QRadioButton:disabled {
             </font>
            </property>
            <property name="text">
-            <string>Select who`s the master in the network</string>
+            <string>Select who is the master in the network</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>

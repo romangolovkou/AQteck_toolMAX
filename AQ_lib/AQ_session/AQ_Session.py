@@ -34,6 +34,7 @@ class AqCurrentSession(QObject):
         self.event_manager.register_event_handler("delete_device", self.delete_device)
         self.event_manager.register_event_handler('no_devices', self.clear_cur_active_device)
         self.event_manager.register_event_handler('restart_cur_active_device', self.restart_current_active_device)
+        self.event_manager.register_event_handler('read_archive_cur_active_device', self.read_archive_cur_active_device)
         self.event_manager.register_event_handler('set_slave_id', self.set_slave_id)
         self.event_manager.register_event_handler('save_device_configuration', self.save_device_config)
         self.event_manager.register_event_handler('load_device_configuration', self.load_device_config)
@@ -83,6 +84,14 @@ class AqCurrentSession(QObject):
     def restart_current_active_device(self):
         if self.cur_active_device is not None:
             self.restart_device(self.cur_active_device)
+
+    def read_archive(self, device):
+        if device is not None:
+            device.read_archive()
+
+    def read_archive_cur_active_device(self):
+        if self.cur_active_device is not None:
+            self.read_archive(self.cur_active_device)
 
     def set_default_cur_active_device(self):
         if self.cur_active_device is not None:

@@ -106,7 +106,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._functions['gateway'] = self.__check_ugm_container()
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = False
-        self._functions['log'] = False
+        self._functions['log'] = self.__check_archive_container() #now only true, заглушка
         self._functions['fw_update'] = False
         self._functions['restart'] = True
 
@@ -264,6 +264,18 @@ class AqAutoDetectionDevice(AqBaseDevice):
             item = self.__get_item_by_modbus_reg(reg)
             if not isinstance(item, AqParamItem):
                 return False
+
+        return True
+
+    def __check_archive_container(self):
+        # regs = [1540] #rs485_MODE
+        # for i in range(31):
+        #     regs.append(1024 + i*16) #R1-R31 (rules for gateway)
+        #
+        # for reg in regs:
+        #     item = self.__get_item_by_modbus_reg(reg)
+        #     if not isinstance(item, AqParamItem):
+        #         return False
 
         return True
 
@@ -566,7 +578,25 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self.read_archive_thread.start()
 
     def read_archive_thread(self):
-        pass
+        try:
+            archive_header_bytes = self.__sync_read_file(self.system_params_dict['arch_header'])
+            archive_header = archive_header_bytes.decode('ANSI')
+            # archive_header = archive_header_bytes.decode('UTF-8')
+            archive_header = archive_header_bytes.decode('cp1251')
+            archive_bytes = self.__sync_read_file(self.system_params_dict['archive'])
+            archive = archive_bytes.decode('ANSI')
+            archive = archive_bytes.decode('cp1251')
+            return archive_header
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return 'decrypt_err'  # Помилка дешифрування
+
+        # if status_file != 'decrypt_err' and status_file != 'connect_err' and \
+        #         status_file != 'modbus_err' and status_file is not None:
+        #     data = self.__parse_status_file(status_file)
+        #     model = self.__load_data_to_info_model(data)
+        #
+        # return model
 
     def get_password(self):
         return self._password
