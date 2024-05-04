@@ -106,7 +106,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._functions['gateway'] = self.__check_ugm_container()
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = False
-        self._functions['log'] = self.__check_archive_container() #now only true, заглушка
+        self._functions['log'] = False  # self.__check_archive_container() #now only true, заглушка
         self._functions['fw_update'] = False
         self._functions['restart'] = True
 

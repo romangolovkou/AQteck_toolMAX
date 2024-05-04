@@ -47,6 +47,7 @@ build_exe_options = {
         ("UI/icons", "UI/icons"),
         ("jsonstyles", "jsonstyles"),
         ("Version.txt", "Version.txt"),
+        ("translate/ua.qm", "translate/ua.qm"),
     ],
     'build_exe': 'cx_Freeze_Result',  # Ім'я папки куди зберігається результат
 }

@@ -6,7 +6,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{D168F49F-8732-43FA-84B2-74DA10D1237B}
 AppName=AQteck tool MAX
-AppVersion=0.01
+AppVersion=__VERSION__
 ;AppVerName=AQteck tool MAX v0.01
 AppPublisher=AQteck
 DefaultDirName={autopf}\AQteck tool MAX
@@ -17,7 +17,7 @@ LicenseFile=License.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=admin
 OutputDir=Output
-OutputBaseFilename=AQteck tool MAX Installer
+OutputBaseFilename=AQteck tool MAX Installer __VERSION__
 SetupIconFile=..\..\cx_Freeze_result\Icons\AQico_silver.ico
 Compression=lzma
 SolidCompression=yes
