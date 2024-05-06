@@ -81,35 +81,35 @@ class AqMainWindow(QMainWindow):
             self.ui.setRtcBtn.setToolTip(None)
         else:
             self.ui.setRtcBtn.setEnabled(False)
-            self.ui.setRtcBtn.setToolTip('Not available for this device')
+            self.ui.setRtcBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
         if device.func('password'):
             self.ui.setPasswordBtn.setEnabled(True)
             self.ui.setPasswordBtn.setToolTip(None)
         else:
             self.ui.setPasswordBtn.setEnabled(False)
-            self.ui.setPasswordBtn.setToolTip('Not available for this device')
+            self.ui.setPasswordBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
         if device.func('gateway'):
             self.ui.gatewayBtn.setEnabled(True)
             self.ui.gatewayBtn.setToolTip(None)
         else:
             self.ui.gatewayBtn.setEnabled(False)
-            self.ui.gatewayBtn.setToolTip('Not available for this device')
+            self.ui.gatewayBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
         if device.func('calibration'):
             self.ui.calibDeviceBtn.setEnabled(True)
             self.ui.calibDeviceBtn.setToolTip(None)
         else:
             self.ui.calibDeviceBtn.setEnabled(False)
-            self.ui.calibDeviceBtn.setToolTip('Not available for this device')
+            self.ui.calibDeviceBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
         if device.func('set_slave_id'):
             self.ui.setSlaveIdBtn.setEnabled(True)
             self.ui.setSlaveIdBtn.setToolTip(None)
         else:
             self.ui.setSlaveIdBtn.setEnabled(False)
-            self.ui.setSlaveIdBtn.setToolTip('Not available for this device')
+            self.ui.setSlaveIdBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
         if device.func('log'):
             self.ui.saveLogBtn.setEnabled(True)
@@ -118,23 +118,23 @@ class AqMainWindow(QMainWindow):
             self.ui.configLogBtn.setToolTip(None)
         else:
             self.ui.saveLogBtn.setEnabled(False)
-            self.ui.saveLogBtn.setToolTip('Not available for this device')
+            self.ui.saveLogBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
             self.ui.configLogBtn.setEnabled(False)
-            self.ui.configLogBtn.setToolTip('Not available for this device')
+            self.ui.configLogBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
         if device.func('fw_update'):
             self.ui.firmwareUpdBtn.setEnabled(True)
             self.ui.firmwareUpdBtn.setToolTip(None)
         else:
             self.ui.firmwareUpdBtn.setEnabled(False)
-            self.ui.firmwareUpdBtn.setToolTip('Not available for this device')
+            self.ui.firmwareUpdBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
         if device.func('restart'):
             self.ui.rebootDeviceBtn.setEnabled(True)
             self.ui.rebootDeviceBtn.setToolTip(None)
         else:
             self.ui.rebootDeviceBtn.setEnabled(False)
-            self.ui.rebootDeviceBtn.setToolTip('Not available for this device')
+            self.ui.rebootDeviceBtn.setToolTip(AqTranslateManager.tr('Not available for this device'))
 
     def close(self):
         super().close()

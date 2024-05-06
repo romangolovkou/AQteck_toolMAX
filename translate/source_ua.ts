@@ -1176,5 +1176,9 @@
         <source>Configuration file from another device</source>
         <translation>Файл конфігурації від іншого пристрою</translation>
     </message>
+    <message>
+        <source>Not available for this device</source>
+        <translation>Недоступно для цього пристрою</translation>
+    </message>
 </context>
 </TS>
