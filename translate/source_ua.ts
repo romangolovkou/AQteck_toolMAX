@@ -1160,5 +1160,21 @@
         <source>The connection to device could not be established.</source>
         <translation>З&apos;єднання з пристроєм не встановлено.</translation>
     </message>
+    <message>
+        <source>Configuration saved</source>
+        <translation>Конфігурацію збережено</translation>
+    </message>
+    <message>
+        <source>Configuration loaded</source>
+        <translation>Конфігурацію завантажено</translation>
+    </message>
+    <message>
+        <source>Can`t load configuration</source>
+        <translation>Не владося завантажити конфігурацію</translation>
+    </message>
+    <message>
+        <source>Configuration file from another device</source>
+        <translation>Файл конфігурації від іншого пристрою</translation>
+    </message>
 </context>
 </TS>

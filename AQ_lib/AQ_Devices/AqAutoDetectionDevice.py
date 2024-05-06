@@ -465,6 +465,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
     def set_configuration(self, config: AqDeviceConfig):
         if self.info('name') != config.device_name:
+            self._message_manager.send_message('main', 'Error', AqTranslateManager.tr('Configuration file from another device'))
             return NotImplementedError
             #TODO: need generate custom exception or generate event to display error message
 

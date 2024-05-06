@@ -14,15 +14,19 @@ import io
 
 from AqConnectManager import AqConnectManager
 from AqDeviceFabrica import DeviceCreator
+from AqMessageManager import AqMessageManager
+from AqTranslateManager import AqTranslateManager
 from AqWatchListCore import AqWatchListCore
 
 
 class AqCurrentSession(QObject):
     cur_active_dev_changed = Signal()
+
     def __init__(self, event_manager, parent):
         super().__init__()
         self.parent = parent
         self.event_manager = event_manager
+        self.message_manager = AqMessageManager.get_global_message_manager()
         self.cur_active_device = None
         self.devices = []
 
@@ -119,6 +123,7 @@ class AqCurrentSession(QObject):
                     file.write(f.getvalue())
                     file.close()
 
+            self.message_manager.send_message('main', 'Success', AqTranslateManager.tr('Configuration saved'))
             print('I wrote some shit')
 
     def load_device_config(self, device: AqBaseDevice):
@@ -146,10 +151,14 @@ class AqCurrentSession(QObject):
 
 
             if loadConf != None:
-                device.set_configuration(loadConf)
-                print('Loaded')
+                if device.set_configuration(loadConf) != NotImplementedError:
+                    print('Loaded')
+                    self.message_manager.send_message('main', 'Success', AqTranslateManager.tr('Configuration loaded'))
+                else:
+                    print('Load failed')
             else:
                 print('Load failed')
+                self.message_manager.send_message('main', 'Error', AqTranslateManager.tr('Can`t load configuration'))
 
     def set_slave_id(self, network_settings):
         network_settings = network_settings[0]
