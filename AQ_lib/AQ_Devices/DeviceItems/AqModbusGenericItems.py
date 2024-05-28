@@ -211,11 +211,44 @@ class AqModbusSignedToFloatParamItem(AqSignedToFloatParamItem, AqModbusSignedPar
         param_attributes['type'] = 'signed_to_float'
         super().__init__(param_attributes)
 
+    def pack(self):
+        if self.param_size == 1:
+            packed_data = struct.pack('h', self.value)
+        elif self.param_size == 2:
+            packed_data = struct.pack('h', self.value)
+            if len(packed_data) < self.param_size + 1:
+                packed_data += b'\x00\x00'
+        elif self.param_size == 4:
+            packed_data = struct.pack('i', self.value)
+        elif self.param_size == 8:
+            packed_data = struct.pack('q', self.value)
+        else:
+            raise Exception('AQ_ModbusSignedToFloatParamItemError: param size is incorrect')
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
 
 class AqModbusUnsignedToFloatParamItem(AqUnsignedToFloatParamItem, AqModbusUnsignedParamItem):
     def __init__(self, param_attributes):
         param_attributes['type'] = 'unsigned_to_float'
         super().__init__(param_attributes)
+
+    def pack(self):
+        if self.param_size == 1:
+            packed_data = struct.pack('h', self.value)
+        elif self.param_size == 2:
+            packed_data = struct.pack('h', self.value)
+            if len(packed_data) < self.param_size + 1:
+                packed_data += b'\x00\x00'
+        elif self.param_size == 4:
+            packed_data = struct.pack('i', self.value)
+        elif self.param_size == 8:
+            packed_data = struct.pack('q', self.value)
+        else:
+            raise Exception('AQ_ModbusUnsignedToFloatParamItemError: param size is incorrect')
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
 
 
 class AqModbusFloatEnumParamItem(AqFloatEnumParamItem, AqModbusEnumParamItem):
