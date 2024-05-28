@@ -54,7 +54,10 @@ class AqConnect(QObject):
         if connect_result is True:
             for i in range(len(request_stack)):
                 request = request_stack.pop()
-                await self.proceed_request(request)
+                try:
+                    await self.proceed_request(request)
+                except Exception as e:
+                    self.proceed_failed_request(request)
         else:
             for i in range(len(request_stack)):
                 request = request_stack.pop()
