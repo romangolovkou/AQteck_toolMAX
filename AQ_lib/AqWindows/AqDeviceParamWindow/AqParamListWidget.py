@@ -22,13 +22,6 @@ class AqParamListWidget(AqDialogTemplate):
         self.auto_load_settings = None
         self.loadLastPath()
 
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-        # loadDialogJsonStyle(self, self.ui)
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
-
-
         self.ui.saveBtn.clicked.connect(self.saveToFile)
 
         self.device_str = ''.join((dev_info.name, ' S/N: ', dev_info.serial))
@@ -104,6 +97,7 @@ class AqParamListInfoFrame(QFrame):
         self.clear()
         for i in str_list:
             row = QLineEdit(self)
+            row.setReadOnly(True)
             row.setText(str(i))
             self.layout().addWidget(row)
 
