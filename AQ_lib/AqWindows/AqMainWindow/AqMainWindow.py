@@ -45,6 +45,7 @@ class AqMainWindow(QMainWindow):
         self.ui.setPasswordBtn.clicked.connect(AqUiWorker.show_set_password)
         self.ui.gatewayBtn.clicked.connect(AqUiWorker.show_gateway)
 
+        self.ui.setDefaultMenuBtn.clicked.connect(self.setFocus)
         self.ui.setDefaultMenuBtn.clicked.connect(Core.session.set_default_cur_active_device)
         self.ui.rebootDeviceBtn.clicked.connect(Core.session.restart_current_active_device)
         # self.ui.saveLogBtn.clicked.connect(Core.session.read_archive_cur_active_device)
