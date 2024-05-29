@@ -187,7 +187,15 @@ class QMainWindow(QtWidgets.QMainWindow):
             if e.buttons() == Qt.LeftButton:
                 #Move window
                 if self.clickPosition is not None:
-                    self.move(self.pos() + e.globalPos() - self.clickPosition)
+                    # Определение экрана, на котором находится курсор
+                    screen = QGuiApplication.screenAt(self.clickPosition)
+
+                    # Получение геометрии экрана
+                    screen_geometry = screen.geometry()
+
+                    pos = self.pos() + e.globalPos() - self.clickPosition
+                    pos.setY(max(screen_geometry.y(), pos.y()))
+                    self.move(pos)
                     self.clickPosition = e.globalPos()
                     e.accept()
         else:
