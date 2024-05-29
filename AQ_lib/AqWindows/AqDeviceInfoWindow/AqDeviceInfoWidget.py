@@ -37,11 +37,11 @@ class AqDeviceInfoWidget(AqDialogTemplate):
         i = 1
         for item in model.general_info:
             line_edit = QLineEdit(self.ui.generalInfoFrame)
-            line_edit.isReadOnly = True
+            line_edit.setReadOnly(True)
             line_edit.setText(item['info_str'])
             self.ui.generalInfoLayout.setWidget(i, QFormLayout.LabelRole, line_edit)
             line_edit = QLineEdit(self.ui.generalInfoFrame)
-            line_edit.isReadOnly = True
+            line_edit.setReadOnly(True)
             line_edit.setText(item['info_value'])
             self.ui.generalInfoLayout.setWidget(i, QFormLayout.FieldRole, line_edit)
             i += 1

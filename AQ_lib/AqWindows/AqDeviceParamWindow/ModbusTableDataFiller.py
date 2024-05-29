@@ -111,5 +111,10 @@ def create_new_row_for_table_view(item):
             bit_size = 'err'
     data_type_item = QTableWidgetItem(param_type + ' ' + str(bit_size))
 
-    return [param_item, group_item, adr_dec_item, adr_hex_item,
-            reg_count_item, read_func_item, write_func_item, data_type_item]
+    row_items = [param_item, group_item, adr_dec_item, adr_hex_item,
+                 reg_count_item, read_func_item, write_func_item, data_type_item]
+
+    for item in row_items:
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+
+    return row_items
