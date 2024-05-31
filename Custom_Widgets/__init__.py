@@ -193,7 +193,18 @@ class QMainWindow(QtWidgets.QMainWindow):
                     # Получение геометрии экрана
                     screen_geometry = screen.geometry()
 
+                    # Блок виправлення невірного стартового положення кліку
+                    # попередження різких скачків вікна по єкрану при переміщенні
+                    # відносно UI є костилем
+                    if hasattr(self.ui, "headerContainer"):
+                        header_pos = self.ui.headerContainer.mapFromGlobal(self.clickPosition)
+                        if not self.ui.headerContainer.rect().contains(header_pos):
+                            self.clickPosition = e.globalPos()
+
                     pos = self.pos() + e.globalPos() - self.clickPosition
+                    dY = pos.y() - self.pos().y()
+                    dX = pos.x() - self.pos().x()
+
                     pos.setY(max(screen_geometry.y(), pos.y()))
                     self.move(pos)
                     self.clickPosition = e.globalPos()
