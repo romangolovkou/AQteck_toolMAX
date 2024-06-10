@@ -17,6 +17,7 @@ class AqDeviceInfoWidget(AqDialogTemplate):
         super().__init__(parent)
         self.ui = _ui()
         self.ui.setupUi(self.content_widget)
+        self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
         self.name = 'Device info'
