@@ -50,6 +50,11 @@ background-color: #1f232a;
 	background-color: #16191d;
 }
 
+#frame_2 QPushButton:hover {
+	border-radius: 5px;
+	background-color: #2c313c;
+}
+
 #leftContainerMenu{
 	background-color: #2c313c;
 }
@@ -120,6 +125,7 @@ background-color: #1f232a;
 #rightMenuSubContainer QToolButton::disabled {
 	color: #807c7c;
 }
+
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -456,7 +462,7 @@ background-color: #1f232a;
                <property name="minimumSize">
                 <size>
                  <width>35</width>
-                 <height>25</height>
+                 <height>35</height>
                 </size>
                </property>
                <property name="text">
@@ -479,7 +485,7 @@ background-color: #1f232a;
                <property name="minimumSize">
                 <size>
                  <width>35</width>
-                 <height>25</height>
+                 <height>35</height>
                 </size>
                </property>
                <property name="text">
@@ -502,7 +508,7 @@ background-color: #1f232a;
                <property name="minimumSize">
                 <size>
                  <width>35</width>
-                 <height>25</height>
+                 <height>35</height>
                 </size>
                </property>
                <property name="text">
