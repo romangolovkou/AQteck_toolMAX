@@ -13,7 +13,7 @@ DefaultDirName={autopf}\AQteck tool MAX
 ChangesAssociations=yes
 DefaultGroupName=AQteck tool MAX
 AllowNoIcons=yes
-LicenseFile=License.txt
+; LicenseFile=License.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=admin
 OutputDir=Output
