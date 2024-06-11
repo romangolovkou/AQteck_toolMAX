@@ -57,6 +57,16 @@ class QMainWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
 
         self.clickPosition = None  # Initialize clickPosition attribute
+        self._isMaximized_custom = False
+        self._normal_geometry = None
+
+    @property
+    def isMaximized_custom(self):
+        return self._isMaximized_custom
+
+    @isMaximized_custom.setter
+    def isMaximized_custom(self, state:bool):
+        self._isMaximized_custom = state
 
     #######################################################################
     # Add mouse events to the window
@@ -150,7 +160,7 @@ class QMainWindow(QtWidgets.QMainWindow):
     #######################################################################
     def updateRestoreButtonIcon(self):
         # If window is maxmized
-        if self.isMaximized():
+        if self.isMaximized_custom:
             # Change Iconload
             if len(str(self.maximizedIcon)) > 0:
                 self.restoreBtn.setIcon(QtGui.QIcon(str(self.maximizedIcon)))
@@ -162,7 +172,7 @@ class QMainWindow(QtWidgets.QMainWindow):
 
     def restore_or_maximize_window(self):
         # If window is maxmized
-        if self.isMaximized():
+        if self.isMaximized_custom:
             self.showNormal()
             if hasattr(self, "floatingWidgets"):
                 for x in self.floatingWidgets:
@@ -171,8 +181,29 @@ class QMainWindow(QtWidgets.QMainWindow):
         else:
             self.showMaximized()
 
+
         print("Window minimum size ", self.minimumSize().width(), "x", self.minimumSize().height())
         self.updateRestoreButtonIcon()
+
+    def showMaximized(self):
+        self._normal_geometry = self.geometry()
+        super().showMaximized()
+        # Получаем центр окна
+        window_center = self.frameGeometry().center()
+
+        # Определяем экран, на котором находится центр окна
+        screen = QGuiApplication.screenAt(window_center)
+        available_geometry = screen.availableGeometry()
+        new_x = available_geometry.topLeft().x()
+        new_y = available_geometry.topLeft().y()
+        self.move(new_x, new_y)
+        # self.setGeometry(available_geometry)
+        self.isMaximized_custom = True
+
+    def showNormal(self):
+        super().showNormal()
+        self.setGeometry(self._normal_geometry)
+        self.isMaximized_custom = False
 
      # ###############################################
     # Function to Move window on mouse drag event on the tittle bar
@@ -180,7 +211,7 @@ class QMainWindow(QtWidgets.QMainWindow):
     def moveWindow(self, e):
         # Detect if the window is  normal size
         # ###############################################
-        if not self.isMaximized(): #Not maximized
+        if not self.isMaximized_custom: #Not maximized
             # Move window only when window is normal size
             # ###############################################
             #if left mouse button is clicked (Only accept left mouse button clicks)
@@ -213,7 +244,7 @@ class QMainWindow(QtWidgets.QMainWindow):
             self.showNormal()
 
     def toggleWindowSize(self, e):
-        if self.isMaximized():
+        if self.isMaximized_custom:
             self.showNormal()
         else:
             self.showMaximized()
