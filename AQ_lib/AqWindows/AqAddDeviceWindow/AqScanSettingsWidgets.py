@@ -126,8 +126,8 @@ class AqScanNetworkSettingsWidget(QWidget):
         self.user_message_label = QLabel('', self.slave_id_frame)
         self.user_message_label.setStyleSheet("color: #D0D0D0; \n")
         self.user_message_label.setFont(QFont('Segoe UI', 10))
-        self.user_message_label.setFixedSize(300, 20)
-        self.user_message_label.move(10, 55)
+        self.user_message_label.setFixedSize(310, 20)
+        self.user_message_label.move(0, 55)
 
     def setting_changed(self):
         # Тимчасовий хардкод у 3 секунди отриманий фактичним заміром часі
