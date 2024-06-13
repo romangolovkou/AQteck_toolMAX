@@ -13,7 +13,6 @@ from AqCRC32 import Crc32
 from AqDeviceConfig import AqDeviceConfig
 from AqConnect import AqModbusConnect
 from AqDeviceInfoModel import AqDeviceInfoModel
-from AqDeviceStrings import get_translated_string
 from AqParser import build_item, build_file_item
 from AqTranslateManager import AqTranslateManager
 from AqTreeViewItemModel import AqTreeItemModel
