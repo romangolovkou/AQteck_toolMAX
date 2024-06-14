@@ -871,7 +871,7 @@
     <message>
         <location filename="../UI/forms/form.ui" line="1643"/>
         <source>To get started, click &quot;Add device&quot; in the device panel</source>
-        <translation>Для початку роботи натисніть &quot;Додати новий пристрій&quot; у панелі зліва</translation>
+        <translation type="unfinished">Для початку роботи натисніть &quot;Додати новий пристрій&quot; у панелі пристроїв</translation>
     </message>
     <message>
         <location filename="../UI/forms/form.ui" line="1844"/>
@@ -949,7 +949,7 @@
     <message>
         <location filename="../UI/forms/NoDeviceWidget.ui" line="116"/>
         <source>in the device panel</source>
-        <translation>у панелі зліва</translation>
+        <translation type="unfinished">у панелі пристроїв</translation>
     </message>
 </context>
 <context>
