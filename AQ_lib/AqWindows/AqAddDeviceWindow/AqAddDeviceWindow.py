@@ -238,6 +238,11 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def search_successful(self, found_devices):
         if len(found_devices) > 0:
+            for device in found_devices:
+                for found_device in self.all_found_devices:
+                    if device.info('address') == found_device.info('address'):
+                        return
+
             self.add_devices_to_table_widget(found_devices)
             self.add_found_devices_to_all_list(found_devices)
         else:
@@ -245,6 +250,11 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def scan_successful(self, found_devices):
         if len(found_devices) > 0:
+            for device in found_devices:
+                for found_device in self.all_found_devices:
+                    if device.info('address') == found_device.info('address'):
+                        return
+
             self.add_devices_to_table_widget(found_devices)
             self.add_found_devices_to_all_list(found_devices)
         else:
