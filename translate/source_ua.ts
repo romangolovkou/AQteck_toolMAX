@@ -232,18 +232,13 @@
 <context>
     <name>AqGatewayWidget</name>
     <message>
-        <source>Select who is the master in the network</source>
-        <oldsource>Select who`s the master in the network</oldsource>
-        <translation type="vanished">Оберіть майстера в мережі</translation>
-    </message>
-    <message>
         <location filename="../UI/forms/AqGatewayWindow.ui" line="14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../UI/forms/AqGatewayWindow.ui" line="367"/>
-        <source>Select who`s the master in the network</source>
+        <source>Select who is the master in the network</source>
         <translation>Оберіть майстера в мережі</translation>
     </message>
     <message>
