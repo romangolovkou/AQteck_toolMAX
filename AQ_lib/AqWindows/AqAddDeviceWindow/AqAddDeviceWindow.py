@@ -696,6 +696,7 @@ class AqPasswordWidget(AqDialogTemplate):
         self.err_label.setStyleSheet("color: #fe2d2d; background-color: transparent; border-radius: 3px;\n")
         self.err_label.setFont(QFont("Segoe UI", 10))
         self.err_label.move(35, 60)
+        self.err_label.setFixedWidth(self.width() * 0.9)
         self.err_label.show()
 
         QTimer.singleShot(3000, self.err_label.deleteLater)
