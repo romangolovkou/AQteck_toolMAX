@@ -57,6 +57,8 @@ executables = [Executable("main.py", base=base,
                           icon='Icons/AQico_silver.ico',
                           target_name='AQteck tool MAX')]
 
+optimize = 2
+
 version_path = "version.txt"
 try:
     with open(version_path, 'r') as file:
