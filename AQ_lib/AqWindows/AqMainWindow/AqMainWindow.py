@@ -50,6 +50,7 @@ class AqMainWindow(QMainWindow):
         self.ui.rebootDeviceBtn.clicked.connect(Core.session.restart_current_active_device)
         # self.ui.saveLogBtn.clicked.connect(Core.session.read_archive_cur_active_device)
 
+        self.ui.readParamMenuBtn.clicked.connect(self.setFocus)
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
         self.ui.writeParamMenuBtn.clicked.connect(Core.session.write_params_cur_active_device)
 
