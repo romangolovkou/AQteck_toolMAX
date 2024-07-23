@@ -35,6 +35,10 @@ class AqSettingsManager(QObject):
             index = cls._auto_load_settings.value(key, 0, type=int)
             try:
                 combobox.setCurrentIndex(index)
+                while combobox.currentText() == '' and index > 0:
+                    index -= 1
+                    combobox.setCurrentIndex(index)
+
             except:
                 combobox.setCurrentIndex(0)
 

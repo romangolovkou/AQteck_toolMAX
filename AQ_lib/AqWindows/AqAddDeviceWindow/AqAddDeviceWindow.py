@@ -131,6 +131,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.stackedWidget.setCurrentWidget(widget)
         self.ui.stackedWidget.setFixedHeight(height)
 
+        self.change_protocol_set_by_interface_selection()
+
     def change_page_by_device_scan_mode_selection(self):
         if self.ui.deviceRadioBtn.isChecked():
             selected_mode = 'device'
@@ -154,10 +156,23 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.insideStackedWidget.setFixedHeight(height)
         self.change_page_by_interface_selection()
 
+    def change_protocol_set_by_interface_selection(self):
+        selected_item = self.ui.interface_combo_box.currentText()
+        protocol_list = AqDeviceFabrica.DeviceCreator.get_protocol_list(selected_item)
+
+        self.ui.protocol_combo_box.clear()
+        self.ui.protocol_combo_box.addItems(protocol_list)
+
+        try:
+            AqSettingsManager.load_last_combobox_state(self.ui.protocol_combo_box)
+        except:
+            self.ui.protocol_combo_box.setCurrentIndex(0)
+
+        self.change_device_set_by_protocol_selection()
+
     def change_device_set_by_protocol_selection(self):
         protocol = self.ui.protocol_combo_box.currentText()
         devices = AqDeviceFabrica.DeviceCreator.get_device_list_by_protocol(protocol)
-        interfaces = AqDeviceFabrica.DeviceCreator.get_interface_list()
         if len(devices) > 0:
             self.ui.device_combo_box.show()
             self.ui.device_combo_box_label.show()
@@ -165,21 +180,14 @@ class AqAddDeviceWidget(AqDialogTemplate):
             # потрапляємо сюди якщо автодетекшн
             self.ui.device_combo_box.hide()
             self.ui.device_combo_box_label.hide()
-            interfaces.remove('Offline')
         # Добавляем имена файлов в комбобокс
         self.ui.device_combo_box.clear()
         self.ui.device_combo_box.addItems(devices)
-        # Оновлюємо доступні інтерфейси
-        self.ui.interface_combo_box.clear()
-        self.ui.interface_combo_box.addItems(interfaces)
         try:
             AqSettingsManager.load_last_combobox_state(self.ui.device_combo_box)
-            AqSettingsManager.load_last_combobox_state(self.ui.interface_combo_box)
         except:
             self.ui.device_combo_box.setCurrentIndex(0)
-            self.ui.interface_combo_box.setCurrentIndex(0)
 
-        self.change_page_by_interface_selection()
 
     def find_button_clicked(self):
         # Декативуємо кнопку для запобігання подвійного натискання до завершення пошуку
