@@ -237,7 +237,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
                         if j == 0:
                             # Замінюємо UID на ім'я параметру
-                            item_by_uid = self.__get_item_by_UID(int(cell_str, 16))
+                            try:
+                                item_by_uid = self.__get_item_by_UID(int(cell_str, 16))
+                            except Exception as e:
+                                continue
+
                             if item_by_uid is not None:
                                 parameter_attributes = item_by_uid.get_param_attributes()
                                 name = parameter_attributes.get('name', 'err_name')

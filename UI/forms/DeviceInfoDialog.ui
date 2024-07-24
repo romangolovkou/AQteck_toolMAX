@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -51,7 +51,7 @@
 #generalInfoFrame, #operatingInfoFrame {
 	border-top: 1px solid;
 	border-left: 1px solid;
-	border-color: #637A7B
+	border-color: #637A7B;
 }
 
 QLineEdit {
@@ -179,7 +179,7 @@ QLabel {
       <item alignment="Qt::AlignTop">
        <widget class="QFrame" name="operatingInfoFrame">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
