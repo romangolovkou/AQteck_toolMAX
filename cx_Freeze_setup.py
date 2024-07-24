@@ -41,20 +41,24 @@ build_exe_options = {
     # 'zip_includes': get_file_paths("AQ_lib"),
     # 'zip_include_packages': ['pymodbus', 'serial'],
     "include_files": [
-        ("UI", "UI"),
-        ("Icons", "Icons"),
+        # ("UI", "UI"),
+        # ("Icons", "Icons"),
         ("110_device_conf", "110_device_conf"),
         ("UI/icons", "UI/icons"),
         ("jsonstyles", "jsonstyles"),
         ("Version.txt", "Version.txt"),
         ("translate/ua.qm", "translate/ua.qm"),
     ],
+    "excludes": [
+        "tkinter", "unittest", "email", "http", "xml", "pydoc",
+        "PySide6.QtWebEngineCore"
+    ],
     'build_exe': 'cx_Freeze_Result',  # Ім'я папки куди зберігається результат
 }
 
 base = "Win32GUI"  # Для использования Win32GUI на Windows
 executables = [Executable("main.py", base=base,
-                          icon='Icons/AQico_silver.ico',
+                          icon='UI/icons/AQico_silver.ico',
                           target_name='AQteck tool MAX')]
 
 optimize = 2

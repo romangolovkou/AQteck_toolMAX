@@ -23,7 +23,7 @@ if __name__ == '__main__':
         # translator = QTranslator(app)
         # if translator.load('translate/ua.qm'):
         #     app.installTranslator(translator)
-        splash = QSplashScreen(QPixmap("Icons/Splash3.png"))
+        splash = QSplashScreen(QPixmap("UI/icons/Splash3.png"))
         splash.show()
 
         # # Имитация загрузки (можно заменить на вашу реализацию)
