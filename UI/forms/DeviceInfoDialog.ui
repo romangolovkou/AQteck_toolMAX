@@ -55,7 +55,7 @@
 }
 
 QLineEdit {
-	min-width: 200px;
+	min-width: 250px;
 	min-height: 20 px;
 	border-right: 1px solid;
 	border-bottom: 1px solid;
