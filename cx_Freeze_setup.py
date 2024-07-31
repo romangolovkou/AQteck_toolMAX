@@ -116,7 +116,7 @@ build_exe_options = {
     "include_files": [
         # ("UI", "UI"),
         # ("Icons", "Icons"),
-        ("110_device_conf", "110_device_conf"),
+        # ("110_device_conf", "110_device_conf"),
         ("UI/icons", "UI/icons"),
         ("jsonstyles", "jsonstyles"),
         ("Version.txt", "Version.txt"),
