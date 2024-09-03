@@ -518,6 +518,8 @@ def get_item_by_type(param_attributes):
         item = AqAutoDetectIpParamItem(param_attributes)
     elif visual_type == 'hex':
         item = AqAutoDetectMACParamItem(param_attributes)
+    elif visual_type == 'bin':
+        item = AqAutoDetectBitMaskParamItem(param_attributes)
     elif param_type == 'enum':
         item = AqAutoDetectEnumParamItem(param_attributes)
     elif param_type == 'unsigned':
