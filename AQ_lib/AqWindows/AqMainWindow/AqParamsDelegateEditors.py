@@ -691,13 +691,6 @@ class AqBitMaskLineEdit(AqTreeLineEdit):
                 # невідоме зміщення без якого єдітор працює некорректно.
                 click_position = max(event.pos().x() - 2, 0)
 
-                # Определяем ширину одного символа
-                # char_width = self.fontMetrics().averageCharWidth()
-                # char_width = text_width / len(current_text)
-
-                # Определяем индекс символа в строке, на который был клик
-                # clicked_index = int(click_position / char_width)
-
                 # Получаем координаты каждого символа
                 char_coordinates = self.get_character_coordinates()
 
