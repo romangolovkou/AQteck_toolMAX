@@ -447,8 +447,6 @@ class AqBitMaskParamItem(AqParamItem):
         if self.param_size is None:
             raise Exception('AQ_BitMaskParamItemError: "param_size" is not exist')
 
-        param_attributes['min_limit'] = 0
-        param_attributes['max_limit'] = None
         if param_attributes.get('def_value', None) is None:
             param_attributes['def_value'] = 0
         super().__init__(param_attributes)
