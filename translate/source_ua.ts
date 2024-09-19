@@ -9,204 +9,204 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="335"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="337"/>
         <source>Network parameters</source>
         <translation>Налаштування мережі</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="362"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="414"/>
         <source>Protocol</source>
         <translation>Протокол</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="382"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="434"/>
         <source>Modbus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="387"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="439"/>
         <source>AQ AutoDetectionProtocol</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="412"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="631"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="464"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="633"/>
         <source>Device</source>
         <translation>Пристрій</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="432"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="484"/>
         <source>AQ AutoDetection Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="457"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="364"/>
         <source>Interface</source>
         <translation>Інтерфейс</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="477"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="384"/>
         <source>Ethernet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="482"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="389"/>
         <source>Offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="649"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="651"/>
         <source>Scan network</source>
         <translation>Сканування мережі</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="728"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="730"/>
         <source>Boudrate</source>
         <translation>Швидкість</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="748"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1091"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="750"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1093"/>
         <source>4800</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="753"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1071"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="755"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1073"/>
         <source>9600</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="758"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1084"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="760"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1086"/>
         <source>19200</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="763"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1105"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="765"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1107"/>
         <source>38400</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="768"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1112"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="770"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1114"/>
         <source>57600</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="773"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1098"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="775"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1100"/>
         <source>115200</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="798"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="800"/>
         <source>Parity</source>
         <translation>Парність</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="818"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1245"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="820"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1247"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="823"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1255"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="825"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1257"/>
         <source>Even</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="828"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1262"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="830"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1264"/>
         <source>Odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="853"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="855"/>
         <source>Stop bits</source>
         <translation>Стоп біти</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="873"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1365"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="875"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1367"/>
         <source>1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="878"/>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1375"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="880"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1377"/>
         <source>2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="903"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="905"/>
         <source>Slave ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1034"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1036"/>
         <source>Boudrate for scan</source>
         <translation>Швидкість</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1208"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1210"/>
         <source>Parity </source>
         <translation>Парність</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1328"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1330"/>
         <source>Stopbits</source>
         <translation>Стоп біти</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1483"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1485"/>
         <source>Start address</source>
         <translation>Сканувати з адреси</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1541"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1543"/>
         <source>End address</source>
         <translation>до адреси</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1613"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1615"/>
         <source>Stop with first found</source>
         <translation>Зупинити з першим співпадінням</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1676"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1678"/>
         <source>IP Address</source>
         <translation>IP адреса</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1769"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1771"/>
         <source>Find device</source>
         <translation>Знайти пристрій</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1791"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1793"/>
         <source>Stop scan</source>
         <translation>Зупинити</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1904"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1906"/>
         <source>Name</source>
         <translation>Ім&apos;я</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1909"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1911"/>
         <source>Address</source>
         <translation>Адреса</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1914"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1916"/>
         <source>Version</source>
         <translation>Версія</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1967"/>
+        <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1969"/>
         <source>Add device</source>
         <translation>Додати пристрій</translation>
     </message>
@@ -292,17 +292,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqGatewayWindow.ui" line="716"/>
+        <location filename="../UI/forms/AqGatewayWindow.ui" line="722"/>
         <source>Add device</source>
         <translation>Додати пристрій</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqGatewayWindow.ui" line="764"/>
+        <location filename="../UI/forms/AqGatewayWindow.ui" line="770"/>
         <source>Save</source>
         <translation>Зберегти</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqGatewayWindow.ui" line="777"/>
+        <location filename="../UI/forms/AqGatewayWindow.ui" line="783"/>
         <source>Cancel</source>
         <translation>Відміна</translation>
     </message>
@@ -604,7 +604,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqWatchListWidget.ui" line="220"/>
+        <location filename="../UI/forms/AqWatchListWidget.ui" line="222"/>
         <source>Clear all</source>
         <translation>Очистити все</translation>
     </message>
@@ -724,197 +724,192 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../UI/forms/form.ui" line="14"/>
-        <source>MainWindow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/forms/form.ui" line="283"/>
+        <location filename="../UI/forms/form.ui" line="291"/>
         <source>Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="296"/>
+        <location filename="../UI/forms/form.ui" line="304"/>
         <source>Parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="309"/>
+        <location filename="../UI/forms/form.ui" line="317"/>
         <source>Logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="322"/>
+        <location filename="../UI/forms/form.ui" line="330"/>
         <source>Utilits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="361"/>
+        <location filename="../UI/forms/form.ui" line="369"/>
         <source>AQteck tool MAX</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="415"/>
+        <location filename="../UI/forms/form.ui" line="423"/>
         <source>EN</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="420"/>
+        <location filename="../UI/forms/form.ui" line="428"/>
         <source>UA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="605"/>
+        <location filename="../UI/forms/form.ui" line="613"/>
         <source>Add devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="651"/>
+        <location filename="../UI/forms/form.ui" line="659"/>
         <source>Delete devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="689"/>
+        <location filename="../UI/forms/form.ui" line="697"/>
         <source>IP addresses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="742"/>
-        <location filename="../UI/forms/form.ui" line="1764"/>
+        <location filename="../UI/forms/form.ui" line="750"/>
+        <location filename="../UI/forms/form.ui" line="1772"/>
         <source>Read parameters</source>
         <translation>Прочитати параметри</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="774"/>
-        <location filename="../UI/forms/form.ui" line="1796"/>
+        <location filename="../UI/forms/form.ui" line="782"/>
+        <location filename="../UI/forms/form.ui" line="1804"/>
         <source>Write parameters</source>
         <translation>Записати параметри</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="806"/>
+        <location filename="../UI/forms/form.ui" line="814"/>
         <source>Factory settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="832"/>
+        <location filename="../UI/forms/form.ui" line="840"/>
         <source>Parameters list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="897"/>
-        <location filename="../UI/forms/form.ui" line="2412"/>
+        <location filename="../UI/forms/form.ui" line="905"/>
+        <location filename="../UI/forms/form.ui" line="2420"/>
         <source>Save log data</source>
         <translation>Зберегти архів</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="943"/>
+        <location filename="../UI/forms/form.ui" line="951"/>
         <source>Data logging settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="996"/>
-        <location filename="../UI/forms/form.ui" line="2687"/>
+        <location filename="../UI/forms/form.ui" line="1004"/>
+        <location filename="../UI/forms/form.ui" line="2695"/>
         <source>Watch list</source>
         <translation>Відстеження параметрів</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1028"/>
+        <location filename="../UI/forms/form.ui" line="1036"/>
         <source>Set real-time clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1057"/>
+        <location filename="../UI/forms/form.ui" line="1065"/>
         <source>Set password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1083"/>
-        <location filename="../UI/forms/form.ui" line="2551"/>
+        <location filename="../UI/forms/form.ui" line="1091"/>
+        <location filename="../UI/forms/form.ui" line="2559"/>
         <source>Firmware update</source>
         <translation>Оновити ПО пристрою</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1115"/>
+        <location filename="../UI/forms/form.ui" line="1123"/>
         <source>Device calibration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1224"/>
+        <location filename="../UI/forms/form.ui" line="1232"/>
         <source>Project: @ProjectName@</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1429"/>
+        <location filename="../UI/forms/form.ui" line="1437"/>
         <source>Click here to add</source>
         <translation>Додати</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1447"/>
+        <location filename="../UI/forms/form.ui" line="1455"/>
         <source>new device</source>
         <translation>новий пристрій</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1616"/>
+        <location filename="../UI/forms/form.ui" line="1624"/>
         <source>Hello!!!</source>
         <translation>Вітаю!</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1628"/>
+        <location filename="../UI/forms/form.ui" line="1636"/>
         <source>Nothing to show here</source>
         <translation>Немає підключених пристроїв</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1643"/>
+        <location filename="../UI/forms/form.ui" line="1651"/>
         <source>To get started, click &quot;Add device&quot; in the device panel</source>
         <translation type="unfinished">Для початку роботи натисніть &quot;Додати новий пристрій&quot; у панелі пристроїв</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1844"/>
+        <location filename="../UI/forms/form.ui" line="1852"/>
         <source>Reset to default</source>
         <translation>Скинути налаштування</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="1981"/>
+        <location filename="../UI/forms/form.ui" line="1989"/>
         <source>Device Information</source>
         <translation>Інформація</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2022"/>
+        <location filename="../UI/forms/form.ui" line="2030"/>
         <source>Parameter list</source>
         <translation>Параметри</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2136"/>
+        <location filename="../UI/forms/form.ui" line="2144"/>
         <source>Real-time clock</source>
         <translation>Дата та час приладу</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2172"/>
+        <location filename="../UI/forms/form.ui" line="2180"/>
         <source>Password</source>
         <translation>Пароль</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2214"/>
+        <location filename="../UI/forms/form.ui" line="2222"/>
         <source>Gateway</source>
         <translation>Шлюз</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2255"/>
+        <location filename="../UI/forms/form.ui" line="2263"/>
         <source>Calibration</source>
         <translation>Калібрування</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2297"/>
+        <location filename="../UI/forms/form.ui" line="2305"/>
         <source>Set slave ID</source>
         <translation>Встановити slaveID</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2448"/>
+        <location filename="../UI/forms/form.ui" line="2456"/>
         <source>Logging configuration</source>
         <translation>Налаштування архіву</translation>
     </message>
     <message>
-        <location filename="../UI/forms/form.ui" line="2587"/>
+        <location filename="../UI/forms/form.ui" line="2595"/>
         <source>Reboot device</source>
         <translation>Перезавантажити</translation>
     </message>
