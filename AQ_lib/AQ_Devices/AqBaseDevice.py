@@ -170,7 +170,7 @@ class AqBaseDevice(ABC):
                                                message_feedback_address=message_feedback_address)
             self._stack_to_write.clear()
         else:
-            self._message_manager.send_message(message_feedback_address, "Warning", f'{self.name} ' +
+            self._message_manager.send_message(message_feedback_address, "Warning", f'{self.name}. ' +
                                                AqTranslateManager.tr('no has changed params to write.') + ' ' +
                                                AqTranslateManager.tr('Please read params, set new value and try again.'))
 

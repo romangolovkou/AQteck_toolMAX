@@ -173,7 +173,7 @@
     <message>
         <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1615"/>
         <source>Stop with first found</source>
-        <translation>Зупинити з першим співпадінням</translation>
+        <translation>Зупинити з першим збігом</translation>
     </message>
     <message>
         <location filename="../UI/forms/AqAddDeviceWindow.ui" line="1678"/>
@@ -226,7 +226,7 @@
     <message>
         <location filename="../UI/forms/AqEnterPassWidget.ui" line="199"/>
         <source>Cancel</source>
-        <translation>Відміна</translation>
+        <translation>Вийти</translation>
     </message>
 </context>
 <context>
@@ -304,7 +304,7 @@
     <message>
         <location filename="../UI/forms/AqGatewayWindow.ui" line="783"/>
         <source>Cancel</source>
-        <translation>Відміна</translation>
+        <translation>Вийти</translation>
     </message>
 </context>
 <context>
@@ -395,7 +395,7 @@
     <message>
         <location filename="../UI/forms/AqSetRtcWidget.ui" line="849"/>
         <source>Cancel</source>
-        <translation>Відміна</translation>
+        <translation>Вийти</translation>
     </message>
 </context>
 <context>
@@ -450,7 +450,7 @@
     <message>
         <location filename="../UI/forms/AqSetPasswordWidget.ui" line="681"/>
         <source>Cancel</source>
-        <translation>Відміна</translation>
+        <translation>Вийти</translation>
     </message>
 </context>
 <context>
@@ -582,8 +582,12 @@
     </message>
     <message>
         <location filename="../UI/forms/AqSetSlaveIdWinWidget.ui" line="804"/>
+        <source>New Slave ID</source>
+        <translation>Новий Slave ID</translation>
+    </message>
+    <message>
         <source>New slave ID</source>
-        <translation>Новий slave ID</translation>
+        <translation type="vanished">Новий slave ID</translation>
     </message>
     <message>
         <location filename="../UI/forms/AqSetSlaveIdWinWidget.ui" line="888"/>
@@ -777,7 +781,7 @@
         <location filename="../UI/forms/form.ui" line="750"/>
         <location filename="../UI/forms/form.ui" line="1772"/>
         <source>Read parameters</source>
-        <translation>Прочитати параметри</translation>
+        <translation>Зчитати параметри</translation>
     </message>
     <message>
         <location filename="../UI/forms/form.ui" line="782"/>
@@ -900,8 +904,12 @@
     </message>
     <message>
         <location filename="../UI/forms/form.ui" line="2305"/>
+        <source>Set Slave ID</source>
+        <translation>Встановити Slave ID</translation>
+    </message>
+    <message>
         <source>Set slave ID</source>
-        <translation>Встановити slaveID</translation>
+        <translation type="vanished">Встановити slaveID</translation>
     </message>
     <message>
         <location filename="../UI/forms/form.ui" line="2456"/>
@@ -964,7 +972,7 @@
     <name>Custom context</name>
     <message>
         <source>Name</source>
-        <translation>Ім&apos;я параметру</translation>
+        <translation>Ім&apos;я параметра</translation>
     </message>
     <message>
         <source>Value</source>
@@ -984,7 +992,7 @@
     </message>
     <message>
         <source>Default value</source>
-        <translation>За замовчуванням</translation>
+        <translation>За умовчанням</translation>
     </message>
     <message>
         <source>Version</source>
@@ -1020,11 +1028,11 @@
     </message>
     <message>
         <source>Read parameter</source>
-        <translation>Прочитати параметр</translation>
+        <translation>Зчитати параметр</translation>
     </message>
     <message>
         <source>Read parameters</source>
-        <translation>Прочитати параметри</translation>
+        <translation>Зчитати параметри</translation>
     </message>
     <message>
         <source>Delete device</source>
@@ -1032,7 +1040,7 @@
     </message>
     <message>
         <source>Read successful</source>
-        <translation>Успішно прочитано</translation>
+        <translation>Успішно зчитано</translation>
     </message>
     <message>
         <source>Can`t write new password settings. Please try again</source>
@@ -1044,7 +1052,7 @@
     </message>
     <message>
         <source>Read failed. One or more params failed</source>
-        <translation>Помилка. Один або більше параметрів не вдалося прочитати</translation>
+        <translation>Помилка. Один або більше параметрів не вдалося зчитати</translation>
     </message>
     <message>
         <source>Password settings successfully updated</source>
@@ -1088,11 +1096,11 @@
     </message>
     <message>
         <source>Wrong password</source>
-        <translation>Невірний пароль</translation>
+        <translation>Неправильний пароль</translation>
     </message>
     <message>
         <source>Enter password. CLick to enter</source>
-        <translation>Введіть пароль. Натисніть щоб почати</translation>
+        <translation>Введіть пароль. Натисніть, щоб почати</translation>
     </message>
     <message>
         <source>Check something!</source>
@@ -1116,7 +1124,7 @@
     </message>
     <message>
         <source>Please read params, set new value and try again.</source>
-        <translation>Будь ласка прочитайте параметри, встановіть нові значення та спробуйте ще раз.</translation>
+        <translation>Будь ласка, прочитайте параметри, встановіть нові значення та спробуйте ще раз.</translation>
     </message>
     <message>
         <source>Byte order: Most significant byte first</source>
@@ -1128,7 +1136,7 @@
     </message>
     <message>
         <source>Please check network settings and try again.</source>
-        <translation>Будь ласка перевірте налаштування та спробуйте ще раз.</translation>
+        <translation>Будь ласка, перевірте налаштування та спробуйте ще раз.</translation>
     </message>
     <message>
         <source>no has changed params to write.</source>

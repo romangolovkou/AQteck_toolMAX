@@ -2302,7 +2302,7 @@ background-color: #1f232a;
                       <enum>Qt::RightToLeft</enum>
                      </property>
                      <property name="text">
-                      <string>Set slave ID</string>
+                      <string>Set Slave ID</string>
                      </property>
                      <property name="icon">
                       <iconset resource="../resoursec.qrc">
