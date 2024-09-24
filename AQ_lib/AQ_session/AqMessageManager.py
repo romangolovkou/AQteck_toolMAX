@@ -55,7 +55,7 @@ class AqMessageManager(QObject):
             "description": descr_text,
             "position": 'bottom-center',
             "parent": parent,
-            'closeIcon': "Icons/Close.png",
+            'closeIcon': "UI/icons/Close.png",
             'modalIcon': "UI/icons/AQico_silver.png",
             "isClosable": True,
             "animationDuration": 3000  # set to zero if you want you modal to not auto-close

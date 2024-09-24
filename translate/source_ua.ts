@@ -239,7 +239,7 @@
     <message>
         <location filename="../UI/forms/AqGatewayWindow.ui" line="367"/>
         <source>Select who is the master in the network</source>
-        <translation>Оберіть майстера в мережі</translation>
+        <translation>Оберіть майстра в мережі</translation>
     </message>
     <message>
         <location filename="../UI/forms/AqGatewayWindow.ui" line="415"/>
