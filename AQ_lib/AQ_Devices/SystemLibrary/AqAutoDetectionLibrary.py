@@ -132,7 +132,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
             prop_pos = prop_adr * 4
             param_prop = prop_area[prop_pos:prop_pos + 4]
             hex_sequence = param_prop.hex()
-            catalog_attributes = unpack_descr(param_descr, param_prop)
+            catalog_attributes = unpack_descr(param_descr, param_prop, string_array)
             catalog_attributes['is_catalog'] = 1
             # Перевірка на атрибут невидимості (3й біт - ознака невидимості)
             if catalog_attributes.get('invis_and_net', 0) & 0x4:
@@ -193,7 +193,7 @@ def add_nodes(root_item, node_area, cache_descr_offsets, descr_area, prop_area, 
                 prop_adr = int.from_bytes((node_area[pos:pos + 2][::-1]), byteorder='big')
                 prop_pos = prop_adr * 4
                 param_prop = prop_area[prop_pos:prop_pos + 4]
-                param_attributes = unpack_descr(param_descr, param_prop)
+                param_attributes = unpack_descr(param_descr, param_prop, string_array)
                 if param_attributes == -1:
                     return -1  # Помилка
                 # Перевірка на атрибут невидимості (3й біт - ознака невидимості)
@@ -270,7 +270,7 @@ types = {
 }
 
 
-def unpack_descr(param_descr, param_prop):
+def unpack_descr(param_descr, param_prop, string_array):
     param_attributes = {}  # Создание пустого словаря
     base_types = int.from_bytes((param_prop[0:2][::-1]), byteorder='big')
     hex_sequence = param_prop[0:4][::-1].hex()
@@ -297,7 +297,7 @@ def unpack_descr(param_descr, param_prop):
     pos = 1
     while pos < descr_size:
         ID = param_descr[pos]
-        pos = get_param_by_ID(param_descr, ID, pos + 1, param_attributes)
+        pos = get_param_by_ID(param_descr, ID, pos + 1, param_attributes, string_array)
         if pos == -1:
             return -1  # Помилка - невідомий дескриптор
 
@@ -305,7 +305,7 @@ def unpack_descr(param_descr, param_prop):
 
 
 # TODO: Refactor this into independent blocks
-def get_param_by_ID(param_descr, ID, pos, param_attributes):
+def get_param_by_ID(param_descr, ID, pos, param_attributes, string_array):
     if ID == 0:
         # Атрибути відображення та доступу по мережі
         attr = param_descr[pos]
@@ -457,11 +457,16 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes):
         parameter_name_b = param_descr[pos + 1:pos + 1 + name_length]
         parameter_name = parameter_name_b.decode('cp1251')
         pos = pos + 1 + name_length
-        param_attributes['name'] = parameter_name
+        param_attributes['name'] = parameter_name if param_attributes.get('name', None) is None \
+                                    else param_attributes['name'] + ' ' + parameter_name
         return pos
     elif 0xD0 <= ID <= 0xD4:
         # Посилання на ім'я вузла на різних мовах (невідомий дескриптор, поки що, пропускаємо)
-        pos = pos + 2
+        # Номер строкового параметру
+        name_string_num = int.from_bytes((param_descr[pos:pos + 2][::-1]), byteorder='big')
+        pos += 2
+        param_attributes['name'] = string_array[name_string_num]
+
         return pos
     # elif ID == 0x20 or ID == 0x21 or ID == 0x22 or ID == 0x23 or ID == 0x24:
     elif 0x20 <= ID <= 0x24:
