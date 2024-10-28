@@ -2,6 +2,7 @@
     "files": [
         "",
         "../../UI/forms/AqAddDeviceWindow.ui",
+        "../../UI/forms/AqCalibration.ui",
         "../../UI/forms/AqEnterPassWidget.ui",
         "../../UI/forms/AqGatewayWindow.ui",
         "../../UI/forms/AqLeftDeviceWidget.ui",

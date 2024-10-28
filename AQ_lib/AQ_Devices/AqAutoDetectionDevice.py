@@ -54,7 +54,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem', password_msg_dict],
         'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],  # file_size will be changed later in code
         'arch_header':  [0x4000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
-        'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None]
+        'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'calib':        [0xFFA0, 0, 248, True, 'AqAutoDetectModbusFileItem', None]
     }
 
     system_params_dict = dict()
@@ -449,6 +450,14 @@ class AqAutoDetectionDevice(AqBaseDevice):
         try:
             status_file = self.__sync_read_file(self.system_params_dict['status'])
             return status_file
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return 'decrypt_err'  # Помилка дешифрування
+
+    def __read_calib_file(self):
+        try:
+            calib_file = self.__sync_read_file(self.system_params_dict['calib'])
+            return calib_file
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування

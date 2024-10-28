@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AqCalibration</class>
+ <widget class="QWidget" name="AqCalibration">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">* {
+	border: none;
+	background-color: transparent;
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	color: #fff;
+}
+
+#toolboxFrame {
+	border-top-right-radius: 10px;
+	border-top-left-radius: 10px;
+	background-color: rgba(47, 72, 88, 180);
+	border: none;
+}
+
+#mainWidget {
+	background-color: #2c313c;
+}
+
+#closeBtn {
+	border-top-right-radius: 10px;
+	border-right: 1px solid #D0D0D0;
+	background-color: #2c313c;
+}
+
+#icon {
+	border-top-left-radius: 10px;
+	border-left: 1px solid #D0D0D0;
+	background-color: rgba(47, 72, 88, 0);
+}
+
+#title_text{
+	border-top:transparent; 
+	border-bottom: 1px solid #637A7B;
+}
+
+QComboBox{
+	border-left: 1px solid #9ef1d3; 
+	border-top: 1px solid #9ef1d3; 
+    border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192; 
+	background-color: #2b2d30; 
+	border-radius: 4px; 
+	padding-left: 4px;
+}
+
+QPushButton {
+	border: 1px solid #637A7B;
+}
+
+QPushButton {
+	 border-left: 1px solid #9ef1d3;
+	border-top: 1px solid #9ef1d3;
+ 	border-bottom: 1px solid #5bb192;
+	border-right: 1px solid #5bb192;
+ 	color: #FFFFFF;
+	background-color: #2b2d30;
+	border-radius: 4px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QPushButton:hover {
+	background-color: #3c3e41;
+}
+QPushButton:pressed {
+	 background-color: #429061;
+}
+
+QCheckBox {
+    font-size: 12px; /* Размер шрифта */
+    color: #D0D0D0; /* Цвет текста */
+    /*background-color: lightgray; /* Цвет фона */
+    padding: 0px; /* Внутренний отступ */
+    /*border: 2px solid darkgray; /* Обводка */
+    /*border-radius: 5px; /* Скругление углов */
+}
+
+QCheckBox::indicator {
+    width: 10px;
+    height: 10px;
+	border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+	border-radius: 5px;
+}
+
+QCheckBox::indicator:checked {
+	image: url(UI/icons/check-mark.png);
+    background-color: #5bb192; /* Цвет фона при выборе */
+    /*border-color: darkgreen; /* Цвет обводки при выборе */
+}
+
+/*QRadioButton {
+    font-size: 16px;
+    color: #FFFFFF;
+    background-color: #2b2d30;
+    padding: 1px;
+	padding-bottom: 3px;
+    border-top: 1px solid #9ef1d3;
+	border-left: 1px solid #9ef1d3; 
+	border-bottom: 1px solid #5bb192; 
+	border-right: 1px solid #5bb192;
+    border-radius: 5px;
+}
+
+#ethRadioBtn{
+	border-top-left-radius: 13px;
+	border-bottom-left-radius: 13px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+#rsRadioBtn{
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-top-right-radius: 13px;
+	border-bottom-right-radius: 13px;
+	border-left: 0px solid #9ef1d3;
+}
+
+QRadioButton:hover {
+   background-color: #3c3e41;
+}
+
+QRadioButton::indicator {
+    width: 0px;
+    height: 0px;
+	background-color: transparent;
+}
+
+QRadioButton:checked {
+    background-color: #429061;
+}
+
+QRadioButton:disabled {
+   background-color: #2b2d30;
+   color: #606060;
+}*/
+
+#tableWidget
+QHeaderView::section { background-color: #2b2d30;}
+QTableWidget { border: none; }
+QTableWidget::item { padding-left: 3px; }
+
+QRadioButton, #rtuRadioBtn {
+    /* Не указываем кастомные стили для этой радиокнопки, она будет использовать дефолтные стили */
+}
+
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="mainWidget">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
