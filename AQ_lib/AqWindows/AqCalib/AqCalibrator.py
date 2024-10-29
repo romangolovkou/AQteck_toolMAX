@@ -29,8 +29,18 @@ class AqCalibrator(object):
         if 'inputs' in data:
             self.Inputs = AqSubCalibrator(data['inputs'], loc_data)
 
-        x = list()
 
+    def get_ui_settings(self):
+        ui_settings = dict()
+
+        if hasattr(self, 'Inputs'):
+            ui_settings['inputs'] = self.Inputs.get_ui_settings()
+        if hasattr(self, 'Outputs'):
+            ui_settings['outputs'] = self.Outputs.get_ui_settings()
+
+        return ui_settings
+        # ui_settings['inputs'] = True if hasattr(self, 'Inputs') else False
+        # ui_settings['outputs'] = True if hasattr(self, 'Outputs') else False
 
 
 

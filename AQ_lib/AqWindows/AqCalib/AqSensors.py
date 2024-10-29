@@ -14,6 +14,19 @@ class AqSensors(object):
             if sensor_data['name'] == 'TCJ':
                 self.ColdJunctionSensor = AqSensor(sensor_data, loc_data)
 
+    def get_ui_settings(self):
+        ui_settings = dict()
+
+        if hasattr(self, 'VoltageSensor'):
+            ui_settings[self.VoltageSensor.fullName] = self.VoltageSensor.get_ui_settings()
+        if hasattr(self, 'CurrentSensor'):
+            ui_settings[self.CurrentSensor.fullName] = self.CurrentSensor.get_ui_settings()
+        if hasattr(self, 'ResistanceSensor'):
+            ui_settings[self.ResistanceSensor.fullName] = self.ResistanceSensor.get_ui_settings()
+        if hasattr(self, 'ColdJunctionSensor'):
+            ui_settings[self.ColdJunctionSensor.fullName] = self.ColdJunctionSensor.get_ui_settings()
+
+        return  ui_settings
 
 class AqSensor(object):
     def __init__(self, data, loc_data):
@@ -45,5 +58,13 @@ class AqSensor(object):
         for channel in channels_data:
             self.channels.append(AqCalibChannel(channel, loc_data))
 
+    def get_ui_settings(self):
+        ui_settings = list()
+
+        for channel in self.channels:
+            ch_name = channel.name + ' ' + str(channel.ch_number)
+            ui_settings.append(ch_name)
+
+        return ui_settings
 
 

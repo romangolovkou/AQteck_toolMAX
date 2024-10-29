@@ -11,3 +11,6 @@ class AqSubCalibrator(object):
 
         self.Sensors = AqSensors(data['sensors'], loc_data)
 
+    def get_ui_settings(self):
+        return self.Sensors.get_ui_settings()
+

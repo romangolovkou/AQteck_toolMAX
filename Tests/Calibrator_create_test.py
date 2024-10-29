@@ -19,6 +19,9 @@ class TestAqCalibrator(unittest.TestCase):
         # Создаем объект AqCalibrator
         calibrator = AqCalibrator(data, loc_data)
 
+        #тест отримання налаштувань UI
+        ui_settings = calibrator.get_ui_settings()
+
         # Проверяем корректность инициализации
         self.assertEqual(calibrator.protocol, 'Auto Detection Protocol')
         self.assertEqual(calibrator.DevName.value, 'MB210-101')
@@ -28,6 +31,7 @@ class TestAqCalibrator(unittest.TestCase):
         self.assertEqual(calibrator.DevName.com.readCommand, 3)
         self.assertEqual(calibrator.DevName.com.register, 61440)
         self.assertEqual(calibrator.timeout, 5000)
+
 
 if __name__ == '__main__':
     unittest.main()
