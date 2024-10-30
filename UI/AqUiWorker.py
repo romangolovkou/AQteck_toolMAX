@@ -1,5 +1,6 @@
 import AppCore
 from AqAddDeviceWindow import AqAddDeviceWidget
+from AqCalibWindow import AqCalibWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
 from AqGatewayWindow import AqGatewayWindow
 from AqMessageManager import AqMessageManager
@@ -9,6 +10,7 @@ from AqSetPasswordWidget import AqSetPasswordWindow
 from AqSetSlaveIdWindow import AqSetSlaveIdWindow
 from AqTranslateManager import AqTranslateManager
 from AqWatchListWindow import AqWatchListWidget
+from ui_AqCalibrationWidget import Ui_AqCalibrationWidget
 from ui_AqGatewayWindow import Ui_AqGatewayWidget
 from ui_AqSetPasswordWidget import Ui_AqSetPasswordWidget
 from ui_AqSetRtcWidget import Ui_AqRtcWidget
@@ -43,6 +45,10 @@ def show_device_param_list():
         widget = AqParamListWidget(Ui_DeviceParamListWidget, device_model)
         widget.exec()
 
+def show_calib_window():
+    if AppCore.Core.session.cur_active_device is not None:
+        dialog = AqCalibWidget(Ui_AqCalibrationWidget)
+        dialog.exec()
 
 def show_watch_list_window():
     dialog = AqWatchListWidget(Ui_AqWatchListWidget)

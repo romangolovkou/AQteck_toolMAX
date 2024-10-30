@@ -44,6 +44,7 @@ class AqMainWindow(QMainWindow):
         self.ui.setRtcBtn.clicked.connect(AqUiWorker.show_set_rtc)
         self.ui.setPasswordBtn.clicked.connect(AqUiWorker.show_set_password)
         self.ui.gatewayBtn.clicked.connect(AqUiWorker.show_gateway)
+        self.ui.calibDeviceBtn.clicked.connect(AqUiWorker.show_calib_window)
 
         self.ui.setDefaultMenuBtn.clicked.connect(self.setFocus)
         self.ui.setDefaultMenuBtn.clicked.connect(Core.session.set_default_cur_active_device)

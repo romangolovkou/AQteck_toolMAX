@@ -15,7 +15,6 @@ class DeviceInitWidget(QWidget):
 
         self.ui.label_2.hide()
 
-        # self.movie = QMovie(u":/images/icons/cat.gif")
         self.movie = QMovie('UI/icons/AQannimation.gif')
         self.movie.setScaledSize(QSize(282, 158))
         self.ui.CatLabel.setMovie(self.movie)

@@ -105,7 +105,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._functions['password'] = True
         self._functions['gateway'] = self.__check_ugm_container()
         self._functions['set_slave_id'] = True
-        self._functions['calibration'] = False
+        self._functions['calibration'] = self.__check_calib_json()
         self._functions['log'] = False  # self.__check_archive_container() #now only true, заглушка
         self._functions['fw_update'] = False
         self._functions['restart'] = True
@@ -281,6 +281,9 @@ class AqAutoDetectionDevice(AqBaseDevice):
         #     if not isinstance(item, AqParamItem):
         #         return False
 
+        return True
+
+    def __check_calib_json(self):
         return True
 
     def __get_item_by_UID(self, uid):

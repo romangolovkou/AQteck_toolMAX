@@ -39,8 +39,7 @@ class AqCalibrator(object):
             ui_settings['outputs'] = self.Outputs.get_ui_settings()
 
         return ui_settings
-        # ui_settings['inputs'] = True if hasattr(self, 'Inputs') else False
-        # ui_settings['outputs'] = True if hasattr(self, 'Outputs') else False
+
 
 
 
