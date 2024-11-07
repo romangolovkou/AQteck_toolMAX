@@ -29,19 +29,27 @@ class AqCalibrator(object):
         if 'inputs' in data:
             self.Inputs = AqSubCalibrator(data['inputs'], loc_data)
 
+    def check_pin_type_by_name(self, name):
+        if hasattr(self, 'Inputs'):
+            if self.Inputs.name == name:
+                return 'inputs'
+
+        if hasattr(self, 'Outputs'):
+            if self.Outputs.name == name:
+                return 'outputs'
 
     def get_ui_settings(self):
         ui_settings = dict()
+        ui_settings['pinTypes'] = list()
 
         if hasattr(self, 'Inputs'):
-            ui_settings['inputs'] = self.Inputs.get_ui_settings()
+            ui_settings['pinTypes'].append(self.Inputs.name)
+            ui_settings[self.Inputs.name] = self.Inputs.get_ui_settings()
         if hasattr(self, 'Outputs'):
-            ui_settings['outputs'] = self.Outputs.get_ui_settings()
+            ui_settings['pinTypes'].append(self.Outputs.name)
+            ui_settings[self.Outputs.name] = self.Outputs.get_ui_settings()
 
         return ui_settings
-
-
-
 
 
 @dataclass

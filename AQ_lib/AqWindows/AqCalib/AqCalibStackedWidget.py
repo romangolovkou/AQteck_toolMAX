@@ -2,7 +2,7 @@ from datetime import datetime
 
 from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QStandardItem
-from PySide6.QtWidgets import QStackedWidget
+from PySide6.QtWidgets import QStackedWidget, QComboBox
 
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
@@ -29,12 +29,98 @@ class AqCalibViewManager(QStackedWidget):
         # self.active_device = None
         # self.no_device_widget = NoDeviceWidget()
         # self.addWidget(self.no_device_widget)
+        self.calib_device = None
+        self.calibrator = None
+        #ui_elements
+        self.main_ui_elements = None
+        self.pinTypeComboBox = None
+        self.inputTypeComboBox = None
+        self.channelsComboBox = None
+        self.methodComboBox = None
+
+        self.event_manager.register_event_handler('set_active_device', self.set_calib_device)
+        self.event_manager.register_event_handler('calibrator_inited', self.calibrator_inited)
+
         self.device_init_widget = DeviceInitWidget()
         self.addWidget(self.device_init_widget)
         self.active_device = None
         self.setCurrentWidget(self.device_init_widget)
         self.show()
-        self.check_is_calibrator_ready(self.calibrator_is_ready)
+        self.check_is_calibrator_ready()
+
+    def prepare_ui(self):
+        self.pinTypeComboBox = self.findChild(QComboBox, 'pinTypeComboBox')
+        self.inputTypeComboBox = self.findChild(QComboBox, 'inputTypeComboBox')
+        self.channelsComboBox = self.findChild(QComboBox, 'channelsComboBox')
+        self.methodComboBox = self.findChild(QComboBox, 'methodComboBox')
+
+
+        self.main_ui_elements = [
+            self.pinTypeComboBox,
+            self.inputTypeComboBox,
+            self.channelsComboBox,
+            self.methodComboBox
+        ]
+
+        for i in self.main_ui_elements:
+            if i is None:
+                raise Exception(self.objectName() + ' Error: lost UI element')
+
+        self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_type_combo_box_)
+        self.inputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
+
+        self.ui_settings = self.calibrator.get_ui_settings()
+        self.load_combo_boxes()
+
+    def load_combo_boxes(self):
+        pinTypes = self.ui_settings['pinTypes']
+        if self.pinTypeComboBox is not None:
+            self.pinTypeComboBox.clear()
+            for pinType in pinTypes:
+                self.pinTypeComboBox.addItem(pinType)
+        else:
+            raise Exception(self.objectName() + ' Error: wrong UI settings')
+
+        if self.methodComboBox is not None:
+            self.methodComboBox.clear()
+            _pin_type = self.calibrator.check_pin_type_by_name(self.pinTypeComboBox.currentText())
+            if _pin_type == 'inputs':
+                self.methodComboBox.addItems([AqTranslateManager.tr('Reference source'),
+                                             AqTranslateManager.tr('Reference meter')])
+            elif _pin_type == 'outputs':
+                self.methodComboBox.addItems(AqTranslateManager.tr('Reference meter'))
+        else:
+            raise Exception(self.objectName() + ' Error: wrong UI settings')
+
+    def _load_input_type_combo_box_(self):
+        key = self.pinTypeComboBox.currentText()
+        inputTypes = self.ui_settings[key]['sensors']
+        if self.inputTypeComboBox is not None:
+            self.inputTypeComboBox.clear()
+            for inputType in inputTypes:
+                self.inputTypeComboBox.addItem(inputType)
+        else:
+            raise Exception(self.objectName() + ' Error: wrong UI settings')
+
+    def _load_channel_combo_box_(self):
+        key = self.inputTypeComboBox.currentText()
+        channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
+        if self.channelsComboBox is not None:
+            self.channelsComboBox.clear()
+            for channel in channels:
+                self.channelsComboBox.addItem(channel)
+
+            self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
+        else:
+            raise Exception(self.objectName() + ' Error: wrong UI settings')
+
+    def set_calib_device(self, device):
+        self.calib_device = device
+
+    def calibrator_inited(self, calibrator):
+        self.calibrator = calibrator
+        self.prepare_ui()
+        self.calibrator_is_ready = True
 
     # def add_new_devices_trees(self, new_devices_list):
     #     for i in range(len(new_devices_list)):
@@ -50,17 +136,18 @@ class AqCalibViewManager(QStackedWidget):
     #     if device is not None:
     #         self.check_is_device_inited(device)
 
-    def check_is_calibrator_ready(self, calibrator_is_inited):
-        if calibrator_is_inited:
+    def check_is_calibrator_ready(self):
+        if self.calibrator_is_ready:
             # if self.active_device == device:
             #     self.show_current_device_widget(device)
+            self.setCurrentIndex(1)
             self.device_init_widget.stop_animation()
         else:
             # if self.active_device == device:
                 self.device_init_widget.start_animation()
                 self.setCurrentWidget(self.device_init_widget)
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
-                QTimer.singleShot(50, lambda: self.check_is_calibrator_ready(calibrator_is_inited))
+                QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
 
     # def show_current_device_widget(self, device):
     #     widget = self.devices_views.get(device, None)

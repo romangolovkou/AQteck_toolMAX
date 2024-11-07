@@ -1,7 +1,9 @@
 import unittest
 
 from AqCalibCreator import AqCalibCreator
+from AqCalibWindow import AqCalibWidget
 from AqCalibrator import AqCalibrator
+from ui_AqCalibrationWidget import Ui_AqCalibrationWidget
 
 
 class TestAqCalibrator(unittest.TestCase):
@@ -21,6 +23,7 @@ class TestAqCalibrator(unittest.TestCase):
 
         #тест отримання налаштувань UI
         ui_settings = calibrator.get_ui_settings()
+
 
         # Проверяем корректность инициализации
         self.assertEqual(calibrator.protocol, 'Auto Detection Protocol')

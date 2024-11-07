@@ -16,14 +16,19 @@ class AqSensors(object):
 
     def get_ui_settings(self):
         ui_settings = dict()
+        ui_settings['sensors'] = list()
 
         if hasattr(self, 'VoltageSensor'):
+            ui_settings['sensors'].append(self.VoltageSensor.fullName)
             ui_settings[self.VoltageSensor.fullName] = self.VoltageSensor.get_ui_settings()
         if hasattr(self, 'CurrentSensor'):
+            ui_settings['sensors'].append(self.CurrentSensor.fullName)
             ui_settings[self.CurrentSensor.fullName] = self.CurrentSensor.get_ui_settings()
         if hasattr(self, 'ResistanceSensor'):
+            ui_settings['sensors'].append(self.ResistanceSensor.fullName)
             ui_settings[self.ResistanceSensor.fullName] = self.ResistanceSensor.get_ui_settings()
         if hasattr(self, 'ColdJunctionSensor'):
+            ui_settings['sensors'].append(self.ColdJunctionSensor.fullName)
             ui_settings[self.ColdJunctionSensor.fullName] = self.ColdJunctionSensor.get_ui_settings()
 
         return  ui_settings
