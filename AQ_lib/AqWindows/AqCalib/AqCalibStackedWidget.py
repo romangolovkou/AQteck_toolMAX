@@ -2,7 +2,7 @@ from datetime import datetime
 
 from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QStandardItem
-from PySide6.QtWidgets import QStackedWidget, QComboBox
+from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel
 
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
@@ -31,12 +31,24 @@ class AqCalibViewManager(QStackedWidget):
         # self.addWidget(self.no_device_widget)
         self.calib_device = None
         self.calibrator = None
+        self.user_settings = dict()
         #ui_elements
+        #first page
         self.main_ui_elements = None
         self.pinTypeComboBox = None
-        self.inputTypeComboBox = None
+        self.input_outputTypeComboBox = None
         self.channelsComboBox = None
         self.methodComboBox = None
+        self.runCalibBtn = None
+        #start page
+        self.startHeaderLabel = None
+        self.startDescrLabel_1 = None
+        self.startDescrLabel_2 = None
+        self.startDescrLabel_3 = None
+        self.startPicLabel = None
+        self.startPicture = None
+        self.startBackBtn = None
+        self.startRunBtn = None
 
         self.event_manager.register_event_handler('set_active_device', self.set_calib_device)
         self.event_manager.register_event_handler('calibrator_inited', self.calibrator_inited)
@@ -50,24 +62,44 @@ class AqCalibViewManager(QStackedWidget):
 
     def prepare_ui(self):
         self.pinTypeComboBox = self.findChild(QComboBox, 'pinTypeComboBox')
-        self.inputTypeComboBox = self.findChild(QComboBox, 'inputTypeComboBox')
+        self.input_outputTypeComboBox = self.findChild(QComboBox, 'input_outputTypeComboBox')
         self.channelsComboBox = self.findChild(QComboBox, 'channelsComboBox')
         self.methodComboBox = self.findChild(QComboBox, 'methodComboBox')
+        self.runCalibBtn = self.findChild(QPushButton, 'runCalibBtn')
 
+        self.startHeaderLabel = self.findChild(QLabel, 'headerLabel')
+        self.startDescrLabel_1 = self.findChild(QLabel, 'descrLabel_1')
+        self.startDescrLabel_2 = self.findChild(QLabel, 'descrLabel_2')
+        self.startDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
+        self.startPicLabel = self.findChild(QLabel, 'picLabel')
+        self.startPicture = None
+        self.startBackBtn = self.findChild(QPushButton, 'backBtn')
+        self.startRunBtn = self.findChild(QPushButton, 'runBtn')
 
         self.main_ui_elements = [
             self.pinTypeComboBox,
-            self.inputTypeComboBox,
+            self.input_outputTypeComboBox,
             self.channelsComboBox,
-            self.methodComboBox
+            self.methodComboBox,
+            self.runCalibBtn,
+            self.startHeaderLabel,
+            self.startDescrLabel_1,
+            self.startDescrLabel_2,
+            self.startDescrLabel_3,
+            self.startPicLabel,
+            # self.startPicture,
+            self.startBackBtn,
+            self.startRunBtn
         ]
 
         for i in self.main_ui_elements:
             if i is None:
                 raise Exception(self.objectName() + ' Error: lost UI element')
 
-        self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_type_combo_box_)
-        self.inputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
+        self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
+        self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
+        self.runCalibBtn.clicked.connect(self._run_btn_clicked_)
+        self.startBackBtn.clicked.connect(self._start_back_btn_clicked_)
 
         self.ui_settings = self.calibrator.get_ui_settings()
         self.load_combo_boxes()
@@ -92,18 +124,18 @@ class AqCalibViewManager(QStackedWidget):
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
 
-    def _load_input_type_combo_box_(self):
+    def _load_input_output_type_combo_box_(self):
         key = self.pinTypeComboBox.currentText()
         inputTypes = self.ui_settings[key]['sensors']
-        if self.inputTypeComboBox is not None:
-            self.inputTypeComboBox.clear()
+        if self.input_outputTypeComboBox is not None:
+            self.input_outputTypeComboBox.clear()
             for inputType in inputTypes:
-                self.inputTypeComboBox.addItem(inputType)
+                self.input_outputTypeComboBox.addItem(inputType)
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
 
     def _load_channel_combo_box_(self):
-        key = self.inputTypeComboBox.currentText()
+        key = self.input_outputTypeComboBox.currentText()
         channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
         if self.channelsComboBox is not None:
             self.channelsComboBox.clear()
@@ -113,6 +145,31 @@ class AqCalibViewManager(QStackedWidget):
             self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
+
+    def _run_btn_clicked_(self):
+        self.user_settings['pinType'] = self.pinTypeComboBox.currentText()
+        self.user_settings['_pinType'] = self.calibrator.check_pin_type_by_name(self.user_settings['pinType'])
+        self.user_settings['input_outputType'] = self.input_outputTypeComboBox.currentText()
+        self.user_settings['channel'] = self.channelsComboBox.currentText()
+        self.user_settings['method'] = self.methodComboBox.currentText()
+
+        self._load_start_page_(self.user_settings)
+
+        self.setCurrentIndex(2)
+
+    def _load_start_page_(self, user_settings):
+        self.startHeaderLabel.setText(user_settings['input_outputType'])
+        self.startDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
+        self.startDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
+                                       self.user_settings['channel'] + ' ' +
+                                       AqTranslateManager.tr('source of signal with value ') +
+                                       'TEST 0.95 V' +
+                                       AqTranslateManager.tr('like show in diagram.'))
+        self.startDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
+        self.startPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
+
+    def _start_back_btn_clicked_(self):
+        self.setCurrentIndex(1)
 
     def set_calib_device(self, device):
         self.calib_device = device
