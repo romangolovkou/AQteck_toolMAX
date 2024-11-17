@@ -616,6 +616,9 @@ QRadioButton, #rtuRadioBtn {
           </item>
           <item>
            <widget class="QFrame" name="picFrame">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -638,13 +641,19 @@ QRadioButton, #rtuRadioBtn {
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QFrame" name="frame">
-               <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
+             <item alignment="Qt::AlignHCenter">
+              <widget class="QSvgWidget" name="picture" native="true">
+               <property name="minimumSize">
+                <size>
+                 <width>700</width>
+                 <height>500</height>
+                </size>
                </property>
-               <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
+               <property name="maximumSize">
+                <size>
+                 <width>700</width>
+                 <height>500</height>
+                </size>
                </property>
               </widget>
              </item>
@@ -716,6 +725,12 @@ QRadioButton, #rtuRadioBtn {
    <class>AqCalibViewManager</class>
    <extends>QStackedWidget</extends>
    <header location="global">AqCalibStackedWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QSvgWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">qtsvgwidgets.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -31,7 +31,36 @@ class AqSensors(object):
             ui_settings['sensors'].append(self.ColdJunctionSensor.fullName)
             ui_settings[self.ColdJunctionSensor.fullName] = self.ColdJunctionSensor.get_ui_settings()
 
-        return  ui_settings
+        return ui_settings
+
+    def get_channels_by_settings(self, user_settings):
+        if hasattr(self, 'VoltageSensor'):
+            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+                return self.VoltageSensor.get_channels_by_settings(user_settings)
+        if hasattr(self, 'CurrentSensor'):
+            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+                return self.CurrentSensor.get_channels_by_settings(user_settings)
+        if hasattr(self, 'ResistanceSensor'):
+            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+                return self.ResistanceSensor.get_channels_by_settings(user_settings)
+        if hasattr(self, 'ColdJunctionSensor'):
+            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+                return self.ColdJunctionSensor.get_channels_by_settings(user_settings)
+
+    def get_image(self, user_settings):
+        if hasattr(self, 'VoltageSensor'):
+            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+                return self.VoltageSensor.images
+        if hasattr(self, 'CurrentSensor'):
+            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+                return self.CurrentSensor.images
+        if hasattr(self, 'ResistanceSensor'):
+            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+                return self.ResistanceSensor.images
+        if hasattr(self, 'ColdJunctionSensor'):
+            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+                return self.ColdJunctionSensor.images
+
 
 class AqSensor(object):
     def __init__(self, data, loc_data):
@@ -44,7 +73,7 @@ class AqSensor(object):
         if not isinstance(self.fullName, str):
             raise TypeError('Sensor.fullName is not str')
 
-        self.images = data['images']
+        self._images = data['images']
 
         self.lowLimit = data.get('lowLimit', None)
         if self.lowLimit is not None and not isinstance(self.lowLimit, int):
@@ -67,9 +96,21 @@ class AqSensor(object):
         ui_settings = list()
 
         for channel in self.channels:
-            ch_name = channel.name + ' ' + str(channel.ch_number)
+            ch_name = channel.name
             ui_settings.append(ch_name)
 
         return ui_settings
 
+    def get_channels_by_settings(self, user_settings):
+        session_channels = list()
+        for ch_name in user_settings['channels']:
+            for channel in self.channels:
+                if ch_name == channel.name:
+                    session_channels.append(channel)
+                    break
 
+        return session_channels
+
+    @property
+    def images(self):
+        return self._images

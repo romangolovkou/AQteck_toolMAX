@@ -13,10 +13,14 @@ class AqCalibAlg(object):
             self.coeffs.append(AqCalibCoeff(coeff))
 
         points_data = data['points']
-        self.points = list()
+        self._points = list()
         for point in points_data:
             if isinstance(point['value'], int) or isinstance(point['value'], float):
-                self.coeffs.append(point['value'])
+                self._points.append(point['value'])
             else:
                 raise TypeError('Point value is not int or float')
+
+    @property
+    def points(self):
+        return self._points
 

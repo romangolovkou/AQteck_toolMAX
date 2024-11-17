@@ -354,6 +354,8 @@ class AqModbusConnect(AqConnect):
                 request.record_length = read_size
 
                 try:
+                    if left_to_read < 14000:
+                        x = 20 + 4
                     result = await self.client.read_file_record(self.slave_id, [request])
                     start_record_num += read_size
                     left_to_read -= read_size
@@ -362,7 +364,10 @@ class AqModbusConnect(AqConnect):
                     item.data_from_network(None, True, 'modbus_error')
                     return
 
-                summary_data += result.records[0].record_data
+                try:
+                    summary_data += result.records[0].record_data
+                except Exception as e:
+                    left_to_read = 0
 
             item.data_from_network(summary_data)
 

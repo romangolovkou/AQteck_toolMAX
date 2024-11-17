@@ -4,12 +4,12 @@ from AqCalibParamSetting import AqCalibParamSetting, AqCalibParamSignal
 
 class AqCalibChannel(object):
     def __init__(self, data, loc_data):
-        self.name = loc_data[data['name']['name'][4:]]
-        if not isinstance(self.name, str):
+        self._name = loc_data[data['name']['name'][4:]]
+        if not isinstance(self._name, str):
             raise TypeError('CalibChannel.name is not str')
 
-        self.ch_number = data['name']['value']
-        if not isinstance(self.ch_number, int):
+        self._ch_number = data['name']['value']
+        if not isinstance(self._ch_number, int):
             raise TypeError('CalibChannel.ch_number is not int')
 
         settings_data = data['settings']
@@ -24,4 +24,11 @@ class AqCalibChannel(object):
         self.parameter_value = AqCalibParamSignal(data['signal'])
         self.calAlg = AqCalibAlg(data['calAlg'])
 
+    @property
+    def name(self):
+        return self._name + ' ' + str(self._ch_number)
+
+    @property
+    def points(self):
+        return self.calAlg.points
 

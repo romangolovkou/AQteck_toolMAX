@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from AqCalibSession import AqCalibSession
 from AqParamCalibCom import Com
 from AqSubCalibrator import AqSubCalibrator
 
@@ -28,6 +29,14 @@ class AqCalibrator(object):
 
         if 'inputs' in data:
             self.Inputs = AqSubCalibrator(data['inputs'], loc_data)
+        if 'outputs' in data:
+            self.Outputs = AqSubCalibrator(data['outputs'], loc_data)
+
+        self.calib_session = None
+        self.device = None
+
+    def set_calib_device(self, device):
+        self.device = device
 
     def check_pin_type_by_name(self, name):
         if hasattr(self, 'Inputs'):
@@ -50,6 +59,17 @@ class AqCalibrator(object):
             ui_settings[self.Outputs.name] = self.Outputs.get_ui_settings()
 
         return ui_settings
+
+    def create_calib_session(self, user_settings):
+        if user_settings['_pinType'] == 'inputs':
+            pins = self.Inputs
+        elif user_settings['_pinType'] == 'outputs':
+            pins = self.Outputs
+        else:
+            raise Exception('Cant create calib session')
+
+        self.calib_session = AqCalibSession(user_settings, pins)
+        return self.calib_session
 
 
 @dataclass

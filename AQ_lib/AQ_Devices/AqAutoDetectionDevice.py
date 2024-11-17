@@ -1,5 +1,6 @@
 import os
 import threading
+import zipfile
 from datetime import datetime
 import struct
 import time
@@ -19,6 +20,7 @@ from AqTreeViewItemModel import AqTreeItemModel
 
 from AqAutoDetectionLibrary import get_containers_count, \
     get_containers_offset, get_storage_container, parse_tree
+from AqZipFunc import extract_zip_with_cyrillic
 
 
 class AqAutoDetectionDevice(AqBaseDevice):
@@ -284,7 +286,15 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return True
 
     def __check_calib_json(self):
-        return True
+        try:
+            calib_file_first_page = self.__sync_read_file(self.system_params_dict['calib'])
+            if calib_file_first_page is None:
+                return False
+            else:
+                return True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
 
     def __get_item_by_UID(self, uid):
         param_attributes = None
@@ -457,9 +467,28 @@ class AqAutoDetectionDevice(AqBaseDevice):
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
 
-    def __read_calib_file(self):
+    def read_calib_file(self):
         try:
+            file_size = 64000
+            self.system_params_dict['calib'].set_file_size(file_size // 2)
             calib_file = self.__sync_read_file(self.system_params_dict['calib'])
+
+            temp_folder_path = 'temp'
+            if not os.path.exists(temp_folder_path):
+                os.makedirs(temp_folder_path)
+
+            filename = self._info['name'] + '_' + self._info['version'] + '_' + 'FFA0'
+            FORMAT = '.zip'
+            full_filepath = os.path.join(temp_folder_path, filename + FORMAT)
+            with open(full_filepath, 'wb') as file:
+                file.write(calib_file)
+
+            # Открытие ZIP-файла
+            # with zipfile.ZipFile(full_filepath, 'r') as zip_ref:
+            #     # Разархивирование всех файлов в указанную директорию
+            #     zip_ref.extractall(temp_folder_path + '/' + filename)
+            extract_zip_with_cyrillic(full_filepath, temp_folder_path + '/calib')
+
             return calib_file
         except Exception as e:
             print(f"Error occurred: {str(e)}")

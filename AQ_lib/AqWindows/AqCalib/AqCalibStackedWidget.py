@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from PySide6.QtCore import QTimer, Qt
-from PySide6.QtGui import QStandardItem
+from PySide6.QtGui import QStandardItem, QPixmap
+from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel
 
 from AqBaseTreeItems import AqParamManagerItem
@@ -12,6 +13,8 @@ from AqTreeView import AqTreeView
 from AqTreeViewItemModel import AqTreeViewItemModel
 from DeviceNotInitedWifget import DeviceInitWidget
 from NoDevicesWidget import NoDeviceWidget
+
+IMAGE_PREFIX = 'test_files/'
 
 
 class AqCalibViewManager(QStackedWidget):
@@ -50,7 +53,7 @@ class AqCalibViewManager(QStackedWidget):
         self.startBackBtn = None
         self.startRunBtn = None
 
-        self.event_manager.register_event_handler('set_active_device', self.set_calib_device)
+        self.event_manager.register_event_handler('set_calib_device', self.set_calib_device)
         self.event_manager.register_event_handler('calibrator_inited', self.calibrator_inited)
 
         self.device_init_widget = DeviceInitWidget()
@@ -72,7 +75,7 @@ class AqCalibViewManager(QStackedWidget):
         self.startDescrLabel_2 = self.findChild(QLabel, 'descrLabel_2')
         self.startDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
         self.startPicLabel = self.findChild(QLabel, 'picLabel')
-        self.startPicture = None
+        self.startPicture = self.findChild(QSvgWidget, 'picture')
         self.startBackBtn = self.findChild(QPushButton, 'backBtn')
         self.startRunBtn = self.findChild(QPushButton, 'runBtn')
 
@@ -87,7 +90,7 @@ class AqCalibViewManager(QStackedWidget):
             self.startDescrLabel_2,
             self.startDescrLabel_3,
             self.startPicLabel,
-            # self.startPicture,
+            self.startPicture,
             self.startBackBtn,
             self.startRunBtn
         ]
@@ -98,7 +101,7 @@ class AqCalibViewManager(QStackedWidget):
 
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
-        self.runCalibBtn.clicked.connect(self._run_btn_clicked_)
+        self.runCalibBtn.clicked.connect(self._run_calib_btn_clicked_)
         self.startBackBtn.clicked.connect(self._start_back_btn_clicked_)
 
         self.ui_settings = self.calibrator.get_ui_settings()
@@ -139,59 +142,64 @@ class AqCalibViewManager(QStackedWidget):
         channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
         if self.channelsComboBox is not None:
             self.channelsComboBox.clear()
+            self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
             for channel in channels:
                 self.channelsComboBox.addItem(channel)
 
-            self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
 
-    def _run_btn_clicked_(self):
+    def _run_calib_btn_clicked_(self):
         self.user_settings['pinType'] = self.pinTypeComboBox.currentText()
         self.user_settings['_pinType'] = self.calibrator.check_pin_type_by_name(self.user_settings['pinType'])
         self.user_settings['input_outputType'] = self.input_outputTypeComboBox.currentText()
-        self.user_settings['channel'] = self.channelsComboBox.currentText()
+        if self.channelsComboBox.currentIndex() == 0:
+            self.user_settings['channels'] = [self.channelsComboBox.itemText(i)
+                                              for i in range(self.channelsComboBox.count())][1:]
+        else:
+            self.user_settings['channels'] = [self.channelsComboBox.currentText()]
+
         self.user_settings['method'] = self.methodComboBox.currentText()
+
+        self.calibrator.create_calib_session(self.user_settings)
 
         self._load_start_page_(self.user_settings)
 
         self.setCurrentIndex(2)
 
     def _load_start_page_(self, user_settings):
+        cur_channel = self.calibrator.calib_session.get_cur_channel()
         self.startHeaderLabel.setText(user_settings['input_outputType'])
         self.startDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
         self.startDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
-                                       self.user_settings['channel'] + ' ' +
+                                       cur_channel.name + ' ' +
                                        AqTranslateManager.tr('source of signal with value ') +
-                                       'TEST 0.95 V' +
+                                       str(cur_channel.points[0]) + ' V ' +
                                        AqTranslateManager.tr('like show in diagram.'))
         self.startDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
         self.startPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
+        if user_settings['method'] == 'Reference source':
+            key = 'referenceSignal'
+        elif user_settings['method'] == 'Reference meter':
+            key = 'measuringSignal'
+        else:
+            raise Exception('method error')
+
+        self.startPicture.load(IMAGE_PREFIX + self.calibrator.calib_session.image[key])
 
     def _start_back_btn_clicked_(self):
         self.setCurrentIndex(1)
 
     def set_calib_device(self, device):
         self.calib_device = device
+        if self.calibrator is not None:
+            self.calibrator.set_calib_device(device)
 
     def calibrator_inited(self, calibrator):
         self.calibrator = calibrator
+        self.calibrator.set_calib_device(self.calib_device)
         self.prepare_ui()
         self.calibrator_is_ready = True
-
-    # def add_new_devices_trees(self, new_devices_list):
-    #     for i in range(len(new_devices_list)):
-    #         tree_view = AqTreeView()
-    #         tree_view.setGeometry(0, 0, self.width(), self.height())
-    #         device_view_tree_model = self.create_device_tree_for_view(new_devices_list[i])
-    #         tree_view.setModel(device_view_tree_model)
-    #         self.devices_views[new_devices_list[i]] = tree_view
-    #         self.addWidget(tree_view)
-
-    # def set_active_device_tree(self, device: AqBaseDevice):
-    #     self.active_device = device
-    #     if device is not None:
-    #         self.check_is_device_inited(device)
 
     def check_is_calibrator_ready(self):
         if self.calibrator_is_ready:
@@ -205,6 +213,9 @@ class AqCalibViewManager(QStackedWidget):
                 self.setCurrentWidget(self.device_init_widget)
                 # Устанавливаем задержку в 50 м.сек и затем повторяем
                 QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
+
+    # def _run_btn_clicked_(self):
+
 
     # def show_current_device_widget(self, device):
     #     widget = self.devices_views.get(device, None)

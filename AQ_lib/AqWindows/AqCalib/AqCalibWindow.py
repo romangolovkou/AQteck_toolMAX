@@ -19,6 +19,11 @@ class AqCalibWidget(AqDialogTemplate):
         # Підготовка необхідних полів UI
         # self.prepare_ui_objects()
 
+
+
+    def set_calib_device(self, device):
+        dat_file = device.read_calib_file()
+
         #TODO: Delete after test
         AqCalibCreator.prepare_json_file('test_files/МВ210-101_calibr.json',
                                          'test_files/current_calibr.json')
@@ -37,5 +42,4 @@ class AqCalibWidget(AqDialogTemplate):
 
         calibrator = AqCalibrator(data, loc_data)
         self.event_manager.emit_event('calibrator_inited', calibrator)
-
-
+        self.event_manager.emit_event('set_calib_device', device)
