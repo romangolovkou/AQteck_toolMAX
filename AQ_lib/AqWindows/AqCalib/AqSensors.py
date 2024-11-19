@@ -83,7 +83,12 @@ class AqSensor(object):
         if self.maxLimit is not None and not isinstance(self.maxLimit, int):
             raise TypeError('Sensor.maxLimit is not int')
 
-        self.unit = loc_data[data['unit'][4:]]
+        if 'loc:' in data['unit']:
+            unit_key = data['unit'][4:]
+        else:
+            unit_key = data['unit']
+
+        self.unit = loc_data[unit_key]
         if not isinstance(self.unit, str):
             raise TypeError('Sensor.unit is not str')
 

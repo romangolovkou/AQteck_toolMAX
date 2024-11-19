@@ -20,8 +20,8 @@ class Com:
             raise ValueError("Register must be between 0 and 65535")
 
         # Проверка диапазона для readCommand, если оно не None
-        if self.readCommand is not None and not (self.readCommand == 3):
-            raise ValueError("ReadCommand must be 3")
+        if self.readCommand is not None and not (self.readCommand == 3 or self.readCommand == 2):
+            raise ValueError("ReadCommand must be 3 or 2")
 
         # Проверка диапазона для writeCommand, если оно не None
         if self.writeCommand is not None and not (self.writeCommand == 16):

@@ -8,6 +8,9 @@ from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
+from AqCalibCreator import AqCalibCreator
+from AqCalibrator import AqCalibrator
+from AqInitCalibTread import InitCalibThread
 from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqTreeViewItemModel import AqTreeViewItemModel
@@ -123,7 +126,7 @@ class AqCalibViewManager(QStackedWidget):
                 self.methodComboBox.addItems([AqTranslateManager.tr('Reference source'),
                                              AqTranslateManager.tr('Reference meter')])
             elif _pin_type == 'outputs':
-                self.methodComboBox.addItems(AqTranslateManager.tr('Reference meter'))
+                self.methodComboBox.addItems([AqTranslateManager.tr('Reference meter')])
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
 
@@ -192,12 +195,40 @@ class AqCalibViewManager(QStackedWidget):
 
     def set_calib_device(self, device):
         self.calib_device = device
-        if self.calibrator is not None:
-            self.calibrator.set_calib_device(device)
+        self.start_init_calibrator()
+        # if self.calibrator is not None:
+        #     self.calibrator.set_calib_device(device)
+
+    def start_init_calibrator(self):
+        self.init_calib_thread = InitCalibThread(self.init_calibrator)
+        # self.init_calib_thread.finished.connect(self.search_finished)
+        # self.init_calib_thread.error.connect(self.search_error)
+        self.init_calib_thread.result_signal.connect(self.calibrator_inited)
+        self.init_calib_thread.start()
+
+    def init_calibrator(self):
+        if self.calib_device.read_calib_file():
+            calib_path = 'temp/calib/'
+            AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
+                                             calib_path + 'current_calibr.json')
+            data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
+
+            AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
+                                             calib_path + 'current_loc.json')
+            loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
+
+            current_lang = AqTranslateManager.get_current_lang().lower()
+            if current_lang == 'ua':
+                current_lang = 'uk'
+            loc_data = loc_data[current_lang]
+
+            # Создаем объект AqCalibrator
+
+            return AqCalibrator(data, loc_data)
 
     def calibrator_inited(self, calibrator):
         self.calibrator = calibrator
-        self.calibrator.set_calib_device(self.calib_device)
+        # self.calibrator.set_calib_device(self.calib_device)
         self.prepare_ui()
         self.calibrator_is_ready = True
 

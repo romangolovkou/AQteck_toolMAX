@@ -21,7 +21,9 @@ class AqCalibChannel(object):
             elif setting['type'] == 'AinH':
                 self.parameter_max_limit = AqCalibParamSetting(setting)
 
-        self.parameter_value = AqCalibParamSignal(data['signal'])
+        if data.get('signal', False):
+            self.parameter_value = AqCalibParamSignal(data['signal'])
+
         self.calAlg = AqCalibAlg(data['calAlg'])
 
     @property

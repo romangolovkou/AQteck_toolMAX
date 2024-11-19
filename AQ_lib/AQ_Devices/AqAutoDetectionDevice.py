@@ -483,16 +483,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
             with open(full_filepath, 'wb') as file:
                 file.write(calib_file)
 
-            # Открытие ZIP-файла
-            # with zipfile.ZipFile(full_filepath, 'r') as zip_ref:
-            #     # Разархивирование всех файлов в указанную директорию
-            #     zip_ref.extractall(temp_folder_path + '/' + filename)
             extract_zip_with_cyrillic(full_filepath, temp_folder_path + '/calib')
 
-            return calib_file
+            return True
         except Exception as e:
             print(f"Error occurred: {str(e)}")
-            return 'decrypt_err'  # Помилка дешифрування
+            return False
 
     def get_configuration(self) -> AqDeviceConfig:
         config = AqDeviceConfig()
