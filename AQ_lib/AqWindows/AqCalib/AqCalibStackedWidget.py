@@ -3,7 +3,7 @@ from datetime import datetime
 from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QStandardItem, QPixmap
 from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel
+from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit
 
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
@@ -48,9 +48,12 @@ class AqCalibViewManager(QStackedWidget):
         self.runCalibBtn = None
         #start page
         self.startHeaderLabel = None
+        self.startStepsLabel = None
         self.startDescrLabel_1 = None
         self.startDescrLabel_2 = None
         self.startDescrLabel_3 = None
+        self.startMeasureLabel = None
+        self.startMeasureLineEdit = None
         self.startPicLabel = None
         self.startPicture = None
         self.startBackBtn = None
@@ -73,9 +76,12 @@ class AqCalibViewManager(QStackedWidget):
         self.runCalibBtn = self.findChild(QPushButton, 'runCalibBtn')
 
         self.startHeaderLabel = self.findChild(QLabel, 'headerLabel')
+        self.startStepsLabel = self.findChild(QLabel, 'stepsLabel')
         self.startDescrLabel_1 = self.findChild(QLabel, 'descrLabel_1')
         self.startDescrLabel_2 = self.findChild(QLabel, 'descrLabel_2')
         self.startDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
+        self.startMeasureLabel = self.findChild(QLabel, 'measureLabel')
+        self.startMeasureLineEdit = self.findChild(QLineEdit, 'measureLineEdit')
         self.startPicLabel = self.findChild(QLabel, 'picLabel')
         self.startPicture = self.findChild(QSvgWidget, 'picture')
         self.startBackBtn = self.findChild(QPushButton, 'backBtn')
@@ -88,9 +94,12 @@ class AqCalibViewManager(QStackedWidget):
             self.methodComboBox,
             self.runCalibBtn,
             self.startHeaderLabel,
+            self.startStepsLabel,
             self.startDescrLabel_1,
             self.startDescrLabel_2,
             self.startDescrLabel_3,
+            self.startMeasureLabel,
+            self.startMeasureLineEdit,
             self.startPicLabel,
             self.startPicture,
             self.startBackBtn,
@@ -170,27 +179,36 @@ class AqCalibViewManager(QStackedWidget):
         self.setCurrentIndex(2)
 
     def _load_start_page_(self, user_settings):
-        step_ui_settings = dict()
-        step_ui_settings['name'] = None
-        step_ui_settings['point'] = None
-        step_ui_settings['unit'] = None
-
-        # cur_channel = self.calibrator.calib_session.get_cur_channel()
         step_ui_settings = self.calibrator.calib_session.get_step_ui_settings()
 
         self.startHeaderLabel.setText(user_settings['input_outputType'])
+        self.startStepsLabel.setText(AqTranslateManager.tr('Step') + ' ' +
+                                     str(step_ui_settings['step']) + ' ' +
+                                     AqTranslateManager.tr('from') + ' ' +
+                                     str(step_ui_settings['steps_count']))
         self.startDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
-        self.startDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
-                                       step_ui_settings['name'] + ' ' +
-                                       AqTranslateManager.tr('source of signal with value ') +
-                                       str(step_ui_settings['point']) + ' ' +
-                                       step_ui_settings['unit'] + ' ' +
-                                       AqTranslateManager.tr('like show in diagram.'))
         self.startDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
+
         self.startPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
         if user_settings['method'] == 'Reference source':
             key = 'referenceSignal'
+            self.startMeasureLabel.hide()
+            self.startMeasureLineEdit.hide()
+            self.startDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
+                                           step_ui_settings['name'] + ' ' +
+                                           AqTranslateManager.tr('source of signal with value ') +
+                                           str(step_ui_settings['point']) + ' ' +
+                                           step_ui_settings['unit'] + ' ' +
+                                           AqTranslateManager.tr('like show in diagram.'))
         elif user_settings['method'] == 'Reference meter':
+            self.startMeasureLabel.setText(AqTranslateManager.tr('Measured value,') + ' ' +
+                                           step_ui_settings['unit'] + ':')
+            self.startMeasureLineEdit.show()
+            self.startDescrLabel_2.setText('1. ' + step_ui_settings['name'] + ' ' +
+                                           AqTranslateManager.tr('produces a signal with the value') +
+                                           ' ' + str(step_ui_settings['point']) + ' ' +
+                                           step_ui_settings['unit'] + '. ' +
+                                           AqTranslateManager.tr('Measure the output signal value as shown in the diagram and enter the value in the appropriate field below.'))
             key = 'measuringSignal'
         else:
             raise Exception('method error')

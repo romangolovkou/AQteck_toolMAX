@@ -17,10 +17,13 @@ class AqCalibSession(object):
             ch_steps = list()
             for i in range(len(channel.points)):
                 step_point_settings = dict()
+                step_point_settings['step'] = i + 1
+                step_point_settings['steps_count'] = len(channel.points)
                 step_point_settings['name'] = channel.name
                 step_point_settings['point'] = channel.points[i]
                 step_point_settings['unit'] = pins.get_unit(user_settings)
                 ch_steps.append(step_point_settings)
+
 
             sub_dict = {'cur_point_num': 0, 'point_list': ch_steps}
             self._ch_steps[channel] = sub_dict
