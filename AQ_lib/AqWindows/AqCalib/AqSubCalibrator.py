@@ -21,6 +21,8 @@ class AqSubCalibrator(object):
     def get_channels_by_settings(self, sensor_name):
         return self.Sensors.get_channels_by_settings(sensor_name)
 
-    def get_image(self, sensor_name):
-        return self.Sensors.get_image(sensor_name)
+    def get_image(self, user_settings):
+        return self.Sensors.get_image(user_settings)
 
+    def get_unit(self, user_settings):
+        return self.Sensors.get_unit(user_settings)

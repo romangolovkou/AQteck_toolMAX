@@ -61,7 +61,6 @@ class AqCalibViewManager(QStackedWidget):
 
         self.device_init_widget = DeviceInitWidget()
         self.addWidget(self.device_init_widget)
-        self.active_device = None
         self.setCurrentWidget(self.device_init_widget)
         self.show()
         self.check_is_calibrator_ready()
@@ -171,13 +170,21 @@ class AqCalibViewManager(QStackedWidget):
         self.setCurrentIndex(2)
 
     def _load_start_page_(self, user_settings):
-        cur_channel = self.calibrator.calib_session.get_cur_channel()
+        step_ui_settings = dict()
+        step_ui_settings['name'] = None
+        step_ui_settings['point'] = None
+        step_ui_settings['unit'] = None
+
+        # cur_channel = self.calibrator.calib_session.get_cur_channel()
+        step_ui_settings = self.calibrator.calib_session.get_step_ui_settings()
+
         self.startHeaderLabel.setText(user_settings['input_outputType'])
         self.startDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
         self.startDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
-                                       cur_channel.name + ' ' +
+                                       step_ui_settings['name'] + ' ' +
                                        AqTranslateManager.tr('source of signal with value ') +
-                                       str(cur_channel.points[0]) + ' V ' +
+                                       str(step_ui_settings['point']) + ' ' +
+                                       step_ui_settings['unit'] + ' ' +
                                        AqTranslateManager.tr('like show in diagram.'))
         self.startDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
         self.startPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
@@ -196,8 +203,6 @@ class AqCalibViewManager(QStackedWidget):
     def set_calib_device(self, device):
         self.calib_device = device
         self.start_init_calibrator()
-        # if self.calibrator is not None:
-        #     self.calibrator.set_calib_device(device)
 
     def start_init_calibrator(self):
         self.init_calib_thread = InitCalibThread(self.init_calibrator)
@@ -234,186 +239,15 @@ class AqCalibViewManager(QStackedWidget):
 
     def check_is_calibrator_ready(self):
         if self.calibrator_is_ready:
-            # if self.active_device == device:
-            #     self.show_current_device_widget(device)
             self.setCurrentIndex(1)
             self.device_init_widget.stop_animation()
         else:
-            # if self.active_device == device:
-                self.device_init_widget.start_animation()
-                self.setCurrentWidget(self.device_init_widget)
-                # Устанавливаем задержку в 50 м.сек и затем повторяем
-                QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
+            self.device_init_widget.start_animation()
+            self.setCurrentWidget(self.device_init_widget)
+            # Устанавливаем задержку в 50 м.сек и затем повторяем
+            QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
 
     # def _run_btn_clicked_(self):
 
 
-    # def show_current_device_widget(self, device):
-    #     widget = self.devices_views.get(device, None)
-    #     if widget is not None:
-    #         self.update_device_values(device)
-    #         self.setCurrentWidget(widget)
-    #     else:
-    #         self.setCurrentWidget(self.no_device_widget)
 
-    # def no_devices_action(self):
-    #     self.setCurrentWidget(self.no_device_widget)
-
-    # def delete_device_view(self, device: AqBaseDevice):
-    #     tree_view = self.devices_views.get(device, None)
-    #     if tree_view is not None:
-    #         self.removeWidget(tree_view)
-    #         tree_view.model().de_init()
-    #         tree_view.deleteLater()
-
-    # def update_device_values(self, device: AqBaseDevice):
-    #     tree_view = self.devices_views.get(device, None)
-    #     if tree_view is not None:
-    #         tree_view.model().update_params_values(device)
-
-    # def update_device_param_statuses(self, device: AqBaseDevice):
-    #     tree_view = self.devices_views.get(device, None)
-    #     if tree_view is not None:
-    #         tree_view.model().update_all_params_statuses()
-
-    # def create_device_tree_for_view(self, device: AqBaseDevice):
-    #     device_tree = device.device_tree
-    #     if device_tree is not None:
-    #         tree_model_for_view = AqTreeViewItemModel(device, self.event_manager)
-    #         donor_root_item = device_tree.invisibleRootItem()
-    #         new_root_item = tree_model_for_view.invisibleRootItem()
-    #         self.traverse_items_create_new_tree_for_view(donor_root_item, new_root_item)
-    #         return tree_model_for_view
-
-    # def traverse_items_create_new_tree_for_view(self, item, new_item):
-    #     for row in range(item.rowCount()):
-    #         child_item = item.child(row)
-    #         if child_item is not None:
-    #             parameter_attributes = child_item.data(Qt.UserRole)
-    #             if parameter_attributes is not None:
-    #                 if parameter_attributes.get('is_catalog', 0) == 1:
-    #                     name = parameter_attributes.get('name', 'err_name')
-    #                     catalog = AqParamManagerItem(child_item)
-    #                     catalog.setData(parameter_attributes, Qt.UserRole)
-    #                     catalog.setFlags(catalog.flags() & ~Qt.ItemIsEditable)
-    #                     self.traverse_items_create_new_tree_for_view(child_item, catalog)
-    #                     new_item.appendRow(catalog)
-    #                 else:
-    #                     new_item.appendRow(self.create_new_row_for_tree_view(child_item))
-
-    # def create_new_row_for_tree_view(self, item):
-    #     parameter_attributes = item.data(Qt.UserRole)
-    #     name = parameter_attributes.get('name', 'err_name')
-    #
-    #     parameter_item = AqParamManagerItem(item)
-    #     parameter_item.setData(parameter_attributes, Qt.UserRole)
-    #     value_item = QStandardItem()
-    #     min_limit_item = self.get_min_limit_item(parameter_attributes)
-    #     max_limit_item = self.get_max_limit_item(parameter_attributes)
-    #     unit_item = self.get_unit_item(parameter_attributes)
-    #     default_item = self.get_default_value_item(parameter_attributes)
-    #     # Встановлюємо флаг не редагуємого ітему, всім ітемам у строці окрім ітема value
-    #     parameter_item.setFlags(parameter_item.flags() & ~Qt.ItemIsEditable)
-    #     value_item.setFlags(value_item.flags() & ~Qt.ItemIsEditable)
-    #     min_limit_item.setFlags(min_limit_item.flags() & ~Qt.ItemIsEditable)
-    #     max_limit_item.setFlags(max_limit_item.flags() & ~Qt.ItemIsEditable)
-    #     unit_item.setFlags(unit_item.flags() & ~Qt.ItemIsEditable)
-    #     default_item.setFlags(default_item.flags() & ~Qt.ItemIsEditable)
-    #
-    #     return [parameter_item, value_item, min_limit_item, max_limit_item, unit_item, default_item]
-
-    # def get_min_limit_item(self, param_attributes):
-    #     param_type = param_attributes.get('type', '')
-    #     visual_type = param_attributes.get('visual_type', '')
-    #     if param_type == 'enum' \
-    #             or visual_type == 'ip_format' \
-    #             or param_type == 'string' \
-    #             or visual_type == 'hex':
-    #
-    #         min_limit_item = QStandardItem('')
-    #
-    #     elif param_type == 'date_time':
-    #         start_time = datetime(2000, 1, 1).timestamp()
-    #         min_lim_value = param_attributes.get('min_limit', None)
-    #         if min_lim_value is not None:
-    #             min_time_limit_obj = datetime.fromtimestamp(start_time + min_lim_value)
-    #             min_time_limit_str = min_time_limit_obj.strftime('%d.%m.%Y %H:%M:%S')
-    #         else:
-    #             min_time_limit_str = ''
-    #
-    #         min_limit_item = QStandardItem(str(min_time_limit_str))
-    #     elif param_attributes.get('multiply', None) is not None:
-    #         min_lim = param_attributes.get('min_limit', '')
-    #         if min_lim != '':
-    #             min_lim = min_lim * param_attributes.get('multiply', 1)
-    #
-    #         min_limit_item = QStandardItem(str(round(float(min_lim), 7)))
-    #     else:
-    #         min_limit_item = QStandardItem(str(param_attributes.get('min_limit', '')))
-    #
-    #     return min_limit_item
-
-    # def get_max_limit_item(self, param_attributes):
-    #     param_type = param_attributes.get('type', '')
-    #     visual_type = param_attributes.get('visual_type', '')
-    #     if param_type == 'enum' or visual_type == 'ip_format' or param_type == 'string'\
-    #        or visual_type == 'hex':
-    #         max_limit_item = QStandardItem('')
-    #     elif param_type == 'date_time':
-    #         start_time = datetime(2000, 1, 1).timestamp()
-    #         max_lim_value = param_attributes.get('max_limit', None)
-    #         if max_lim_value is not None:
-    #             max_time_limit_obj = datetime.fromtimestamp(start_time + max_lim_value)
-    #             max_time_limit_str = max_time_limit_obj.strftime('%d.%m.%Y %H:%M:%S')
-    #         else:
-    #             max_time_limit_str = ''
-    #
-    #         max_limit_item = QStandardItem(str(max_time_limit_str))
-    #     elif param_attributes.get('multiply', None) is not None:
-    #         max_lim = param_attributes.get('max_limit', '')
-    #         if max_lim != '':
-    #             max_lim = max_lim * param_attributes.get('multiply', 1)
-    #
-    #         max_limit_item = QStandardItem(str(round(float(max_lim), 7)))
-    #     else:
-    #         max_limit_item = QStandardItem(str(param_attributes.get('max_limit', '')))
-    #
-    #     return max_limit_item
-
-    # def get_unit_item(self, param_attributes):
-    #     param_type = param_attributes.get('type', '')
-    #     visual_type = param_attributes.get('visual_type', '')
-    #     if param_type == 'enum' or visual_type == 'ip_format':
-    #         unit_item = QStandardItem('')
-    #     else:
-    #         unit_item = QStandardItem(str(param_attributes.get('unit', '')))
-    #
-    #     return unit_item
-
-    # def get_default_value_item(self, param_attributes):
-    #     cur_par_default = ''
-    #     if param_attributes.get('type', '') == 'enum':
-    #         def_value = param_attributes.get('def_value', '')
-    #         r_only = param_attributes.get('R_Only', 0)
-    #         w_only = param_attributes.get('W_Only', 0)
-    #         if def_value == '' or (r_only == 1 and w_only == 0):
-    #             cur_par_default = ''
-    #         else:
-    #             enum_strings = param_attributes.get('enum_strings', [])
-    #             if len(enum_strings) > 0:
-    #                 def_str = enum_strings[def_value]
-    #                 cur_par_default = def_str
-    #     elif param_attributes.get('visual_type', '') == 'ip_format':
-    #         cur_par_default = ''
-    #     elif param_attributes.get('multiply', None) is not None:
-    #         cur_par_default = param_attributes.get('def_value', '')
-    #         if cur_par_default != '':
-    #             cur_par_default = cur_par_default * param_attributes.get('multiply', 1)
-    #
-    #         cur_par_default = round(float(cur_par_default), 7)
-    #     else:
-    #         cur_par_default = param_attributes.get('def_value', '')
-    #
-    #     default_value_item = QStandardItem(str(cur_par_default))
-    #
-    #     return default_value_item

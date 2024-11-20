@@ -61,6 +61,20 @@ class AqSensors(object):
             if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
                 return self.ColdJunctionSensor.images
 
+    def get_unit(self, user_settings):
+        if hasattr(self, 'VoltageSensor'):
+            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+                return self.VoltageSensor.unit
+        if hasattr(self, 'CurrentSensor'):
+            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+                return self.CurrentSensor.unit
+        if hasattr(self, 'ResistanceSensor'):
+            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+                return self.ResistanceSensor.unit
+        if hasattr(self, 'ColdJunctionSensor'):
+            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+                return self.ColdJunctionSensor.unit
+
 
 class AqSensor(object):
     def __init__(self, data, loc_data):
@@ -88,8 +102,8 @@ class AqSensor(object):
         else:
             unit_key = data['unit']
 
-        self.unit = loc_data[unit_key]
-        if not isinstance(self.unit, str):
+        self._unit = loc_data[unit_key]
+        if not isinstance(self._unit, str):
             raise TypeError('Sensor.unit is not str')
 
         self.channels = list()
@@ -119,3 +133,7 @@ class AqSensor(object):
     @property
     def images(self):
         return self._images
+
+    @property
+    def unit(self):
+        return self._unit

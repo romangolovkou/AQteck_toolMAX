@@ -34,3 +34,7 @@ class AqCalibChannel(object):
     def points(self):
         return self.calAlg.points
 
+    @property
+    def formula(self):
+        return self.calAlg.formula
+
