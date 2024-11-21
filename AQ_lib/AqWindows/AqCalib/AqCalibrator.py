@@ -71,6 +71,9 @@ class AqCalibrator(object):
         self.calib_session = AqCalibSession(user_settings, pins)
         return self.calib_session
 
+    def make_calib_cur_step(self):
+        self.device.read_calib_coeff(0, 1, 0)
+
 
 @dataclass
 class DevName:

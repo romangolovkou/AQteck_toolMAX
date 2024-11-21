@@ -85,3 +85,6 @@ class AqCalibCoeff(object):
                                           data['accessRule']['accessParam']['accessCode']['param2'],
                                           data['accessRule']['accessParam']['accessCode']['param3'])
 
+    def get_access_code(self):
+        return self.accessCode
+

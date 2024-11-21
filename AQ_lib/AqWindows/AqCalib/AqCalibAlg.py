@@ -24,3 +24,7 @@ class AqCalibAlg(object):
     def points(self):
         return self._points
 
+    @property
+    def access_code(self):
+        return self.coeffs.get_access_code()
+

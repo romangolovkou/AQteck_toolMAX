@@ -38,3 +38,7 @@ class AqCalibChannel(object):
     def formula(self):
         return self.calAlg.formula
 
+    @property
+    def access_code(self):
+        return self.calAlg.access_code
+

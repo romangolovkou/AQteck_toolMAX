@@ -43,3 +43,7 @@ class AqCalibSession(object):
     def get_step_ui_settings(self):
         cur_ch_steps = self._ch_steps[self._current_ch]
         return cur_ch_steps['point_list'][cur_ch_steps['cur_point_num']]
+
+    # def get_cur_step_calib_params(self):
+
+

@@ -46,18 +46,18 @@ class AqCalibViewManager(QStackedWidget):
         self.channelsComboBox = None
         self.methodComboBox = None
         self.runCalibBtn = None
-        #start page
-        self.startHeaderLabel = None
-        self.startStepsLabel = None
-        self.startDescrLabel_1 = None
-        self.startDescrLabel_2 = None
-        self.startDescrLabel_3 = None
-        self.startMeasureLabel = None
-        self.startMeasureLineEdit = None
-        self.startPicLabel = None
-        self.startPicture = None
-        self.startBackBtn = None
-        self.startRunBtn = None
+        # step page
+        self.stepHeaderLabel = None
+        self.stepStepsLabel = None
+        self.stepDescrLabel_1 = None
+        self.stepDescrLabel_2 = None
+        self.stepDescrLabel_3 = None
+        self.stepMeasureLabel = None
+        self.stepMeasureLineEdit = None
+        self.stepPicLabel = None
+        self.stepPicture = None
+        self.stepBackBtn = None
+        self.stepRunBtn = None
 
         self.event_manager.register_event_handler('set_calib_device', self.set_calib_device)
         self.event_manager.register_event_handler('calibrator_inited', self.calibrator_inited)
@@ -75,17 +75,17 @@ class AqCalibViewManager(QStackedWidget):
         self.methodComboBox = self.findChild(QComboBox, 'methodComboBox')
         self.runCalibBtn = self.findChild(QPushButton, 'runCalibBtn')
 
-        self.startHeaderLabel = self.findChild(QLabel, 'headerLabel')
-        self.startStepsLabel = self.findChild(QLabel, 'stepsLabel')
-        self.startDescrLabel_1 = self.findChild(QLabel, 'descrLabel_1')
-        self.startDescrLabel_2 = self.findChild(QLabel, 'descrLabel_2')
-        self.startDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
-        self.startMeasureLabel = self.findChild(QLabel, 'measureLabel')
-        self.startMeasureLineEdit = self.findChild(QLineEdit, 'measureLineEdit')
-        self.startPicLabel = self.findChild(QLabel, 'picLabel')
-        self.startPicture = self.findChild(QSvgWidget, 'picture')
-        self.startBackBtn = self.findChild(QPushButton, 'backBtn')
-        self.startRunBtn = self.findChild(QPushButton, 'runBtn')
+        self.stepHeaderLabel = self.findChild(QLabel, 'headerLabel')
+        self.stepStepsLabel = self.findChild(QLabel, 'stepsLabel')
+        self.stepDescrLabel_1 = self.findChild(QLabel, 'descrLabel_1')
+        self.stepDescrLabel_2 = self.findChild(QLabel, 'descrLabel_2')
+        self.stepDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
+        self.stepMeasureLabel = self.findChild(QLabel, 'measureLabel')
+        self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureLineEdit')
+        self.stepPicLabel = self.findChild(QLabel, 'picLabel')
+        self.stepPicture = self.findChild(QSvgWidget, 'picture')
+        self.stepBackBtn = self.findChild(QPushButton, 'backBtn')
+        self.stepRunBtn = self.findChild(QPushButton, 'runBtn')
 
         self.main_ui_elements = [
             self.pinTypeComboBox,
@@ -93,17 +93,17 @@ class AqCalibViewManager(QStackedWidget):
             self.channelsComboBox,
             self.methodComboBox,
             self.runCalibBtn,
-            self.startHeaderLabel,
-            self.startStepsLabel,
-            self.startDescrLabel_1,
-            self.startDescrLabel_2,
-            self.startDescrLabel_3,
-            self.startMeasureLabel,
-            self.startMeasureLineEdit,
-            self.startPicLabel,
-            self.startPicture,
-            self.startBackBtn,
-            self.startRunBtn
+            self.stepHeaderLabel,
+            self.stepStepsLabel,
+            self.stepDescrLabel_1,
+            self.stepDescrLabel_2,
+            self.stepDescrLabel_3,
+            self.stepMeasureLabel,
+            self.stepMeasureLineEdit,
+            self.stepPicLabel,
+            self.stepPicture,
+            self.stepBackBtn,
+            self.stepRunBtn
         ]
 
         for i in self.main_ui_elements:
@@ -113,7 +113,8 @@ class AqCalibViewManager(QStackedWidget):
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
         self.runCalibBtn.clicked.connect(self._run_calib_btn_clicked_)
-        self.startBackBtn.clicked.connect(self._start_back_btn_clicked_)
+        self.stepBackBtn.clicked.connect(self._step_back_btn_clicked_)
+        self.stepRunBtn.clicked.connect(self._step_run_btn_)
 
         self.ui_settings = self.calibrator.get_ui_settings()
         self.load_combo_boxes()
@@ -174,37 +175,38 @@ class AqCalibViewManager(QStackedWidget):
 
         self.calibrator.create_calib_session(self.user_settings)
 
-        self._load_start_page_(self.user_settings)
+        self._load_step_page_(self.user_settings)
 
         self.setCurrentIndex(2)
 
-    def _load_start_page_(self, user_settings):
+    def _load_step_page_(self, user_settings):
         step_ui_settings = self.calibrator.calib_session.get_step_ui_settings()
 
-        self.startHeaderLabel.setText(user_settings['input_outputType'])
-        self.startStepsLabel.setText(AqTranslateManager.tr('Step') + ' ' +
+        self.stepHeaderLabel.setText(user_settings['input_outputType'])
+        self.stepStepsLabel.setText(AqTranslateManager.tr('Step') + ' ' +
                                      str(step_ui_settings['step']) + ' ' +
                                      AqTranslateManager.tr('from') + ' ' +
                                      str(step_ui_settings['steps_count']))
-        self.startDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
-        self.startDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
+        self.stepDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
+        self.stepDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
 
-        self.startPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
+        self.stepPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
         if user_settings['method'] == 'Reference source':
             key = 'referenceSignal'
-            self.startMeasureLabel.hide()
-            self.startMeasureLineEdit.hide()
-            self.startDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
+            self.stepMeasureLabel.hide()
+            self.stepMeasureLineEdit.hide()
+            self.stepDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
                                            step_ui_settings['name'] + ' ' +
                                            AqTranslateManager.tr('source of signal with value ') +
                                            str(step_ui_settings['point']) + ' ' +
                                            step_ui_settings['unit'] + ' ' +
                                            AqTranslateManager.tr('like show in diagram.'))
         elif user_settings['method'] == 'Reference meter':
-            self.startMeasureLabel.setText(AqTranslateManager.tr('Measured value,') + ' ' +
+            self.stepMeasureLabel.setText(AqTranslateManager.tr('Measured value,') + ' ' +
                                            step_ui_settings['unit'] + ':')
-            self.startMeasureLineEdit.show()
-            self.startDescrLabel_2.setText('1. ' + step_ui_settings['name'] + ' ' +
+            self.stepMeasureLabel.show()
+            self.stepMeasureLineEdit.show()
+            self.stepDescrLabel_2.setText('1. ' + step_ui_settings['name'] + ' ' +
                                            AqTranslateManager.tr('produces a signal with the value') +
                                            ' ' + str(step_ui_settings['point']) + ' ' +
                                            step_ui_settings['unit'] + '. ' +
@@ -213,10 +215,13 @@ class AqCalibViewManager(QStackedWidget):
         else:
             raise Exception('method error')
 
-        self.startPicture.load(IMAGE_PREFIX + self.calibrator.calib_session.image[key])
+        self.stepPicture.load(IMAGE_PREFIX + self.calibrator.calib_session.image[key])
 
-    def _start_back_btn_clicked_(self):
+    def _step_back_btn_clicked_(self):
         self.setCurrentIndex(1)
+
+    def _step_run_btn_(self):
+        self.calibrator.make_calib_cur_step()
 
     def set_calib_device(self, device):
         self.calib_device = device
@@ -251,7 +256,7 @@ class AqCalibViewManager(QStackedWidget):
 
     def calibrator_inited(self, calibrator):
         self.calibrator = calibrator
-        # self.calibrator.set_calib_device(self.calib_device)
+        self.calibrator.set_calib_device(self.calib_device)
         self.prepare_ui()
         self.calibrator_is_ready = True
 
@@ -265,7 +270,6 @@ class AqCalibViewManager(QStackedWidget):
             # Устанавливаем задержку в 50 м.сек и затем повторяем
             QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
 
-    # def _run_btn_clicked_(self):
 
 
 

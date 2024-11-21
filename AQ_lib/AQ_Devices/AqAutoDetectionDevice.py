@@ -38,7 +38,9 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'date_time':        [0xF080, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
         'time_zone':        [0xF082, 1, 3, 16, 'AqAutoDetectSignedParamItem', False],
         'new_time_trig':    [0xF07F, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
-        'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False]
+        'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'calib_code':       [61616, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'calib_value':      [61618, 2, 3, 16, 'AqAutoDetectFloatParamItem', False]
     }
 
 
@@ -486,6 +488,22 @@ class AqAutoDetectionDevice(AqBaseDevice):
             extract_zip_with_cyrillic(full_filepath, temp_folder_path + '/calib')
 
             return True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
+    def read_calib_coeff(self, param1, param2, param3):
+        try:
+            calib_code_param = self.system_params_dict['calib_code']
+            code_key = 0x1326 << 16 | param1 << 10 | param2 << 5 | param3
+            calib_code_param.value = code_key
+            calib_code_param.param_status = 'changed'
+            if self.__sync_write_param(calib_code_param) != 'ok':
+                raise Exception('Calib access code error')
+
+            coeff = self.__sync_read_param(self.system_params_dict['calib_value'])
+
+            return coeff
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return False
