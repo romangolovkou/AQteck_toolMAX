@@ -5,6 +5,7 @@ class AqCalibSession(object):
 
     def __init__(self, user_settings, pins):
         super().__init__()
+        self.saved_coeffs = dict()
 
         self.session_channels = pins.get_channels_by_settings(user_settings)
 
@@ -39,6 +40,9 @@ class AqCalibSession(object):
 
     def get_cur_channel(self):
         return self._current_ch
+
+    def get_cur_step(self):
+        return self._ch_steps[self._current_ch]
 
     def get_step_ui_settings(self):
         cur_ch_steps = self._ch_steps[self._current_ch]

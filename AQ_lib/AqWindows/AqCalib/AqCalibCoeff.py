@@ -58,7 +58,7 @@ class AqCalibCoeff(object):
     def __init__(self, data):
         if data['name'] == 'a' or data['name'] == 'b' or\
                 data['name'] == 'c' or data['name'] == 'k':
-            self.name = data['name']
+            self._name = data['name']
         else:
             raise ValueError("Coeff name must be a or b or c or k")
 
@@ -87,4 +87,8 @@ class AqCalibCoeff(object):
 
     def get_access_code(self):
         return self.accessCode
+
+    @property
+    def name(self):
+        return self._name
 

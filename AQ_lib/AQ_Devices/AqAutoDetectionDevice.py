@@ -493,9 +493,14 @@ class AqAutoDetectionDevice(AqBaseDevice):
             return False
 
     def read_calib_coeff(self, param1, param2, param3):
+        DEBUG_REVERT = False
         try:
             calib_code_param = self.system_params_dict['calib_code']
-            code_key = 0x1326 << 16 | param1 << 10 | param2 << 5 | param3
+            if DEBUG_REVERT:
+                code_key = 0x1326 << 16 | param3 << 10 | param2 << 5 | param1
+            else:
+                code_key = 0x1326 << 16 | param1 << 10 | param2 << 5 | param3
+
             calib_code_param.value = code_key
             calib_code_param.param_status = 'changed'
             if self.__sync_write_param(calib_code_param) != 'ok':
@@ -504,6 +509,31 @@ class AqAutoDetectionDevice(AqBaseDevice):
             coeff = self.__sync_read_param(self.system_params_dict['calib_value'])
 
             return coeff
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
+    def write_calib_coeff(self, param1, param2, param3, value):
+        DEBUG_REVERT = False
+        try:
+            calib_code_param = self.system_params_dict['calib_code']
+            if DEBUG_REVERT:
+                code_key = 0x1326 << 16 | param3 << 10 | param2 << 5 | param1
+            else:
+                code_key = 0x1326 << 16 | param1 << 10 | param2 << 5 | param3
+
+            calib_code_param.value = code_key
+            calib_code_param.param_status = 'changed'
+            if self.__sync_write_param(calib_code_param) != 'ok':
+                raise Exception('Calib access code error')
+
+            calib_value_param = self.system_params_dict['calib_value']
+            calib_value_param.value = value
+            calib_value_param.param_status = 'changed'
+            if self.__sync_write_param(calib_code_param) != 'ok':
+                raise Exception('Calib access code error')
+
+            return True
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return False

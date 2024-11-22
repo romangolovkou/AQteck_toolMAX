@@ -72,7 +72,21 @@ class AqCalibrator(object):
         return self.calib_session
 
     def make_calib_cur_step(self):
-        self.device.read_calib_coeff(0, 1, 0)
+        cur_step = self.calib_session.get_cur_step()
+        cur_channel = self.calib_session.get_cur_channel()
+        coeffs = cur_channel.coeffs
+        if cur_step['cur_point_num'] == 0:
+            self.save_channel_coeffs(cur_channel)
+
+    def save_channel_coeffs(self, channel):
+        coeffs = channel.coeffs
+        # збереження поточних коєфіцієнтів
+        for coeff in coeffs:
+            access_code = coeff.get_access_code()
+            cur_coefficient = self.device.read_calib_coeff(access_code.param1,
+                                                           access_code.param2,
+                                                           access_code.param3)
+            self.calib_session.saved_coeffs[channel] = {coeff.name: cur_coefficient}
 
 
 @dataclass

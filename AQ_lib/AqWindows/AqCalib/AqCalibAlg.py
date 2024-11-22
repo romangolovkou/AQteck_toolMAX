@@ -8,9 +8,9 @@ class AqCalibAlg(object):
             raise ValueError("CalibAlg.formula must be between 0 and 4")
 
         coeffs_data = data['coeffs']
-        self.coeffs = list()
+        self._coeffs = list()
         for coeff in coeffs_data:
-            self.coeffs.append(AqCalibCoeff(coeff))
+            self._coeffs.append(AqCalibCoeff(coeff))
 
         points_data = data['points']
         self._points = list()
@@ -28,3 +28,6 @@ class AqCalibAlg(object):
     def access_code(self):
         return self.coeffs.get_access_code()
 
+    @property
+    def coeffs(self):
+        return self._coeffs
