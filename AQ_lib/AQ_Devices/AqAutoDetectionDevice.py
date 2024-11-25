@@ -530,7 +530,20 @@ class AqAutoDetectionDevice(AqBaseDevice):
             calib_value_param = self.system_params_dict['calib_value']
             calib_value_param.value = value
             calib_value_param.param_status = 'changed'
-            if self.__sync_write_param(calib_code_param) != 'ok':
+            if self.__sync_write_param(calib_value_param) != 'ok':
+                raise Exception('Calib access code error')
+
+            return True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
+    def write_calib_param(self, reg, value):
+        try:
+            item = self.__get_item_by_modbus_reg(reg)
+            item.value = value
+            item.param_status = 'changed'
+            if self.__sync_write_param(item) != 'ok':
                 raise Exception('Calib access code error')
 
             return True

@@ -71,12 +71,19 @@ class AqCalibrator(object):
         self.calib_session = AqCalibSession(user_settings, pins)
         return self.calib_session
 
-    def make_calib_cur_step(self):
-        cur_step = self.calib_session.get_cur_step()
-        cur_channel = self.calib_session.get_cur_channel()
-        coeffs = cur_channel.coeffs
-        if cur_step['cur_point_num'] == 0:
-            self.save_channel_coeffs(cur_channel)
+    # def make_calib_cur_step(self):
+
+
+    def pre_calib_func(self, user_settings):
+        if user_settings['_pinType'] == 'outputs':
+            cur_step = self.calib_session.get_cur_step()
+            cur_channel = self.calib_session.get_cur_channel()
+            if cur_step['cur_point_num'] == 0:
+                self.save_channel_coeffs(cur_channel)
+                self.set_ch_def_coeffs(cur_channel)
+                point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
+                self.set_ch_out_value(cur_channel, point_value)
+
 
     def save_channel_coeffs(self, channel):
         coeffs = channel.coeffs
@@ -88,6 +95,20 @@ class AqCalibrator(object):
                                                            access_code.param3)
             self.calib_session.saved_coeffs[channel] = {coeff.name: cur_coefficient}
 
+    def set_ch_def_coeffs(self, channel):
+        coeffs = channel.coeffs
+        for coeff in coeffs:
+            access_code = coeff.get_access_code()
+            result = self.device.write_calib_coeff(access_code.param1,
+                                                   access_code.param2,
+                                                   access_code.param3,
+                                                   coeff.def_value)
+
+    def set_ch_out_value(self, channel, value):
+        calib_param_type = channel.calib_param_type
+        calib_param_value = channel.calib_param_value
+        result = self.device.write_calib_param(calib_param_type.register, calib_param_type.type_value)
+        result = self.device.write_calib_param(calib_param_value.register, value)
 
 @dataclass
 class DevName:

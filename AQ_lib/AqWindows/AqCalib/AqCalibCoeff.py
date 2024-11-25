@@ -72,9 +72,9 @@ class AqCalibCoeff(object):
         if not (minValue < defValue < maxValue):
             raise ValueError("Coeff min max def somethink wrong")
 
-        self.defValue = defValue
-        self.minValue = minValue
-        self.maxValue = maxValue
+        self._defValue = defValue
+        self._minValue = minValue
+        self._maxValue = maxValue
         #TODO: error - допустипая погрешность в процентах сделать потом,
         # как будет понятно для чего это
         self.error = data['error']
@@ -91,4 +91,16 @@ class AqCalibCoeff(object):
     @property
     def name(self):
         return self._name
+
+    @property
+    def def_value(self):
+        return self._defValue
+
+    @property
+    def min_limit(self):
+        return self._minValue
+
+    @property
+    def max_value(self):
+        return self._maxValue
 

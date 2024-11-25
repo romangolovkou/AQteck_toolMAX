@@ -7,8 +7,8 @@ class AqCalibParamSetting(object):
         if not isinstance(self.param_type, str):
             raise TypeError("CalibParamSetting.param_type is not str")
 
-        self.defValue = data['defValue']
-        if not isinstance(self.defValue, int):
+        self._defValue = data['defValue']
+        if not isinstance(self._defValue, int):
             raise TypeError("CalibParamSetting.defValue is not int")
 
         self.valueType = data['valueType']
@@ -19,6 +19,14 @@ class AqCalibParamSetting(object):
                        length=data['com']['length'],
                        register=data['com']['register'],
                        readCommand=data['com']['readCommand'])
+
+    @property
+    def register(self):
+        return self.Com.register
+
+    @property
+    def type_value(self):
+        return self._defValue
 
 
 class AqCalibParamSignal(object):
@@ -32,5 +40,7 @@ class AqCalibParamSignal(object):
                        register=data['com']['register'],
                        readCommand=data['com']['readCommand'])
 
-
+    @property
+    def register(self):
+        return self.Com.register
 

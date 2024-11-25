@@ -175,6 +175,8 @@ class AqCalibViewManager(QStackedWidget):
 
         self.calibrator.create_calib_session(self.user_settings)
 
+        self.calibrator.pre_calib_func(self.user_settings)
+
         self._load_step_page_(self.user_settings)
 
         self.setCurrentIndex(2)
@@ -221,7 +223,8 @@ class AqCalibViewManager(QStackedWidget):
         self.setCurrentIndex(1)
 
     def _step_run_btn_(self):
-        self.calibrator.make_calib_cur_step()
+        # self.calibrator.make_calib_cur_step()
+        return False
 
     def set_calib_device(self, device):
         self.calib_device = device

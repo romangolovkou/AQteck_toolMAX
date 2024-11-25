@@ -15,14 +15,16 @@ class AqCalibChannel(object):
         settings_data = data['settings']
         for setting in settings_data:
             if setting['type'] == 'SensorType':
-                self.parameter_type = AqCalibParamSetting(setting)
+                self._parameter_type = AqCalibParamSetting(setting)
             elif setting['type'] == 'AinL':
-                self.parameter_min_limit = AqCalibParamSetting(setting)
+                self._parameter_min_limit = AqCalibParamSetting(setting)
             elif setting['type'] == 'AinH':
-                self.parameter_max_limit = AqCalibParamSetting(setting)
+                self._parameter_max_limit = AqCalibParamSetting(setting)
+            elif setting['type'] == 'Signal':
+                self._parameter_value = AqCalibParamSetting(setting)
 
-        if data.get('signal', False):
-            self.parameter_value = AqCalibParamSignal(data['signal'])
+        if data.get('signal', False) and not hasattr(self, '_parameter_value'):
+            self._parameter_value = AqCalibParamSignal(data['signal'])
 
         self.calAlg = AqCalibAlg(data['calAlg'])
 
@@ -45,4 +47,12 @@ class AqCalibChannel(object):
     @property
     def coeffs(self):
         return self.calAlg.coeffs
+
+    @property
+    def calib_param_type(self):
+        return self._parameter_type
+
+    @property
+    def calib_param_value(self):
+        return self._parameter_value
 
