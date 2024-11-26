@@ -11,8 +11,8 @@ class AqCalibParamSetting(object):
         if not isinstance(self._defValue, int):
             raise TypeError("CalibParamSetting.defValue is not int")
 
-        self.valueType = data['valueType']
-        if not isinstance(self.valueType, str):
+        self._valueType = data['valueType']
+        if not isinstance(self._valueType, str):
             raise TypeError("CalibParamSetting.valueType is not str")
 
         self.Com = Com(isLittleEndianWords=data['com']['isLittleEndianWords'],
@@ -25,8 +25,12 @@ class AqCalibParamSetting(object):
         return self.Com.register
 
     @property
-    def type_value(self):
+    def point_value(self):
         return self._defValue
+
+    @property
+    def value_type(self):
+        return self._valueType
 
 
 class AqCalibParamSignal(object):

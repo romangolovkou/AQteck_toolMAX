@@ -34,12 +34,29 @@ class AqCalibSession(object):
             if (self._current_ch_num + 1) < len(self.session_channels):
                 self._current_ch_num += 1
                 self._current_ch = self.session_channels[self._current_ch_num]
+                return True
+            else:
+                self._current_ch_num = 0
+                self._current_ch = self.session_channels[self._current_ch_num]
+                return False
         else:
-            if num < len(self.session_channels):
+            if 0 <= num < len(self.session_channels):
                 self._current_ch = self.session_channels[num]
+                return True
+            else:
+                return False
 
     def get_cur_channel(self):
         return self._current_ch
+
+    def update_cur_step(self):
+        cur_ch_steps = self._ch_steps[self._current_ch]
+        if (cur_ch_steps['cur_point_num'] + 1) < len(cur_ch_steps['point_list']):
+            cur_ch_steps['cur_point_num'] += 1
+            return True
+        else:
+            cur_ch_steps['cur_point_num'] = 0
+            return False
 
     def get_cur_step(self):
         return self._ch_steps[self._current_ch]
@@ -48,6 +65,8 @@ class AqCalibSession(object):
         cur_ch_steps = self._ch_steps[self._current_ch]
         return cur_ch_steps['point_list'][cur_ch_steps['cur_point_num']]
 
-    # def get_cur_step_calib_params(self):
+    def activate_next_step(self):
+        if not self.update_cur_step():
+            self.update_cur_ch()
 
 

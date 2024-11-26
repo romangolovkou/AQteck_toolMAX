@@ -107,8 +107,17 @@ class AqCalibrator(object):
     def set_ch_out_value(self, channel, value):
         calib_param_type = channel.calib_param_type
         calib_param_value = channel.calib_param_value
-        result = self.device.write_calib_param(calib_param_type.register, calib_param_type.type_value)
+        result = self.device.write_calib_param(calib_param_type.register, calib_param_type.point_value)
         result = self.device.write_calib_param(calib_param_value.register, value)
+
+    def accept_measured_point(self, value):
+        channel = self.calib_session.get_cur_channel()
+        if channel.calib_param_value.value_type == 'UInteger':
+            value = int(value)
+
+        cur_step = self.calib_session.get_cur_step()
+        cur_step['point_list'][cur_step['cur_point_num']]['measured_value'] = value
+
 
 @dataclass
 class DevName:
