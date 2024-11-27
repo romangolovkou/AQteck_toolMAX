@@ -224,7 +224,9 @@ class AqCalibViewManager(QStackedWidget):
 
     def _step_run_btn_(self):
         self.calibrator.accept_measured_point(self.stepMeasureLineEdit.text())
-        self.calibrator.calib_session.activate_next_step()
+        if not self.calibrator.calib_session.activate_next_step():
+            self.calibrator.make_calculation()
+
         self._load_step_page_(self.user_settings)
         return False
 

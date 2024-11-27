@@ -97,7 +97,7 @@ class AqCalibCoeff(object):
         return self._defValue
 
     @property
-    def min_limit(self):
+    def min_value(self):
         return self._minValue
 
     @property

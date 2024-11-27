@@ -1,11 +1,12 @@
 from AqCalibCoeff import AqCalibCoeff
+from AqCalibFormula import CalibFormulaBank
 
 
 class AqCalibAlg(object):
     def __init__(self, data):
-        self.formula = data['formula']
-        if not (0 <= self.formula <= 4):
-            raise ValueError("CalibAlg.formula must be between 0 and 4")
+        self._formula_func = CalibFormulaBank.get_formula_funk(data['formula'])
+        if not self._formula_func:
+            raise ValueError("CalibAlg.formula incorrect")
 
         coeffs_data = data['coeffs']
         self._coeffs = list()
@@ -31,3 +32,9 @@ class AqCalibAlg(object):
     @property
     def coeffs(self):
         return self._coeffs
+
+    @property
+    def formula_func(self):
+        return self._formula_func
+
+

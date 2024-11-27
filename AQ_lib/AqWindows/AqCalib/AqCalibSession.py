@@ -6,6 +6,9 @@ class AqCalibSession(object):
     def __init__(self, user_settings, pins):
         super().__init__()
         self.saved_coeffs = dict()
+        self.new_coeffs = dict()
+
+        self.user_settings = user_settings
 
         self.session_channels = pins.get_channels_by_settings(user_settings)
 
@@ -66,7 +69,43 @@ class AqCalibSession(object):
         return cur_ch_steps['point_list'][cur_ch_steps['cur_point_num']]
 
     def activate_next_step(self):
+        result = True
         if not self.update_cur_step():
-            self.update_cur_ch()
+            result = self.update_cur_ch()
 
+        return result
 
+    def accept_measured_point(self, value):
+        channel = self.get_cur_channel()
+        if channel.calib_param_value.value_type == 'UInteger':
+            value = int(value)
+
+        cur_step = self.get_cur_step()
+        cur_step['point_list'][cur_step['cur_point_num']]['measured_value'] = value
+
+    def make_calculation(self):
+        x_list = list()
+        y_list = list()
+        for channel in self.session_channels:
+            formula_func = channel.formula_func
+            ch_step = self._ch_steps[channel]
+            for i in range(len(ch_step['point_list'])):
+                if self.user_settings['_pinType'] == 'outputs':
+                    y_list.append(ch_step['point_list'][i]['point'])
+                    x_list.append(ch_step['point_list'][i]['measured_value'])
+
+            self.new_coeffs[channel] = formula_func(x_list, y_list)
+            keys = self.new_coeffs[channel].keys()
+            for key in keys:
+                ch_coeff = None
+                for coeff in channel.coeffs:
+                    if coeff.name == key:
+                        ch_coeff = coeff
+                        break
+
+                if ch_coeff.min_value <\
+                        self.new_coeffs[channel][ch_coeff.name]\
+                        < ch_coeff.max_value:
+                    self.new_coeffs[channel][ch_coeff.name]['error_coeff'] = False
+                else:
+                    self.new_coeffs[channel][ch_coeff.name]['error_coeff'] = True
