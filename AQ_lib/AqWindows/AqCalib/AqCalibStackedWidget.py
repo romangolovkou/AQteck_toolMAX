@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QL
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
+from AqCalibCoeffTable import AqCalibCoeffTable
 from AqCalibCreator import AqCalibCreator
 from AqCalibrator import AqCalibrator
 from AqInitCalibTread import InitCalibThread
@@ -25,17 +26,8 @@ class AqCalibViewManager(QStackedWidget):
         super().__init__(parent)
         self.calibrator_is_ready = False
         self.event_manager = AQ_EventManager.get_global_event_manager()
-        # self.event_manager.register_event_handler("new_devices_added", self.add_new_devices_trees)
-        # self.event_manager.register_event_handler('set_active_device', self.set_active_device_tree)
-        # self.event_manager.register_event_handler("current_device_data_updated", self.update_device_values)
-        # self.event_manager.register_event_handler("current_device_data_written", self.update_device_param_statuses)
-        # self.event_manager.register_event_handler("delete_device", self.delete_device_view)
-        # self.event_manager.register_event_handler('no_devices', self.no_devices_action)
-        # self.devices_views = {}
-        # self.active_device = None
-        # self.no_device_widget = NoDeviceWidget()
-        # self.addWidget(self.no_device_widget)
-        self.calib_device = None
+
+        self._calib_device = None
         self.calibrator = None
         self.user_settings = dict()
         #ui_elements
@@ -58,6 +50,12 @@ class AqCalibViewManager(QStackedWidget):
         self.stepPicture = None
         self.stepBackBtn = None
         self.stepRunBtn = None
+        self.tableWidget = None
+        self.tableDescrLabel1 = None
+        self.tableDescrLabel2 = None
+        self.tableDescrLabel3 = None
+        self.devNameLabel = None
+        self.devSnLabel = None
 
         self.event_manager.register_event_handler('set_calib_device', self.set_calib_device)
         self.event_manager.register_event_handler('calibrator_inited', self.calibrator_inited)
@@ -86,6 +84,12 @@ class AqCalibViewManager(QStackedWidget):
         self.stepPicture = self.findChild(QSvgWidget, 'picture')
         self.stepBackBtn = self.findChild(QPushButton, 'backBtn')
         self.stepRunBtn = self.findChild(QPushButton, 'runBtn')
+        self.tableWidget = self.findChild(AqCalibCoeffTable, 'tableWidget')
+        self.tableDescrLabel1 = self.findChild(QLabel, 'descrLabel2_1')
+        self.tableDescrLabel2 = self.findChild(QLabel, 'descrLabel2_2')
+        self.tableDescrLabel3 = self.findChild(QLabel, 'descrLabel2_3')
+        self.devNameLabel = self.parent().findChild(QLabel, 'devNameLabel')
+        self.devSnLabel = self.parent().findChild(QLabel, 'devSnLabel')
 
         self.main_ui_elements = [
             self.pinTypeComboBox,
@@ -103,12 +107,21 @@ class AqCalibViewManager(QStackedWidget):
             self.stepPicLabel,
             self.stepPicture,
             self.stepBackBtn,
-            self.stepRunBtn
+            self.stepRunBtn,
+            self.tableWidget,
+            self.tableDescrLabel1,
+            self.tableDescrLabel2,
+            self.tableDescrLabel3,
+            self.devNameLabel,
+            self.devSnLabel
         ]
 
         for i in self.main_ui_elements:
             if i is None:
                 raise Exception(self.objectName() + ' Error: lost UI element')
+
+        self.devNameLabel.setText(self.calib_device.name)
+        self.devSnLabel.setText(self.calib_device.info('serial_num'))
 
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
@@ -118,6 +131,14 @@ class AqCalibViewManager(QStackedWidget):
 
         self.ui_settings = self.calibrator.get_ui_settings()
         self.load_combo_boxes()
+
+    @property
+    def calib_device(self):
+        return self._calib_device
+
+    @calib_device.setter
+    def calib_device(self, device):
+        self._calib_device = device
 
     def load_combo_boxes(self):
         pinTypes = self.ui_settings['pinTypes']
@@ -219,6 +240,14 @@ class AqCalibViewManager(QStackedWidget):
 
         self.stepPicture.load(IMAGE_PREFIX + self.calibrator.calib_session.image[key])
 
+    def _load_table_page_(self, context):
+        sensor_type = self.user_settings['pinType']
+        self.tableDescrLabel1.setText(AqTranslateManager.tr('Calibration coefficients were calculated successfully'))
+        self.tableDescrLabel2.setText(AqTranslateManager.tr(f'Sensor type: {sensor_type}'))
+        self.tableDescrLabel3.setText(AqTranslateManager.tr('To record new calibration coefficients, click "Write"'))
+        self.tableWidget.load_table(context)
+        self.setCurrentIndex(3)
+
     def _step_back_btn_clicked_(self):
         self.setCurrentIndex(1)
 
@@ -226,6 +255,9 @@ class AqCalibViewManager(QStackedWidget):
         self.calibrator.accept_measured_point(self.stepMeasureLineEdit.text())
         if not self.calibrator.calib_session.activate_next_step():
             self.calibrator.make_calculation()
+            calib_result = self.calibrator.calib_session.get_calib_result()
+            self._load_table_page_(calib_result)
+            return False
 
         self._load_step_page_(self.user_settings)
         return False

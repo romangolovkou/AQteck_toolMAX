@@ -7,6 +7,7 @@ class AqCalibSession(object):
         super().__init__()
         self.saved_coeffs = dict()
         self.new_coeffs = dict()
+        self.error_coeffs = dict()
 
         self.user_settings = user_settings
 
@@ -86,6 +87,7 @@ class AqCalibSession(object):
     def make_calculation(self):
         x_list = list()
         y_list = list()
+        err_dict = dict()
         for channel in self.session_channels:
             formula_func = channel.formula_func
             ch_step = self._ch_steps[channel]
@@ -104,8 +106,32 @@ class AqCalibSession(object):
                         break
 
                 if ch_coeff.min_value <\
-                        self.new_coeffs[channel][ch_coeff.name]\
+                        self.new_coeffs[channel][ch_coeff.name]['value']\
                         < ch_coeff.max_value:
-                    self.new_coeffs[channel][ch_coeff.name]['error_coeff'] = False
+                    err_dict[ch_coeff.name] = False
                 else:
-                    self.new_coeffs[channel][ch_coeff.name]['error_coeff'] = True
+                    err_dict[ch_coeff.name] = True
+
+            self.error_coeffs[channel] = err_dict
+
+    def get_calib_result(self):
+        ch_list = list()
+
+        for channel in self.session_channels:
+            ch_dict = dict()
+            ch_dict['name'] = channel.name
+            ch_dict['coeff'] = self.new_coeffs[channel]
+
+            keys = ch_dict['coeff'].keys()
+
+            for key in keys:
+                coeff_dict = ch_dict['coeff'][key]
+                coeff_dict['coeff_error'] = self.error_coeffs[channel][key]
+
+            ch_list.append(ch_dict)
+
+        return ch_list
+
+
+
+

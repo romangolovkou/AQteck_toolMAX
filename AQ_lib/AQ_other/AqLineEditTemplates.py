@@ -213,3 +213,111 @@ class AqIpLineEdit(QLineEdit):
         self.err_label.show()
         # Устанавливаем задержку в 2 секунды и затем удаляем метку
         QTimer.singleShot(3000, self.err_label.deleteLater)
+
+
+class AqFloatLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    # def line_edit_changed_update_value(self, text):
+    #     # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+    #     if text != '' and text != '-':
+    #         value = float(text)
+    #     else:
+    #         value = None
+    #     self.save_new_value(value)
+
+    # def verify(self, value=None, show_err=False):
+    #     if value is None:
+    #         if self.text() != '' and self.text() is not None:
+    #             try:
+    #                 value = int(self.text())
+    #             except:
+    #                 value = str(self.text())
+    #         else:
+    #             return None
+    #
+    #     if self.min_limit is not None or self.max_limit is not None:
+    #         if value != '':
+    #             value = float(value)
+    #             if value < self.min_limit or value > self.max_limit:
+    #                 if show_err:
+    #                     self.red_blink_timer.start()
+    #                     if self.err_label is None:
+    #                         show_err_label(self)
+    #                 return False
+    #             else:
+    #                 if self.err_label is not None:
+    #                     try:
+    #                         self.err_label.hide()
+    #                         self.err_label.deleteLater()
+    #                         self.err_label = None
+    #                     except:
+    #                         pass
+    #
+    #                 return True
+
+    def keyPressEvent(self, event):
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position + 1)
+                return
+            elif key == Qt.Key_Backspace:
+                self.backspace()
+                # str_copy = self.text()
+                # self.verify(str_copy)
+                return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
+                return
+
+            if self.hasSelectedText():
+                self.backspace()
+
+            cursor_position = self.cursorPosition()
+            text = event.text()
+            if not text.isdigit() and text != '-' and text != '.':
+                # Якщо не цифра та не мінус
+                return
+            # Если цифра
+            else:
+                str_copy = self.text()
+                if text == '-':
+                    # Перевірка чи не порожня строка
+                    if str_copy.strip():
+                        if str_copy[0] == '-':
+                            return
+                        else:
+                            self.setCursorPosition(0)
+                            self.insert(text)
+                            self.setCursorPosition(cursor_position + 1)
+                            # str_copy = self.text()
+                            # user_data = float(str_copy)  # Преобразуем подстроку в целое число
+                            # self.verify(user_data, show_err=True)
+
+                            return
+                    else:
+                        self.setCursorPosition(0)
+                        self.insert(text)
+                        self.setCursorPosition(1)
+                        return
+                elif text == '.':
+                    if '.' in str_copy:
+                        return
+
+                # str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                # user_data = float(str_copy)  # Преобразуем подстроку в целое число
+                #
+                # self.verify(user_data, show_err=True)
+
+            super().keyPressEvent(event)
+
+
+
+

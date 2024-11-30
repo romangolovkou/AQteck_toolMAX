@@ -26,7 +26,7 @@ class CalibFormulaBank(object):
         a = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x ** 2)
         b = (sum_y - a * sum_x) / n
 
-        result = {'a': a, 'b': b}
+        result = {'a': {'value': round(a, 3)}, 'b': {'value': round(b, 3)}}
 
         return result
 
