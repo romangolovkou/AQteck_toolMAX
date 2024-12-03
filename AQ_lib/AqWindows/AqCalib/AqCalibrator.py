@@ -110,6 +110,11 @@ class AqCalibrator(object):
         result = self.device.write_calib_param(calib_param_type.register, calib_param_type.point_value)
         result = self.device.write_calib_param(calib_param_value.register, value)
 
+    def write_new_coeffs(self):
+        wr_coeffs = self.calib_session.get_available_to_write_coeffs()
+        return
+
+
     def accept_measured_point(self, value):
         self.calib_session.accept_measured_point(value)
 

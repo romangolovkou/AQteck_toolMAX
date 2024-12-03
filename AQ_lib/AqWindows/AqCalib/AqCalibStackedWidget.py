@@ -54,6 +54,8 @@ class AqCalibViewManager(QStackedWidget):
         self.tableDescrLabel1 = None
         self.tableDescrLabel2 = None
         self.tableDescrLabel3 = None
+        self.tableBackBtn = None
+        self.tableWriteCoeffBtn = None
         self.devNameLabel = None
         self.devSnLabel = None
 
@@ -88,6 +90,8 @@ class AqCalibViewManager(QStackedWidget):
         self.tableDescrLabel1 = self.findChild(QLabel, 'descrLabel2_1')
         self.tableDescrLabel2 = self.findChild(QLabel, 'descrLabel2_2')
         self.tableDescrLabel3 = self.findChild(QLabel, 'descrLabel2_3')
+        self.tableBackBtn = self.findChild(QPushButton, 'backBtn2')
+        self.tableWriteCoeffBtn = self.findChild(QPushButton, 'writeCoeffBtn')
         self.devNameLabel = self.parent().findChild(QLabel, 'devNameLabel')
         self.devSnLabel = self.parent().findChild(QLabel, 'devSnLabel')
 
@@ -112,6 +116,8 @@ class AqCalibViewManager(QStackedWidget):
             self.tableDescrLabel1,
             self.tableDescrLabel2,
             self.tableDescrLabel3,
+            self.tableBackBtn,
+            self.tableWriteCoeffBtn,
             self.devNameLabel,
             self.devSnLabel
         ]
@@ -121,13 +127,17 @@ class AqCalibViewManager(QStackedWidget):
                 raise Exception(self.objectName() + ' Error: lost UI element')
 
         self.devNameLabel.setText(self.calib_device.name)
+        self.devNameLabel.show()
         self.devSnLabel.setText(self.calib_device.info('serial_num'))
+        self.devSnLabel.show()
 
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
         self.runCalibBtn.clicked.connect(self._run_calib_btn_clicked_)
-        self.stepBackBtn.clicked.connect(self._step_back_btn_clicked_)
+        self.stepBackBtn.clicked.connect(self._back_btn_clicked_)
+        self.tableBackBtn.clicked.connect(self._back_btn_clicked_)
         self.stepRunBtn.clicked.connect(self._step_run_btn_)
+        self.tableWriteCoeffBtn.clicked.connect(self._write_coeffs_btn_clicked_)
 
         self.ui_settings = self.calibrator.get_ui_settings()
         self.load_combo_boxes()
@@ -248,7 +258,7 @@ class AqCalibViewManager(QStackedWidget):
         self.tableWidget.load_table(context)
         self.setCurrentIndex(3)
 
-    def _step_back_btn_clicked_(self):
+    def _back_btn_clicked_(self):
         self.setCurrentIndex(1)
 
     def _step_run_btn_(self):
@@ -261,6 +271,9 @@ class AqCalibViewManager(QStackedWidget):
 
         self._load_step_page_(self.user_settings)
         return False
+
+    def _write_coeffs_btn_clicked_(self):
+        self.calibrator.write_new_coeffs()
 
     def set_calib_device(self, device):
         self.calib_device = device

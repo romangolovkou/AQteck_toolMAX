@@ -101,7 +101,25 @@ class AqCalibTableFloatLineEdit(AqFloatLineEdit):
 
     def set_error(self, error):
         if error is True:
-            self.setStyleSheet("border: none; color: #D0D0D0; background-color: #df2d30;\n")
+            self.setStyleSheet("""
+                QToolTip {
+                    font-size: 14px;  /* Размер шрифта */
+                    color: white;     /* Цвет текста */
+                    background-color: #2b2d30;  /* Цвет фона */
+                    border: 1px solid red;  /* Граница */
+                    border-radius: 4px;  /* Радиус закругления */
+                }
+
+                QWidget {
+                    border: none; 
+                    color: #D0D0D0; 
+                    background-color: #df2d30;
+                }
+            """)
+            self.setToolTip(AqTranslateManager.tr('The coefficients for this channel will not be applied!\n'
+                                                  '\n'
+                                                  'The coefficient is outside the acceptable range.\n'
+                                                  'This channel needs to be recalibrated.\n'))
         else:
             self.setStyleSheet("border: none; color: #D0D0D0; background-color: transparent;\n")
 

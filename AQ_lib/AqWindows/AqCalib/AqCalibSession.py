@@ -87,10 +87,11 @@ class AqCalibSession(object):
     def make_calculation(self):
         x_list = list()
         y_list = list()
-        err_dict = dict()
         for channel in self.session_channels:
             formula_func = channel.formula_func
             ch_step = self._ch_steps[channel]
+            x_list.clear()
+            y_list.clear()
             for i in range(len(ch_step['point_list'])):
                 if self.user_settings['_pinType'] == 'outputs':
                     y_list.append(ch_step['point_list'][i]['point'])
@@ -98,6 +99,7 @@ class AqCalibSession(object):
 
             self.new_coeffs[channel] = formula_func(x_list, y_list)
             keys = self.new_coeffs[channel].keys()
+            err_dict = dict()
             for key in keys:
                 ch_coeff = None
                 for coeff in channel.coeffs:
@@ -132,6 +134,17 @@ class AqCalibSession(object):
 
         return ch_list
 
+    def get_available_to_write_coeffs(self):
+        available_channels = list()
+        for s_channel in self.session_channels:
+            coeffs = s_channel.coeffs
+            err_flag = False
+            for coeff in coeffs:
+                err_flag = err_flag or self.error_coeffs[s_channel][coeff.name]
 
+            if err_flag is False:
+                available_channels.append({'channel': s_channel, 'new_value': self.new_coeffs[s_channel]})
+
+        return available_channels
 
 

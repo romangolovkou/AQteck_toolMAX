@@ -210,21 +210,40 @@ border-radius: 4px;
          </property>
          <item>
           <widget class="QLabel" name="devNameLabel">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string/>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <property name="indent">
+            <number>0</number>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="devSnLabel">
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -692,7 +711,7 @@ border-radius: 4px;
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="measureLineEdit">
+              <widget class="AqIntLineEdit" name="measureLineEdit">
                <property name="minimumSize">
                 <size>
                  <width>100</width>
@@ -944,7 +963,7 @@ border-radius: 4px;
                  <number>20</number>
                 </property>
                 <item>
-                 <widget class="QPushButton" name="backBtn_2">
+                 <widget class="QPushButton" name="backBtn2">
                   <property name="minimumSize">
                    <size>
                     <width>100</width>
@@ -962,7 +981,7 @@ border-radius: 4px;
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="runBtn_2">
+                 <widget class="QPushButton" name="writeCoeffBtn">
                   <property name="minimumSize">
                    <size>
                     <width>100</width>
@@ -1011,6 +1030,11 @@ border-radius: 4px;
    <class>AqCalibCoeffTable</class>
    <extends>QTableWidget</extends>
    <header location="global">AqCalibCoeffTable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AqIntLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">AqLineEditTemplates.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

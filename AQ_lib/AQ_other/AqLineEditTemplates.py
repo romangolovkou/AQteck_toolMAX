@@ -319,5 +319,89 @@ class AqFloatLineEdit(QLineEdit):
             super().keyPressEvent(event)
 
 
+class AqIntLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    # def line_edit_changed_update_value(self, text):
+    #     # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+    #     if text != '' and text != '-':
+    #         value = int(text)
+    #     else:
+    #         value = None
+    #     self.save_new_value(value)
+
+    def keyPressEvent(self, event):
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position + 1)
+                return
+            elif key == Qt.Key_Backspace:
+                self.backspace()
+                str_copy = self.text()
+                # self.verify(str_copy)
+                return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
+                return
+
+            if self.hasSelectedText():
+                self.backspace()
+
+            cursor_position = self.cursorPosition()
+            text = event.text()
+            if not text.isdigit() and text != '-':
+                # Якщо не цифра та не мінус
+                return
+            # Если цифра
+            else:
+                str_copy = self.text()
+                if text == '-':
+                    # Перевірка чи не порожня строка
+                    if str_copy.strip():
+                        if str_copy[0] == '-':
+                            return
+                        else:
+                            self.setCursorPosition(0)
+                            self.insert(text)
+                            self.setCursorPosition(cursor_position + 1)
+                            # str_copy = self.text()
+                            # user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                            # if self.min_limit is not None:
+                            #     if user_data < self.min_limit:
+                            #         self.red_blink_timer.start()
+                            #         show_err_label(self)
+                            # if self.max_limit is not None:
+                            #     if user_data > self.max_limit:
+                            #         self.red_blink_timer.start()
+                            #         show_err_label(self)
+                            # self.verify(user_data, show_err=True)
+
+                            return
+                    else:
+                        self.setCursorPosition(0)
+                        self.insert(text)
+                        self.setCursorPosition(1)
+                        return
+
+                # str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                # user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                # if self.min_limit is not None:
+                #     if user_data < self.min_limit:
+                #         self.red_blink_timer.start()
+                #         show_err_label(self)
+                # if self.max_limit is not None:
+                #     if user_data > self.max_limit:
+                #         self.red_blink_timer.start()
+                #         show_err_label(self)
+                # self.verify(user_data, show_err=True)
+
+            super().keyPressEvent(event)
 
 
