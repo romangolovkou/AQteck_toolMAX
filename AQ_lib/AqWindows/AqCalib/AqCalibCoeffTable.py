@@ -33,6 +33,7 @@ class AqCalibCoeffTable(QTableWidget):
                             """)
 
     def load_table(self, ch_list):
+        self.setRowCount(0)
         col_count = 0
         col_name_list = list()
         for channel in ch_list:

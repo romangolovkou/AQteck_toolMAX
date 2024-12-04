@@ -259,6 +259,8 @@ class AqCalibViewManager(QStackedWidget):
         self.setCurrentIndex(3)
 
     def _back_btn_clicked_(self):
+        self.calibrator.return_saved_coeffs()
+        self.calibrator.clear_session_cash()
         self.setCurrentIndex(1)
 
     def _step_run_btn_(self):
@@ -269,6 +271,7 @@ class AqCalibViewManager(QStackedWidget):
             self._load_table_page_(calib_result)
             return False
 
+        self.calibrator.pre_calib_func(self.user_settings)
         self._load_step_page_(self.user_settings)
         return False
 

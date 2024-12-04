@@ -134,7 +134,7 @@ class AqCalibSession(object):
 
         return ch_list
 
-    def get_available_to_write_coeffs(self):
+    def get_available_to_write_channels(self):
         available_channels = list()
         for s_channel in self.session_channels:
             coeffs = s_channel.coeffs
@@ -144,7 +144,15 @@ class AqCalibSession(object):
 
             if err_flag is False:
                 available_channels.append({'channel': s_channel, 'new_value': self.new_coeffs[s_channel]})
+            else:
+                available_channels.append({'channel': s_channel, 'new_value': self.saved_coeffs[s_channel]})
 
         return available_channels
 
+    def clear_calib_cash(self):
+        self.saved_coeffs = dict()
+        self.new_coeffs = dict()
+        self.error_coeffs = dict()
+        self._current_ch_num = 0
+        self._current_ch = self.session_channels[self._current_ch_num]
 
