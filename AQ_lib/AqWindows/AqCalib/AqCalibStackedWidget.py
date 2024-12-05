@@ -217,9 +217,9 @@ class AqCalibViewManager(QStackedWidget):
 
         self.stepHeaderLabel.setText(user_settings['input_outputType'])
         self.stepStepsLabel.setText(AqTranslateManager.tr('Step') + ' ' +
-                                     str(step_ui_settings['step']) + ' ' +
+                                     '<b>' + str(step_ui_settings['step']) + '</b>' + ' ' +
                                      AqTranslateManager.tr('from') + ' ' +
-                                     str(step_ui_settings['steps_count']))
+                                     '<b>' + str(step_ui_settings['steps_count']) + '</b>')
         self.stepDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
         self.stepDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
 
@@ -229,9 +229,9 @@ class AqCalibViewManager(QStackedWidget):
             self.stepMeasureLabel.hide()
             self.stepMeasureLineEdit.hide()
             self.stepDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
-                                           step_ui_settings['name'] + ' ' +
+                                           '<b>' + step_ui_settings['name'] + '</b>' + ' ' +
                                            AqTranslateManager.tr('source of signal with value ') +
-                                           str(step_ui_settings['point']) + ' ' +
+                                           '<b>' + str(step_ui_settings['point']) + '</b>' + ' ' +
                                            step_ui_settings['unit'] + ' ' +
                                            AqTranslateManager.tr('like show in diagram.'))
         elif user_settings['method'] == 'Reference meter':
@@ -239,9 +239,9 @@ class AqCalibViewManager(QStackedWidget):
                                            step_ui_settings['unit'] + ':')
             self.stepMeasureLabel.show()
             self.stepMeasureLineEdit.show()
-            self.stepDescrLabel_2.setText('1. ' + step_ui_settings['name'] + ' ' +
+            self.stepDescrLabel_2.setText('1. ' + '<b>' + step_ui_settings['name'] + '</b>' + ' ' +
                                            AqTranslateManager.tr('produces a signal with the value') +
-                                           ' ' + str(step_ui_settings['point']) + ' ' +
+                                           ' ' + '<b>' + str(step_ui_settings['point']) + '</b>' + ' ' +
                                            step_ui_settings['unit'] + '. ' +
                                            AqTranslateManager.tr('Measure the output signal value as shown in the diagram and enter the value in the appropriate field below.'))
             key = 'measuringSignal'
@@ -277,6 +277,8 @@ class AqCalibViewManager(QStackedWidget):
 
     def _write_coeffs_btn_clicked_(self):
         self.calibrator.write_new_coeffs()
+        self.calibrator.clear_session_cash()
+        self.setCurrentIndex(1)
 
     def set_calib_device(self, device):
         self.calib_device = device

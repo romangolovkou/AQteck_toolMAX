@@ -78,8 +78,8 @@ class AqCalibrator(object):
             if cur_step['cur_point_num'] == 0:
                 self.save_channel_coeffs(cur_channel)
                 self.set_ch_def_coeffs(cur_channel)
-                point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
-                self.set_ch_out_value(cur_channel, point_value)
+            point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
+            self.set_ch_out_value(cur_channel, point_value)
 
     def save_channel_coeffs(self, channel):
         coeffs = channel.coeffs

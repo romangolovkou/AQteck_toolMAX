@@ -80,6 +80,8 @@ class AqCalibSession(object):
         channel = self.get_cur_channel()
         if channel.calib_param_value.value_type == 'UInteger':
             value = int(value)
+        else:
+            raise Exception('Cant accept user value. Unknown type.')
 
         cur_step = self.get_cur_step()
         cur_step['point_list'][cur_step['cur_point_num']]['measured_value'] = value
