@@ -116,12 +116,15 @@ class AqCalibrator(object):
         result = False
         coeffs = channel.coeffs
         for coeff in coeffs:
-            value = self.calib_session.saved_coeffs[channel][coeff.name]
-            access_code = coeff.get_access_code()
-            result = self.device.write_calib_coeff(access_code.param1,
-                                                   access_code.param2,
-                                                   access_code.param3,
-                                                   value)
+            try:
+                value = self.calib_session.saved_coeffs[channel][coeff.name]
+                access_code = coeff.get_access_code()
+                result = self.device.write_calib_coeff(access_code.param1,
+                                                       access_code.param2,
+                                                       access_code.param3,
+                                                       value)
+            except:
+                print('not have saved value for channel')
 
         return result
 
