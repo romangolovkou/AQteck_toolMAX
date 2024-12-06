@@ -264,7 +264,14 @@ class AqCalibViewManager(QStackedWidget):
         self.setCurrentIndex(1)
 
     def _step_run_btn_(self):
-        self.calibrator.accept_measured_point(self.stepMeasureLineEdit.text())
+        if self.user_settings['method'] == 'Reference meter':
+            value = self.stepMeasureLineEdit.text()
+        elif self.user_settings['method'] == 'Reference source':
+            value = self.calibrator.get_cur_ch_value()
+        else:
+            raise Exception('Unknown calib method')
+
+        self.calibrator.accept_measured_point(value)
         if not self.calibrator.calib_session.activate_next_step():
             self.calibrator.make_calculation()
             calib_result = self.calibrator.calib_session.get_calib_result()

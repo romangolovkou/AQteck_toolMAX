@@ -98,6 +98,14 @@ class AqCalibSession(object):
                 if self.user_settings['_pinType'] == 'outputs':
                     y_list.append(ch_step['point_list'][i]['point'])
                     x_list.append(ch_step['point_list'][i]['measured_value'])
+                elif self.user_settings['_pinType'] == 'inputs' and \
+                        self.user_settings['method'] == 'Reference meter':
+                    y_list.append(ch_step['point_list'][i]['point'])
+                    x_list.append(ch_step['point_list'][i]['measured_value'])
+                elif self.user_settings['_pinType'] == 'inputs' and \
+                        self.user_settings['method'] == 'Reference source':
+                    y_list.append(ch_step['point_list'][i]['point'])
+                    x_list.append(ch_step['point_list'][i]['measured_value'])
 
             self.new_coeffs[channel] = formula_func(x_list, y_list)
             keys = self.new_coeffs[channel].keys()

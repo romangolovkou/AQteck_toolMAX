@@ -81,6 +81,16 @@ class AqCalibrator(object):
             point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
             self.set_ch_out_value(cur_channel, point_value)
 
+        if user_settings['_pinType'] == 'inputs' and \
+                user_settings['method'] == 'Reference meter':
+            cur_step = self.calib_session.get_cur_step()
+            cur_channel = self.calib_session.get_cur_channel()
+            if cur_step['cur_point_num'] == 0:
+                self.save_channel_coeffs(cur_channel)
+                self.set_ch_def_coeffs(cur_channel)
+            # point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
+            # self.set_ch_out_value(cur_channel, point_value)
+
     def save_channel_coeffs(self, channel):
         coeffs = channel.coeffs
         ch_dict = dict()
@@ -111,6 +121,12 @@ class AqCalibrator(object):
         calib_param_value = channel.calib_param_value
         result = self.device.write_calib_param(calib_param_type.register, calib_param_type.point_value)
         result = self.device.write_calib_param(calib_param_value.register, value)
+
+    def get_cur_ch_value(self):
+        cur_channel = self.calib_session.get_cur_channel()
+        calib_param_value = cur_channel.calib_param_value
+        value = self.device.read_calib_param(calib_param_value.register)
+        return value
 
     def set_ch_saved_coeffs(self, channel):
         result = False

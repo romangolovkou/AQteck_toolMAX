@@ -538,6 +538,16 @@ class AqAutoDetectionDevice(AqBaseDevice):
             print(f"Error occurred: {str(e)}")
             return False
 
+    def read_calib_param(self, reg):
+        try:
+            item = self.__get_item_by_modbus_reg(reg)
+            item.param_status = 'changed'
+            return self.__sync_read_param(item)
+
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
     def write_calib_param(self, reg, value):
         try:
             item = self.__get_item_by_modbus_reg(reg)
