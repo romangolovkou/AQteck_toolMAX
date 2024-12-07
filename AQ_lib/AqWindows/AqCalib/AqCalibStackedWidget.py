@@ -1,6 +1,7 @@
 from datetime import datetime
+from functools import partial
 
-from PySide6.QtCore import QTimer, Qt
+from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtGui import QStandardItem, QPixmap
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit
@@ -12,6 +13,7 @@ from AqCalibCoeffTable import AqCalibCoeffTable
 from AqCalibCreator import AqCalibCreator
 from AqCalibrator import AqCalibrator
 from AqInitCalibTread import InitCalibThread
+from AqMessageManager import AqMessageManager
 from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqTreeViewItemModel import AqTreeViewItemModel
@@ -22,10 +24,16 @@ IMAGE_PREFIX = 'test_files/'
 
 
 class AqCalibViewManager(QStackedWidget):
+    message_signal = Signal(str, str)
+
     def __init__(self, parent):
         super().__init__(parent)
         self.calibrator_is_ready = False
         self.event_manager = AQ_EventManager.get_global_event_manager()
+        self._message_manager = AqMessageManager.get_global_message_manager()
+
+        self.message_signal.connect(partial(self._message_manager.show_message, self))
+        self._message_manager.subscribe('calib', self.message_signal.emit)
 
         self._calib_device = None
         self.calibrator = None
