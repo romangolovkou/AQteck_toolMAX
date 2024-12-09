@@ -508,7 +508,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
             coeff = self.__sync_read_param(self.system_params_dict['calib_value'])
 
-            return coeff
+            if isinstance(coeff, float):
+                return coeff
+            else:
+                return False
+
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return False

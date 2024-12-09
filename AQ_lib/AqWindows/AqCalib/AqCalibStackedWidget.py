@@ -214,11 +214,16 @@ class AqCalibViewManager(QStackedWidget):
 
         self.calibrator.create_calib_session(self.user_settings)
 
-        self.calibrator.pre_calib_func(self.user_settings)
+        if self.calibrator.pre_calib_func(self.user_settings):
+            self._load_step_page_(self.user_settings)
+            self.setCurrentIndex(2)
+        else:
+            self.setCurrentIndex(1)
+            self._message_manager.send_message('calib',
+                                               'Error',
+                                               AqTranslateManager.tr(
+                                                   'Start calibration failed! Check connections lines and try again.'))
 
-        self._load_step_page_(self.user_settings)
-
-        self.setCurrentIndex(2)
 
     def _load_step_page_(self, user_settings):
         step_ui_settings = self.calibrator.calib_session.get_step_ui_settings()
@@ -270,12 +275,23 @@ class AqCalibViewManager(QStackedWidget):
         self.calibrator.return_saved_coeffs()
         self.calibrator.clear_session_cash()
         self.setCurrentIndex(1)
+        self._message_manager.send_message('calib',
+                                           'Warning',
+                                           AqTranslateManager.tr(
+                                               'Calibration aborted. The previous calibration coefficients have been returned to the device.'))
 
     def _step_run_btn_(self):
         if self.user_settings['method'] == 'Reference meter':
             value = self.stepMeasureLineEdit.text()
         elif self.user_settings['method'] == 'Reference source':
             value = self.calibrator.get_cur_ch_value()
+            if value is False:
+                self._message_manager.send_message('calib',
+                                                   'Error',
+                                                   AqTranslateManager.tr(
+                                                       'Read value from device failed.'))
+                self._back_btn_clicked_()
+
         else:
             raise Exception('Unknown calib method')
 
@@ -286,12 +302,25 @@ class AqCalibViewManager(QStackedWidget):
             self._load_table_page_(calib_result)
             return False
 
-        self.calibrator.pre_calib_func(self.user_settings)
-        self._load_step_page_(self.user_settings)
+        # self.calibrator.pre_calib_func(self.user_settings)
+        # self._load_step_page_(self.user_settings)
+        if self.calibrator.pre_calib_func(self.user_settings):
+            self._load_step_page_(self.user_settings)
+        else:
+            self._message_manager.send_message('calib',
+                                               'Error',
+                                               AqTranslateManager.tr(
+                                                   'Calibration step failed! Check connections lines and try again.'))
+            self._back_btn_clicked_()
+
         return False
 
     def _write_coeffs_btn_clicked_(self):
-        self.calibrator.write_new_coeffs()
+        if self.calibrator.write_new_coeffs():
+            self._message_manager.send_message('calib',
+                                               'Success',
+                                               AqTranslateManager.tr(
+                                                   'Calibration successfully!'))
         self.calibrator.clear_session_cash()
         self.setCurrentIndex(1)
 
@@ -302,35 +331,54 @@ class AqCalibViewManager(QStackedWidget):
     def start_init_calibrator(self):
         self.init_calib_thread = InitCalibThread(self.init_calibrator)
         # self.init_calib_thread.finished.connect(self.search_finished)
-        # self.init_calib_thread.error.connect(self.search_error)
+        self.init_calib_thread.error.connect(self.calib_init_error)
         self.init_calib_thread.result_signal.connect(self.calibrator_inited)
         self.init_calib_thread.start()
 
     def init_calibrator(self):
         if self.calib_device.read_calib_file():
             calib_path = 'temp/calib/'
-            AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
-                                             calib_path + 'current_calibr.json')
-            data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
+            try:
+                AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
+                                                 calib_path + 'current_calibr.json')
+                data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
 
-            AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
-                                             calib_path + 'current_loc.json')
-            loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
+                AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
+                                                 calib_path + 'current_loc.json')
+                loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
 
-            current_lang = AqTranslateManager.get_current_lang().lower()
-            if current_lang == 'ua':
-                current_lang = 'uk'
-            loc_data = loc_data[current_lang]
+                current_lang = AqTranslateManager.get_current_lang().lower()
+                if current_lang == 'ua':
+                    current_lang = 'uk'
+                loc_data = loc_data[current_lang]
+
+                calibrator = AqCalibrator(data, loc_data)
+            except:
+                self._message_manager.send_message('calib',
+                                                   'Error',
+                                                   AqTranslateManager.tr(
+                                                       'Calibration file parsing failed!'))
+                raise Exception('Calibration file parsing failed!')
 
             # Создаем объект AqCalibrator
 
-            return AqCalibrator(data, loc_data)
+            return calibrator
+        else:
+            self._message_manager.send_message('calib',
+                                               'Error',
+                                               AqTranslateManager.tr('Read calibration file failed! Close calibration window and try again.'))
 
     def calibrator_inited(self, calibrator):
         self.calibrator = calibrator
         self.calibrator.set_calib_device(self.calib_device)
         self.prepare_ui()
         self.calibrator_is_ready = True
+
+    def calib_init_error(self):
+        self._message_manager.send_message('calib',
+                                           'Error',
+                                           AqTranslateManager.tr(
+                                               'Calibrator init failed!'))
 
     def check_is_calibrator_ready(self):
         if self.calibrator_is_ready:

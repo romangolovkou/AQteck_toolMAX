@@ -72,24 +72,20 @@ class AqCalibrator(object):
         return self.calib_session
 
     def pre_calib_func(self, user_settings):
-        if user_settings['_pinType'] == 'outputs':
-            cur_step = self.calib_session.get_cur_step()
-            cur_channel = self.calib_session.get_cur_channel()
-            if cur_step['cur_point_num'] == 0:
-                self.save_channel_coeffs(cur_channel)
-                self.set_ch_def_coeffs(cur_channel)
-            point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
-            self.set_ch_out_value(cur_channel, point_value)
+        cur_step = self.calib_session.get_cur_step()
+        cur_channel = self.calib_session.get_cur_channel()
+        if cur_step['cur_point_num'] == 0:
+            if not self.save_channel_coeffs(cur_channel):
+                return False
+            if not self.set_ch_def_coeffs(cur_channel):
+                return False
 
-        if user_settings['_pinType'] == 'inputs' and \
-                user_settings['method'] == 'Reference meter':
-            cur_step = self.calib_session.get_cur_step()
-            cur_channel = self.calib_session.get_cur_channel()
-            if cur_step['cur_point_num'] == 0:
-                self.save_channel_coeffs(cur_channel)
-                self.set_ch_def_coeffs(cur_channel)
-            # point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
-            # self.set_ch_out_value(cur_channel, point_value)
+        if user_settings['_pinType'] == 'outputs':
+            point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
+            if not self.set_ch_out_value(cur_channel, point_value):
+                return False
+
+        return True
 
     def save_channel_coeffs(self, channel):
         coeffs = channel.coeffs
@@ -100,9 +96,14 @@ class AqCalibrator(object):
             cur_coefficient = self.device.read_calib_coeff(access_code.param1,
                                                            access_code.param2,
                                                            access_code.param3)
+
+            if cur_coefficient is False:
+                return False
+
             ch_dict[coeff.name] = cur_coefficient
 
         self.calib_session.saved_coeffs[channel] = ch_dict
+        return True
 
     def set_ch_def_coeffs(self, channel):
         result = False
@@ -113,6 +114,8 @@ class AqCalibrator(object):
                                                    access_code.param2,
                                                    access_code.param3,
                                                    coeff.def_value)
+            if result is False:
+                return False
 
         return result
 
@@ -120,13 +123,18 @@ class AqCalibrator(object):
         calib_param_type = channel.calib_param_type
         calib_param_value = channel.calib_param_value
         result = self.device.write_calib_param(calib_param_type.register, calib_param_type.point_value)
-        result = self.device.write_calib_param(calib_param_value.register, value)
+        result &= self.device.write_calib_param(calib_param_value.register, value)
+
+        return result
 
     def get_cur_ch_value(self):
         cur_channel = self.calib_session.get_cur_channel()
         calib_param_value = cur_channel.calib_param_value
         value = self.device.read_calib_param(calib_param_value.register)
-        return value
+        if isinstance(value, (int, float)):
+            return value
+        else:
+            return False
 
     def set_ch_saved_coeffs(self, channel):
         result = False
@@ -139,6 +147,8 @@ class AqCalibrator(object):
                                                        access_code.param2,
                                                        access_code.param3,
                                                        value)
+                if result is False:
+                    return False
             except:
                 print('not have saved value for channel')
 
@@ -155,8 +165,10 @@ class AqCalibrator(object):
                                                        access_code.param2,
                                                        access_code.param3,
                                                        channel['new_value'][coeff.name]['value'])
+                if result is False:
+                    return False
 
-        return
+        return True
 
     def accept_measured_point(self, value):
         self.calib_session.accept_measured_point(value)
