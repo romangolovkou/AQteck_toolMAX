@@ -224,8 +224,8 @@ class AqCalibViewManager(QStackedWidget):
                                                AqTranslateManager.tr(
                                                    'Start calibration failed! Check connections lines and try again.'))
 
-
     def _load_step_page_(self, user_settings):
+        self.stepRunBtn.setEnabled(True)
         step_ui_settings = self.calibrator.calib_session.get_step_ui_settings()
 
         self.stepHeaderLabel.setText(user_settings['input_outputType'])
@@ -281,6 +281,15 @@ class AqCalibViewManager(QStackedWidget):
                                                'Calibration aborted. The previous calibration coefficients have been returned to the device.'))
 
     def _step_run_btn_(self):
+        if self.stepMeasureLineEdit.text() == '':
+            self._message_manager.send_message('calib',
+                                               'Warning',
+                                               AqTranslateManager.tr(
+                                                   'Empty field.'))
+            return
+
+        self.stepRunBtn.setEnabled(False)
+
         if self.user_settings['method'] == 'Reference meter':
             value = self.stepMeasureLineEdit.text()
         elif self.user_settings['method'] == 'Reference source':
