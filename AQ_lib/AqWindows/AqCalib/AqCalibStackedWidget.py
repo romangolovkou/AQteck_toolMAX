@@ -237,7 +237,7 @@ class AqCalibViewManager(QStackedWidget):
         self.stepDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
 
         self.stepPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
-        if user_settings['method'] == 'Reference source':
+        if user_settings['method'] == AqTranslateManager.tr('Reference source'):
             key = 'referenceSignal'
             self.stepMeasureLabel.hide()
             self.stepMeasureLineEdit.hide()
@@ -247,7 +247,7 @@ class AqCalibViewManager(QStackedWidget):
                                            '<b>' + str(step_ui_settings['point']) + '</b>' + ' ' +
                                            step_ui_settings['unit'] + ' ' +
                                            AqTranslateManager.tr('like show in diagram.'))
-        elif user_settings['method'] == 'Reference meter':
+        elif user_settings['method'] == AqTranslateManager.tr('Reference meter'):
             self.stepMeasureLabel.setText(AqTranslateManager.tr('Measured value,') + ' ' +
                                            step_ui_settings['unit'] + ':')
             self.stepMeasureLabel.show()
@@ -277,28 +277,25 @@ class AqCalibViewManager(QStackedWidget):
         self.setCurrentIndex(1)
         self._message_manager.send_message('calib',
                                            'Warning',
-                                           AqTranslateManager.tr(
-                                               'Calibration aborted. The previous calibration coefficients have been returned to the device.'))
+                                           AqTranslateManager.tr('Calibration aborted. The previous calibration coefficients have been returned to the device.'))
 
     def _step_run_btn_(self):
         if self.stepMeasureLineEdit.text() == '':
             self._message_manager.send_message('calib',
                                                'Warning',
-                                               AqTranslateManager.tr(
-                                                   'Empty field.'))
+                                               AqTranslateManager.tr('Empty field.'))
             return
 
         self.stepRunBtn.setEnabled(False)
 
-        if self.user_settings['method'] == 'Reference meter':
+        if self.user_settings['method'] == AqTranslateManager.tr('Reference meter'):
             value = self.stepMeasureLineEdit.text()
-        elif self.user_settings['method'] == 'Reference source':
+        elif self.user_settings['method'] == AqTranslateManager.tr('Reference source'):
             value = self.calibrator.get_cur_ch_value()
             if value is False:
                 self._message_manager.send_message('calib',
                                                    'Error',
-                                                   AqTranslateManager.tr(
-                                                       'Read value from device failed.'))
+                                                   AqTranslateManager.tr('Read value from device failed.'))
                 self._back_btn_clicked_()
 
         else:
@@ -318,8 +315,7 @@ class AqCalibViewManager(QStackedWidget):
         else:
             self._message_manager.send_message('calib',
                                                'Error',
-                                               AqTranslateManager.tr(
-                                                   'Calibration step failed! Check connections lines and try again.'))
+                                               AqTranslateManager.tr('Calibration step failed! Check connections lines and try again.'))
             self._back_btn_clicked_()
 
         return False
@@ -328,8 +324,7 @@ class AqCalibViewManager(QStackedWidget):
         if self.calibrator.write_new_coeffs():
             self._message_manager.send_message('calib',
                                                'Success',
-                                               AqTranslateManager.tr(
-                                                   'Calibration successfully!'))
+                                               AqTranslateManager.tr('Calibration successfully!'))
         self.calibrator.clear_session_cash()
         self.setCurrentIndex(1)
 

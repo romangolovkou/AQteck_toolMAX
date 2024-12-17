@@ -212,6 +212,71 @@
     </message>
 </context>
 <context>
+    <name>AqCalibrationWidget</name>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="32"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="358"/>
+        <source>Input type</source>
+        <translation>Тип входів</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="410"/>
+        <source>Channels</source>
+        <translation>Канали</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="462"/>
+        <source>Calib method</source>
+        <translation>Метод калібрування</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="514"/>
+        <source>Run calibrate</source>
+        <translation>Старт калібрування</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="583"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="610"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="637"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="655"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="670"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="709"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="760"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="864"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="876"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="888"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="809"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="979"/>
+        <source>Back</source>
+        <translation>Назад</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="827"/>
+        <source>Run</source>
+        <translation>Далі</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="926"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="931"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="936"/>
+        <source>Новый столбец</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="997"/>
+        <source>Write</source>
+        <translation>Записати</translation>
+    </message>
+</context>
+<context>
     <name>AqEnterPassWidget</name>
     <message>
         <location filename="../UI/forms/AqEnterPassWidget.ui" line="14"/>
@@ -1177,6 +1242,102 @@
     <message>
         <source>Not available for this device</source>
         <translation>Недоступно для цього пристрою</translation>
+    </message>
+    <message>
+        <source>Measured value,</source>
+        <translation>Виміряне значення,</translation>
+    </message>
+    <message>
+        <source>produces a signal with the value</source>
+        <translation>подає сигнал зі значенням</translation>
+    </message>
+    <message>
+        <source>Step</source>
+        <translation>Крок</translation>
+    </message>
+    <message>
+        <source>Do next:</source>
+        <translation>Зробіть наступне:</translation>
+    </message>
+    <message>
+        <source>1. Connect to</source>
+        <translation>1. Під&apos;єднайте до</translation>
+    </message>
+    <message>
+        <source>Calibration coefficients were calculated successfully</source>
+        <translation>Калібрувальні коефіціенти успішно розраховані</translation>
+    </message>
+    <message>
+        <source>from</source>
+        <translation>з</translation>
+    </message>
+    <message>
+        <source>Connection diagram</source>
+        <translation>Схема підключення</translation>
+    </message>
+    <message>
+        <source>To record new calibration coefficients, click</source>
+        <translation>Для запису нових коефіциентів натисніть</translation>
+    </message>
+    <message>
+        <source>Measure the output signal value as shown in the diagram and enter the value in the appropriate field below.</source>
+        <translation>Виміряйте значення вихідного сигналу, як показано на схемі та введіть значення у відповідне поле нижче.</translation>
+    </message>
+    <message>
+        <source>Read calibration file failed! Close calibration window and try again.</source>
+        <translation>Неможливо вичитати файл калібрування! Закрийте вікно калібровки та спробуйте ще раз.</translation>
+    </message>
+    <message>
+        <source>Reference meter</source>
+        <translation>Еталонний вимірювач</translation>
+    </message>
+    <message>
+        <source>Reference source</source>
+        <translation>Еталонне джерело</translation>
+    </message>
+    <message>
+        <source>Channel</source>
+        <translation>Канал</translation>
+    </message>
+    <message>
+        <source>The coefficients for this channel will not be applied!\n</source>
+        <translation>Коефіціенти для цього каналу не будуть встановлені!\n</translation>
+    </message>
+    <message>
+        <source>source of signal with value</source>
+        <translation>джерело сигналу зі значенням</translation>
+    </message>
+    <message>
+        <source>2. Press</source>
+        <translation>2. Натисніть</translation>
+    </message>
+    <message>
+        <source>All channels</source>
+        <translation>Всі канали</translation>
+    </message>
+    <message>
+        <source>like show in diagram.</source>
+        <translation>як вказано на схемі.</translation>
+    </message>
+    <message>
+        <source>Calibration successfully!</source>
+        <translation>Успішно відкалібровано</translation>
+    </message>
+    <message>
+        <source>Read value from device failed.</source>
+        <translation>Неможливо вичитати значення з приладу.</translation>
+    </message>
+    <message>
+        <source>Empty field.</source>
+        <translation>Порожнє поле.</translation>
+    </message>
+    <message>
+        <source>Calibration aborted. The previous calibration coefficients have been returned to the device.</source>
+        <translation>Калібрування скасовано. Попередні коефіціенти у приладі відновлено.</translation>
+    </message>
+    <message>
+        <source>Calibration step failed! Check connections lines and try again.</source>
+        <translation>Помилка! Перевірте зв&apos;язок з приладом та спробуйте ще раз.</translation>
     </message>
 </context>
 </TS>
