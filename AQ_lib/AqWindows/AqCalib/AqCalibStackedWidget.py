@@ -221,8 +221,7 @@ class AqCalibViewManager(QStackedWidget):
             self.setCurrentIndex(1)
             self._message_manager.send_message('calib',
                                                'Error',
-                                               AqTranslateManager.tr(
-                                                   'Start calibration failed! Check connections lines and try again.'))
+                                               AqTranslateManager.tr('Start calibration failed! Check connections lines and try again.'))
 
     def _load_step_page_(self, user_settings):
         self.stepRunBtn.setEnabled(True)
@@ -234,7 +233,7 @@ class AqCalibViewManager(QStackedWidget):
                                      AqTranslateManager.tr('from') + ' ' +
                                      '<b>' + str(step_ui_settings['steps_count']) + '</b>')
         self.stepDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
-        self.stepDescrLabel_3.setText(AqTranslateManager.tr('2. Press "Run".'))
+        self.stepDescrLabel_3.setText(AqTranslateManager.tr('2. Press Run.'))
 
         self.stepPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
         if user_settings['method'] == AqTranslateManager.tr('Reference source'):
@@ -266,8 +265,8 @@ class AqCalibViewManager(QStackedWidget):
     def _load_table_page_(self, context):
         sensor_type = self.user_settings['pinType']
         self.tableDescrLabel1.setText(AqTranslateManager.tr('Calibration coefficients were calculated successfully'))
-        self.tableDescrLabel2.setText(AqTranslateManager.tr(f'Sensor type: {sensor_type}'))
-        self.tableDescrLabel3.setText(AqTranslateManager.tr('To record new calibration coefficients, click "Write"'))
+        self.tableDescrLabel2.setText(AqTranslateManager.tr('Sensor type:') + f' {sensor_type}')
+        self.tableDescrLabel3.setText(AqTranslateManager.tr('To record new calibration coefficients, click Write'))
         self.tableWidget.load_table(context)
         self.setCurrentIndex(3)
 
@@ -360,8 +359,7 @@ class AqCalibViewManager(QStackedWidget):
             except:
                 self._message_manager.send_message('calib',
                                                    'Error',
-                                                   AqTranslateManager.tr(
-                                                       'Calibration file parsing failed!'))
+                                                   AqTranslateManager.tr('Calibration file parsing failed!'))
                 raise Exception('Calibration file parsing failed!')
 
             # Создаем объект AqCalibrator
@@ -381,8 +379,7 @@ class AqCalibViewManager(QStackedWidget):
     def calib_init_error(self):
         self._message_manager.send_message('calib',
                                            'Error',
-                                           AqTranslateManager.tr(
-                                               'Calibrator init failed!'))
+                                           AqTranslateManager.tr('Calibrator init failed!'))
 
     def check_is_calibrator_ready(self):
         if self.calibrator_is_ready:

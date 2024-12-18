@@ -1339,5 +1339,29 @@
         <source>Calibration step failed! Check connections lines and try again.</source>
         <translation>Помилка! Перевірте зв&apos;язок з приладом та спробуйте ще раз.</translation>
     </message>
+    <message>
+        <source>Calibration file parsing failed!</source>
+        <translation>Неможливо розпізнати дані у файлі калібрувння!</translation>
+    </message>
+    <message>
+        <source>2. Press Run.</source>
+        <translation>2. Натисніть Далі.</translation>
+    </message>
+    <message>
+        <source>Calibrator init failed!</source>
+        <translation>Помилка ініціалізації калібратора.</translation>
+    </message>
+    <message>
+        <source>Start calibration failed! Check connections lines and try again.</source>
+        <translation>Неможливо почати калібрування! Перевірте з&apos;єднання з приладом та спробуйде ще.</translation>
+    </message>
+    <message>
+        <source>Sensor type:</source>
+        <translation>Тип сенсору:</translation>
+    </message>
+    <message>
+        <source>To record new calibration coefficients, click Write</source>
+        <translation>Для запису нових калібрувальних коефіціентів натисніть Записати</translation>
+    </message>
 </context>
 </TS>
