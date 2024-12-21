@@ -375,6 +375,7 @@ class AqCalibViewManager(QStackedWidget):
         self.calibrator.set_calib_device(self.calib_device)
         self.prepare_ui()
         self.calibrator_is_ready = True
+        #rem РОМА БЛЯДЬ ГДЕ EXCEPTION??????????????
 
     def calib_init_error(self):
         self._message_manager.send_message('calib',

@@ -304,6 +304,9 @@ def unpack_descr(param_descr, param_prop, string_array):
     return param_attributes
 
 
+def enum_size_to_bytes(enum_size):
+    return ((enum_size-1)//8)+1
+
 # TODO: Refactor this into independent blocks
 def get_param_by_ID(param_descr, ID, pos, param_attributes, string_array):
     if ID == 0:
@@ -356,7 +359,7 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes, string_array):
             param_attributes['def_value'] = def_string
         elif param_attributes.get('type', 0) == 'enum':
             def_index = param_descr[pos]
-            pos = pos + 1
+            pos = pos + enum_size_to_bytes(param_attributes['param_size'])
             param_attributes['def_value'] = def_index
         else:
             size = param_attributes.get('param_size', 0)
@@ -374,7 +377,7 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes, string_array):
             return -1  # Помилка
         elif param_attributes.get('type', 0) == 'enum':
             def_index = param_descr[pos]
-            pos = pos + 1
+            pos = pos + enum_size_to_bytes(param_attributes['param_size'])
             param_attributes['min_limit'] = def_index
         else:
             size = param_attributes.get('param_size', 0)
@@ -392,7 +395,7 @@ def get_param_by_ID(param_descr, ID, pos, param_attributes, string_array):
             return -1  # Помилка
         elif param_attributes.get('type', 0) == 'enum':
             def_index = param_descr[pos]
-            pos = pos + 1
+            pos = pos + enum_size_to_bytes(param_attributes['param_size'])
             param_attributes['max_limit'] = def_index
         else:
             size = param_attributes.get('param_size', 0)
