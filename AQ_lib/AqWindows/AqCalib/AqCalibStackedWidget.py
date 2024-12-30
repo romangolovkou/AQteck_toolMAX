@@ -371,11 +371,16 @@ class AqCalibViewManager(QStackedWidget):
                                                AqTranslateManager.tr('Read calibration file failed! Close calibration window and try again.'))
 
     def calibrator_inited(self, calibrator):
-        self.calibrator = calibrator
-        self.calibrator.set_calib_device(self.calib_device)
-        self.prepare_ui()
-        self.calibrator_is_ready = True
-        #rem РОМА БЛЯДЬ ГДЕ EXCEPTION??????????????
+        try:
+            self.calibrator = calibrator
+            self.calibrator.set_calib_device(self.calib_device)
+            self.prepare_ui()
+            self.calibrator_is_ready = True
+        except:
+            self.device_init_widget.stop_animation()
+            self._message_manager.send_message('calib',
+                                               'Error',
+                                               AqTranslateManager.tr('Read calibration file failed! Close calibration window and try again.'))
 
     def calib_init_error(self):
         self._message_manager.send_message('calib',
