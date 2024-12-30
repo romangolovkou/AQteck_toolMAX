@@ -37,11 +37,17 @@ class AqAutoDetectEnumParamItem(AqEnumParamItem, AqModbusItem):
     def unpack(self, data):
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in data.registers)
-        # Конвертируем строку в массив байт
-        byte_array = bytes.fromhex(hex_string)
+
         if self.param_size == 4:
+            left = hex_string[:4]
+            right = hex_string[4:]
+            hex_string = right + left
+            # Конвертируем строку в массив байт
+            byte_array = bytes.fromhex(hex_string)
             param_value = struct.unpack('>I', byte_array)[0]
         elif self.param_size == 2:
+            # Конвертируем строку в массив байт
+            byte_array = bytes.fromhex(hex_string)
             param_value = struct.unpack('>H', byte_array)[0]
         else:
             raise Exception('AqAutoDetectEnumParamItemError: "param_size" is incorrect')
