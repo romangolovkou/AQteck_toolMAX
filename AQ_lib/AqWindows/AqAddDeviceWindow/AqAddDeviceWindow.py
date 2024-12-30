@@ -203,6 +203,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if not is_valid_ip(ip):
                     self.ui.ip_line_edit.red_blink_timer.start()
                     self.ui.ip_line_edit.show_err_label()
+                    self.ui.findBtn.setEnabled(True)
                     return
             elif selected_item == 'Offline':
                 pass
@@ -210,6 +211,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if self.ui.slave_id_line_edit.text() == '':
                     self.ui.slave_id_line_edit.red_blink_timer.start()
                     self.ui.slave_id_line_edit.show_err_label()
+                    self.ui.findBtn.setEnabled(True)
                     return
 
             self.start_search()
