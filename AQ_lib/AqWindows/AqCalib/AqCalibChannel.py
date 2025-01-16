@@ -13,15 +13,24 @@ class AqCalibChannel(object):
             raise TypeError('CalibChannel.ch_number is not int')
 
         settings_data = data['settings']
+        # for setting in settings_data:
+        #     if setting['type'] == 'SensorType':
+        #         self._parameter_type = AqCalibParamSetting(setting)
+        #     elif setting['type'] == 'AinL':
+        #         self._parameter_min_limit = AqCalibParamSetting(setting)
+        #     elif setting['type'] == 'AinH':
+        #         self._parameter_max_limit = AqCalibParamSetting(setting)
+        #     elif setting['type'] == 'Signal':
+        #         self._parameter_value = AqCalibParamSetting(setting)
+        #     elif setting['type'] == 'Timeout':
+        #         self._parameter_filter_period = AqCalibParamSetting(setting)
+
+        self._channel_cfg_params = list()
         for setting in settings_data:
-            if setting['type'] == 'SensorType':
-                self._parameter_type = AqCalibParamSetting(setting)
-            elif setting['type'] == 'AinL':
-                self._parameter_min_limit = AqCalibParamSetting(setting)
-            elif setting['type'] == 'AinH':
-                self._parameter_max_limit = AqCalibParamSetting(setting)
-            elif setting['type'] == 'Signal':
+            if setting['type'] == 'Signal':
                 self._parameter_value = AqCalibParamSetting(setting)
+            else:
+                self._channel_cfg_params.append(AqCalibParamSetting(setting))
 
         if data.get('signal', False) and not hasattr(self, '_parameter_value'):
             self._parameter_value = AqCalibParamSignal(data['signal'])
@@ -55,4 +64,8 @@ class AqCalibChannel(object):
     @property
     def calib_param_value(self):
         return self._parameter_value
+
+    @property
+    def get_all_ch_cfg_params(self):
+        return self._channel_cfg_params
 

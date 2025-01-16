@@ -279,7 +279,7 @@ class AqCalibViewManager(QStackedWidget):
                                            AqTranslateManager.tr('Calibration aborted. The previous calibration coefficients have been returned to the device.'))
 
     def _step_run_btn_(self):
-        if self.stepMeasureLineEdit.text() == '':
+        if self.stepMeasureLineEdit.text() == '' and self.user_settings['method'] == AqTranslateManager.tr('Reference meter'):
             self._message_manager.send_message('calib',
                                                'Warning',
                                                AqTranslateManager.tr('Empty field.'))

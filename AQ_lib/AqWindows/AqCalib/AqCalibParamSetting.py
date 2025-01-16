@@ -25,7 +25,7 @@ class AqCalibParamSetting(object):
         return self.Com.register
 
     @property
-    def point_value(self):
+    def value(self):
         return self._defValue
 
     @property

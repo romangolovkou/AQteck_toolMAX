@@ -1,4 +1,4 @@
-
+from AqTranslateManager import AqTranslateManager
 
 
 class AqCalibSession(object):
@@ -78,8 +78,11 @@ class AqCalibSession(object):
 
     def accept_measured_point(self, value):
         channel = self.get_cur_channel()
-        if channel.calib_param_value.value_type == 'UInteger':
+        if channel.calib_param_value.valueType == 'UInteger':
             value = int(value)
+        if channel.calib_param_value.valueType == 'FloatWithErrorCode':
+            #TODO: Add error code execute
+            value = float(value)
         else:
             raise Exception('Cant accept user value. Unknown type.')
 
@@ -99,11 +102,11 @@ class AqCalibSession(object):
                     y_list.append(ch_step['point_list'][i]['point'])
                     x_list.append(ch_step['point_list'][i]['measured_value'])
                 elif self.user_settings['_pinType'] == 'inputs' and \
-                        self.user_settings['method'] == 'Reference meter':
+                        self.user_settings['method'] == AqTranslateManager.tr('Reference meter'):
                     y_list.append(ch_step['point_list'][i]['point'])
                     x_list.append(ch_step['point_list'][i]['measured_value'])
                 elif self.user_settings['_pinType'] == 'inputs' and \
-                        self.user_settings['method'] == 'Reference source':
+                        self.user_settings['method'] == AqTranslateManager.tr('Reference source'):
                     y_list.append(ch_step['point_list'][i]['point'])
                     x_list.append(ch_step['point_list'][i]['measured_value'])
 

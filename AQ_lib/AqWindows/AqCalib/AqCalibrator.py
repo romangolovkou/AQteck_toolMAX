@@ -84,6 +84,9 @@ class AqCalibrator(object):
             point_value = cur_step['point_list'][cur_step['cur_point_num']]['point']
             if not self.set_ch_out_value(cur_channel, point_value):
                 return False
+        elif user_settings['_pinType'] == 'inputs':
+            if not self.set_ch_cfg(cur_channel):
+                return False
 
         return True
 
@@ -119,10 +122,18 @@ class AqCalibrator(object):
 
         return result
 
+    def set_ch_cfg(self, channel):
+        result = True
+        channel_cfg_params = channel.get_all_ch_cfg_params
+        for param in channel_cfg_params:
+            result &= self.device.write_calib_param(param.register, param.value)
+
+        return result
+
     def set_ch_out_value(self, channel, value):
-        calib_param_type = channel.calib_param_type
+        result = True
+        self.set_ch_cfg(channel)
         calib_param_value = channel.calib_param_value
-        result = self.device.write_calib_param(calib_param_type.register, calib_param_type.point_value)
         result &= self.device.write_calib_param(calib_param_value.register, value)
 
         return result

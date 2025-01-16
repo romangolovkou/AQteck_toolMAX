@@ -16,7 +16,7 @@ class AqCalibCreator(object):
     def prepare_json_file(cls, input_file, output_file):
         try:
             # Открытие оригинального файла с указанием кодировки
-            with open(input_file, 'r', encoding='utf-8') as file:
+            with open(input_file, 'r', encoding='utf-8-sig') as file:
                 content = file.read()
 
             # Регулярное выражение для поиска комментариев: // и /* */
