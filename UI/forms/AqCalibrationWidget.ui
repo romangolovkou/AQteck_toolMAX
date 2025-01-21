@@ -259,7 +259,7 @@ border-radius: 4px;
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -711,7 +711,7 @@ border-radius: 4px;
               </widget>
              </item>
              <item>
-              <widget class="AqIntLineEdit" name="measureLineEdit">
+              <widget class="AqIntLineEdit" name="measureIntLineEdit">
                <property name="minimumSize">
                 <size>
                  <width>100</width>
@@ -728,6 +728,22 @@ border-radius: 4px;
                 <font>
                  <pointsize>11</pointsize>
                 </font>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="AqFloatLineEdit" name="measureFloatLineEdit">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>30</height>
+                </size>
                </property>
               </widget>
              </item>
@@ -1033,6 +1049,11 @@ border-radius: 4px;
   </customwidget>
   <customwidget>
    <class>AqIntLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">AqLineEditTemplates.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AqFloatLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">AqLineEditTemplates.h</header>
   </customwidget>

@@ -89,7 +89,6 @@ class AqCalibViewManager(QStackedWidget):
         self.stepDescrLabel_2 = self.findChild(QLabel, 'descrLabel_2')
         self.stepDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
         self.stepMeasureLabel = self.findChild(QLabel, 'measureLabel')
-        self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureLineEdit')
         self.stepPicLabel = self.findChild(QLabel, 'picLabel')
         self.stepPicture = self.findChild(QSvgWidget, 'picture')
         self.stepBackBtn = self.findChild(QPushButton, 'backBtn')
@@ -102,6 +101,8 @@ class AqCalibViewManager(QStackedWidget):
         self.tableWriteCoeffBtn = self.findChild(QPushButton, 'writeCoeffBtn')
         self.devNameLabel = self.parent().findChild(QLabel, 'devNameLabel')
         self.devSnLabel = self.parent().findChild(QLabel, 'devSnLabel')
+        stepMeasureIntLineEdit = self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureIntLineEdit')
+        stepMeasureFloatLineEdit = self.findChild(QLineEdit, 'measureFloatLineEdit')
 
         self.main_ui_elements = [
             self.pinTypeComboBox,
@@ -115,7 +116,6 @@ class AqCalibViewManager(QStackedWidget):
             self.stepDescrLabel_2,
             self.stepDescrLabel_3,
             self.stepMeasureLabel,
-            self.stepMeasureLineEdit,
             self.stepPicLabel,
             self.stepPicture,
             self.stepBackBtn,
@@ -127,7 +127,9 @@ class AqCalibViewManager(QStackedWidget):
             self.tableBackBtn,
             self.tableWriteCoeffBtn,
             self.devNameLabel,
-            self.devSnLabel
+            self.devSnLabel,
+            stepMeasureIntLineEdit,
+            stepMeasureFloatLineEdit
         ]
 
         for i in self.main_ui_elements:
@@ -138,6 +140,8 @@ class AqCalibViewManager(QStackedWidget):
         self.devNameLabel.show()
         self.devSnLabel.setText(self.calib_device.info('serial_num'))
         self.devSnLabel.show()
+        stepMeasureIntLineEdit.hide()
+        stepMeasureFloatLineEdit.hide()
 
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
@@ -250,6 +254,13 @@ class AqCalibViewManager(QStackedWidget):
             self.stepMeasureLabel.setText(AqTranslateManager.tr('Measured value,') + ' ' +
                                            step_ui_settings['unit'] + ':')
             self.stepMeasureLabel.show()
+            self.stepMeasureLineEdit.hide()
+            line_edit_type = self.calibrator.calib_session.get_cur_channel().calib_param_value.value_type
+            if line_edit_type == 'UInteger':
+                self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureIntLineEdit')
+            elif line_edit_type == 'FloatWithErrorCode' or line_edit_type == 'Float':
+                self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureFloatLineEdit')
+
             self.stepMeasureLineEdit.show()
             self.stepDescrLabel_2.setText('1. ' + '<b>' + step_ui_settings['name'] + '</b>' + ' ' +
                                            AqTranslateManager.tr('produces a signal with the value') +
@@ -344,10 +355,12 @@ class AqCalibViewManager(QStackedWidget):
             try:
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
                                                  calib_path + 'current_calibr.json')
+                # AqCalibCreator.prepare_json_file('test_files/FI210-8T_calibr.json', calib_path + 'current_calibr.json')
                 data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
 
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
                                                  calib_path + 'current_loc.json')
+                # AqCalibCreator.prepare_json_file('test_files/FI210-8T.json', calib_path + 'current_loc.json')
                 loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
 
                 current_lang = AqTranslateManager.get_current_lang().lower()

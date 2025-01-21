@@ -78,9 +78,9 @@ class AqCalibSession(object):
 
     def accept_measured_point(self, value):
         channel = self.get_cur_channel()
-        if channel.calib_param_value.valueType == 'UInteger':
+        if channel.calib_param_value.value_type == 'UInteger':
             value = int(value)
-        if channel.calib_param_value.valueType == 'FloatWithErrorCode':
+        elif channel.calib_param_value.value_type == 'FloatWithErrorCode':
             #TODO: Add error code execute
             value = float(value)
         else:
