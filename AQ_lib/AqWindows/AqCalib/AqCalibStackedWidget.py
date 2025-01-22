@@ -298,20 +298,21 @@ class AqCalibViewManager(QStackedWidget):
 
         self.stepRunBtn.setEnabled(False)
 
-        if self.user_settings['method'] == AqTranslateManager.tr('Reference meter'):
-            value = self.stepMeasureLineEdit.text()
-        elif self.user_settings['method'] == AqTranslateManager.tr('Reference source'):
-            value = self.calibrator.get_cur_ch_value()
-            if value is False:
-                self._message_manager.send_message('calib',
-                                                   'Error',
-                                                   AqTranslateManager.tr('Read value from device failed.'))
-                self._back_btn_clicked_()
-
-        else:
+        if self.user_settings['method'] not in (AqTranslateManager.tr('Reference meter'),
+                                                AqTranslateManager.tr('Reference source')):
             raise Exception('Unknown calib method')
 
-        self.calibrator.accept_measured_point(value)
+        if self.user_settings['method'] == (AqTranslateManager.tr('Reference meter')):
+            self.calibrator.accept_measured_point(self.stepMeasureLineEdit.text())
+
+        value = self.calibrator.get_cur_ch_value()
+        if value is False:
+            self._message_manager.send_message('calib',
+                                               'Error',
+                                               AqTranslateManager.tr('Read value from device failed.'))
+            self._back_btn_clicked_()
+
+        self.calibrator.accept_measured_value(value)
         if not self.calibrator.calib_session.activate_next_step():
             self.calibrator.make_calculation()
             calib_result = self.calibrator.calib_session.get_calib_result()

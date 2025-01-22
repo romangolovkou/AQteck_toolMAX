@@ -181,6 +181,9 @@ class AqCalibrator(object):
 
         return True
 
+    def accept_measured_value(self, value):
+        self.calib_session.accept_measured_value(value)
+
     def accept_measured_point(self, value):
         self.calib_session.accept_measured_point(value)
 

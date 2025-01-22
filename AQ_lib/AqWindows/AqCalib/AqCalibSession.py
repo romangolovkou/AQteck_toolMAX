@@ -76,7 +76,7 @@ class AqCalibSession(object):
 
         return result
 
-    def accept_measured_point(self, value):
+    def accept_measured_value(self, value):
         channel = self.get_cur_channel()
         if channel.calib_param_value.value_type == 'UInteger':
             value = int(value)
@@ -88,6 +88,19 @@ class AqCalibSession(object):
 
         cur_step = self.get_cur_step()
         cur_step['point_list'][cur_step['cur_point_num']]['measured_value'] = value
+
+    def accept_measured_point(self, value):
+        channel = self.get_cur_channel()
+        if channel.calib_param_value.value_type == 'UInteger':
+            value = int(value)
+        elif channel.calib_param_value.value_type == 'FloatWithErrorCode':
+            #TODO: Add error code execute
+            value = float(value)
+        else:
+            raise Exception('Cant accept user value. Unknown type.')
+
+        cur_step = self.get_cur_step()
+        cur_step['point_list'][cur_step['cur_point_num']]['point'] = value
 
     def make_calculation(self):
         x_list = list()

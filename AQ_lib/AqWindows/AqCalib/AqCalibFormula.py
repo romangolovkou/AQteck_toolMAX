@@ -33,7 +33,9 @@ class CalibFormulaBank(object):
         # Вычисление a
         a = sum_xy / sum_x2
 
-        result = {'a': {'value': round(a, 3)}}
+        #result = {'a': {'value': round(a, 7)}}
+
+        result = {'a': {'value': a}}
 
         return result
 
