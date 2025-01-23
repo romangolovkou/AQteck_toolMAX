@@ -8,6 +8,7 @@ class AqCalibSession(object):
         self.saved_coeffs = dict()
         self.new_coeffs = dict()
         self.error_coeffs = dict()
+        self.saved_cfg_params_values = dict()
 
         self.user_settings = user_settings
 
@@ -179,6 +180,7 @@ class AqCalibSession(object):
         self.saved_coeffs = dict()
         self.new_coeffs = dict()
         self.error_coeffs = dict()
+        self.saved_cfg_params_values = dict()
         self._current_ch_num = 0
         self._current_ch = self.session_channels[self._current_ch_num]
 

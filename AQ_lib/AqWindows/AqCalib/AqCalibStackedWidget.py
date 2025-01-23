@@ -218,6 +218,14 @@ class AqCalibViewManager(QStackedWidget):
 
         self.calibrator.create_calib_session(self.user_settings)
 
+        if not self.calibrator.init_calib_device_config():
+            self.setCurrentIndex(1)
+            self._message_manager.send_message('calib',
+                                               'Error',
+                                               AqTranslateManager.tr(
+                                                   'Start calibration failed! Check connections lines and try again.'))
+            return
+
         if self.calibrator.pre_calib_func(self.user_settings):
             self._load_step_page_(self.user_settings)
             self.setCurrentIndex(2)
@@ -313,6 +321,10 @@ class AqCalibViewManager(QStackedWidget):
             self._back_btn_clicked_()
 
         self.calibrator.accept_measured_value(value)
+
+        # перед активацією наступного кроку повертаємо конфіг каналу який був до калібрування
+        self.calibrator.set_saved_ch_cfg()
+
         if not self.calibrator.calib_session.activate_next_step():
             self.calibrator.make_calculation()
             calib_result = self.calibrator.calib_session.get_calib_result()

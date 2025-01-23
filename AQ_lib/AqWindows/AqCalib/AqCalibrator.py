@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from AqCalibParamSetting import AqCalibParamSetting
 from AqCalibSession import AqCalibSession
 from AqParamCalibCom import Com
 from AqSubCalibrator import AqSubCalibrator
@@ -26,6 +27,11 @@ class AqCalibrator(object):
         self.timeout = data['timeout']['value']
         if not isinstance(self.timeout, int):
             raise TypeError('Calibrator.timeout is not int')
+
+        if 'init_cfg' in data:
+            self.init_cfg_params = list()
+            for setting in data['init_cfg']:
+                self.init_cfg_params.append(AqCalibParamSetting(setting))
 
         if 'inputs' in data:
             self.Inputs = AqSubCalibrator(data['inputs'], loc_data)
@@ -70,6 +76,14 @@ class AqCalibrator(object):
 
         self.calib_session = AqCalibSession(user_settings, pins)
         return self.calib_session
+
+    def init_calib_device_config(self):
+        result = True
+        if hasattr(self, 'init_cfg_params'):
+            for param in self.init_cfg_params:
+                result &= self.device.write_calib_param(param.register, param.value)
+
+        return result
 
     def pre_calib_func(self, user_settings):
         cur_step = self.calib_session.get_cur_step()
@@ -124,9 +138,20 @@ class AqCalibrator(object):
 
     def set_ch_cfg(self, channel):
         result = True
+        self.calib_session.saved_cfg_params_values = dict()
         channel_cfg_params = channel.get_all_ch_cfg_params
         for param in channel_cfg_params:
+            self.calib_session.saved_cfg_params_values[param] = self.device.read_calib_param(param.register)
             result &= self.device.write_calib_param(param.register, param.value)
+
+        return result
+
+    def set_saved_ch_cfg(self, channel):
+        result = True
+        channel_cfg_params = channel.get_all_ch_cfg_params
+        for param in channel_cfg_params:
+            value = self.calib_session.saved_cfg_params_values[param]
+            result &= self.device.write_calib_param(param.register, value)
 
         return result
 
