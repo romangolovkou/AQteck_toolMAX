@@ -85,7 +85,7 @@ class AqCalibrator(object):
 
         return result
 
-    def pre_calib_func(self, user_settings):
+    def pre_ch_calib_func(self, user_settings):
         cur_step = self.calib_session.get_cur_step()
         cur_channel = self.calib_session.get_cur_channel()
         if cur_step['cur_point_num'] == 0:
@@ -103,6 +103,10 @@ class AqCalibrator(object):
                 return False
 
         return True
+
+    def post_ch_calib_func(self):
+        cur_channel = self.calib_session.get_cur_channel()
+        return self.set_saved_cur_ch_cfg(cur_channel)
 
     def save_channel_coeffs(self, channel):
         coeffs = channel.coeffs
@@ -146,7 +150,7 @@ class AqCalibrator(object):
 
         return result
 
-    def set_saved_ch_cfg(self, channel):
+    def set_saved_cur_ch_cfg(self, channel):
         result = True
         channel_cfg_params = channel.get_all_ch_cfg_params
         for param in channel_cfg_params:
@@ -207,7 +211,7 @@ class AqCalibrator(object):
         return True
 
     def accept_measured_value(self, value):
-        self.calib_session.accept_measured_value(value)
+        return self.calib_session.accept_measured_value(value)
 
     def accept_measured_point(self, value):
         self.calib_session.accept_measured_point(value)

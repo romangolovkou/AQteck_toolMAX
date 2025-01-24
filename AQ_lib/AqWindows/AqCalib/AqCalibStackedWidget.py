@@ -226,7 +226,7 @@ class AqCalibViewManager(QStackedWidget):
                                                    'Start calibration failed! Check connections lines and try again.'))
             return
 
-        if self.calibrator.pre_calib_func(self.user_settings):
+        if self.calibrator.pre_ch_calib_func(self.user_settings):
             self._load_step_page_(self.user_settings)
             self.setCurrentIndex(2)
         else:
@@ -320,10 +320,15 @@ class AqCalibViewManager(QStackedWidget):
                                                AqTranslateManager.tr('Read value from device failed.'))
             self._back_btn_clicked_()
 
-        self.calibrator.accept_measured_value(value)
+        if not self.calibrator.accept_measured_value(value):
+            self._message_manager.send_message('calib',
+                                               'Error',
+                                               AqTranslateManager.tr('The measured value is too different from the expected value. Try again.'))
+            self.stepRunBtn.setEnabled(True)
+            return False
 
         # перед активацією наступного кроку повертаємо конфіг каналу який був до калібрування
-        self.calibrator.set_saved_ch_cfg()
+        self.calibrator.post_ch_calib_func()
 
         if not self.calibrator.calib_session.activate_next_step():
             self.calibrator.make_calculation()
@@ -333,7 +338,7 @@ class AqCalibViewManager(QStackedWidget):
 
         # self.calibrator.pre_calib_func(self.user_settings)
         # self._load_step_page_(self.user_settings)
-        if self.calibrator.pre_calib_func(self.user_settings):
+        if self.calibrator.pre_ch_calib_func(self.user_settings):
             self._load_step_page_(self.user_settings)
         else:
             self._message_manager.send_message('calib',

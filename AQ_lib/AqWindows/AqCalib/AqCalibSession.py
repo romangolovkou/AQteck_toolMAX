@@ -88,7 +88,13 @@ class AqCalibSession(object):
             raise Exception('Cant accept user value. Unknown type.')
 
         cur_step = self.get_cur_step()
+
+        point = cur_step['point_list'][cur_step['cur_point_num']]['point']
+        if abs(abs(point) - abs(value)) > abs(point/2):
+            return False
+
         cur_step['point_list'][cur_step['cur_point_num']]['measured_value'] = value
+        return True
 
     def accept_measured_point(self, value):
         channel = self.get_cur_channel()
@@ -113,8 +119,8 @@ class AqCalibSession(object):
             y_list.clear()
             for i in range(len(ch_step['point_list'])):
                 if self.user_settings['_pinType'] == 'outputs':
-                    y_list.append(ch_step['point_list'][i]['point'])
-                    x_list.append(ch_step['point_list'][i]['measured_value'])
+                    y_list.append(ch_step['point_list'][i]['measured_value'])
+                    x_list.append(ch_step['point_list'][i]['point'])
                 elif self.user_settings['_pinType'] == 'inputs' and \
                         self.user_settings['method'] == AqTranslateManager.tr('Reference meter'):
                     y_list.append(ch_step['point_list'][i]['point'])
@@ -172,7 +178,8 @@ class AqCalibSession(object):
             if err_flag is False:
                 available_channels.append({'channel': s_channel, 'new_value': self.new_coeffs[s_channel]})
             else:
-                available_channels.append({'channel': s_channel, 'new_value': self.saved_coeffs[s_channel]})
+                for coeff in coeffs:
+                    available_channels.append({'channel': s_channel, 'new_value': {coeff.name: {'value': self.saved_coeffs[s_channel][coeff.name]}}})
 
         return available_channels
 
