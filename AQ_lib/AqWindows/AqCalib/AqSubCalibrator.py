@@ -26,3 +26,6 @@ class AqSubCalibrator(object):
 
     def get_unit(self, user_settings):
         return self.Sensors.get_unit(user_settings)
+
+    def get_limits(self, user_settings):
+        return self.Sensors.get_limits(user_settings)

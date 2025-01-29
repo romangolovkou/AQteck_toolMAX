@@ -68,8 +68,20 @@ class AqBaseDevice(ABC):
         if self._status != 'need_pass' and self._status != 'decrypt_err'\
                 and self._status != 'parsing_err':
             self._param_convert_tree_to_list()
+            self.check_uid()
 
         # self.__verify()
+
+    def check_uid(self):
+        count = 0
+        uid_set = set()
+        for item in self.params_list:
+            param_attributes = item.get_param_attributes()
+            uid_set.add(param_attributes.get('UID', None))
+            count += 1
+
+        if len(uid_set) < count:
+            print('WARNING   UIDs has duplicate !!!')
 
     @property
     def status(self):
@@ -90,6 +102,10 @@ class AqBaseDevice(ABC):
     @property
     def name(self):
         return self._info['name']
+
+    @property
+    def params_list(self):
+        return self._params_list
 
     def func(self, name: str):
         return self._functions[name]

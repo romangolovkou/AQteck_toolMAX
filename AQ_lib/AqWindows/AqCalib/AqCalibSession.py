@@ -17,6 +17,7 @@ class AqCalibSession(object):
         self._current_ch_num = 0
         self._current_ch = self.session_channels[self._current_ch_num]
         self.image = pins.get_image(user_settings)
+        self.limits = pins.get_limits(user_settings)
         self._ch_steps = dict()
 
         for channel in self.session_channels:
@@ -89,8 +90,10 @@ class AqCalibSession(object):
 
         cur_step = self.get_cur_step()
 
+        #if value is too different than expected point, skip and show warning
         point = cur_step['point_list'][cur_step['cur_point_num']]['point']
-        if abs(abs(point) - abs(value)) > abs(point/2):
+        diap = self.limits['maxLimit'] - self.limits['minLimit']
+        if abs(abs(point) - abs(value)) > abs(diap/2):
             return False
 
         cur_step['point_list'][cur_step['cur_point_num']]['measured_value'] = value

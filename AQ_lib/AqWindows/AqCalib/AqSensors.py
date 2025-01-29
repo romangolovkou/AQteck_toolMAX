@@ -75,6 +75,20 @@ class AqSensors(object):
             if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
                 return self.ColdJunctionSensor.unit
 
+    def get_limits(self, user_settings):
+        if hasattr(self, 'VoltageSensor'):
+            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+                return self.VoltageSensor.limits
+        if hasattr(self, 'CurrentSensor'):
+            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+                return self.CurrentSensor.limits
+        if hasattr(self, 'ResistanceSensor'):
+            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+                return self.ResistanceSensor.limits
+        if hasattr(self, 'ColdJunctionSensor'):
+            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+                return self.ColdJunctionSensor.limits
+
 
 class AqSensor(object):
     def __init__(self, data, loc_data):
@@ -137,3 +151,7 @@ class AqSensor(object):
     @property
     def unit(self):
         return self._unit
+
+    @property
+    def limits(self):
+        return {"lowLimit": self.lowLimit, "maxLimit": self.maxLimit}
