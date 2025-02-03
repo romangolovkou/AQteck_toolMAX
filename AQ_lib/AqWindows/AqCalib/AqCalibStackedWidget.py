@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from functools import partial
 
@@ -369,7 +370,8 @@ class AqCalibViewManager(QStackedWidget):
 
     def init_calibrator(self):
         if self.calib_device.read_calib_file():
-            calib_path = 'temp/calib/'
+            roaming_temp_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
+            calib_path = roaming_temp_folder + '/calib/'
             try:
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
                                                  calib_path + 'current_calibr.json')
