@@ -90,11 +90,12 @@ class AqCalibSession(object):
 
         cur_step = self.get_cur_step()
 
+        #TODO: доробити, ліміти не співрозмірні з точками калібрування, ламає задум.
         #if value is too different than expected point, skip and show warning
-        point = cur_step['point_list'][cur_step['cur_point_num']]['point']
-        diap = self.limits['maxLimit'] - self.limits['minLimit']
-        if abs(abs(point) - abs(value)) > abs(diap/2):
-            return False
+        # point = cur_step['point_list'][cur_step['cur_point_num']]['point']
+        # diap = self.limits['maxLimit'] - self.limits['minLimit']
+        # if abs(abs(point) - abs(value)) > abs(diap/2):
+        #     return False
 
         cur_step['point_list'][cur_step['cur_point_num']]['measured_value'] = value
         return True

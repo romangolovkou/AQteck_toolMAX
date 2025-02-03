@@ -154,4 +154,4 @@ class AqSensor(object):
 
     @property
     def limits(self):
-        return {"lowLimit": self.lowLimit, "maxLimit": self.maxLimit}
+        return {"minLimit": self.lowLimit, "maxLimit": self.maxLimit}
