@@ -9,10 +9,8 @@ from AqRtcWindow import AqRtcWindow
 from AqSetPasswordWidget import AqSetPasswordWindow
 from AqSetSlaveIdWindow import AqSetSlaveIdWindow
 from AqTranslateManager import AqTranslateManager
-from AqUpdateFirmwareWindow import AqUpdateFirmwareWidget
 from AqWatchListWindow import AqWatchListWidget
 from ui_AqCalibrationWidget import Ui_AqCalibrationWidget
-from ui_AqFirmwareUpdateWindow import Ui_AqFirmwareUpdateWidget
 from ui_AqGatewayWindow import Ui_AqGatewayWidget
 from ui_AqSetPasswordWidget import Ui_AqSetPasswordWidget
 from ui_AqSetRtcWidget import Ui_AqRtcWidget
@@ -51,12 +49,6 @@ def show_calib_window():
     if AppCore.Core.session.cur_active_device is not None:
         dialog = AqCalibWidget(Ui_AqCalibrationWidget)
         dialog.set_calib_device(AppCore.Core.session.cur_active_device)
-        dialog.exec()
-
-def show_update_fw_window():
-    if AppCore.Core.session.cur_active_device is not None:
-        dialog = AqUpdateFirmwareWidget(Ui_AqFirmwareUpdateWidget)
-        # dialog.set_calib_device(AppCore.Core.session.cur_active_device)
         dialog.exec()
 
 def show_watch_list_window():

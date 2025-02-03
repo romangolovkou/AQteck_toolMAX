@@ -4,7 +4,6 @@
         "../../UI/forms/AqAddDeviceWindow.ui",
         "../../UI/forms/AqCalibrationWidget.ui",
         "../../UI/forms/AqEnterPassWidget.ui",
-        "../../UI/forms/AqFirmwareUpdateWindow.ui",
         "../../UI/forms/AqGatewayWindow.ui",
         "../../UI/forms/AqLeftDeviceWidget.ui",
         "../../UI/forms/AqSetPasswordWidget.ui",
