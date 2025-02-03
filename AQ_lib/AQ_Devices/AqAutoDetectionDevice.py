@@ -59,7 +59,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],  # file_size will be changed later in code
         'arch_header':  [0x4000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
         'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
-        'calib':        [0xFFA0, 0, 248, True, 'AqAutoDetectModbusFileItem', None]
+        'calib':        [0xFFA0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'updateFW':     [0x0090, 0, 248, False, 'AqAutoDetectModbusFileItem', None]
     }
 
     system_params_dict = dict()
@@ -740,3 +741,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     if pass_file_item.get_status() == 'ok':
                         new_password = item_stack[0].value.decode('cp1251')
                         self.set_password(new_password)
+
+    def write_update_file(self, new_password):
+        record_data = new_password.encode('1251')
+        item = self.system_params_dict.get('password', None)
+        item.value = record_data
+        file_size = None
+        item.set_file_size(file_size)
+
+        self.write_file(item, message_feedback_address='main')

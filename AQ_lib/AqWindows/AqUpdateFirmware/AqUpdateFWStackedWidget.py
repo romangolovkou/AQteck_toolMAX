@@ -1,6 +1,6 @@
 from functools import partial
 from PySide6.QtCore import QTimer, Qt, Signal
-from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit
+from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar
 from AQ_EventManager import AQ_EventManager
 from AqCalibCreator import AqCalibCreator
 from AqCalibrator import AqCalibrator
@@ -28,6 +28,8 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.devSnLabel = None
         self.filePathBtn = None
         self.filePathLineEdit = None
+        self.updateRunBtn = None
+        self.progressBar = None
 
         self.event_manager.register_event_handler('set_update_device', self.set_update_device)
 
@@ -41,17 +43,16 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.devSnLabel = self.parent().findChild(QLabel, 'devSnLabel')
         self.filePathBtn = self.findChild(QPushButton, 'filePathBtn')
         self.filePathLineEdit = self.findChild(QLineEdit, 'filePathLineEdit')
-        # self.pinTypeComboBox = self.findChild(QComboBox, 'pinTypeComboBox')
-        # self.input_outputTypeComboBox = self.findChild(QComboBox, 'input_outputTypeComboBox')
-        # self.channelsComboBox = self.findChild(QComboBox, 'channelsComboBox')
-        # self.methodComboBox = self.findChild(QComboBox, 'methodComboBox')
-        # self.runCalibBtn = self.findChild(QPushButton, 'runCalibBtn')
+        self.updateRunBtn = self.findChild(QPushButton, 'updateRunBtn')
+        self.progressBar = self.findChild(QProgressBar, 'progressBar')
 
         self.main_ui_elements = [
             self.devNameLabel,
             self.devSnLabel,
             self.filePathBtn,
-            self.filePathLineEdit
+            self.filePathLineEdit,
+            self.updateRunBtn,
+            self.progressBar
         ]
 
         for i in self.main_ui_elements:
@@ -64,13 +65,7 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.devSnLabel.show()
 
         self.filePathBtn.clicked.connect(self.open_file_btn_clicked)
-        # self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
-        # self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
-        # self.runCalibBtn.clicked.connect(self._run_calib_btn_clicked_)
-        # self.stepBackBtn.clicked.connect(self._back_btn_clicked_)
-        # self.tableBackBtn.clicked.connect(self._back_btn_clicked_)
-        # self.stepRunBtn.clicked.connect(self._step_run_btn_)
-        # self.tableWriteCoeffBtn.clicked.connect(self._write_coeffs_btn_clicked_)
+        self.updateRunBtn.clicked.connect(self.update_btn_clicked)
 
     @property
     def update_device(self):
@@ -81,9 +76,24 @@ class AqUpdateFWViewManager(QStackedWidget):
         self._update_device = device
 
     def open_file_btn_clicked(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, 'Open file', '', '.fw')
+        file_path, _ = QFileDialog.getOpenFileName(self, 'Open file', '', '*.fw')
         if file_path:
             self.filePathLineEdit.setText(file_path)
+
+    def update_btn_clicked(self):
+        file_path = self.filePathLineEdit.text()
+        if file_path:
+            try:
+                with open(file_path, 'rb') as file:
+                    byte_array = file.read()
+            except:
+                self._message_manager.send_message('updateFW',
+                                                   'Error',
+                                                   AqTranslateManager.tr('Read file failed!'))
+
+        self.setCurrentIndex(2)
+
+        return
 
     def _write_coeffs_btn_clicked_(self):
         if self.calibrator.write_new_coeffs():
