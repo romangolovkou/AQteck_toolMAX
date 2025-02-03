@@ -56,7 +56,7 @@ def show_calib_window():
 def show_update_fw_window():
     if AppCore.Core.session.cur_active_device is not None:
         dialog = AqUpdateFirmwareWidget(Ui_AqFirmwareUpdateWidget)
-        # dialog.set_calib_device(AppCore.Core.session.cur_active_device)
+        dialog.set_update_device(AppCore.Core.session.cur_active_device)
         dialog.exec()
 
 def show_watch_list_window():

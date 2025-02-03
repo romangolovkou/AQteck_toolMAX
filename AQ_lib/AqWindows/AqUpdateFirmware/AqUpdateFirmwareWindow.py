@@ -14,7 +14,7 @@ class AqUpdateFirmwareWidget(AqDialogTemplate):
         self.name = 'Firmware update'
         self.event_manager = AQ_EventManager.get_global_event_manager()
 
-    # def set_calib_device(self, device):
-    #     self.event_manager.emit_event('set_calib_device', device)
+    def set_update_device(self, device):
+        self.event_manager.emit_event('set_update_device', device)
 
 

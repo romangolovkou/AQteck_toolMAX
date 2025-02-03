@@ -236,7 +236,7 @@ border-radius: 4px;
        </widget>
       </item>
       <item>
-       <widget class="AqCalibViewManager" name="stackedWidget">
+       <widget class="AqUpdateFWViewManager" name="stackedWidget">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -244,7 +244,7 @@ border-radius: 4px;
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -277,7 +277,7 @@ border-radius: 4px;
               </spacer>
              </item>
              <item>
-              <widget class="QLineEdit" name="filrPathLineEdit">
+              <widget class="QLineEdit" name="filePathLineEdit">
                <property name="minimumSize">
                 <size>
                  <width>400</width>
@@ -407,6 +407,12 @@ border-radius: 4px;
                <property name="value">
                 <number>24</number>
                </property>
+               <property name="textVisible">
+                <bool>true</bool>
+               </property>
+               <property name="invertedAppearance">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -423,9 +429,9 @@ border-radius: 4px;
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AqCalibViewManager</class>
+   <class>AqUpdateFWViewManager</class>
    <extends>QStackedWidget</extends>
-   <header location="global">AqCalibStackedWidget.h</header>
+   <header location="global">AqUpdateFWStackedWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -111,7 +111,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = self.__check_calib_json()
         self._functions['log'] = False  # self.__check_archive_container() #now only true, заглушка
-        self._functions['fw_update'] = False
+        self._functions['fw_update'] = True
         self._functions['restart'] = True
 
         self._status = 'ok'
