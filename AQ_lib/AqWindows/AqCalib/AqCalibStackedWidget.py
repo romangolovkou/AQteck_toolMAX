@@ -389,7 +389,7 @@ class AqCalibViewManager(QStackedWidget):
                 loc_data = loc_data[current_lang]
 
                 calibrator = AqCalibrator(data, loc_data)
-            except:
+            except Exception as e:
                 self._message_manager.send_message('calib',
                                                    'Error',
                                                    AqTranslateManager.tr('Calibration file parsing failed!'))

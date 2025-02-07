@@ -4,90 +4,117 @@ from AqCalibChannel import AqCalibChannel
 class AqSensors(object):
     def __init__(self, data, loc_data):
         super().__init__()
+        # for sensor_data in data:
+        #     if sensor_data['name'] == 'U':
+        #         self.VoltageSensor = AqSensor(sensor_data, loc_data)
+        #     if sensor_data['name'] == 'I':
+        #         self.CurrentSensor = AqSensor(sensor_data, loc_data)
+        #     if sensor_data['name'] == 'R':
+        #         self.ResistanceSensor = AqSensor(sensor_data, loc_data)
+        #     if sensor_data['name'] == 'TCJ':
+        #         self.ColdJunctionSensor = AqSensor(sensor_data, loc_data)
+
+        self._sensors = list()
         for sensor_data in data:
-            if sensor_data['name'] == 'U':
-                self.VoltageSensor = AqSensor(sensor_data, loc_data)
-            if sensor_data['name'] == 'I':
-                self.CurrentSensor = AqSensor(sensor_data, loc_data)
-            if sensor_data['name'] == 'R':
-                self.ResistanceSensor = AqSensor(sensor_data, loc_data)
-            if sensor_data['name'] == 'TCJ':
-                self.ColdJunctionSensor = AqSensor(sensor_data, loc_data)
+            self._sensors.append(AqSensor(sensor_data, loc_data))
+
+    def get_sensor(self, full_name: str):
+        for sensor in self._sensors:
+            if sensor.fullName == full_name:
+                return sensor
+
+        return None
 
     def get_ui_settings(self):
         ui_settings = dict()
         ui_settings['sensors'] = list()
 
-        if hasattr(self, 'VoltageSensor'):
-            ui_settings['sensors'].append(self.VoltageSensor.fullName)
-            ui_settings[self.VoltageSensor.fullName] = self.VoltageSensor.get_ui_settings()
-        if hasattr(self, 'CurrentSensor'):
-            ui_settings['sensors'].append(self.CurrentSensor.fullName)
-            ui_settings[self.CurrentSensor.fullName] = self.CurrentSensor.get_ui_settings()
-        if hasattr(self, 'ResistanceSensor'):
-            ui_settings['sensors'].append(self.ResistanceSensor.fullName)
-            ui_settings[self.ResistanceSensor.fullName] = self.ResistanceSensor.get_ui_settings()
-        if hasattr(self, 'ColdJunctionSensor'):
-            ui_settings['sensors'].append(self.ColdJunctionSensor.fullName)
-            ui_settings[self.ColdJunctionSensor.fullName] = self.ColdJunctionSensor.get_ui_settings()
+        # if hasattr(self, 'VoltageSensor'):
+        #     ui_settings['sensors'].append(self.VoltageSensor.fullName)
+        #     ui_settings[self.VoltageSensor.fullName] = self.VoltageSensor.get_ui_settings()
+        # if hasattr(self, 'CurrentSensor'):
+        #     ui_settings['sensors'].append(self.CurrentSensor.fullName)
+        #     ui_settings[self.CurrentSensor.fullName] = self.CurrentSensor.get_ui_settings()
+        # if hasattr(self, 'ResistanceSensor'):
+        #     ui_settings['sensors'].append(self.ResistanceSensor.fullName)
+        #     ui_settings[self.ResistanceSensor.fullName] = self.ResistanceSensor.get_ui_settings()
+        # if hasattr(self, 'ColdJunctionSensor'):
+        #     ui_settings['sensors'].append(self.ColdJunctionSensor.fullName)
+        #     ui_settings[self.ColdJunctionSensor.fullName] = self.ColdJunctionSensor.get_ui_settings()
+
+        for sensor in self._sensors:
+            ui_settings['sensors'].append(sensor.fullName)
+            ui_settings[sensor.fullName] = sensor.get_ui_settings()
 
         return ui_settings
 
     def get_channels_by_settings(self, user_settings):
-        if hasattr(self, 'VoltageSensor'):
-            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
-                return self.VoltageSensor.get_channels_by_settings(user_settings)
-        if hasattr(self, 'CurrentSensor'):
-            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
-                return self.CurrentSensor.get_channels_by_settings(user_settings)
-        if hasattr(self, 'ResistanceSensor'):
-            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
-                return self.ResistanceSensor.get_channels_by_settings(user_settings)
-        if hasattr(self, 'ColdJunctionSensor'):
-            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
-                return self.ColdJunctionSensor.get_channels_by_settings(user_settings)
+        # if hasattr(self, 'VoltageSensor'):
+        #     if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+        #         return self.VoltageSensor.get_channels_by_settings(user_settings)
+        # if hasattr(self, 'CurrentSensor'):
+        #     if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+        #         return self.CurrentSensor.get_channels_by_settings(user_settings)
+        # if hasattr(self, 'ResistanceSensor'):
+        #     if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+        #         return self.ResistanceSensor.get_channels_by_settings(user_settings)
+        # if hasattr(self, 'ColdJunctionSensor'):
+        #     if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+        #         return self.ColdJunctionSensor.get_channels_by_settings(user_settings)
+
+        sensor = self.get_sensor(user_settings['input_outputType'])
+        return sensor.get_channels_by_settings(user_settings)
 
     def get_image(self, user_settings):
-        if hasattr(self, 'VoltageSensor'):
-            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
-                return self.VoltageSensor.images
-        if hasattr(self, 'CurrentSensor'):
-            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
-                return self.CurrentSensor.images
-        if hasattr(self, 'ResistanceSensor'):
-            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
-                return self.ResistanceSensor.images
-        if hasattr(self, 'ColdJunctionSensor'):
-            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
-                return self.ColdJunctionSensor.images
+        # if hasattr(self, 'VoltageSensor'):
+        #     if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+        #         return self.VoltageSensor.images
+        # if hasattr(self, 'CurrentSensor'):
+        #     if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+        #         return self.CurrentSensor.images
+        # if hasattr(self, 'ResistanceSensor'):
+        #     if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+        #         return self.ResistanceSensor.images
+        # if hasattr(self, 'ColdJunctionSensor'):
+        #     if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+        #         return self.ColdJunctionSensor.images
+
+        sensor = self.get_sensor(user_settings['input_outputType'])
+        return sensor.images
 
     def get_unit(self, user_settings):
-        if hasattr(self, 'VoltageSensor'):
-            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
-                return self.VoltageSensor.unit
-        if hasattr(self, 'CurrentSensor'):
-            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
-                return self.CurrentSensor.unit
-        if hasattr(self, 'ResistanceSensor'):
-            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
-                return self.ResistanceSensor.unit
-        if hasattr(self, 'ColdJunctionSensor'):
-            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
-                return self.ColdJunctionSensor.unit
+        # if hasattr(self, 'VoltageSensor'):
+        #     if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+        #         return self.VoltageSensor.unit
+        # if hasattr(self, 'CurrentSensor'):
+        #     if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+        #         return self.CurrentSensor.unit
+        # if hasattr(self, 'ResistanceSensor'):
+        #     if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+        #         return self.ResistanceSensor.unit
+        # if hasattr(self, 'ColdJunctionSensor'):
+        #     if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+        #         return self.ColdJunctionSensor.unit
+
+        sensor = self.get_sensor(user_settings['input_outputType'])
+        return sensor.unit
 
     def get_limits(self, user_settings):
-        if hasattr(self, 'VoltageSensor'):
-            if user_settings['input_outputType'] == self.VoltageSensor.fullName:
-                return self.VoltageSensor.limits
-        if hasattr(self, 'CurrentSensor'):
-            if user_settings['input_outputType'] == self.CurrentSensor.fullName:
-                return self.CurrentSensor.limits
-        if hasattr(self, 'ResistanceSensor'):
-            if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
-                return self.ResistanceSensor.limits
-        if hasattr(self, 'ColdJunctionSensor'):
-            if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
-                return self.ColdJunctionSensor.limits
+        # if hasattr(self, 'VoltageSensor'):
+        #     if user_settings['input_outputType'] == self.VoltageSensor.fullName:
+        #         return self.VoltageSensor.limits
+        # if hasattr(self, 'CurrentSensor'):
+        #     if user_settings['input_outputType'] == self.CurrentSensor.fullName:
+        #         return self.CurrentSensor.limits
+        # if hasattr(self, 'ResistanceSensor'):
+        #     if user_settings['input_outputType'] == self.ResistanceSensor.fullName:
+        #         return self.ResistanceSensor.limits
+        # if hasattr(self, 'ColdJunctionSensor'):
+        #     if user_settings['input_outputType'] == self.ColdJunctionSensor.fullName:
+        #         return self.ColdJunctionSensor.limits
+
+        sensor = self.get_sensor(user_settings['input_outputType'])
+        return sensor.limits
 
 
 class AqSensor(object):
