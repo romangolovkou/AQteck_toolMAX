@@ -17,6 +17,7 @@ from AqTranslateManager import AqTranslateManager
 
 
 class AqConnect(QObject):
+    progress_updated = Signal(int, str)
 
     def __init__(self, notify):
         super().__init__()
@@ -395,6 +396,7 @@ class AqModbusConnect(AqConnect):
             if left_to_write is None:
                 left_to_write = len(record_data)//2 + len(record_data) % 2
 
+            total_size = left_to_write
             last_record_number = left_to_write
 
             while left_to_write > 0:
@@ -410,6 +412,10 @@ class AqModbusConnect(AqConnect):
                     result = await self.client.write_file_record(self.slave_id, [request])
                     start_record_num += write_size
                     left_to_write -= write_size
+
+                    # Отправляем сигнал с обновлением прогресса
+                    progress = int(((total_size - left_to_write) / total_size) * 100)
+                    self.progress_updated.emit(progress, 'write_file')
 
                 except Exception as e:
                     print(f"Error occurred: {str(e)}")

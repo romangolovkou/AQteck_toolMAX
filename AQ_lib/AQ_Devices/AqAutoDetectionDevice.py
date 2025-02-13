@@ -742,11 +742,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
                         new_password = item_stack[0].value.decode('cp1251')
                         self.set_password(new_password)
 
-    def write_update_file(self, new_password):
-        record_data = new_password.encode('1251')
-        item = self.system_params_dict.get('password', None)
+    def write_update_file(self, update_file_array):
+        record_data = update_file_array.encode('1251')
+        item = self.system_params_dict.get('updateFW', None)
         item.value = record_data
         file_size = None
         item.set_file_size(file_size)
 
-        self.write_file(item, message_feedback_address='main')
+        self.write_file(item, message_feedback_address='updateFW')

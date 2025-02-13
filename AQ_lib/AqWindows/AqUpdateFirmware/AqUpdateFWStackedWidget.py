@@ -21,6 +21,7 @@ class AqUpdateFWViewManager(QStackedWidget):
         self._message_manager.subscribe('updateFW', self.message_signal.emit)
 
         self._update_device = None
+        self.progress_bar_is_active = False
         #ui_elements
         #first page
         self.main_ui_elements = None
@@ -30,6 +31,7 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.filePathLineEdit = None
         self.updateRunBtn = None
         self.progressBar = None
+
 
         self.event_manager.register_event_handler('set_update_device', self.set_update_device)
 
@@ -74,6 +76,11 @@ class AqUpdateFWViewManager(QStackedWidget):
     @update_device.setter
     def update_device(self, device):
         self._update_device = device
+        self._update_device.connect_progress.connect(self.progress_update)
+
+    def progress_update(self, value, servise_msg):
+        if servise_msg == 'write_file' and self.progress_bar_is_active:
+            self.progressBar.setValue(value)
 
     def open_file_btn_clicked(self):
         file_path, _ = QFileDialog.getOpenFileName(self, 'Open file', '', '*.fw')
@@ -86,6 +93,11 @@ class AqUpdateFWViewManager(QStackedWidget):
             try:
                 with open(file_path, 'rb') as file:
                     byte_array = file.read()
+                try:
+                    self.progress_bar_is_active = True
+                    self._update_device.write_update_file(byte_array)
+                except:
+                    self.progress_bar_is_active = False
             except:
                 self._message_manager.send_message('updateFW',
                                                    'Error',
@@ -94,14 +106,6 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.setCurrentIndex(2)
 
         return
-
-    def _write_coeffs_btn_clicked_(self):
-        if self.calibrator.write_new_coeffs():
-            self._message_manager.send_message('calib',
-                                               'Success',
-                                               AqTranslateManager.tr('Calibration successfully!'))
-        self.calibrator.clear_session_cash()
-        self.setCurrentIndex(1)
 
     def set_update_device(self, device):
         self.update_device = device

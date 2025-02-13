@@ -107,6 +107,10 @@ class AqBaseDevice(ABC):
     def params_list(self):
         return self._params_list
 
+    @property
+    def connect_progress(self):
+        return self._connect.progress_updated
+
     def func(self, name: str):
         return self._functions[name]
 
