@@ -96,14 +96,14 @@ class AqUpdateFWViewManager(QStackedWidget):
                 try:
                     self.progress_bar_is_active = True
                     self._update_device.write_update_file(byte_array)
-                except:
+                except Exception as e:
                     self.progress_bar_is_active = False
-            except:
+            except Exception as e:
                 self._message_manager.send_message('updateFW',
                                                    'Error',
                                                    AqTranslateManager.tr('Read file failed!'))
 
-        self.setCurrentIndex(2)
+        self.setCurrentIndex(1)
 
         return
 

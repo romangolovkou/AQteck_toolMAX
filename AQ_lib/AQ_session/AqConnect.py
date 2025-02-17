@@ -386,7 +386,11 @@ class AqModbusConnect(AqConnect):
 
     async def write_file(self, item):
         if item is not None:
-            max_record_size = 124
+            # 120 записів (не байт)
+            max_record_size = 120
+            # 10000 записів (не байт)
+            max_file_size = 10000
+            _file_shift = 0
             param_attributes = item.get_param_attributes()
 
             file_num = param_attributes.get('file_num', '')
@@ -403,10 +407,18 @@ class AqModbusConnect(AqConnect):
                 write_size = max_record_size if left_to_write > max_record_size else left_to_write
                 result = None
                 request = WriteFileRecordRequest(self.slave_id)
-                request.file_number = file_num
+                if start_record_num >= max_file_size:
+                    _file_shift += 1
+                    start_record_num = 0
+
+                if (write_size + start_record_num) > max_file_size:
+                    write_size = max_file_size - start_record_num
+
+                request.file_number = file_num + _file_shift
                 request.record_number = start_record_num
                 request.record_length = write_size
-                request.record_data = record_data
+                request.record_data = record_data[((_file_shift*max_file_size) + start_record_num)*2:
+                                                  (((_file_shift*max_file_size) + start_record_num)*2) + write_size*2]
 
                 try:
                     result = await self.client.write_file_record(self.slave_id, [request])
@@ -427,7 +439,7 @@ class AqModbusConnect(AqConnect):
             # незрозумілий пустий файл потрібно передати у кінці
             #
             # Update: Порожній файл передається в кінці запису будь якого файлу!
-            request.record_number = last_record_number #param_attributes.get('file_size', '')
+            request.record_number = start_record_num#last_record_number #param_attributes.get('file_size', '')
             request.record_length = 0
             request.record_data = b'' #b'\x00\x00'
             try:

@@ -50,6 +50,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
                        'error': AqTranslateManager.tr('Reboot failed. Please try again')}
     password_msg_dict = {'ok': AqTranslateManager.tr('Password settings successfully updated'),
                          'error': AqTranslateManager.tr('Can`t write new password settings. Please try again')}
+    updateFW_msg_dict = {'ok': AqTranslateManager.tr('Firmware file successfully load into device'),
+                         'error': AqTranslateManager.tr('Firmware file loading failed. Please try again')}
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only, File Type, message_dict]
     _system_file = {
@@ -60,7 +62,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'arch_header':  [0x4000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
         'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
         'calib':        [0xFFA0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
-        'updateFW':     [0x0090, 0, 248, False, 'AqAutoDetectModbusFileItem', None]
+        'updateFW':     [0x0090, 0, 248, False, 'AqAutoDetectModbusFileItem', updateFW_msg_dict] # file_size will be changed later in code
     }
 
     system_params_dict = dict()
@@ -743,7 +745,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
                         self.set_password(new_password)
 
     def write_update_file(self, update_file_array):
-        record_data = update_file_array.encode('1251')
+        # record_data = update_file_array.encode('1251')
+        record_data = update_file_array
         item = self.system_params_dict.get('updateFW', None)
         item.value = record_data
         file_size = None
