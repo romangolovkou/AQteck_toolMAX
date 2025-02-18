@@ -168,6 +168,7 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         self.__get_pass = get_password
         self._msg_dict = msg_dict
         self._msg_string = None
+        self._confirm_writing_callback = None
 
     def pack(self):
         record_data = self.value
@@ -304,6 +305,14 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         else:
             self.param_status = 'error'
 
+    @property
+    def confirm_writing_callback(self):
+        return self._confirm_writing_callback
+
+    @confirm_writing_callback.setter
+    def confirm_writing_callback(self, function):
+        self._confirm_writing_callback = function
+
     def confirm_writing(self, result: bool, message=None):
         """
         The function must be called for each writing operation.
@@ -314,6 +323,9 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         super().confirm_writing(result, message)
         if self._msg_dict is not None:
             self._msg_string = self._msg_dict.get(self.param_status, None)
+
+        if self._confirm_writing_callback is not None:
+            self._confirm_writing_callback(self.get_status())
 
     def get_msg_string(self):
         return self._msg_string

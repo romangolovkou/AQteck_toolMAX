@@ -95,7 +95,7 @@ class AqUpdateFWViewManager(QStackedWidget):
                     byte_array = file.read()
                 try:
                     self.progress_bar_is_active = True
-                    self._update_device.write_update_file(byte_array)
+                    self._update_device.write_update_file(byte_array, self.update_file_loaded_callback)
                 except Exception as e:
                     self.progress_bar_is_active = False
             except Exception as e:
@@ -106,6 +106,10 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.setCurrentIndex(1)
 
         return
+
+    def update_file_loaded_callback(self, status):
+        if status == 'ok':
+            self._update_device.reboot()
 
     def set_update_device(self, device):
         self.update_device = device

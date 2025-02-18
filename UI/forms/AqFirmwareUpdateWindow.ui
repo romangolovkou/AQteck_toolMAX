@@ -244,7 +244,7 @@ border-radius: 4px;
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
