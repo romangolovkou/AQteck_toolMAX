@@ -1,4 +1,5 @@
 import os
+import shutil
 from datetime import datetime
 from functools import partial
 
@@ -29,12 +30,16 @@ class AqCalibViewManager(QStackedWidget):
 
     def __init__(self, parent):
         super().__init__(parent)
+        x = parent.parent()
         self.calibrator_is_ready = False
         self.event_manager = AQ_EventManager.get_global_event_manager()
+        self.event_manager.register_event_handler('calib_close_steps', self.close_steps)
         self._message_manager = AqMessageManager.get_global_message_manager()
 
         self.message_signal.connect(partial(self._message_manager.show_message, self))
         self._message_manager.subscribe('calib', self.message_signal.emit)
+
+        self.roaming_temp_folder = None
 
         self._calib_device = None
         self.calibrator = None
@@ -370,8 +375,8 @@ class AqCalibViewManager(QStackedWidget):
 
     def init_calibrator(self):
         if self.calib_device.read_calib_file():
-            roaming_temp_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
-            calib_path = roaming_temp_folder + '/calib/'
+            self.roaming_temp_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
+            calib_path = self.roaming_temp_folder + '/calib/'
             try:
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
                                                  calib_path + 'current_calibr.json')
@@ -393,10 +398,12 @@ class AqCalibViewManager(QStackedWidget):
                 self._message_manager.send_message('calib',
                                                    'Error',
                                                    AqTranslateManager.tr('Calibration file parsing failed!'))
+                if self.roaming_temp_folder is not None and os.path.exists(self.roaming_temp_folder):
+                    shutil.rmtree(self.roaming_temp_folder)
+
                 raise Exception('Calibration file parsing failed!')
 
             # Создаем объект AqCalibrator
-
             return calibrator
         else:
             self._message_manager.send_message('calib',
@@ -430,6 +437,8 @@ class AqCalibViewManager(QStackedWidget):
             # Устанавливаем задержку в 50 м.сек и затем повторяем
             QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
 
-
+    def close_steps(self):
+        if self.roaming_temp_folder is not None and os.path.exists(self.roaming_temp_folder):
+            shutil.rmtree(self.roaming_temp_folder)
 
 
