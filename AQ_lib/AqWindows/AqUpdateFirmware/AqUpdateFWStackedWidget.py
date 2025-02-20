@@ -6,6 +6,7 @@ from AqCalibCreator import AqCalibCreator
 from AqCalibrator import AqCalibrator
 from AqInitCalibTread import InitCalibThread
 from AqMessageManager import AqMessageManager
+from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
 
 
@@ -83,9 +84,15 @@ class AqUpdateFWViewManager(QStackedWidget):
             self.progressBar.setValue(value)
 
     def open_file_btn_clicked(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, 'Open file', '', '*.fw')
+        # Начальный путь для диалога
+        initial_path = AqSettingsManager.get_last_path('updateFW_path')
+        if initial_path == '':
+            initial_path = "C:/"
+
+        file_path, _ = QFileDialog.getOpenFileName(self, 'Open file', initial_path, '*.fw')
         if file_path:
             self.filePathLineEdit.setText(file_path)
+            AqSettingsManager.save_last_path('updateFW_path', file_path)
 
     def update_btn_clicked(self):
         file_path = self.filePathLineEdit.text()
