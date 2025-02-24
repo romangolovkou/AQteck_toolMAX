@@ -70,6 +70,8 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.filePathBtn.clicked.connect(self.open_file_btn_clicked)
         self.updateRunBtn.clicked.connect(self.update_btn_clicked)
 
+        self.setCurrentIndex(0)
+
     @property
     def update_device(self):
         return self._update_device
@@ -116,7 +118,8 @@ class AqUpdateFWViewManager(QStackedWidget):
 
     def update_file_loaded_callback(self, status):
         if status == 'ok':
-            self._update_device.reboot()
+            return
+            # self._update_device.reboot()
 
     def set_update_device(self, device):
         self.update_device = device

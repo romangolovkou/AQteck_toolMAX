@@ -172,14 +172,13 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
 
     def pack(self):
         record_data = self.value
-        crc = Crc32().calculate(record_data)
+        crc = Crc32().calculate(record_data) & 0xFFFFFFFF
         length = len(record_data)
         # Выравнивание длины исходных данных
         pad_length = 8 - (len(record_data) % 8)
         padded_data = record_data + bytes([0x00] * pad_length)
-
         data_to_write = padded_data + length.to_bytes(4, byteorder='little')
-        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
+        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=False)
 
         encrypted_record_data = self._encrypt_data(data_to_write)
         return encrypted_record_data
