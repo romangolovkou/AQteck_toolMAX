@@ -82,7 +82,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         AqSettingsManager.load_last_combobox_state(self.ui.protocol_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.device_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.interface_combo_box)
-        AqSettingsManager.load_last_text_value(self.ui.ip_line_edit)
+        AqSettingsManager.load_last_ip_list(self.ui.ip_line_edit)
         AqSettingsManager.load_last_combobox_state(self.ui.boudrate_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.parity_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.stopbits_combo_box)
@@ -474,7 +474,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         AqSettingsManager.save_combobox_current_state(self.ui.boudrate_combo_box)
         AqSettingsManager.save_combobox_current_state(self.ui.parity_combo_box)
         AqSettingsManager.save_combobox_current_state(self.ui.stopbits_combo_box)
-        AqSettingsManager.save_current_text_value(self.ui.ip_line_edit)
+        AqSettingsManager.save_current_ip_to_list(self.ui.ip_line_edit)
         AqSettingsManager.save_current_text_value(self.ui.slave_id_line_edit)
 
     def add_devices_to_table_widget(self, found_devices):

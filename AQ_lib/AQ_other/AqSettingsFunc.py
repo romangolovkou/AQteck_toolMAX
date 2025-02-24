@@ -69,6 +69,36 @@ class AqSettingsManager(QObject):
             cls._auto_load_settings.sync()
 
     @classmethod
+    def load_last_ip_list(cls, edit_line):
+        if cls._auto_load_settings:
+            key = edit_line.objectName()
+            ips_string = cls._auto_load_settings.value(key, "", type=str)
+            ip_list = ips_string.split(';')
+            edit_line.setText(ip_list[0])
+            edit_line.set_last_ip_list(ip_list)
+
+    @classmethod
+    def save_current_ip_to_list(cls, edit_line):
+        MAX_SAVED_IP = 10
+        if cls._auto_load_settings:
+            key = edit_line.objectName()
+            text = edit_line.text()
+            ips_string = cls._auto_load_settings.value(key, "", type=str)
+            ip_list = ips_string.split(';')
+            if len(ip_list) > (MAX_SAVED_IP - 1):
+                ip_list = ip_list[0:(MAX_SAVED_IP - 1)]
+
+            ip_list.insert(0, text)
+
+            # видалення дублікатів
+            ip_list = list(set(ip_list))
+
+            ips_string = ';'.join(ip_list)
+
+            cls._auto_load_settings.setValue(key, ips_string)
+            cls._auto_load_settings.sync()
+
+    @classmethod
     def get_last_path(cls, key):
         if cls._auto_load_settings:
             path = cls._auto_load_settings.value(key, "", type=str)

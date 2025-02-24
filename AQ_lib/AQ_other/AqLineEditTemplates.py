@@ -1,5 +1,5 @@
-from PySide6.QtCore import QTimer, Qt
-from PySide6.QtWidgets import QLineEdit, QLabel
+from PySide6.QtCore import QTimer, Qt, QPoint
+from PySide6.QtWidgets import QLineEdit, QLabel, QListWidget
 
 
 class AqSlaveIdLineEdit(QLineEdit):
@@ -94,7 +94,18 @@ class AqIpLineEdit(QLineEdit):
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b #Берется из цвета background-color, первые два символа после # соответствуют RED
+        self.last_ip_list = None
 
+        # Создаём выпадающий список
+        self.dropdown = CustomListWidget(self)
+        self.dropdown.setWindowFlags(Qt.Popup)  # Делаем его всплывающим
+        self.dropdown.itemClicked.connect(self.insert_selected_ip)  # Подключаем обработчик клика
+
+        # Подключаем события
+        self.textEdited.connect(self.hide_dropdown)  # Скрывать список при вводе
+
+    def set_last_ip_list(self, last_ip_list: list):
+        self.last_ip_list = last_ip_list
 
     def err_blink(self):
         if self.anim_cnt < 34:
@@ -115,6 +126,7 @@ class AqIpLineEdit(QLineEdit):
                                "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
                                "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")
             self.red_blink_timer.stop()
+
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Left:
@@ -213,6 +225,43 @@ class AqIpLineEdit(QLineEdit):
         self.err_label.show()
         # Устанавливаем задержку в 2 секунды и затем удаляем метку
         QTimer.singleShot(3000, self.err_label.deleteLater)
+
+    def mousePressEvent(self, event):
+        """При клике показываем выпадающий список"""
+        if self.last_ip_list:
+            self.show_dropdown()
+        super().mousePressEvent(event)
+
+    def show_dropdown(self):
+        """Отображаем выпадающее окно под QLineEdit"""
+        self.dropdown.clear()
+        self.dropdown.addItems(self.last_ip_list)
+
+        # Вычисляем позицию (ниже QLineEdit)
+        pos = self.mapToGlobal(QPoint(0, self.height()))
+        self.dropdown.move(pos)
+        self.dropdown.show()
+
+    def hide_dropdown(self):
+        """Скрываем выпадающее окно при вводе текста"""
+        self.dropdown.hide()
+
+    def insert_selected_ip(self, item):
+        """Вставляем выбранный IP в QLineEdit"""
+        self.setText(item.text())
+        self.hide_dropdown()
+
+
+class CustomListWidget(QListWidget):
+    """Кастомный QListWidget, который скрывается при уводе мыши"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowFlags(Qt.Popup)  # Делаем всплывающим
+
+    def leaveEvent(self, event):
+        """При уводе мыши скрываем список"""
+        self.hide()
 
 
 class AqFloatLineEdit(QLineEdit):
