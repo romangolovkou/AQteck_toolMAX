@@ -178,7 +178,7 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         pad_length = 8 - (len(record_data) % 8)
         padded_data = record_data + bytes([0x00] * pad_length)
         data_to_write = padded_data + length.to_bytes(4, byteorder='little')
-        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=False)
+        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
 
         encrypted_record_data = self._encrypt_data(data_to_write)
         return encrypted_record_data
