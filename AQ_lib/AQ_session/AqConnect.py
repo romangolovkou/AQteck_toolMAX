@@ -88,6 +88,7 @@ class AqConnect(QObject):
             item.data_from_network(None, True, 'modbus_error')
         elif function.__name__ == 'write_param':
             item.confirm_writing(False, 'modbus_error')
+        #TODO: ROMA NADO SDELAT OBRABOTCHIC OSHIBOK DLYA FAILOV
 
     def create_param_request(self, method, stack, message_feedback_address=False):
         request_stack = list()
