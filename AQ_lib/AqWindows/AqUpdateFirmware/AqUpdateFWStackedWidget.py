@@ -1,3 +1,4 @@
+import time
 from functools import partial
 from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar
@@ -118,8 +119,9 @@ class AqUpdateFWViewManager(QStackedWidget):
 
     def update_file_loaded_callback(self, status):
         if status == 'ok':
-            return
-            # self._update_device.reboot()
+            # QTimer.singleShot(8000, lambda: self._update_device.reboot())
+            time.sleep(8)
+            self._update_device.reboot()
 
     def set_update_device(self, device):
         self.update_device = device

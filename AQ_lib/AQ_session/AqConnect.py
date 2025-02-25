@@ -84,13 +84,11 @@ class AqConnect(QObject):
     def proceed_failed_request(self, request):
         item = request.get('item', None)
         function = request.get('method', None)
-        if function.__name__ == 'read_param':
+        if function.__name__ == 'read_param' or function.__name__ == 'read_file':
             item.data_from_network(None, True, 'modbus_error')
-        elif function.__name__ == 'write_param':
+        elif function.__name__ == 'write_param' or function.__name__ == 'write_file':
             item.confirm_writing(False, 'modbus_error')
-        elif function.__name__ == 'write_file':
-            item.confirm_writing(False, 'modbus_error')
-        #TODO: ROMA NADO SDELAT OBRABOTCHIC OSHIBOK DLYA FAILOV
+
 
     def create_param_request(self, method, stack, message_feedback_address=False):
         request_stack = list()
