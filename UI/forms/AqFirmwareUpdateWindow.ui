@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>300</height>
+    <width>600</width>
+    <height>200</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -149,14 +149,14 @@ border-radius: 4px;
     <widget class="QFrame" name="mainWidget">
      <property name="minimumSize">
       <size>
-       <width>800</width>
-       <height>300</height>
+       <width>600</width>
+       <height>200</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>800</width>
-       <height>300</height>
+       <width>600</width>
+       <height>200</height>
       </size>
      </property>
      <property name="frameShape">
@@ -169,18 +169,21 @@ border-radius: 4px;
       <property name="topMargin">
        <number>9</number>
       </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item alignment="Qt::AlignLeft">
        <widget class="QFrame" name="DevInfoFrame">
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>60</height>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>80</height>
+          <height>40</height>
          </size>
         </property>
         <property name="frameShape">
@@ -249,6 +252,54 @@ border-radius: 4px;
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
+           <widget class="QFrame" name="LabelFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Select the software update file and click &quot;Update&quot;. After successful download, the device will automatically reboot.</string>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
            <widget class="QFrame" name="filaPathFrame">
             <property name="maximumSize">
              <size>
@@ -263,6 +314,18 @@ border-radius: 4px;
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
               <spacer name="horizontalSpacer_3">
                <property name="orientation">
@@ -361,12 +424,23 @@ border-radius: 4px;
          </layout>
         </widget>
         <widget class="QWidget" name="stackedWidgetPage2">
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <property name="bottomMargin">
-           <number>50</number>
+           <number>9</number>
           </property>
           <item>
            <widget class="QFrame" name="headerFrame">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>50</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -375,18 +449,25 @@ border-radius: 4px;
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_11">
              <property name="leftMargin">
-              <number>40</number>
+              <number>9</number>
              </property>
              <item>
               <widget class="QLabel" name="headerLabel">
                <property name="font">
                 <font>
-                 <pointsize>14</pointsize>
-                 <bold>true</bold>
+                 <pointsize>11</pointsize>
+                 <bold>false</bold>
+                 <kerning>true</kerning>
                 </font>
                </property>
                <property name="text">
-                <string>TextLabel</string>
+                <string>Attention! Do not switch off the power supply until the firmware update is complete. If it fails, repeat. If it fails again, contact technical support.</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -402,10 +483,47 @@ border-radius: 4px;
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
               <widget class="QProgressBar" name="progressBar">
+               <property name="font">
+                <font>
+                 <pointsize>9</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">
+QProgressBar {
+    border-radius: 5px;
+    text-align: center;
+}
+QProgressBar::chunk {
+    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,
+        stop:0 rgba(0, 100, 255, 180), /* Начало синего */
+        stop:0.5 rgba(0, 150, 255, 255), /* Яркий синий */
+        stop:1 rgba(0, 100, 255, 180)); /* Конец синего */
+}
+</string>
+               </property>
                <property name="value">
-                <number>24</number>
+                <number>1</number>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
                <property name="textVisible">
                 <bool>true</bool>
@@ -413,7 +531,127 @@ border-radius: 4px;
                <property name="invertedAppearance">
                 <bool>false</bool>
                </property>
+               <property name="textDirection">
+                <enum>QProgressBar::TopToBottom</enum>
+               </property>
+               <property name="format">
+                <string notr="true">%p%</string>
+               </property>
               </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="finalWaitPage">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QFrame" name="labelFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="waitLabel">
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Wait for the software update to complete.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="successLabel">
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Update completed successfully.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="errorLabel">
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>An error occurred, please try again.</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="waitGifFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>9</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>9</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="DeviceInitWidget" name="waitWidget" native="true"/>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </widget>
@@ -432,6 +670,12 @@ border-radius: 4px;
    <class>AqUpdateFWViewManager</class>
    <extends>QStackedWidget</extends>
    <header location="global">AqUpdateFWStackedWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DeviceInitWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">DeviceNotInitedWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

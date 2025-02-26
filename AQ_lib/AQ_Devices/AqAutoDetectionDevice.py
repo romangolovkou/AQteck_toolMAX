@@ -753,3 +753,10 @@ class AqAutoDetectionDevice(AqBaseDevice):
         item.confirm_writing_callback = callback
 
         self.write_file(item, message_feedback_address='updateFW')
+
+    def check_device_update_fw(self):
+        if self.__sync_read_param(self.system_params_dict['name']) == self.name and \
+            self.__sync_read_param(self.system_params_dict['version']) != self._info['version']:
+                return True
+        else:
+            return False

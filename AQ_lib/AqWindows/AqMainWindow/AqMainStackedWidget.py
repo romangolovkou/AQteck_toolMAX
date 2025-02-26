@@ -10,7 +10,7 @@ from AqBaseDevice import AqBaseDevice
 from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqTreeViewItemModel import AqTreeViewItemModel
-from DeviceNotInitedWifget import DeviceInitWidget
+from DeviceNotInitedWidget import DeviceInitWidget
 from NoDevicesWidget import NoDeviceWidget
 
 

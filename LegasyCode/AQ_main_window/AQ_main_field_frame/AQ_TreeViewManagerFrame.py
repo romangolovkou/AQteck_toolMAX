@@ -8,7 +8,7 @@ from AQ_TreeViewItemModel import AQ_TreeViewItemModel
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_TreeView import AQ_TreeView
 from AqBaseDevice import AqBaseDevice
-from DeviceNotInitedWifget import DeviceInitWidget
+from DeviceNotInitedWidget import DeviceInitWidget
 from NoDevicesWidget import NoDeviceWidget
 
 

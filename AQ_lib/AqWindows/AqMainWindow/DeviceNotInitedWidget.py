@@ -8,7 +8,7 @@ from ui_DeviceInitWidget import Ui_DeviceInitWidget
 
 class DeviceInitWidget(QWidget):
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
         self.ui = Ui_DeviceInitWidget()
         self.ui.setupUi(self)

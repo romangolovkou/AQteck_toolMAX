@@ -1,7 +1,7 @@
 import time
 from functools import partial
 from PySide6.QtCore import QTimer, Qt, Signal
-from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar
+from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar, QWidget
 from AQ_EventManager import AQ_EventManager
 from AqCalibCreator import AqCalibCreator
 from AqCalibrator import AqCalibrator
@@ -9,6 +9,7 @@ from AqInitCalibTread import InitCalibThread
 from AqMessageManager import AqMessageManager
 from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
+from AqUpdateFinalWaitTread import UpdateFinalWaitTread
 
 
 class AqUpdateFWViewManager(QStackedWidget):
@@ -33,6 +34,10 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.filePathLineEdit = None
         self.updateRunBtn = None
         self.progressBar = None
+        self.errorLabel = None
+        self.successLabel = None
+        self.waitLabel = None
+        self.waitWidget = None
 
 
         self.event_manager.register_event_handler('set_update_device', self.set_update_device)
@@ -49,6 +54,10 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.filePathLineEdit = self.findChild(QLineEdit, 'filePathLineEdit')
         self.updateRunBtn = self.findChild(QPushButton, 'updateRunBtn')
         self.progressBar = self.findChild(QProgressBar, 'progressBar')
+        self.errorLabel = self.findChild(QLabel, 'errorLabel')
+        self.successLabel = self.findChild(QLabel, 'successLabel')
+        self.waitLabel = self.findChild(QLabel, 'waitLabel')
+        self.waitWidget = self.findChild(QWidget, 'waitWidget')
 
         self.main_ui_elements = [
             self.devNameLabel,
@@ -56,7 +65,11 @@ class AqUpdateFWViewManager(QStackedWidget):
             self.filePathBtn,
             self.filePathLineEdit,
             self.updateRunBtn,
-            self.progressBar
+            self.progressBar,
+            self.errorLabel,
+            self.successLabel,
+            self.waitLabel,
+            self.waitWidget
         ]
 
         for i in self.main_ui_elements:
@@ -70,6 +83,10 @@ class AqUpdateFWViewManager(QStackedWidget):
 
         self.filePathBtn.clicked.connect(self.open_file_btn_clicked)
         self.updateRunBtn.clicked.connect(self.update_btn_clicked)
+
+        self.errorLabel.hide()
+        self.successLabel.hide()
+        self.waitLabel.hide()
 
         self.setCurrentIndex(0)
 
@@ -119,82 +136,68 @@ class AqUpdateFWViewManager(QStackedWidget):
 
     def update_file_loaded_callback(self, status):
         if status == 'ok':
-            # QTimer.singleShot(8000, lambda: self._update_device.reboot())
-            time.sleep(8)
-            self._update_device.reboot()
+            self.start_final_wait()
 
     def set_update_device(self, device):
         self.update_device = device
         # self.start_init_calibrator()
         self.prepare_ui()
 
-    def start_init_calibrator(self):
-        self.init_calib_thread = InitCalibThread(self.init_calibrator)
+    def start_final_wait(self):
+        self.setCurrentIndex(2)
+        self.waitWidget.start_animation()
+        self.waitLabel.show()
+        self.final_wait_thread = UpdateFinalWaitTread(self.final_wait)
         # self.init_calib_thread.finished.connect(self.search_finished)
-        self.init_calib_thread.error.connect(self.calib_init_error)
-        self.init_calib_thread.result_signal.connect(self.calibrator_inited)
-        self.init_calib_thread.start()
+        self.final_wait_thread.error.connect(self.fw_update_error)
+        self.final_wait_thread.result_signal.connect(self.device_updated)
+        self.final_wait_thread.start()
 
-    def init_calibrator(self):
-        if self.calib_device.read_calib_file():
-            calib_path = 'temp/calib/'
-            try:
-                AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
-                                                 calib_path + 'current_calibr.json')
-                # AqCalibCreator.prepare_json_file('test_files/FI210-8T_calibr.json', calib_path + 'current_calibr.json')
-                data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
+    def final_wait(self):
+        wait_cnt = 0
+        time.sleep(8)
+        self._update_device.reboot()
+        time.sleep(30)
+        while not self._update_device.check_device_update_fw():
+            time.sleep(2)
+            wait_cnt += 1
+            if wait_cnt > 10:
+                return False
 
-                AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
-                                                 calib_path + 'current_loc.json')
-                # AqCalibCreator.prepare_json_file('test_files/FI210-8T.json', calib_path + 'current_loc.json')
-                loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
+        return True
 
-                current_lang = AqTranslateManager.get_current_lang().lower()
-                if current_lang == 'ua':
-                    current_lang = 'uk'
-                loc_data = loc_data[current_lang]
-
-                calibrator = AqCalibrator(data, loc_data)
-            except:
-                self._message_manager.send_message('calib',
-                                                   'Error',
-                                                   AqTranslateManager.tr('Calibration file parsing failed!'))
-                raise Exception('Calibration file parsing failed!')
-
-            # Создаем объект AqCalibrator
-
-            return calibrator
-        else:
-            self._message_manager.send_message('calib',
-                                               'Error',
-                                               AqTranslateManager.tr('Read calibration file failed! Close calibration window and try again.'))
-
-    def calibrator_inited(self, calibrator):
+    def device_updated(self, result):
         try:
-            self.calibrator = calibrator
-            self.calibrator.set_calib_device(self.calib_device)
-            self.prepare_ui()
-            self.calibrator_is_ready = True
-        except:
-            self.device_init_widget.stop_animation()
-            self._message_manager.send_message('calib',
+            if result:
+                self.waitLabel.hide()
+                self.errorLabel.hide()
+                self.successLabel.show()
+                self.waitWidget.stop_animation()
+                self._message_manager.send_message('updateFW',
+                                                   'Success',
+                                                   AqTranslateManager.tr('The device successfully updated.'))
+            else:
+                self.fw_update_error()
+
+        except Exception as e:
+            self.waitLabel.hide()
+            self.errorLabel.show()
+            self.successLabel.hide()
+            self.waitWidget.stop_animation()
+            self._message_manager.send_message('updateFW',
                                                'Error',
-                                               AqTranslateManager.tr('Read calibration file failed! Close calibration window and try again.'))
+                                               AqTranslateManager.tr(
+                                                   'Something failed! Close update window and try again.'))
 
-    def calib_init_error(self):
-        self._message_manager.send_message('calib',
+    def fw_update_error(self):
+        self.waitLabel.hide()
+        self.errorLabel.show()
+        self.successLabel.hide()
+        self.waitWidget.stop_animation()
+        self._message_manager.send_message('updateFW',
                                            'Error',
-                                           AqTranslateManager.tr('Calibrator init failed!'))
-
-    def check_is_calibrator_ready(self):
-        if self.calibrator_is_ready:
-            self.setCurrentIndex(1)
-            self.device_init_widget.stop_animation()
-        else:
-            self.device_init_widget.start_animation()
-            self.setCurrentWidget(self.device_init_widget)
-            # Устанавливаем задержку в 50 м.сек и затем повторяем
-            QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
+                                           AqTranslateManager.tr(
+                                               'Firmware update failed! Close update window and try again.'))
 
 
 
