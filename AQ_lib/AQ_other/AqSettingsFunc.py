@@ -88,10 +88,10 @@ class AqSettingsManager(QObject):
             if len(ip_list) > (MAX_SAVED_IP - 1):
                 ip_list = ip_list[0:(MAX_SAVED_IP - 1)]
 
-            ip_list.insert(0, text)
+            if text in ip_list:
+                ip_list.remove(text)
 
-            # видалення дублікатів
-            ip_list = list(set(ip_list))
+            ip_list.insert(0, text)
 
             ips_string = ';'.join(ip_list)
 
