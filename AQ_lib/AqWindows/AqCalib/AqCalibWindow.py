@@ -7,6 +7,7 @@ from AqCalibCreator import AqCalibCreator
 from AqCalibrator import AqCalibrator
 from AqMessageManager import AqMessageManager
 from AqTranslateManager import AqTranslateManager
+from AqWatchListCore import AqWatchListCore
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -21,8 +22,11 @@ class AqCalibWidget(AqDialogTemplate):
 
         self.name = 'Calibration'
         self.event_manager = AQ_EventManager.get_global_event_manager()
+        AqWatchListCore.set_pause_flag(True)
 
     def set_calib_device(self, device):
         self.event_manager.emit_event('set_calib_device', device)
 
-
+    def close(self):
+        AqWatchListCore.set_pause_flag(False)
+        super().close()
