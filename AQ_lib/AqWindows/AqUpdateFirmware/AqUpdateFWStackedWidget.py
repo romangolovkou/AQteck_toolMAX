@@ -3,9 +3,6 @@ from functools import partial
 from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar, QWidget
 from AQ_EventManager import AQ_EventManager
-from AqCalibCreator import AqCalibCreator
-from AqCalibrator import AqCalibrator
-from AqInitCalibTread import InitCalibThread
 from AqMessageManager import AqMessageManager
 from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
@@ -57,7 +54,7 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.errorLabel = self.findChild(QLabel, 'errorLabel')
         self.successLabel = self.findChild(QLabel, 'successLabel')
         self.waitLabel = self.findChild(QLabel, 'waitLabel')
-        self.waitWidget = self.findChild(QWidget, 'waitWidget')
+        self.waitWidget = self.findChild(QLabel, 'waitWidget')
 
         self.main_ui_elements = [
             self.devNameLabel,
@@ -87,6 +84,7 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.errorLabel.hide()
         self.successLabel.hide()
         self.waitLabel.hide()
+        self.waitWidget.set_movie_size(self.waitWidget.width(), self.waitWidget.height())
 
         self.setCurrentIndex(0)
 
@@ -140,7 +138,6 @@ class AqUpdateFWViewManager(QStackedWidget):
 
     def set_update_device(self, device):
         self.update_device = device
-        # self.start_init_calibrator()
         self.prepare_ui()
 
     def start_final_wait(self):
@@ -169,13 +166,19 @@ class AqUpdateFWViewManager(QStackedWidget):
     def device_updated(self, result):
         try:
             if result:
-                self.waitLabel.hide()
-                self.errorLabel.hide()
-                self.successLabel.show()
-                self.waitWidget.stop_animation()
-                self._message_manager.send_message('updateFW',
-                                                   'Success',
-                                                   AqTranslateManager.tr('The device successfully updated.'))
+                if self._update_device.reinit_device_with_pass(self._update_device.get_password()) == 'ok':
+                    self.waitLabel.hide()
+                    self.errorLabel.hide()
+                    self.successLabel.show()
+                    self.waitWidget.stop_animation()
+                    self._message_manager.send_message('updateFW',
+                                                       'Success',
+                                                       AqTranslateManager.tr('The device successfully updated.'))
+
+                else:
+                    self.fw_update_error()
+
+
             else:
                 self.fw_update_error()
 

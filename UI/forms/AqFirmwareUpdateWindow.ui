@@ -127,6 +127,11 @@ background-color: #2b2d30;
 border-radius: 4px; 
 }
 
+QLabel#successLabel {
+    color: green;
+    font-weight: bold;
+}
+
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -247,7 +252,7 @@ border-radius: 4px;
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -571,6 +576,9 @@ QProgressBar::chunk {
                <property name="text">
                 <string>Wait for the software update to complete.</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
              </item>
              <item>
@@ -578,10 +586,14 @@ QProgressBar::chunk {
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>Update completed successfully.</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -594,6 +606,9 @@ QProgressBar::chunk {
                </property>
                <property name="text">
                 <string>An error occurred, please try again.</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -638,7 +653,23 @@ QProgressBar::chunk {
               </spacer>
              </item>
              <item>
-              <widget class="DeviceInitWidget" name="waitWidget" native="true"/>
+              <widget class="AqAnimation" name="waitWidget">
+               <property name="minimumSize">
+                <size>
+                 <width>110</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>110</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
              </item>
              <item>
               <spacer name="horizontalSpacer_2">
@@ -673,10 +704,9 @@ QProgressBar::chunk {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>DeviceInitWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">DeviceNotInitedWidget.h</header>
-   <container>1</container>
+   <class>AqAnimation</class>
+   <extends>QLabel</extends>
+   <header location="global">AqAnimation.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -293,7 +293,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
     def __check_calib_json(self):
         try:
             calib_file_first_page = self.__sync_read_file(self.system_params_dict['calib'])
-            if calib_file_first_page is None:
+            if calib_file_first_page is None or len(calib_file_first_page) == 0:
                 return False
             else:
                 return True
@@ -755,8 +755,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self.write_file(item, message_feedback_address='updateFW')
 
     def check_device_update_fw(self):
-        if self.__sync_read_param(self.system_params_dict['name']) == self.name and \
-            self.__sync_read_param(self.system_params_dict['version']) != self._info['version']:
+        if self.__sync_read_param(self.system_params_dict['name']) == self.name:
                 return True
         else:
             return False
