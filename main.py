@@ -14,7 +14,24 @@ from AqTranslateManager import AqTranslateManager
 
 cur_lang = 'UA'
 
+
+import sys
+import logging
+
+logging.basicConfig(filename='/tmp/foobar.log')
+
+def exception_hook(exc_type, exc_value, exc_traceback):
+    logging.error(
+        "Uncaught exception",
+        exc_info=(exc_type, exc_value, exc_traceback)
+    )
+
+sys.excepthook = exception_hook
+
 if __name__ == '__main__':
+    sys.excepthook = exception_hook
+    #x = 1/0
+
     # Program started without advanced command
     Core.init()
     if len(sys.argv) == 1:

@@ -76,6 +76,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._connect = connect
 
     def init_device(self) -> bool:
+
         self.__create_system_params()
         self.__create_system_files()
         self._info['name'] = self.__sync_read_param(self.system_params_dict['name'])
