@@ -722,7 +722,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return self._password
 
     def set_password(self, password: str):
-        self._password = str(password) if str(password) != '' else None
+        if password is not None:
+            self._password = str(password) if str(password) != '' else None
 
     def write_password(self, new_password):
         record_data = new_password.encode('1251')
