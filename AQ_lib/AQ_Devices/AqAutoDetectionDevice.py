@@ -68,11 +68,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
     system_params_dict = dict()
 
     # Add to init all what we need
-    def __init__(self, event_manager, connect: AqModbusConnect):
-        self._password = None
+    def __init__(self, event_manager, connect: AqModbusConnect, password=None):
+        self._password = password
         super().__init__(event_manager, connect)
         self._default_prg = None
-        self._password = None
+        # self._password = None
         self._connect = connect
 
     def init_device(self) -> bool:

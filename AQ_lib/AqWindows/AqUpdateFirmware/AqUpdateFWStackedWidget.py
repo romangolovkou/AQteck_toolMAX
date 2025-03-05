@@ -3,6 +3,9 @@ from functools import partial
 from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar, QWidget
 from AQ_EventManager import AQ_EventManager
+from AppCore import Core
+from AqAddDeviceWindow import ReinitDeviceWithPassThread
+from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqMessageManager import AqMessageManager
 from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
@@ -11,6 +14,7 @@ from AqUpdateFinalWaitTread import UpdateFinalWaitTread
 
 class AqUpdateFWViewManager(QStackedWidget):
     message_signal = Signal(str, str)
+    anim_start_signal = Signal()
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -86,6 +90,8 @@ class AqUpdateFWViewManager(QStackedWidget):
         self.waitLabel.hide()
         self.waitWidget.set_movie_size(self.waitWidget.width(), self.waitWidget.height())
 
+        self.anim_start_signal.connect(self.waitWidget.start_animation)
+
         self.setCurrentIndex(0)
 
     @property
@@ -142,7 +148,7 @@ class AqUpdateFWViewManager(QStackedWidget):
 
     def start_final_wait(self):
         self.setCurrentIndex(2)
-        self.waitWidget.start_animation()
+        self.anim_start_signal.emit()
         self.waitLabel.show()
         self.final_wait_thread = UpdateFinalWaitTread(self.final_wait)
         # self.init_calib_thread.finished.connect(self.search_finished)
@@ -156,7 +162,7 @@ class AqUpdateFWViewManager(QStackedWidget):
         self._update_device.reboot()
         time.sleep(30)
         while not self._update_device.check_device_update_fw():
-            time.sleep(2)
+            time.sleep(10)
             wait_cnt += 1
             if wait_cnt > 10:
                 return False
@@ -166,17 +172,24 @@ class AqUpdateFWViewManager(QStackedWidget):
     def device_updated(self, result):
         try:
             if result:
-                if self._update_device.reinit_device_with_pass(self._update_device.get_password()) == 'ok':
-                    self.waitLabel.hide()
-                    self.errorLabel.hide()
-                    self.successLabel.show()
-                    self.waitWidget.stop_animation()
-                    self._message_manager.send_message('updateFW',
-                                                       'Success',
-                                                       AqTranslateManager.tr('The device successfully updated.'))
-
-                else:
+                saved_connect = self._update_device.get_connect()
+                saved_password = self._update_device.get_password()
+                try:
+                    device = AqAutoDetectionDevice(self.event_manager, saved_connect, saved_password)
+                    self.event_manager.emit_event('delete_device', self._update_device)
+                    device.init_parameters()
+                    self.event_manager.emit_event('add_new_devices', [device])
+                except Exception as e:
+                    print(f"{str(e)}")
                     self.fw_update_error()
+
+                self.waitLabel.hide()
+                self.errorLabel.hide()
+                self.successLabel.show()
+                self.waitWidget.stop_animation()
+                self._message_manager.send_message('updateFW',
+                                                   'Success',
+                                                   AqTranslateManager.tr('The device successfully updated.'))
 
 
             else:
@@ -201,7 +214,4 @@ class AqUpdateFWViewManager(QStackedWidget):
                                            'Error',
                                            AqTranslateManager.tr(
                                                'Firmware update failed! Close update window and try again.'))
-
-
-
 

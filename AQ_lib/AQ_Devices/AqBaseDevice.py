@@ -117,6 +117,9 @@ class AqBaseDevice(ABC):
     def info(self, param):
         return self._info[param]
 
+    def get_connect(self):
+        return self._connect
+
     # def init_parameters(self):
     #     self._event_manager.register_event_handler('current_device_data_updated', self.read_complete)
     #     # TODO: check for offline connectivity
