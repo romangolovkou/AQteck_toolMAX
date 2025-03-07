@@ -1,5 +1,5 @@
-from PySide6.QtCore import QTimer, Qt, QPoint
-from PySide6.QtWidgets import QLineEdit, QLabel, QListWidget
+from PySide6.QtCore import QTimer, Qt, QPoint, QEvent
+from PySide6.QtWidgets import QLineEdit, QLabel, QListWidget, QApplication
 
 
 class AqSlaveIdLineEdit(QLineEdit):
@@ -103,6 +103,9 @@ class AqIpLineEdit(QLineEdit):
 
         # Подключаем события
         self.textEdited.connect(self.hide_dropdown)  # Скрывать список при вводе
+
+        # Устанавливаем глобальный фильтр событий
+        QApplication.instance().installEventFilter(self)
 
     def set_last_ip_list(self, last_ip_list: list):
         self.last_ip_list = last_ip_list
@@ -248,6 +251,14 @@ class AqIpLineEdit(QLineEdit):
     def hide_dropdown(self):
         """Скрываем выпадающее окно при вводе текста"""
         self.dropdown.hide()
+
+    def eventFilter(self, obj, event):
+        """Отслеживаем клики во всём приложении"""
+        if event.type() == QEvent.MouseButtonPress:
+            # Проверяем, был ли клик за пределами QLineEdit и QListWidget
+            if self.dropdown.isVisible() and not (self.underMouse() or self.dropdown.underMouse()):
+                self.hide_dropdown()
+        return super().eventFilter(obj, event)
 
     def insert_selected_ip(self, item):
         """Вставляем выбранный IP в QLineEdit"""
