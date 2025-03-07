@@ -1,4 +1,6 @@
 import getopt
+import logging
+import os
 import sys
 import time
 
@@ -9,28 +11,17 @@ from PySide6.QtWidgets import QApplication, QSplashScreen
 import console_app
 import console_help_functions
 from AppCore import Core
+import AqLogging
 from AqMainWindow import AqMainWindow
 from AqTranslateManager import AqTranslateManager
 
 cur_lang = 'UA'
 
+AqLogging.init()
 
-import sys
-import logging
-
-logging.basicConfig(filename='/tmp/foobar.log')
-
-def exception_hook(exc_type, exc_value, exc_traceback):
-    logging.error(
-        "Uncaught exception",
-        exc_info=(exc_type, exc_value, exc_traceback)
-    )
-
-sys.excepthook = exception_hook
+sys.excepthook = AqLogging.exception_hook
 
 if __name__ == '__main__':
-    sys.excepthook = exception_hook
-    #x = 1/0
 
     # Program started without advanced command
     Core.init()
