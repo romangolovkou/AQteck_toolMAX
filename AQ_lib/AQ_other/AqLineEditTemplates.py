@@ -240,6 +240,9 @@ class AqIpLineEdit(QLineEdit):
         # Вычисляем позицию (ниже QLineEdit)
         pos = self.mapToGlobal(QPoint(0, self.height()))
         self.dropdown.move(pos)
+
+        row_height = 19
+        self.dropdown.setFixedHeight(row_height * len(self.last_ip_list))
         self.dropdown.show()
 
     def hide_dropdown(self):
