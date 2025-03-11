@@ -1,4 +1,5 @@
 from AQ_EventManager import AQ_EventManager
+from AqTranslateManager import AqTranslateManager
 from AqWatchListCore import AqWatchListCore
 from AqWindowTemplate import AqDialogTemplate
 
@@ -13,7 +14,7 @@ class AqUpdateFirmwareWidget(AqDialogTemplate):
         self.maximizeBtnEnable = False
         AqWatchListCore.set_pause_flag(True)
 
-        self.name = 'Firmware update'
+        self.name = AqTranslateManager.tr('Firmware update')
         self.event_manager = AQ_EventManager.get_global_event_manager()
 
     def set_update_device(self, device):

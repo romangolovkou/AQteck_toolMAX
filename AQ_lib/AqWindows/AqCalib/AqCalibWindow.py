@@ -20,7 +20,7 @@ class AqCalibWidget(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
-        self.name = 'Calibration'
+        self.name = AqTranslateManager.tr('Calibration')
         self.event_manager = AQ_EventManager.get_global_event_manager()
         AqWatchListCore.set_pause_flag(True)
 

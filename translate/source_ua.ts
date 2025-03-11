@@ -1363,5 +1363,65 @@
         <source>To record new calibration coefficients, click Write</source>
         <translation>Для запису нових калібрувальних коефіціентів натисніть Записати</translation>
     </message>
+    <message>
+        <source>Gateway</source>
+        <translation>Шлюз</translation>
+    </message>
+    <message>
+        <source>Firmware file loading failed. Please try again</source>
+        <translation>Оновлення ПО неуспішне. Спробуйте ще.</translation>
+    </message>
+    <message>
+        <source>Firmware update</source>
+        <translation>Оновлення ПО</translation>
+    </message>
+    <message>
+        <source>Set password</source>
+        <translation>Встановити пароль</translation>
+    </message>
+    <message>
+        <source>Calibration</source>
+        <translation>Калібрування</translation>
+    </message>
+    <message>
+        <source>Device info</source>
+        <translation>Інформація про пристрій</translation>
+    </message>
+    <message>
+        <source>Parameters list</source>
+        <translation>Параметри пристрою</translation>
+    </message>
+    <message>
+        <source>Firmware file successfully load into device</source>
+        <translation>Файл нового ПО завантажено в пристрій.</translation>
+    </message>
+    <message>
+        <source>Read file failed!</source>
+        <translation>Вичтення файлу неуспішне</translation>
+    </message>
+    <message>
+        <source>Add devices</source>
+        <translation>Додати пристрої</translation>
+    </message>
+    <message>
+        <source>The device successfully updated.</source>
+        <translation>ПО приладу успішно оновлено.</translation>
+    </message>
+    <message>
+        <source>The measured value is too different from the expected value. Try again.</source>
+        <translation>Отримане значення надто відрізняється від очікуваного. Спробуйте ще.</translation>
+    </message>
+    <message>
+        <source>Set Date Time</source>
+        <translation>Встановити дату та час</translation>
+    </message>
+    <message>
+        <source>Set slave ID</source>
+        <translation>Встановити Slave ID</translation>
+    </message>
+    <message>
+        <source>Watch list</source>
+        <translation>Відстеження параметрів</translation>
+    </message>
 </context>
 </TS>

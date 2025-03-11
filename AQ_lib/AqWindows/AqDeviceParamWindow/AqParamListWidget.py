@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidg
 
 import ModbusTableDataFiller
 from AqSettingsFunc import AqSettingsManager
+from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate
 from AqDeviceParamListModel import AqDeviceParamListModel
 
@@ -19,7 +20,7 @@ class AqParamListWidget(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
-        self.name = 'Parameters list'
+        self.name = AqTranslateManager.tr('Parameters list')
         self.auto_load_settings = None
         self.loadLastPath()
 

@@ -31,7 +31,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.scan_stop_event = QEvent(QEvent.User)
         self.scan_stop_event.setAccepted(False)
 
-        self.name = 'Add devices'
+        self.name = AqTranslateManager.tr('Add devices')
         self.event_manager = AQ_EventManager.get_global_event_manager()
 
         self.selected_devices_list = []

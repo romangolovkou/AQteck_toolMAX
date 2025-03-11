@@ -12,6 +12,7 @@ from AqIsValidIpFunc import is_valid_ip
 from AqLineEditTemplates import AqSlaveIdLineEdit, AqIpLineEdit
 from AqMessageManager import AqMessageManager
 from AqModbusTips import remove_empty_bytes
+from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -29,7 +30,7 @@ class AqGatewayWindow(AqDialogTemplate):
         self.device = None
         self._message_manager = AqMessageManager.get_global_message_manager()
 
-        self.name = 'Gateway'
+        self.name = AqTranslateManager.tr('Gateway')
         self.prepare_ui()
 
     def prepare_ui(self):

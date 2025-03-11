@@ -21,7 +21,7 @@ class AqRtcWindow(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
-        self.name = 'Set Date Time'
+        self.name = AqTranslateManager.tr('Set Date Time')
         self._date = None
         self._time = None
         self._time_zone = None

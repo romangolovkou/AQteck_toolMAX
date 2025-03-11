@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
 
+from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate
 from AqDeviceInfoModel import AqDeviceInfoModel
 
@@ -20,7 +21,7 @@ class AqDeviceInfoWidget(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
-        self.name = 'Device info'
+        self.name = AqTranslateManager.tr('Device info')
         # loadDialogJsonStyle(self, self.ui)
         self.generalTextEditors = list()
         self.operatingTextEditors = list()

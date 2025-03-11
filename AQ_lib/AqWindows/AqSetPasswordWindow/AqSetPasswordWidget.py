@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QLineEdit
 
 from AqBaseDevice import AqBaseDevice
+from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -16,7 +17,7 @@ class AqSetPasswordWindow(AqDialogTemplate):
         self._password = None
         self._workingDevice = None
 
-        self.name = 'Set password'
+        self.name = AqTranslateManager.tr('Set password')
         self.prepare_ui()
 
     def prepare_ui(self):
