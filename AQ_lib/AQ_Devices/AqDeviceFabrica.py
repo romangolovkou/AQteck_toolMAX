@@ -72,6 +72,9 @@ class DeviceCreator(object):
             if connect is not None:
                 device = cls.__param_dict_to_device_object(param_dict, connect)
 
+            if device is None:
+                AqConnectManager.deleteConnect(connect)
+
         return device
 
     @classmethod

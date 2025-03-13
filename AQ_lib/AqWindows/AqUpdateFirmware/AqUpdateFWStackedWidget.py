@@ -6,6 +6,7 @@ from AQ_EventManager import AQ_EventManager
 from AppCore import Core
 from AqAddDeviceWindow import ReinitDeviceWithPassThread
 from AqAutoDetectionDevice import AqAutoDetectionDevice
+from AqConnectManager import AqConnectManager
 from AqMessageManager import AqMessageManager
 from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
@@ -162,6 +163,7 @@ class AqUpdateFWViewManager(QStackedWidget):
         self._update_device.reboot()
         time.sleep(30)
         while not self._update_device.check_device_update_fw():
+            print('wait check device name')
             time.sleep(10)
             wait_cnt += 1
             if wait_cnt > 10:
@@ -175,8 +177,10 @@ class AqUpdateFWViewManager(QStackedWidget):
                 saved_connect = self._update_device.get_connect()
                 saved_password = self._update_device.get_password()
                 try:
-                    device = AqAutoDetectionDevice(self.event_manager, saved_connect, saved_password)
+                    # device = AqAutoDetectionDevice(self.event_manager, saved_connect, saved_password)
                     self.event_manager.emit_event('delete_device', self._update_device)
+                    device = AqAutoDetectionDevice(self.event_manager, saved_connect, saved_password)
+                    AqConnectManager.connect_list.append(device.get_connect())
                     device.init_parameters()
                     self.event_manager.emit_event('add_new_devices', [device])
                 except Exception as e:

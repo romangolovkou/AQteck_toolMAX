@@ -754,7 +754,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         item.set_file_size(file_size)
         item.confirm_writing_callback = callback
 
-        self.write_file(item, message_feedback_address='updateFW')
+        # self.write_file(item, message_feedback_address='updateFW')
+        self.write_file(item)
 
     def check_device_update_fw(self):
         if self.__sync_read_param(self.system_params_dict['name']) == self.name:
