@@ -120,6 +120,7 @@ class AqUpdateFWViewManager(QStackedWidget):
             AqSettingsManager.save_last_path('updateFW_path', file_path)
 
     def update_btn_clicked(self):
+        self.event_manager.emit_event('FW_update_close_btn_block', True)
         file_path = self.filePathLineEdit.text()
         if file_path:
             try:
@@ -130,10 +131,12 @@ class AqUpdateFWViewManager(QStackedWidget):
                     self._update_device.write_update_file(byte_array, self.update_file_loaded_callback)
                 except Exception as e:
                     self.progress_bar_is_active = False
+                    self.event_manager.emit_event('FW_update_close_btn_block', False)
             except Exception as e:
                 self._message_manager.send_message('updateFW',
                                                    'Error',
                                                    AqTranslateManager.tr('Read file failed!'))
+                self.event_manager.emit_event('FW_update_close_btn_block', False)
 
         self.setCurrentIndex(1)
 
@@ -194,7 +197,7 @@ class AqUpdateFWViewManager(QStackedWidget):
                 self._message_manager.send_message('updateFW',
                                                    'Success',
                                                    AqTranslateManager.tr('The device successfully updated.'))
-
+                self.event_manager.emit_event('FW_update_close_btn_block', False)
 
             else:
                 self.fw_update_error()
@@ -208,6 +211,7 @@ class AqUpdateFWViewManager(QStackedWidget):
                                                'Error',
                                                AqTranslateManager.tr(
                                                    'Something failed! Close update window and try again.'))
+            self.event_manager.emit_event('FW_update_close_btn_block', False)
 
     def fw_update_error(self):
         self.waitLabel.hide()
@@ -218,4 +222,4 @@ class AqUpdateFWViewManager(QStackedWidget):
                                            'Error',
                                            AqTranslateManager.tr(
                                                'Firmware update failed! Close update window and try again.'))
-
+        self.event_manager.emit_event('FW_update_close_btn_block', False)
