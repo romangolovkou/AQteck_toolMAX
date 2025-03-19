@@ -659,12 +659,17 @@ class AqBitMaskLineEdit(AqTreeLineEdit):
             param_attributes["W_Only"] == 0 else 0
         self.setReadOnly(True)
 
+    def get_bitmask_size(self):
+        bit_length_by_max = self.max_limit.bit_length()
+        bit_length_by_size = self.param_size * 8
+        return bit_length_by_size if bit_length_by_size < bit_length_by_max else bit_length_by_max
+
     def set_value(self, value):
         if value is None:
             self.setText('')
         else:
             bin_value = bin(value)[2:]
-            bin_value = bin_value.zfill(self.param_size * 8)
+            bin_value = bin_value.zfill(self.get_bitmask_size())
             bin_value = ' '.join(re.findall('.{1,4}', bin_value[::-1]))[::-1]
             self.setText(str(bin_value))
 
@@ -720,7 +725,7 @@ class AqBitMaskLineEdit(AqTreeLineEdit):
                     new_value = current_value ^ (1 << bit_index)
                     new_value = bin(new_value)
                     new_bitmask = str(new_value)[2:]
-                    new_bitmask = new_bitmask.zfill(self.param_size * 8)
+                    new_bitmask = new_bitmask.zfill(self.get_bitmask_size())
                     bitmask_list = re.findall('.{1,4}', new_bitmask)
                     new_bitmask = ' '.join(bitmask_list)
                     QLineEdit.setText(self, new_bitmask)
