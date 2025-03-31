@@ -46,11 +46,11 @@ class AqMainWindow(QMainWindow):
         self.ui.gatewayBtn.clicked.connect(AqUiWorker.show_gateway)
         self.ui.calibDeviceBtn.clicked.connect(AqUiWorker.show_calib_window)
         self.ui.firmwareUpdBtn.clicked.connect(AqUiWorker.show_update_fw_window)
+        self.ui.saveLogBtn.clicked.connect(AqUiWorker.show_archive_window)
 
         self.ui.setDefaultMenuBtn.clicked.connect(self.setFocus)
         self.ui.setDefaultMenuBtn.clicked.connect(Core.session.set_default_cur_active_device)
         self.ui.rebootDeviceBtn.clicked.connect(Core.session.restart_current_active_device)
-        # self.ui.saveLogBtn.clicked.connect(Core.session.read_archive_cur_active_device)
 
         self.ui.readParamMenuBtn.clicked.connect(self.setFocus)
         self.ui.readParamMenuBtn.clicked.connect(Core.session.read_params_cur_active_device)
@@ -60,6 +60,7 @@ class AqMainWindow(QMainWindow):
 
         # TODO: тимчасове, потім видалити
         self.ui.headerMenuFrame.hide()
+        self.ui.configLogBtn.hide()
 
         self.message_signal.connect(partial(Core.message_manager.show_message, self))
         Core.message_manager.subscribe('main', self.message_signal.emit)

@@ -39,8 +39,13 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'time_zone':        [0xF082, 1, 3, 16, 'AqAutoDetectSignedParamItem', False],
         'new_time_trig':    [0xF07F, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
         'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        # For calibration
         'calib_code':       [61616, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
-        'calib_value':      [61618, 2, 3, 16, 'AqAutoDetectFloatParamItem', False]
+        'calib_value':      [61618, 2, 3, 16, 'AqAutoDetectFloatParamItem', False],
+        # For log (archive)
+        'log_interval':     [900, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'log_num_files':    [901, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'log_file_size':    [902, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False]
     }
 
 
@@ -479,7 +484,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
             self.system_params_dict['calib'].set_file_size(file_size // 2)
             calib_file = self.__sync_read_file(self.system_params_dict['calib'])
 
-            temp_folder_path = 'temp'
+            temp_folder_path = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
             if not os.path.exists(temp_folder_path):
                 os.makedirs(temp_folder_path)
 
@@ -703,6 +708,9 @@ class AqAutoDetectionDevice(AqBaseDevice):
             archive_header = archive_header_bytes.decode('ANSI')
             # archive_header = archive_header_bytes.decode('UTF-8')
             archive_header = archive_header_bytes.decode('cp1251')
+
+            file_size = 64000
+            self.system_params_dict['archive'].set_file_size(file_size // 2)
             archive_bytes = self.__sync_read_file(self.system_params_dict['archive'])
             archive = archive_bytes.decode('ANSI')
             archive = archive_bytes.decode('cp1251')
@@ -717,6 +725,20 @@ class AqAutoDetectionDevice(AqBaseDevice):
         #     model = self.__load_data_to_info_model(data)
         #
         # return model
+
+    def get_log_settings(self):
+        try:
+            log_interval = self.__sync_read_param(self.system_params_dict['log_interval'])
+            log_num_files = self.__sync_read_param(self.system_params_dict['log_num_files'])
+            log_file_size = self.__sync_read_param(self.system_params_dict['log_file_size'])
+
+            if isinstance(log_interval, int) and isinstance(log_num_files, int) and isinstance(log_file_size, int):
+                return {'log_interval': log_interval, 'log_num_files': log_num_files, 'log_file_size': log_file_size}
+            else:
+                return None
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return None
 
     def get_password(self):
         return self._password

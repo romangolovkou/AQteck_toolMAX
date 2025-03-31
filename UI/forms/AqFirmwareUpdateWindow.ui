@@ -252,7 +252,7 @@ QLabel#successLabel {
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -525,7 +525,7 @@ QProgressBar::chunk {
 </string>
                </property>
                <property name="value">
-                <number>1</number>
+                <number>0</number>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
