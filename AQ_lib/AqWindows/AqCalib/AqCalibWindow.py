@@ -28,5 +28,6 @@ class AqCalibWidget(AqDialogTemplate):
         self.event_manager.emit_event('set_calib_device', device)
 
     def close(self):
+        self.event_manager.emit_event('calib_close_steps')
         AqWatchListCore.set_pause_flag(False)
         super().close()

@@ -484,17 +484,18 @@ class AqAutoDetectionDevice(AqBaseDevice):
             self.system_params_dict['calib'].set_file_size(file_size // 2)
             calib_file = self.__sync_read_file(self.system_params_dict['calib'])
 
-            temp_folder_path = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
-            if not os.path.exists(temp_folder_path):
-                os.makedirs(temp_folder_path)
+            roaming_temp_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
+            # Проверяем наличие папки Roaming, если её нет - создаем
+            if not os.path.exists(roaming_temp_folder):
+                os.makedirs(roaming_temp_folder)
 
             filename = self._info['name'] + '_' + self._info['version'] + '_' + 'FFA0'
             FORMAT = '.zip'
-            full_filepath = os.path.join(temp_folder_path, filename + FORMAT)
+            full_filepath = os.path.join(roaming_temp_folder, filename + FORMAT)
             with open(full_filepath, 'wb') as file:
                 file.write(calib_file)
 
-            extract_zip_with_cyrillic(full_filepath, temp_folder_path + '/calib')
+            extract_zip_with_cyrillic(full_filepath, roaming_temp_folder + '/calib')
 
             return True
         except Exception as e:
