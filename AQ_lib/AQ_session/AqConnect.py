@@ -216,7 +216,7 @@ class AqModbusConnect(AqConnect):
         super().__init__(notify)
         self.connect_settings = connect_settings
         self.file_request_stack = []
-        self.timeout = 1.0
+        self.timeout = 5.0
         self.mutex = connect_settings.mutex
         self.event_manager = AQ_EventManager.get_global_event_manager()
         if isinstance(self.connect_settings, AqComConnectSettings):
@@ -226,7 +226,7 @@ class AqModbusConnect(AqConnect):
                                                     parity=self.connect_settings.parity[:1],
                                                     stopbits=self.connect_settings.stopbits,
                                                     timeout=self.timeout,
-                                                    retries=3)
+                                                    retries=1)
             self.slave_id = slave_id
         elif isinstance(self.connect_settings, AqIpConnectSettings):
             self.client = AsyncModbusTcpClient(self.connect_settings.ip)
@@ -434,6 +434,17 @@ class AqModbusConnect(AqConnect):
                     print(f"Error occurred: {str(e)}")
                     item.confirm_writing(False, 'modbus_error')
                     return 'error'
+
+                #TEST FW BREAK RESPONCE
+                if isinstance(result, ModbusIOException):
+                    # return 'modbus_error'
+                    item.data_from_network(None, True, 'modbus_error')
+                elif isinstance(result, ExceptionResponse):
+                    self.status = 'connect_err'
+                    item.data_from_network(None, True, 'modbus_error')
+                    return
+                else:
+                    item.data_from_network(result)
 
             # WARNING TODO:!!!!  !!!!!!!!
             # Тимчасова вставка для перевірки роботи файлу ребут,
