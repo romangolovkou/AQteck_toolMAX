@@ -77,8 +77,9 @@ class AqBaseDevice(ABC):
         uid_set = set()
         for item in self.params_list:
             param_attributes = item.get_param_attributes()
-            uid_set.add(param_attributes.get('UID', None))
-            count += 1
+            if param_attributes.get('UID', None) is not None:
+                uid_set.add(param_attributes.get('UID', None))
+                count += 1
 
         if len(uid_set) < count:
             print('WARNING   UIDs has duplicate !!!')
