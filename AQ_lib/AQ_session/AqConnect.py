@@ -216,7 +216,7 @@ class AqModbusConnect(AqConnect):
         super().__init__(notify)
         self.connect_settings = connect_settings
         self.file_request_stack = []
-        self.timeout = 5.0
+        self.timeout = 3.0
         self.mutex = connect_settings.mutex
         self.event_manager = AQ_EventManager.get_global_event_manager()
         if isinstance(self.connect_settings, AqComConnectSettings):
@@ -226,13 +226,42 @@ class AqModbusConnect(AqConnect):
                                                     parity=self.connect_settings.parity[:1],
                                                     stopbits=self.connect_settings.stopbits,
                                                     timeout=self.timeout,
-                                                    retries=1)
+                                                    retries=0)
             self.slave_id = slave_id
         elif isinstance(self.connect_settings, AqIpConnectSettings):
             self.client = AsyncModbusTcpClient(self.connect_settings.ip)
             self.slave_id = 1
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
+
+    # def set_new_client_settings(self, ip=None, port=None, baudrate=None, parity=None,
+    #                             stopbits=None, timeout=None, retries=None, slave_id=None):
+    #     try:
+    #         if ip is None:
+    #             self.connect_settings = AqComConnectSettings(_port=port if port is not None else self.connect_settings.port,
+    #                                                         _baudrate=baudrate if baudrate is not None else self.connect_settings.baudrate,
+    #                                                         _parity=parity if parity is not None else self.connect_settings.parity,
+    #                                                         _stopbits=stopbits if stopbits is not None else self.connect_settings.stopbits)
+    #
+    #             self.timeout = timeout if timeout is not None else self.timeout
+    #
+    #             self.client = AsyncModbusSerialClient(method='rtu',
+    #                                                     port=self.connect_settings.port,
+    #                                                     baudrate=self.connect_settings.baudrate,
+    #                                                     parity=self.connect_settings.parity[:1],
+    #                                                     stopbits=self.connect_settings.stopbits,
+    #                                                     timeout=self.timeout,
+    #                                                     retries=retries if retries is not None else 0)
+    #
+    #             self.slave_id = slave_id if slave_id is not None else self.slave_id
+    #
+    #         else:
+    #             self.connect_settings = AqIpConnectSettings(_ip=ip)
+    #             self.client = AsyncModbusTcpClient(self.connect_settings.ip)
+    #             self.slave_id = 1
+    #
+    #     except Exception as e:
+    #         Exception('Помилка. Невідомі налаштування коннекту')
 
     def address_string(self):
         if isinstance(self.connect_settings, AqIpConnectSettings):
