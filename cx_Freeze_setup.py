@@ -21,7 +21,7 @@ def copy_files(source_directory):
 
     for root, directories, files in os.walk(source_directory):
         for file in files:
-            if not file.startswith("__init__") and file.endswith(".py"):
+            if not file.startswith("__init__") and (file.endswith(".py") or file.endswith(".pyd")):
                 source_path = os.path.join(root, file)
                 destination_path = os.path.join(destination_directory, file)
                 shutil.copy2(source_path, destination_path)
