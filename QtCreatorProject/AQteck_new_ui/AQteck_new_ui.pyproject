@@ -1,0 +1,24 @@
+{
+    "files": [
+        "",
+        "../../UI/forms/AqAddDeviceWindow.ui",
+        "../../UI/forms/AqArchiveWindow.ui",
+        "../../UI/forms/AqCalibrationWidget.ui",
+        "../../UI/forms/AqEnterPassWidget.ui",
+        "../../UI/forms/AqGatewayWindow.ui",
+        "../../UI/forms/AqLeftDeviceWidget.ui",
+        "../../UI/forms/AqSetPasswordWidget.ui",
+        "../../UI/forms/AqSetRtcWidget.ui",
+        "../../UI/forms/AqSetSlaveIdWinWidget.ui",
+        "../../UI/forms/AqWatchListWidget.ui",
+        "../../UI/forms/AqWindowTemplate.ui",
+        "../../UI/forms/DeviceInfoDialog.ui",
+        "../../UI/forms/DeviceInitWidget.ui",
+        "../../UI/forms/DeviceParamListWindow.ui",
+        "../../UI/forms/NoDeviceWidget.ui",
+        "../../UI/forms/form.ui",
+        "../../UI/forms/test_hover.ui",
+        "../../UI/resoursec.qrc",
+        "main.py"
+    ]
+}

@@ -1,20 +1,24 @@
 import csv
+import os
 from dataclasses import dataclass
 
-from AQ_CustomTreeItems import AqCatalogItem
-from AQ_TreeViewItemModel import AQ_TreeItemModel
+from AqBaseTreeItems import AqCatalogItem
 from AqParser import parse_parameter
+from AqTreeViewItemModel import AqTreeItemModel
+
 
 @dataclass
 class AqModbusGenericConfiguration:
     dev_descr_dict: dict
     system_params: list
-    params_tree: AQ_TreeItemModel
+    params_tree: AqTreeItemModel
 
 
 def read_configuration_file(conf_filename):
     file_path = '110_device_conf/' + conf_filename
     data = []
+    if not os.path.isfile(file_path):
+        raise Exception('AqGenericModbusError: Can`t find configuration for specified device')
     with open(file_path, 'r', newline='\n') as csvfile:
         csv_reader = csv.reader(csvfile)
         for row in csv_reader:
@@ -27,7 +31,7 @@ def read_configuration_file(conf_filename):
 
     if dev_descr_dict.get('Name') is None or \
             dev_descr_dict.get('Type') is None or \
-            not isinstance(params_tree, AQ_TreeItemModel):
+            not isinstance(params_tree, AqTreeItemModel):
         raise Exception('AqGenericModbusError: Configuration can`t read. "Name" or "Type" or "params_tree" not exist')
 
     return AqModbusGenericConfiguration(dev_descr_dict, system_params, params_tree)
@@ -38,7 +42,7 @@ def get_device_descr(data: list):
     start = None
     end = None
     for i in range(len(data)):
-        # Єлемент з індексом 0 - може містити хедер блоку (ключ початку та кінця блоку у файлі)
+        # Елемент з індексом 0 - може містити хедер блоку (ключ початку та кінця блоку у файлі)
         config_string = data[i]
         fields = config_string.split(';')
         if fields[0] == '!Device_descr_area':
@@ -88,7 +92,7 @@ def get_systems_params(data: list):
 
 def get_params_tree(data: list):
     try:
-        params_tree = AQ_TreeItemModel()
+        params_tree = AqTreeItemModel()
         start = None
         end = None
         for i in range(len(data)):

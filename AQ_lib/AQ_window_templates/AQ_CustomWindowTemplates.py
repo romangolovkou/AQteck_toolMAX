@@ -1,10 +1,10 @@
-from PySide2.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
-from PySide2.QtCore import Qt, QTimer, QRect, QSize
-from PySide2.QtGui import QIcon, QFont, QPainter, QColor, QPen
-from AQ_MouseEventFunc import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
+from PySide6.QtWidgets import QWidget, QFrame, QLabel, QDialog, QPushButton, QComboBox, QLineEdit, QProgressBar
+from PySide6.QtCore import Qt, QTimer, QRect, QSize
+from PySide6.QtGui import QIcon, QFont
+from AqMouseEventFunc import mousePressEvent_Dragging, mouseMoveEvent_Dragging, mouseReleaseEvent_Dragging
 from functools import partial
 
-from AQ_ResizeWidgets import resizeWidthR_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
+from AqResizeWidgets import resizeWidthR_Qwidget, resizeHeigthLow_Qwidget, resizeHeigthTop_Qwidget, \
     resizeDiag_BotRigth_Qwidget, resizeWidthL_Qwidget, resizeDiag_BotLeft_Qwidget, resizeDiag_TopLeft_Qwidget, \
     resizeDiag_TopRigth_Qwidget
 
@@ -96,7 +96,7 @@ class AQ_SimplifiedTitleBarFrame(QFrame):
 
         # Создаем кнопку свернуть
         self.btn_minimize = QPushButton('', self)
-        self.icoMinimize = QIcon('Icons/Minimize.png')
+        self.icoMinimize = QIcon('UI/icons/Minimize.png')
         self.btn_minimize.setIcon(QIcon(self.icoMinimize))  # установите свою иконку для кнопки
         self.btn_minimize.setGeometry(self.width() - 70, 0, 35, 35)  # установите координаты и размеры кнопки
         self.btn_minimize.clicked.connect(lambda: self.event_manager.emit_event('minimize_' + name))
@@ -104,7 +104,7 @@ class AQ_SimplifiedTitleBarFrame(QFrame):
 
         # Создаем кнопку закрытия
         self.btn_close = QPushButton('', self)
-        self.icoClose = QIcon('Icons/Close.png')
+        self.icoClose = QIcon('UI/icons/Close.png')
         self.btn_close.setIcon(QIcon(self.icoClose))  # установите свою иконку для кнопки
         self.btn_close.setGeometry(self.width() - 35, 0, 35, 35)  # установите координаты и размеры кнопки
         self.btn_close.clicked.connect(lambda: self.event_manager.emit_event('close_' + name))  # добавляем обработчик события нажатия на кнопку закрытия
@@ -131,8 +131,8 @@ class AQ_FullTitleBarFrame(AQ_SimplifiedTitleBarFrame):
                                       35)  # установите координаты и размеры кнопки
 
         # Создаем кнопку развернуть/нормализировать
-        self.icoMaximize = QIcon('Icons/Maximize.png')
-        self.icoNormalize = QIcon('Icons/_Normalize.png')
+        self.icoMaximize = QIcon('UI/icons/Maximize.png')
+        self.icoNormalize = QIcon('UI/icons/_Normalize.png')
         self.isMaximized = False  # Флаг, указывающий на текущее состояние окна
         self.btn_maximize = QPushButton('', self)
         self.btn_maximize.setIcon(QIcon(self.icoMaximize))  # установите свою иконку для кнопки
@@ -185,7 +185,7 @@ class AQ_SimplifiedDialog(QDialog):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setGeometry(0, 0, 800, 600)
 
-        self.AQicon = QIcon('Icons/AQico_silver.png')
+        self.AQicon = QIcon('UI/icons/AQico_silver.png')
 
         self.setWindowTitle(window_name)
         self.setWindowIcon(self.AQicon)

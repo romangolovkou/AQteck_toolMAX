@@ -1,6 +1,9 @@
-from AQ_ParseFunc import get_conteiners_count, get_containers_offset, get_storage_container, parse_tree
+from AqAutoDetectionLibrary import parse_tree, get_storage_container, get_containers_offset
+#Імпорти нижче не видаляти, потрібні для globsls
+from AqModbusGenericItems import *
 from AqDY500Items import *
-from AQ_ModbusGenericItems import *
+from AqAutoDetectionItems import *
+from AqNPT_1K_Items import *
 
 
 def parse_config(configuration, conf_type=None):
@@ -25,7 +28,7 @@ def parse_config(configuration, conf_type=None):
 
 def parse_default_prg(default_prg):
     try:
-        containers_count = get_conteiners_count(default_prg)
+        # containers_count = get_conteiners_count(default_prg)
         containers_offset = get_containers_offset(default_prg)
         storage_container = get_storage_container(default_prg, containers_offset)
         device_tree = parse_tree(storage_container)
@@ -70,7 +73,8 @@ def parse_parameter(config_string: str):
         if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusStringParamItem' or \
                 param_type == 'AqModbusDiscretParamItem' or param_type == 'AqDY500EnumParamItem' or \
                 param_type == 'AqDY500StringParamItem' or param_type == 'AqDY500DiscretParamItem' or \
-                param_type == 'AqDY500FloatEnumParamItem':
+                param_type == 'AqDY500FloatEnumParamItem' or param_type == 'AqNPT_1K_StringParamItem' or\
+                param_type == 'AqNPT_1K_CalibResultParamItem':
             param_size = int(parts[1])
         else:
             param_size = int(parts[1]) // 8
@@ -121,9 +125,18 @@ def parse_parameter(config_string: str):
         return 'parsing_err'
 
 
-def build_item(item_class: str, param_attributes: dict):
+def build_item(item_class: str, param_attributes: dict, ):
     try:
         param_item = globals()[str(item_class)](param_attributes)
+        return param_item
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        raise Exception(e)
+
+
+def build_file_item(item_class: str, param_attributes: dict, pass_handler, msg_dict: dict):
+    try:
+        param_item = globals()[str(item_class)](param_attributes, pass_handler, msg_dict)
         return param_item
     except Exception as e:
         print(f"Error occurred: {str(e)}")
