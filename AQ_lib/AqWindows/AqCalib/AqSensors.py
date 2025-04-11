@@ -2,7 +2,7 @@ from AqCalibChannel import AqCalibChannel
 
 
 class AqSensors(object):
-    def __init__(self, data, loc_data):
+    def __init__(self, data, loc_data, dev_mode=False):
         super().__init__()
         # for sensor_data in data:
         #     if sensor_data['name'] == 'U':

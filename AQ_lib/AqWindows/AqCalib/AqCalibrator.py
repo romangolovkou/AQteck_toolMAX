@@ -8,7 +8,7 @@ from AqSubCalibrator import AqSubCalibrator
 
 class AqCalibrator(object):
 
-    def __init__(self, data, loc_data):
+    def __init__(self, data, loc_data, dev_mode):
         super().__init__()
         self.protocol = data['protocol']
         if not isinstance(self.protocol, str):
@@ -34,9 +34,9 @@ class AqCalibrator(object):
                 self.init_cfg_params.append(AqCalibParamSetting(setting))
 
         if 'inputs' in data:
-            self.Inputs = AqSubCalibrator(data['inputs'], loc_data)
+            self.Inputs = AqSubCalibrator(data['inputs'], loc_data, dev_mode)
         if 'outputs' in data:
-            self.Outputs = AqSubCalibrator(data['outputs'], loc_data)
+            self.Outputs = AqSubCalibrator(data['outputs'], loc_data, dev_mode)
 
         self.calib_session = None
         self.device = None

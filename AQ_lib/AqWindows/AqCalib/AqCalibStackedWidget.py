@@ -42,6 +42,7 @@ class AqCalibViewManager(QStackedWidget):
         self.roaming_temp_folder = None
 
         self._calib_device = None
+        self.calib_dev_mode = False
         self.calibrator = None
         self.user_settings = dict()
         #ui_elements
@@ -75,6 +76,7 @@ class AqCalibViewManager(QStackedWidget):
 
         self.event_manager.register_event_handler('set_calib_device', self.set_calib_device)
         self.event_manager.register_event_handler('calibrator_inited', self.calibrator_inited)
+        self.event_manager.register_event_handler('set_calib_dev_mode', self.set_calib_dev_mode)
 
         self.device_init_widget = DeviceInitWidget()
         self.addWidget(self.device_init_widget)
@@ -362,6 +364,9 @@ class AqCalibViewManager(QStackedWidget):
         self.calibrator.clear_session_cash()
         self.setCurrentIndex(1)
 
+    def set_calib_dev_mode(self, dev_mode):
+        self.calib_dev_mode = dev_mode
+
     def set_calib_device(self, device):
         self.calib_device = device
         self.start_init_calibrator()
@@ -393,7 +398,7 @@ class AqCalibViewManager(QStackedWidget):
                     current_lang = 'uk'
                 loc_data = loc_data[current_lang]
 
-                calibrator = AqCalibrator(data, loc_data)
+                calibrator = AqCalibrator(data, loc_data, self.calib_dev_mode)
             except Exception as e:
                 self._message_manager.send_message('calib',
                                                    'Error',
