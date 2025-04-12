@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QLineEdit
+from PySide2.QtWidgets import QLineEdit
 
 from AqBaseDevice import AqBaseDevice
 from AqTranslateManager import AqTranslateManager

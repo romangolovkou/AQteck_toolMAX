@@ -1,6 +1,6 @@
-from PySide6.QtCore import QCoreApplication, Qt
-from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem
+from PySide2.QtCore import QCoreApplication, Qt
+from PySide2.QtGui import QStandardItemModel, QStandardItem
+from PySide2.QtWidgets import QTableWidget, QTableWidgetItem
 from typing import List
 
 from AqBaseTreeItems import AqModbusItem

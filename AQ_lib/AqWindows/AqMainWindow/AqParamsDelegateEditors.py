@@ -5,9 +5,9 @@ import socket
 import struct
 import re
 
-from PySide6.QtCore import Qt, QTimer, Signal
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QComboBox, QLineEdit, QLabel
+from PySide2.QtCore import Qt, QTimer, Signal
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import QComboBox, QLineEdit, QLabel
 
 
 class AqTreeLineEdit(QLineEdit):

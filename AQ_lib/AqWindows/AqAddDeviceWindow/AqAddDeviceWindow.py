@@ -2,9 +2,9 @@ import os
 import threading
 
 import serial
-from PySide6.QtCore import Qt, QSettings, QThread, Signal, QEvent, QPoint, QTimer
-from PySide6.QtGui import QColor, QFont
-from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame, QWidget, QLabel, QLineEdit
+from PySide2.QtCore import Qt, QSettings, QThread, Signal, QEvent, QPoint, QTimer
+from PySide2.QtGui import QColor, QFont
+from PySide2.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame, QWidget, QLabel, QLineEdit
 
 import AqBaseDevice
 import AqDeviceFabrica

@@ -3,10 +3,10 @@ import shutil
 from datetime import datetime
 from functools import partial
 
-from PySide6.QtCore import QTimer, Qt, Signal
-from PySide6.QtGui import QStandardItem, QPixmap
-from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit
+from PySide2.QtCore import QTimer, Qt, Signal
+from PySide2.QtGui import QStandardItem, QPixmap
+# from PySide2.QtSvgWidgets import QSvgWidget
+from PySide2.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit
 
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
@@ -96,7 +96,7 @@ class AqCalibViewManager(QStackedWidget):
         self.stepDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
         self.stepMeasureLabel = self.findChild(QLabel, 'measureLabel')
         self.stepPicLabel = self.findChild(QLabel, 'picLabel')
-        self.stepPicture = self.findChild(QSvgWidget, 'picture')
+        # self.stepPicture = self.findChild(QSvgWidget, 'picture')
         self.stepBackBtn = self.findChild(QPushButton, 'backBtn')
         self.stepRunBtn = self.findChild(QPushButton, 'runBtn')
         self.tableWidget = self.findChild(AqCalibCoeffTable, 'tableWidget')

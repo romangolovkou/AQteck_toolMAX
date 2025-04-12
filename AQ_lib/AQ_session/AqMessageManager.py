@@ -1,7 +1,7 @@
 import threading
 
-from PySide6.QtCore import QObject, QSize
-from PySide6.QtWidgets import QStyle
+from PySide2.QtCore import QObject, QSize
+from PySide2.QtWidgets import QStyle
 
 from QCustomModals import QCustomModals
 

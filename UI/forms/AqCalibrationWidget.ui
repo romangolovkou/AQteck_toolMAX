@@ -259,7 +259,7 @@ border-radius: 4px;
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -777,22 +777,6 @@ border-radius: 4px;
                </property>
               </widget>
              </item>
-             <item alignment="Qt::AlignHCenter">
-              <widget class="QSvgWidget" name="picture" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>700</width>
-                 <height>500</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>700</width>
-                 <height>500</height>
-                </size>
-               </property>
-              </widget>
-             </item>
             </layout>
            </widget>
           </item>
@@ -1034,12 +1018,6 @@ border-radius: 4px;
    <class>AqCalibViewManager</class>
    <extends>QStackedWidget</extends>
    <header location="global">AqCalibStackedWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QSvgWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">qtsvgwidgets.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

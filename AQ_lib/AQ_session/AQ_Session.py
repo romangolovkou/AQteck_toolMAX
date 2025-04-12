@@ -1,8 +1,8 @@
-from PySide6.QtCore import QCoreApplication, Signal
-from PySide6.QtWidgets import QFileDialog
-from PySide6.QtCore import QObject
-from PySide6.QtGui import QGuiApplication, QFont
-from PySide6.QtWidgets import QWidget, QFrame, QLabel
+from PySide2.QtCore import QCoreApplication, Signal
+from PySide2.QtWidgets import QFileDialog
+from PySide2.QtCore import QObject
+from PySide2.QtGui import QGuiApplication, QFont
+from PySide2.QtWidgets import QWidget, QFrame, QLabel
 from pymodbus.client import serial, ModbusSerialClient
 import serial.tools.list_ports
 from pymodbus.exceptions import ModbusIOException

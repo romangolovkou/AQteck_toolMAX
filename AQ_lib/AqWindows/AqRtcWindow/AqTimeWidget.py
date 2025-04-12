@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
 
-from PySide6.QtCore import QTimer, Signal
-from PySide6.QtWidgets import QWidget
+from PySide2.QtCore import QTimer, Signal
+from PySide2.QtWidgets import QWidget
 
 from AqTimeCellWidget import AqTimeCellWidget
 

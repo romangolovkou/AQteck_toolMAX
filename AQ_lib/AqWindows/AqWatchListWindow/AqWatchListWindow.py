@@ -1,9 +1,9 @@
 import csv
 import os
 
-from PySide6.QtCore import Qt, QSettings, QModelIndex
-from PySide6.QtGui import QScreen, QStandardItem
-from PySide6.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
+from PySide2.QtCore import Qt, QSettings, QModelIndex
+from PySide2.QtGui import QScreen, QStandardItem
+from PySide2.QtWidgets import QWidget, QFrame, QTableWidget, QDialog, QTableWidgetItem, QLineEdit, QFileDialog
 
 import ModbusTableDataFiller
 from AqBaseDevice import AqBaseDevice

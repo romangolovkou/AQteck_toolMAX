@@ -4,9 +4,9 @@ import os
 import sys
 import time
 
-from PySide6.QtCore import QTranslator, QLocale
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QApplication, QSplashScreen
+from PySide2.QtCore import QTranslator, QLocale
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QApplication, QSplashScreen
 
 import console_app
 import console_help_functions

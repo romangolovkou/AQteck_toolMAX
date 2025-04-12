@@ -1,8 +1,8 @@
 import weakref
 
-from PySide6.QtCore import QMetaObject, QCoreApplication
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QLabel, QVBoxLayout, QFrame, QSizePolicy, QPushButton, QHBoxLayout
+from PySide2.QtCore import QMetaObject, QCoreApplication
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import QLabel, QVBoxLayout, QFrame, QSizePolicy, QPushButton, QHBoxLayout
 from qtpy.QtGui import QPaintEvent, QPainter, QIcon, QPalette, QPixmap
 from qtpy.QtCore import Qt, QPoint, QSize, QEvent, QTimer, QPropertyAnimation, QParallelAnimationGroup, QEasingCurve, QObject, Signal
 from qtpy.QtWidgets import QStyleOption, QWidget, QStyle, QGraphicsOpacityEffect

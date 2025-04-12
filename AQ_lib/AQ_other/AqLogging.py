@@ -5,7 +5,7 @@ import logging
 import traceback
 from pathlib import Path
 
-from PySide6.QtCore import QObject
+from PySide2.QtCore import QObject
 
 
 # class AqLogging(QObject):

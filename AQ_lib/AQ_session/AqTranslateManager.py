@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, QTranslator, Signal, QCoreApplication
+from PySide2.QtCore import QObject, QTranslator, Signal, QCoreApplication
 
 
 class AqTranslateManager(QObject):

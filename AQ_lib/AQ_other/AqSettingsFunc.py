@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtCore import QSettings, QObject
+from PySide2.QtCore import QSettings, QObject
 
 
 class AqSettingsManager(QObject):

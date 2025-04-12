@@ -4,7 +4,7 @@ from collections import deque
 from dataclasses import dataclass
 from queue import Queue, PriorityQueue
 
-from PySide6.QtCore import QObject, Signal
+from PySide2.QtCore import QObject, Signal
 from pymodbus.client import AsyncModbusTcpClient, AsyncModbusSerialClient
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.file_message import ReadFileRecordRequest, WriteFileRecordRequest

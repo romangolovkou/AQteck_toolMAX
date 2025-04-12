@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QTableWidget, QLineEdit
+from PySide2.QtWidgets import QTableWidget, QLineEdit
 
 from AqLineEditTemplates import AqFloatLineEdit
 from AqTranslateManager import AqTranslateManager

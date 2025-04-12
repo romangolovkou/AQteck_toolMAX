@@ -5,7 +5,7 @@ import threading
 import time
 from typing import Union
 
-from PySide6.QtCore import Signal, QObject
+from PySide2.QtCore import Signal, QObject
 
 from AqBaseTreeItems import AqParamItem
 from AqWatchedItem import WatchedItem

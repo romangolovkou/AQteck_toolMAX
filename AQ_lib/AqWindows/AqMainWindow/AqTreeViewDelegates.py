@@ -1,6 +1,6 @@
-from PySide6.QtGui import QColor
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QStyledItemDelegate
+from PySide2.QtGui import QColor
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QStyledItemDelegate
 
 
 class AqValueTreeDelegate(QStyledItemDelegate):

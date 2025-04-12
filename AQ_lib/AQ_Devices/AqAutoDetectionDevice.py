@@ -5,7 +5,7 @@ from datetime import datetime
 import struct
 import time
 
-from PySide6.QtCore import Qt
+from PySide2.QtCore import Qt
 
 from AqAutoDetectionItems import AqAutoDetectStringParamItem, AqAutoDetectModbusFileItem, AqAutoDetectPasswordFileItem
 from AqBaseDevice import AqBaseDevice

@@ -1,7 +1,7 @@
 import os
 import struct
 
-from PySide6.QtCore import Qt
+from PySide2.QtCore import Qt
 
 from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem, \

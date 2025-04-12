@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QFrame, QPushButton, QLineEdit
+from PySide2.QtWidgets import QFrame, QPushButton, QLineEdit
 
 
 class AqPasswordLineEditFrame(QFrame):

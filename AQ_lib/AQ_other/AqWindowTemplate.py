@@ -1,5 +1,5 @@
-from PySide6 import QtGui
-from PySide6.QtWidgets import QDialog
+from PySide2 import QtGui
+from PySide2.QtWidgets import QDialog
 
 from AQ_EventManager import AQ_EventManager
 from AqResizeWidgets import *

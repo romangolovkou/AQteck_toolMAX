@@ -1,7 +1,7 @@
 import time
 from functools import partial
-from PySide6.QtCore import QTimer, Qt, Signal
-from PySide6.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar, QWidget
+from PySide2.QtCore import QTimer, Qt, Signal
+from PySide2.QtWidgets import QStackedWidget, QLabel, QPushButton, QFileDialog, QLineEdit, QProgressBar, QWidget
 from AQ_EventManager import AQ_EventManager
 from AppCore import Core
 from AqAddDeviceWindow import ReinitDeviceWithPassThread

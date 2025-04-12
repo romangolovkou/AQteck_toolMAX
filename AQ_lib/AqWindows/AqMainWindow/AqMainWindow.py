@@ -1,6 +1,6 @@
 from functools import partial
 
-from PySide6.QtCore import QCoreApplication, Signal
+from PySide2.QtCore import QCoreApplication, Signal
 
 import AqUiWorker
 from AqSettingsFunc import AqSettingsManager

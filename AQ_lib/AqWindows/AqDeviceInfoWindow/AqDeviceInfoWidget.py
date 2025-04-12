@@ -1,7 +1,7 @@
 import random
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QStandardItemModel, QStandardItem
+from PySide2.QtWidgets import QWidget, QLineEdit, QFormLayout
 
 from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate

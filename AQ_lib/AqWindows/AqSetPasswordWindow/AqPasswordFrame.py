@@ -1,5 +1,5 @@
-from PySide6.QtCore import Signal, QTimer
-from PySide6.QtWidgets import QFrame, QLabel, QPushButton, QLineEdit, QRadioButton
+from PySide2.QtCore import Signal, QTimer
+from PySide2.QtWidgets import QFrame, QLabel, QPushButton, QLineEdit, QRadioButton
 
 
 class AqPasswordFrame(QFrame):

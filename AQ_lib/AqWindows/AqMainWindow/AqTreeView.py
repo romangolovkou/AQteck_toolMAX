@@ -1,5 +1,5 @@
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import QMenu, QTreeView, QHeaderView
+from PySide2.QtCore import Qt, QTimer
+from PySide2.QtWidgets import QMenu, QTreeView, QHeaderView
 
 from AqTranslateManager import AqTranslateManager
 from AqTreeViewDelegates import AqNameTreeDelegate, AqValueTreeDelegate

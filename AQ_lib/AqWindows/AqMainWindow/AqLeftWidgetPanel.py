@@ -1,6 +1,6 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QWidget, QFrame, QMenu
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QPalette, QColor
+from PySide2.QtWidgets import QWidget, QFrame, QMenu
 
 import AqUiWorker
 from AQ_EventManager import AQ_EventManager
@@ -8,7 +8,7 @@ from AqBaseDevice import AqBaseDevice
 from AqTranslateManager import AqTranslateManager
 from ui_AqLeftDeviceWidget import Ui_AqLeftDeviceWidget
 
-from PySide6.QtCore import Qt, Signal
+from PySide2.QtCore import Qt, Signal
 
 class AqLeftWidgetPanelFrame(QFrame):
     def __init__(self, parent=None):

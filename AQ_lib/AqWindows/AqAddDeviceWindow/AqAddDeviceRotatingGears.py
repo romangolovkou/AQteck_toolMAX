@@ -1,6 +1,6 @@
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QGraphicsPixmapItem, QWidget, QGraphicsView, QFrame, QGraphicsScene
+from PySide2.QtCore import Qt, QTimer
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QGraphicsPixmapItem, QWidget, QGraphicsView, QFrame, QGraphicsScene
 
 class AqRotatingGearsWidget(QWidget):
     def __init__(self, parent=None):

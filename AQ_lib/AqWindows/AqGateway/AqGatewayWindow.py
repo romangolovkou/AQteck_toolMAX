@@ -3,9 +3,9 @@ import re
 import socket
 from functools import partial
 
-from PySide6.QtCore import Signal, QPoint, Qt, QTimer
-from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtWidgets import QTableWidget, QFrame, QPushButton, QRadioButton, QStackedWidget, QWidget, \
+from PySide2.QtCore import Signal, QPoint, Qt, QTimer
+from PySide2.QtGui import QPixmap, QIcon
+from PySide2.QtWidgets import QTableWidget, QFrame, QPushButton, QRadioButton, QStackedWidget, QWidget, \
     QTableWidgetItem, QLineEdit, QLabel
 
 from AqIsValidIpFunc import is_valid_ip

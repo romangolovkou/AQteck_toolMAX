@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone, date, time
 from functools import partial
 
-from PySide6.QtCore import QDate, QObject, QModelIndex, Qt, Signal
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QColor, QPalette
-from PySide6.QtWidgets import QWidget, QCalendarWidget, QTableView, QHeaderView, QTableWidget
+from PySide2.QtCore import QDate, QObject, QModelIndex, Qt, Signal
+from PySide2.QtGui import QStandardItemModel, QStandardItem, QColor, QPalette
+from PySide2.QtWidgets import QWidget, QCalendarWidget, QTableView, QHeaderView, QTableWidget
 
 from AqMessageManager import AqMessageManager
 from AqTranslateManager import AqTranslateManager

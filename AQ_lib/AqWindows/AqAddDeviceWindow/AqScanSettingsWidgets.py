@@ -1,6 +1,6 @@
-from PySide6.QtCore import Signal
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QFrame, QCheckBox, QLabel, QLineEdit, QWidget
+from PySide2.QtCore import Signal
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import QFrame, QCheckBox, QLabel, QLineEdit, QWidget
 
 from AqTranslateManager import AqTranslateManager
 

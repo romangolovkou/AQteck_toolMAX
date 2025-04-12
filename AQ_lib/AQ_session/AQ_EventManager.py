@@ -1,6 +1,6 @@
 import threading
 
-from PySide6.QtCore import QObject
+from PySide2.QtCore import QObject
 
 
 class AQ_EventManager(QObject):

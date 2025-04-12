@@ -1,6 +1,6 @@
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QMovie
-from PySide6.QtWidgets import QWidget, QLabel
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QMovie
+from PySide2.QtWidgets import QWidget, QLabel
 
 from AqTranslateManager import AqTranslateManager
 from ui_DeviceInitWidget import Ui_DeviceInitWidget

@@ -1,6 +1,6 @@
 from functools import partial
 
-from PySide6.QtCore import Signal
+from PySide2.QtCore import Signal
 
 from AQ_EventManager import AQ_EventManager
 from AqCalibCreator import AqCalibCreator

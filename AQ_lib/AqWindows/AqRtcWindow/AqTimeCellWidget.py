@@ -1,5 +1,5 @@
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QLabel, QPushButton
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QWidget, QLabel, QPushButton
 
 
 class AqTimeCellWidget(QWidget):
