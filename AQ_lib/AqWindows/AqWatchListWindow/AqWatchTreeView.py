@@ -38,7 +38,7 @@ class AqWatchTreeView(AqTreeView):
                 # Подключаем обработчик события выбора действия
                 action_delete.triggered.connect(lambda: self.removeItem(item))
                 # # Показываем контекстное меню
-                context_menu.exec(event.globalPos())
+                context_menu.exec_(event.globalPos())
 
         else:
             # Если индекс недействителен, вызывается обработчик события контекстного меню по умолчанию

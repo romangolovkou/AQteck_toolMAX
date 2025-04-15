@@ -119,7 +119,7 @@ class AQ_TreeView(QTreeView):
                     # # Показываем контекстное меню
                     action_add_to_watch_list = context_menu.addAction("Add to watch list")
                     action_add_to_watch_list.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
-                    context_menu.exec(event.globalPos())
+                    context_menu.exec_(event.globalPos())
                 else:
                     # Создаем контекстное меню
                     context_menu = QMenu(self)
@@ -154,7 +154,7 @@ class AQ_TreeView(QTreeView):
 
 
                     # Показываем контекстное меню
-                    context_menu.exec(event.globalPos())
+                    context_menu.exec_(event.globalPos())
         else:
             # Если индекс недействителен, вызывается обработчик события контекстного меню по умолчанию
             super().contextMenuEvent(event)

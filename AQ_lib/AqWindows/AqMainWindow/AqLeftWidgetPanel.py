@@ -162,7 +162,7 @@ class AqLeftDeviceWidget(QWidget):
         #     # Подключаем обработчик события выбора действия
         #     action_write.triggered.connect(lambda: self.write_catalog_by_modbus(index, 1))
         # # Показываем контекстное меню
-        context_menu.exec(event.globalPos())
+        context_menu.exec_(event.globalPos())
 
 
 class AqLeftPanelAddWidget(QWidget):
