@@ -104,7 +104,7 @@ if get_qt_plugins_paths:
     # Inclusion of extra plugins (since cx_Freeze 6.8b2)
     # cx_Freeze automatically imports the following plugins depending on the
     # module used, but suppose we need the following:
-    include_files += get_qt_plugins_paths("PySide6", "multimedia")
+    include_files += get_qt_plugins_paths("PySide2", "multimedia")
     print('cx_Freeze_get_dependencies: ')
     print(include_files)
 
