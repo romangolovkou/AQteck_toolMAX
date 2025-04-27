@@ -48,9 +48,10 @@ def show_device_param_list():
         widget = AqParamListWidget(Ui_DeviceParamListWidget, device_model)
         widget.exec()
 
-def show_calib_window():
+def show_calib_window(dev_mode=False):
     if AppCore.Core.session.cur_active_device is not None:
         dialog = AqCalibWidget(Ui_AqCalibrationWidget)
+        dialog.set_develop_mode(dev_mode)
         dialog.set_calib_device(AppCore.Core.session.cur_active_device)
         dialog.exec()
 

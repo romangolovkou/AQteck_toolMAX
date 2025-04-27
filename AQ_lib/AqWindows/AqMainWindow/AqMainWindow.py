@@ -72,7 +72,7 @@ class AqMainWindow(QMainWindow):
 
         #Hot keys
         self.shortcut_calib_develop = QShortcut(QKeySequence("Ctrl+Alt+C"), self)
-        self.shortcut_calib_develop.activated.connect(AqUiWorker.show_calib_window)
+        self.shortcut_calib_develop.activated.connect(lambda: AqUiWorker.show_calib_window(True))
 
     def retranslate(self):
         self.ui.retranslateUi(self)
