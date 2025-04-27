@@ -68,9 +68,17 @@ def show_update_fw_window():
         dialog.exec()
 
 def show_watch_list_window():
-    dialog = AqWatchListWidget(Ui_AqWatchListWidget)
-    # Потрібно show замість exec, для немодального вікна
-    dialog.show()
+    if AppCore.Core.watch_list_window is None:
+        AppCore.Core.watch_list_window = AqWatchListWidget(Ui_AqWatchListWidget)
+        AppCore.Core.watch_list_window.show()
+    else:
+        # Если окно уже открыто и свернуто, разворачиваем
+        AppCore.Core.watch_list_window.showNormal()  # Разворачиваем если было свернуто
+        AppCore.Core.watch_list_window.raise_()  # Поднимаем над другими окнами
+        AppCore.Core.watch_list_window.activateWindow()  # Активируем окно
+    # AppCore.Core.watch_list_window = AqWatchListWidget(Ui_AqWatchListWidget)
+    # # Потрібно show замість exec, для немодального вікна
+    # AppCore.Core.watch_list_window.show()
 
 
 def show_set_slave_id_window():
