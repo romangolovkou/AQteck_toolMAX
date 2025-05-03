@@ -145,6 +145,8 @@ class AqUpdateFWViewManager(QStackedWidget):
     def update_file_loaded_callback(self, status):
         if status == 'ok':
             self.start_final_wait()
+        else:
+            self.fw_update_error()
 
     def set_update_device(self, device):
         self.update_device = device

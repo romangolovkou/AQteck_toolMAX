@@ -226,7 +226,7 @@ class AqModbusConnect(AqConnect):
                                                     parity=self.connect_settings.parity[:1],
                                                     stopbits=self.connect_settings.stopbits,
                                                     timeout=self.timeout,
-                                                    retries=0)
+                                                    retries=3)
             self.slave_id = slave_id
         elif isinstance(self.connect_settings, AqIpConnectSettings):
             self.client = AsyncModbusTcpClient(self.connect_settings.ip)
@@ -480,7 +480,7 @@ class AqModbusConnect(AqConnect):
             # незрозумілий пустий файл потрібно передати у кінці
             #
             # Update: Порожній файл передається в кінці запису будь якого файлу!
-            request.record_number = start_record_num#last_record_number #param_attributes.get('file_size', '')
+            request.record_number = start_record_num #last_record_number #param_attributes.get('file_size', '')
             request.record_length = 0
             request.record_data = b'' #b'\x00\x00'
             try:
