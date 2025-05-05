@@ -3,6 +3,7 @@ import shutil
 from datetime import datetime
 from functools import partial
 
+import cairosvg
 from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtGui import QStandardItem, QPixmap
 from PySide6.QtSvgWidgets import QSvgWidget
@@ -98,7 +99,7 @@ class AqCalibViewManager(QStackedWidget):
         self.stepDescrLabel_3 = self.findChild(QLabel, 'descrLabel_3')
         self.stepMeasureLabel = self.findChild(QLabel, 'measureLabel')
         self.stepPicLabel = self.findChild(QLabel, 'picLabel')
-        self.stepPicture = self.findChild(QSvgWidget, 'picture')
+        self.stepPicture = self.findChild(QLabel, 'picture')
         self.stepBackBtn = self.findChild(QPushButton, 'backBtn')
         self.stepRunBtn = self.findChild(QPushButton, 'runBtn')
         self.tableWidget = self.findChild(AqCalibCoeffTable, 'tableWidget')
@@ -287,7 +288,16 @@ class AqCalibViewManager(QStackedWidget):
         else:
             raise Exception('method error')
 
-        self.stepPicture.load(IMAGE_PREFIX + self.calibrator.calib_session.image[key])
+        # Конвертируем SVG → PNG в память
+        svg_path = self.roaming_temp_folder + '/calib/' + self.calibrator.calib_session.image[key]
+        with open(svg_path, 'rb') as f:
+            svg_data = f.read()
+
+        png_bytes = cairosvg.svg2png(bytestring=svg_data)
+        pixmap = QPixmap()
+        pixmap.loadFromData(png_bytes)
+        self.stepPicture.setPixmap(pixmap)
+        self.stepPicture.show()
 
     def _load_table_page_(self, context):
         sensor_type = self.user_settings['pinType']
