@@ -288,16 +288,19 @@ class AqCalibViewManager(QStackedWidget):
         else:
             raise Exception('method error')
 
-        # Конвертируем SVG → PNG в память
-        svg_path = self.roaming_temp_folder + '/calib/' + self.calibrator.calib_session.image[key]
-        with open(svg_path, 'rb') as f:
-            svg_data = f.read()
+        try:
+            # Конвертируем SVG → PNG в память
+            svg_path = self.roaming_temp_folder + '/calib/' + self.calibrator.calib_session.image[key]
+            with open(svg_path, 'rb') as f:
+                svg_data = f.read()
 
-        png_bytes = cairosvg.svg2png(bytestring=svg_data)
-        pixmap = QPixmap()
-        pixmap.loadFromData(png_bytes)
-        self.stepPicture.setPixmap(pixmap)
-        self.stepPicture.show()
+            png_bytes = cairosvg.svg2png(bytestring=svg_data)
+            pixmap = QPixmap()
+            pixmap.loadFromData(png_bytes)
+            self.stepPicture.setPixmap(pixmap)
+            self.stepPicture.show()
+        except Exception as e:
+            print(f'image not found. Error: {e}')
 
     def _load_table_page_(self, context):
         sensor_type = self.user_settings['pinType']
