@@ -216,7 +216,7 @@ class AqModbusConnect(AqConnect):
         super().__init__(notify)
         self.connect_settings = connect_settings
         self.file_request_stack = []
-        self.timeout = 3.0
+        self.timeout = 10.0
         self.mutex = connect_settings.mutex
         self.event_manager = AQ_EventManager.get_global_event_manager()
         if isinstance(self.connect_settings, AqComConnectSettings):
@@ -226,7 +226,7 @@ class AqModbusConnect(AqConnect):
                                                     parity=self.connect_settings.parity[:1],
                                                     stopbits=self.connect_settings.stopbits,
                                                     timeout=self.timeout,
-                                                    retries=3)
+                                                    retries=0)
             self.slave_id = slave_id
         elif isinstance(self.connect_settings, AqIpConnectSettings):
             self.client = AsyncModbusTcpClient(self.connect_settings.ip)

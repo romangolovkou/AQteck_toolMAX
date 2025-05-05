@@ -164,7 +164,7 @@ class AqUpdateFWViewManager(QStackedWidget):
 
     def final_wait(self):
         wait_cnt = 0
-        time.sleep(8)
+        time.sleep(15)
         self._update_device.reboot()
         time.sleep(30)
         while not self._update_device.check_device_update_fw():
