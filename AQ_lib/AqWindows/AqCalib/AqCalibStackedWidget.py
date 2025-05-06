@@ -7,7 +7,7 @@ import cairosvg
 from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtGui import QStandardItem, QPixmap
 from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit
+from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
 
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
@@ -15,6 +15,7 @@ from AqBaseDevice import AqBaseDevice
 from AqCalibCoeffTable import AqCalibCoeffTable
 from AqCalibCreator import AqCalibCreator
 from AqCalibrator import AqCalibrator
+from AqCurCalibValueTread import CurCalibValueThread
 from AqInitCalibTread import InitCalibThread
 from AqMessageManager import AqMessageManager
 from AqTranslateManager import AqTranslateManager
@@ -74,6 +75,10 @@ class AqCalibViewManager(QStackedWidget):
         self.tableWriteCoeffBtn = None
         self.devNameLabel = None
         self.devSnLabel = None
+        self.currentCalibValueFrame = None
+        self.currentCalibValueLabel = None
+        self.currentCalibValueLineEdit = None
+        self.cur_calib_value_thread = None
 
         self.event_manager.register_event_handler('set_calib_device', self.set_calib_device)
         self.event_manager.register_event_handler('calibrator_inited', self.calibrator_inited)
@@ -110,6 +115,9 @@ class AqCalibViewManager(QStackedWidget):
         self.tableWriteCoeffBtn = self.findChild(QPushButton, 'writeCoeffBtn')
         self.devNameLabel = self.parent().findChild(QLabel, 'devNameLabel')
         self.devSnLabel = self.parent().findChild(QLabel, 'devSnLabel')
+        self.currentCalibValueFrame = self.findChild(QFrame, 'currentCalibValueFrame')
+        self.currentCalibValueLabel = self.findChild(QLabel, 'currentCalibValueLabel')
+        self.currentCalibValueLineEdit = self.findChild(QLineEdit, 'currentCalibValueLineEdit')
         stepMeasureIntLineEdit = self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureIntLineEdit')
         stepMeasureFloatLineEdit = self.findChild(QLineEdit, 'measureFloatLineEdit')
 
@@ -137,6 +145,9 @@ class AqCalibViewManager(QStackedWidget):
             self.tableWriteCoeffBtn,
             self.devNameLabel,
             self.devSnLabel,
+            self.currentCalibValueFrame,
+            self.currentCalibValueLabel,
+            self.currentCalibValueLineEdit,
             stepMeasureIntLineEdit,
             stepMeasureFloatLineEdit
         ]
@@ -151,6 +162,7 @@ class AqCalibViewManager(QStackedWidget):
         self.devSnLabel.show()
         stepMeasureIntLineEdit.hide()
         stepMeasureFloatLineEdit.hide()
+        self.currentCalibValueFrame.hide()
 
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
@@ -261,6 +273,11 @@ class AqCalibViewManager(QStackedWidget):
             key = 'referenceSignal'
             self.stepMeasureLabel.hide()
             self.stepMeasureLineEdit.hide()
+
+            self.currentCalibValueFrame.show()
+            self.currentCalibValueLabel.setText(AqTranslateManager.tr('Current in value '))
+            self.activate_cur_calib_value_scan(True)
+
             self.stepDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
                                            '<b>' + step_ui_settings['name'] + '</b>' + ' ' +
                                            AqTranslateManager.tr('source of signal with value ') +
@@ -313,12 +330,14 @@ class AqCalibViewManager(QStackedWidget):
     def _back_btn_clicked_(self):
         self.calibrator.return_saved_coeffs()
         self.calibrator.clear_session_cash()
+        self.activate_cur_calib_value_scan(False)
         self.setCurrentIndex(1)
         self._message_manager.send_message('calib',
                                            'Warning',
                                            AqTranslateManager.tr('Calibration aborted. The previous calibration coefficients have been returned to the device.'))
 
     def _step_run_btn_(self):
+        self.activate_cur_calib_value_scan(False)
         if self.stepMeasureLineEdit.text() == '' and self.user_settings['method'] == AqTranslateManager.tr('Reference meter'):
             self._message_manager.send_message('calib',
                                                'Warning',
@@ -456,7 +475,22 @@ class AqCalibViewManager(QStackedWidget):
             QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
 
     def close_steps(self):
+        self.activate_cur_calib_value_scan(False)
         if self.roaming_temp_folder is not None and os.path.exists(self.roaming_temp_folder):
             shutil.rmtree(self.roaming_temp_folder)
 
+    def activate_cur_calib_value_scan(self, state: bool):
+        if state:
+            self.cur_calib_value_thread = CurCalibValueThread(self.cur_calib_value_read)
+            # self.init_calib_thread.finished.connect(self.search_finished)
+            # self.init_calib_thread.error.connect(self.calib_init_error)
+            # self.init_calib_thread.result_signal.connect(self.calibrator_inited)
+            self.cur_calib_value_thread.start()
+        else:
+            if self.cur_calib_value_thread is not None:
+                self.cur_calib_value_thread.requestInterruption()
+                self.cur_calib_value_thread.wait()  # Дождаться завершения
 
+    def cur_calib_value_read(self):
+        value = self.calibrator.get_cur_ch_value()
+        self.currentCalibValueLineEdit.setText(str(value))
