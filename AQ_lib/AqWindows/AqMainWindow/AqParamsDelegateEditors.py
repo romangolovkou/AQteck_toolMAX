@@ -9,6 +9,8 @@ from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QComboBox, QLineEdit, QLabel
 
+from AqTypeValueWithErrCodeLib import check_err_code_in_value
+
 
 class AqTreeLineEdit(QLineEdit):
     edit_done_signal = Signal(object)
@@ -493,6 +495,7 @@ class AqIntTreeLineEdit(AqTreeLineEdit):
 class AqFloatTreeLineEdit(AqTreeLineEdit):
     def __init__(self, param_attributes, parent=None):
         super().__init__(param_attributes, parent)
+        self.visual_type = param_attributes.get('visual_type', '')
 
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
@@ -501,6 +504,15 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
         else:
             value = None
         self.save_new_value(value)
+
+    def set_value(self, value):
+        if self.visual_type != '' and self.visual_type == 'dec_with_err':
+            value = check_err_code_in_value(value)
+
+        if value is None:
+            self.setText('')
+        else:
+            self.setText(str(value))
 
     def verify(self, value=None, show_err=False):
         if value is None:
