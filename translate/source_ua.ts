@@ -212,6 +212,39 @@
     </message>
 </context>
 <context>
+    <name>AqArchiveWidget</name>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="288"/>
+        <source>Logging interval (sec)</source>
+        <translation>Інтервал архіву</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="346"/>
+        <source>Number of files</source>
+        <translation>Кількість файлів архіву</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="398"/>
+        <source>File size (bytes)</source>
+        <translation>Розмір файлу (байт)</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="462"/>
+        <source>Set</source>
+        <translation>Встановити</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="609"/>
+        <source>Save log</source>
+        <translation>Скачати архів</translation>
+    </message>
+</context>
+<context>
     <name>AqCalibrationWidget</name>
     <message>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="32"/>
@@ -245,33 +278,34 @@
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="655"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="670"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="709"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="760"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="864"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="876"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="888"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="804"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="856"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="951"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="963"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="975"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="809"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="979"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="896"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1066"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="827"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="914"/>
         <source>Run</source>
         <translation>Далі</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="926"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="931"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="936"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1013"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1018"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1023"/>
         <source>Новый столбец</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="997"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1084"/>
         <source>Write</source>
         <translation>Записати</translation>
     </message>
@@ -292,6 +326,104 @@
         <location filename="../UI/forms/AqEnterPassWidget.ui" line="199"/>
         <source>Cancel</source>
         <translation>Вийти</translation>
+    </message>
+</context>
+<context>
+    <name>AqFirmwareUpdateWidget</name>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="291"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1159"/>
+        <source>Select the software update file and click &quot;Update&quot;. After successful download, the device will automatically reboot.</source>
+        <translation>Оберіть файл оновлення ПЗ та натисніть &quot;Оновити&quot;. Після успішного запису файлу з ПЗ, прилад буде автоматично перезавантажено.</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="378"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="757"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1187"/>
+        <source>Open file</source>
+        <translation>Відкрити файл</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="422"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="958"/>
+        <source>Update</source>
+        <translation>Оновити</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="469"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="889"/>
+        <source>Attention! Do not switch off the power supply until the firmware update is complete. If it fails, repeat. If it fails again, contact technical support.</source>
+        <translation>Увага! Не вимикайте живлення приладу доки оновлення не буде завершено. Якщо оновлення завершиться неуспішно, спробуйте ще. Якщо завершиться неуспішно знову, зверніться до технічної підтримки.</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="577"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1089"/>
+        <source>Wait for the software update to complete.</source>
+        <translation>Зачекайте доки завершиться оновлення.</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="593"/>
+        <source>Update completed successfully.</source>
+        <translation>Оновлення успішне.</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="608"/>
+        <source>An error occurred, please try again.</source>
+        <translation>Сталася помилка, спробуйте ще.</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="717"/>
+        <source>1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="729"/>
+        <source>Select the software update file.. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="776"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="977"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1047"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1117"/>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1206"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="815"/>
+        <source>2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="830"/>
+        <source>Click &quot;Update&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1007"/>
+        <source>3.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1019"/>
+        <source>Automatically reboot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1077"/>
+        <source>4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqFirmwareUpdateWindow.ui" line="1147"/>
+        <source>5.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -830,7 +962,7 @@
     <message>
         <location filename="../UI/forms/form.ui" line="613"/>
         <source>Add devices</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Додати пристрої</translation>
     </message>
     <message>
         <location filename="../UI/forms/form.ui" line="659"/>
@@ -862,11 +994,10 @@
     <message>
         <location filename="../UI/forms/form.ui" line="840"/>
         <source>Parameters list</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Параметри пристрою</translation>
     </message>
     <message>
         <location filename="../UI/forms/form.ui" line="905"/>
-        <location filename="../UI/forms/form.ui" line="2420"/>
         <source>Save log data</source>
         <translation>Зберегти архів</translation>
     </message>
@@ -889,7 +1020,7 @@
     <message>
         <location filename="../UI/forms/form.ui" line="1065"/>
         <source>Set password</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Встановити пароль</translation>
     </message>
     <message>
         <location filename="../UI/forms/form.ui" line="1091"/>
@@ -971,6 +1102,11 @@
         <location filename="../UI/forms/form.ui" line="2305"/>
         <source>Set Slave ID</source>
         <translation>Встановити Slave ID</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/form.ui" line="2420"/>
+        <source>Log data</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Set slave ID</source>
@@ -1422,6 +1558,22 @@
     <message>
         <source>Watch list</source>
         <translation>Відстеження параметрів</translation>
+    </message>
+    <message>
+        <source>1. Connect to </source>
+        <translation>1. Під&apos;єднайте до </translation>
+    </message>
+    <message>
+        <source>source of signal with value </source>
+        <translation>джерело сигналу зі значенням </translation>
+    </message>
+    <message>
+        <source>Current in value</source>
+        <translation>Поточне значення приладу</translation>
+    </message>
+    <message>
+        <source>Log</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
