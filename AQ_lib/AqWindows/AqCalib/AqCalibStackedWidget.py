@@ -123,7 +123,7 @@ class AqCalibViewManager(QStackedWidget):
             self.stepDescrLabel_3,
             self.stepMeasureLabel,
             self.stepPicLabel,
-            self.stepPicture,
+            # self.stepPicture,
             self.stepBackBtn,
             self.stepRunBtn,
             self.tableWidget,
@@ -285,7 +285,7 @@ class AqCalibViewManager(QStackedWidget):
         else:
             raise Exception('method error')
 
-        self.stepPicture.load(IMAGE_PREFIX + self.calibrator.calib_session.image[key])
+        # self.stepPicture.load(IMAGE_PREFIX + self.calibrator.calib_session.image[key])
 
     def _load_table_page_(self, context):
         sensor_type = self.user_settings['pinType']
