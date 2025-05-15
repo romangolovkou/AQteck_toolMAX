@@ -216,7 +216,7 @@ class AqModbusConnect(AqConnect):
         super().__init__(notify)
         self.connect_settings = connect_settings
         self.file_request_stack = []
-        self.timeout = 3.0
+        self.timeout = 10.0
         self.mutex = connect_settings.mutex
         self.event_manager = AQ_EventManager.get_global_event_manager()
         if isinstance(self.connect_settings, AqComConnectSettings):
@@ -480,7 +480,7 @@ class AqModbusConnect(AqConnect):
             # незрозумілий пустий файл потрібно передати у кінці
             #
             # Update: Порожній файл передається в кінці запису будь якого файлу!
-            request.record_number = start_record_num#last_record_number #param_attributes.get('file_size', '')
+            request.record_number = start_record_num #last_record_number #param_attributes.get('file_size', '')
             request.record_length = 0
             request.record_data = b'' #b'\x00\x00'
             try:

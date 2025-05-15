@@ -20,12 +20,17 @@ class AqCalibWidget(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
+        self.dev_mode = False
+
         self.name = AqTranslateManager.tr('Calibration')
         self.event_manager = AQ_EventManager.get_global_event_manager()
         AqWatchListCore.set_pause_flag(True)
 
     def set_calib_device(self, device):
         self.event_manager.emit_event('set_calib_device', device)
+
+    def set_develop_mode(self, dev_mode):
+        self.event_manager.emit_event('set_calib_dev_mode', dev_mode)
 
     def close(self):
         self.event_manager.emit_event('calib_close_steps')

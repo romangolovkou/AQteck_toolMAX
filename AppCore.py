@@ -10,6 +10,7 @@ from AqWatchListCore import AqWatchListCore
 class Core(object):
     event_manager = None
     session = None
+    watch_list_window = None
     @classmethod
     def init(cls):
         cls.event_manager = AQ_EventManager.get_global_event_manager()

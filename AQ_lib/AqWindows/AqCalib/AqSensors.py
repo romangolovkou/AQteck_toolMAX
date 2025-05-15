@@ -2,7 +2,7 @@ from AqCalibChannel import AqCalibChannel
 
 
 class AqSensors(object):
-    def __init__(self, data, loc_data):
+    def __init__(self, data, loc_data, dev_mode=False):
         super().__init__()
         # for sensor_data in data:
         #     if sensor_data['name'] == 'U':
@@ -16,7 +16,10 @@ class AqSensors(object):
 
         self._sensors = list()
         for sensor_data in data:
-            self._sensors.append(AqSensor(sensor_data, loc_data))
+            if 'dev_mode' in sensor_data and dev_mode is False and sensor_data['dev_mode'] is True:
+                continue
+            else:
+                self._sensors.append(AqSensor(sensor_data, loc_data))
 
     def get_sensor(self, full_name: str):
         for sensor in self._sensors:
