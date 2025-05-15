@@ -33,6 +33,9 @@
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AqWindows/AqSetSlaveIdWindow" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AqWindows/AqSetPasswordWindow" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AqWindows/AqGateway" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AqWindows/AqCalib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AqWindows/AqUpdateFirmware" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/AQ_lib/AqWindows/AqArchive" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.11 (venv) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

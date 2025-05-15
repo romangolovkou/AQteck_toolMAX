@@ -342,6 +342,56 @@ QCheckBox::indicator:checked {
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="interface_combo_box_label">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Interface</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="interface_combo_box">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>30</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Ethernet</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Offline</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
              <widget class="QLabel" name="protocol_combo_box_label">
               <property name="minimumSize">
                <size>
@@ -432,56 +482,6 @@ QCheckBox::indicator:checked {
               <item>
                <property name="text">
                 <string>AQ AutoDetection Device</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="interface_combo_box_label">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>10</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Interface</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="interface_combo_box">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>30</height>
-               </size>
-              </property>
-              <item>
-               <property name="text">
-                <string>Ethernet</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Offline</string>
                </property>
               </item>
              </widget>
@@ -2080,11 +2080,6 @@ QCheckBox::indicator:checked {
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AqAddDeviceTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header location="global">AqAddDeviceWindow.h</header>
-  </customwidget>
-  <customwidget>
    <class>AqConnectionSettingsFrame</class>
    <extends>QFrame</extends>
    <header location="global">AqAddDeviceWindow.h</header>
@@ -2094,6 +2089,11 @@ QCheckBox::indicator:checked {
    <class>AqSlaveIdLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">AqLineEditTemplates.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AqAddDeviceTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header location="global">AqAddDeviceWindow.h</header>
   </customwidget>
   <customwidget>
    <class>AqIpLineEdit</class>

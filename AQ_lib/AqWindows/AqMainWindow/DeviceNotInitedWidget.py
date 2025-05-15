@@ -8,14 +8,13 @@ from ui_DeviceInitWidget import Ui_DeviceInitWidget
 
 class DeviceInitWidget(QWidget):
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
         self.ui = Ui_DeviceInitWidget()
         self.ui.setupUi(self)
 
         self.ui.label_2.hide()
 
-        # self.movie = QMovie(u":/images/icons/cat.gif")
         self.movie = QMovie('UI/icons/AQannimation.gif')
         self.movie.setScaledSize(QSize(282, 158))
         self.ui.CatLabel.setMovie(self.movie)

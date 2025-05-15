@@ -15,7 +15,7 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
-        self.name = 'Set slave ID'
+        self.name = AqTranslateManager.tr('Set slave ID')
 
         self.watch_core_save_state = AqWatchListCore.is_stopped()
         AqWatchListCore.set_pause_flag(True)

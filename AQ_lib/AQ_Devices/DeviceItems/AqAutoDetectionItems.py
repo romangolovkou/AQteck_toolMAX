@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 
 from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqBitParamItem, AqIpParamItem, AqMACParamItem, \
-    AqModbusFileItem
+    AqModbusFileItem, AqBitMaskParamItem
 from AqCRC32 import Crc32
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes
@@ -37,11 +37,17 @@ class AqAutoDetectEnumParamItem(AqEnumParamItem, AqModbusItem):
     def unpack(self, data):
         # Конвертируем значения регистров в строку
         hex_string = ''.join(format(value, '04X') for value in data.registers)
-        # Конвертируем строку в массив байт
-        byte_array = bytes.fromhex(hex_string)
+
         if self.param_size == 4:
+            left = hex_string[:4]
+            right = hex_string[4:]
+            hex_string = right + left
+            # Конвертируем строку в массив байт
+            byte_array = bytes.fromhex(hex_string)
             param_value = struct.unpack('>I', byte_array)[0]
         elif self.param_size == 2:
+            # Конвертируем строку в массив байт
+            byte_array = bytes.fromhex(hex_string)
             param_value = struct.unpack('>H', byte_array)[0]
         else:
             raise Exception('AqAutoDetectEnumParamItemError: "param_size" is incorrect')
@@ -162,17 +168,17 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         self.__get_pass = get_password
         self._msg_dict = msg_dict
         self._msg_string = None
+        self._confirm_writing_callback = None
 
     def pack(self):
         record_data = self.value
-        crc = Crc32().calculate(record_data)
+        crc = Crc32().calculate(record_data) & 0xFFFFFFFF
         length = len(record_data)
         # Выравнивание длины исходных данных
         pad_length = 8 - (len(record_data) % 8)
         padded_data = record_data + bytes([0x00] * pad_length)
-
         data_to_write = padded_data + length.to_bytes(4, byteorder='little')
-        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little', signed=True)
+        data_to_write = data_to_write + crc.to_bytes(4, byteorder='little')
 
         encrypted_record_data = self._encrypt_data(data_to_write)
         return encrypted_record_data
@@ -298,6 +304,14 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         else:
             self.param_status = 'error'
 
+    @property
+    def confirm_writing_callback(self):
+        return self._confirm_writing_callback
+
+    @confirm_writing_callback.setter
+    def confirm_writing_callback(self, function):
+        self._confirm_writing_callback = function
+
     def confirm_writing(self, result: bool, message=None):
         """
         The function must be called for each writing operation.
@@ -308,6 +322,9 @@ class AqAutoDetectModbusFileItem(AqModbusFileItem):
         super().confirm_writing(result, message)
         if self._msg_dict is not None:
             self._msg_string = self._msg_dict.get(self.param_status, None)
+
+        if self._confirm_writing_callback is not None:
+            self._confirm_writing_callback(self.get_status())
 
     def get_msg_string(self):
         return self._msg_string
@@ -457,4 +474,44 @@ class AqAutoDetectDiscretParamItem(AqBitParamItem, AqModbusItem):
             param_value = 1
         else:
             param_value = 0
+        return param_value
+
+
+class AqAutoDetectBitMaskParamItem(AqBitMaskParamItem, AqModbusItem):
+    def __init__(self, param_attributes):
+        super().__init__(param_attributes)
+
+    def pack(self):
+        if self.param_size == 1:
+            packed_data = struct.pack('H', self.value)
+        elif self.param_size == 2:
+            packed_data = struct.pack('H', self.value)
+        elif self.param_size == 4:
+            packed_data = struct.pack('I', self.value)
+        elif self.param_size == 8:
+            packed_data = struct.pack('Q', self.value)
+        else:
+            raise Exception('AqAutoDetectBitMaskParamItemError: param size is incorrect')
+        # Разбиваем упакованные данные на 16-битные значения (2 байта)
+        registers = [struct.unpack('H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
+        return registers
+
+    def unpack(self, data):
+        # Конвертируем значения регистров в строку
+        hex_string = ''.join(format(value, '04X') for value in data.registers)
+        # Конвертируем строку в массив байт
+        byte_array = bytes.fromhex(hex_string)
+        if self.param_size == 1:
+            param_value = struct.unpack('>H', byte_array)[0]
+        elif self.param_size == 2:
+            param_value = struct.unpack('>H', byte_array)[0]
+        elif self.param_size == 4:
+            byte_array = reverse_registers(byte_array)
+            param_value = struct.unpack('>I', byte_array)[0]
+        elif self.param_size == 8:
+            byte_array = reverse_registers(byte_array)
+            param_value = struct.unpack('>Q', byte_array)[0]
+        else:
+            raise Exception('AqAutoDetectBitMaskParamItemError: param size is incorrect')
+
         return param_value

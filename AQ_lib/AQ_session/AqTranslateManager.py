@@ -30,6 +30,10 @@ class AqTranslateManager(QObject):
                 subcriber()
 
     @classmethod
+    def get_current_lang(cls):
+        return cls._current_lang
+
+    @classmethod
     def subscribe(cls, retrans_method):
         if retrans_method not in cls._retranslate_subscribers:
             cls._retranslate_subscribers.append(retrans_method)

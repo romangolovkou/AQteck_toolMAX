@@ -17,6 +17,7 @@ from AqTranslateManager import AqTranslateManager
 
 
 class AqConnect(QObject):
+    progress_updated = Signal(int, str)
 
     def __init__(self, notify):
         super().__init__()
@@ -83,10 +84,11 @@ class AqConnect(QObject):
     def proceed_failed_request(self, request):
         item = request.get('item', None)
         function = request.get('method', None)
-        if function.__name__ == 'read_param':
+        if function.__name__ == 'read_param' or function.__name__ == 'read_file':
             item.data_from_network(None, True, 'modbus_error')
-        elif function.__name__ == 'write_param':
+        elif function.__name__ == 'write_param' or function.__name__ == 'write_file':
             item.confirm_writing(False, 'modbus_error')
+
 
     def create_param_request(self, method, stack, message_feedback_address=False):
         request_stack = list()
@@ -214,7 +216,7 @@ class AqModbusConnect(AqConnect):
         super().__init__(notify)
         self.connect_settings = connect_settings
         self.file_request_stack = []
-        self.timeout = 1.0
+        self.timeout = 3.0
         self.mutex = connect_settings.mutex
         self.event_manager = AQ_EventManager.get_global_event_manager()
         if isinstance(self.connect_settings, AqComConnectSettings):
@@ -231,6 +233,35 @@ class AqModbusConnect(AqConnect):
             self.slave_id = 1
         else:
             Exception('Помилка. Невідомі налаштування коннекту')
+
+    # def set_new_client_settings(self, ip=None, port=None, baudrate=None, parity=None,
+    #                             stopbits=None, timeout=None, retries=None, slave_id=None):
+    #     try:
+    #         if ip is None:
+    #             self.connect_settings = AqComConnectSettings(_port=port if port is not None else self.connect_settings.port,
+    #                                                         _baudrate=baudrate if baudrate is not None else self.connect_settings.baudrate,
+    #                                                         _parity=parity if parity is not None else self.connect_settings.parity,
+    #                                                         _stopbits=stopbits if stopbits is not None else self.connect_settings.stopbits)
+    #
+    #             self.timeout = timeout if timeout is not None else self.timeout
+    #
+    #             self.client = AsyncModbusSerialClient(method='rtu',
+    #                                                     port=self.connect_settings.port,
+    #                                                     baudrate=self.connect_settings.baudrate,
+    #                                                     parity=self.connect_settings.parity[:1],
+    #                                                     stopbits=self.connect_settings.stopbits,
+    #                                                     timeout=self.timeout,
+    #                                                     retries=retries if retries is not None else 0)
+    #
+    #             self.slave_id = slave_id if slave_id is not None else self.slave_id
+    #
+    #         else:
+    #             self.connect_settings = AqIpConnectSettings(_ip=ip)
+    #             self.client = AsyncModbusTcpClient(self.connect_settings.ip)
+    #             self.slave_id = 1
+    #
+    #     except Exception as e:
+    #         Exception('Помилка. Невідомі налаштування коннекту')
 
     def address_string(self):
         if isinstance(self.connect_settings, AqIpConnectSettings):
@@ -354,6 +385,8 @@ class AqModbusConnect(AqConnect):
                 request.record_length = read_size
 
                 try:
+                    if left_to_read < 14000:
+                        x = 20 + 4
                     result = await self.client.read_file_record(self.slave_id, [request])
                     start_record_num += read_size
                     left_to_read -= read_size
@@ -362,7 +395,10 @@ class AqModbusConnect(AqConnect):
                     item.data_from_network(None, True, 'modbus_error')
                     return
 
-                summary_data += result.records[0].record_data
+                try:
+                    summary_data += result.records[0].record_data
+                except Exception as e:
+                    left_to_read = 0
 
             item.data_from_network(summary_data)
 
@@ -380,7 +416,11 @@ class AqModbusConnect(AqConnect):
 
     async def write_file(self, item):
         if item is not None:
-            max_record_size = 124
+            # 120 записів (не байт)
+            max_record_size = 120
+            # 10000 записів (не байт)
+            max_file_size = 10000
+            _file_shift = 0
             param_attributes = item.get_param_attributes()
 
             file_num = param_attributes.get('file_num', '')
@@ -390,33 +430,57 @@ class AqModbusConnect(AqConnect):
             if left_to_write is None:
                 left_to_write = len(record_data)//2 + len(record_data) % 2
 
+            total_size = left_to_write
             last_record_number = left_to_write
 
             while left_to_write > 0:
                 write_size = max_record_size if left_to_write > max_record_size else left_to_write
                 result = None
                 request = WriteFileRecordRequest(self.slave_id)
-                request.file_number = file_num
+                if start_record_num >= max_file_size:
+                    _file_shift += 1
+                    start_record_num = 0
+
+                if (write_size + start_record_num) > max_file_size:
+                    write_size = max_file_size - start_record_num
+
+                request.file_number = file_num + _file_shift
                 request.record_number = start_record_num
                 request.record_length = write_size
-                request.record_data = record_data
+                request.record_data = record_data[((_file_shift*max_file_size) + start_record_num)*2:
+                                                  (((_file_shift*max_file_size) + start_record_num)*2) + write_size*2]
 
                 try:
                     result = await self.client.write_file_record(self.slave_id, [request])
                     start_record_num += write_size
                     left_to_write -= write_size
 
+                    # Отправляем сигнал с обновлением прогресса
+                    progress = int(((total_size - left_to_write) / total_size) * 100)
+                    self.progress_updated.emit(progress, 'write_file')
+
                 except Exception as e:
                     print(f"Error occurred: {str(e)}")
                     item.confirm_writing(False, 'modbus_error')
                     return 'error'
+
+                #TEST FW BREAK RESPONCE
+                if isinstance(result, ModbusIOException):
+                    # return 'modbus_error'
+                    item.data_from_network(None, True, 'modbus_error')
+                elif isinstance(result, ExceptionResponse):
+                    self.status = 'connect_err'
+                    item.data_from_network(None, True, 'modbus_error')
+                    return
+                else:
+                    item.data_from_network(result)
 
             # WARNING TODO:!!!!  !!!!!!!!
             # Тимчасова вставка для перевірки роботи файлу ребут,
             # незрозумілий пустий файл потрібно передати у кінці
             #
             # Update: Порожній файл передається в кінці запису будь якого файлу!
-            request.record_number = last_record_number #param_attributes.get('file_size', '')
+            request.record_number = start_record_num#last_record_number #param_attributes.get('file_size', '')
             request.record_length = 0
             request.record_data = b'' #b'\x00\x00'
             try:

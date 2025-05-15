@@ -68,8 +68,21 @@ class AqBaseDevice(ABC):
         if self._status != 'need_pass' and self._status != 'decrypt_err'\
                 and self._status != 'parsing_err':
             self._param_convert_tree_to_list()
+            self.check_uid()
 
         # self.__verify()
+
+    def check_uid(self):
+        count = 0
+        uid_set = set()
+        for item in self.params_list:
+            param_attributes = item.get_param_attributes()
+            if param_attributes.get('UID', None) is not None:
+                uid_set.add(param_attributes.get('UID', None))
+                count += 1
+
+        if len(uid_set) < count:
+            print('WARNING   UIDs has duplicate !!!')
 
     @property
     def status(self):
@@ -91,11 +104,22 @@ class AqBaseDevice(ABC):
     def name(self):
         return self._info['name']
 
+    @property
+    def params_list(self):
+        return self._params_list
+
+    @property
+    def connect_progress(self):
+        return self._connect.progress_updated
+
     def func(self, name: str):
         return self._functions[name]
 
     def info(self, param):
         return self._info[param]
+
+    def get_connect(self):
+        return self._connect
 
     # def init_parameters(self):
     #     self._event_manager.register_event_handler('current_device_data_updated', self.read_complete)
@@ -170,7 +194,7 @@ class AqBaseDevice(ABC):
                                                message_feedback_address=message_feedback_address)
             self._stack_to_write.clear()
         else:
-            self._message_manager.send_message(message_feedback_address, "Warning", f'{self.name} ' +
+            self._message_manager.send_message(message_feedback_address, "Warning", f'{self.name}. ' +
                                                AqTranslateManager.tr('no has changed params to write.') + ' ' +
                                                AqTranslateManager.tr('Please read params, set new value and try again.'))
 

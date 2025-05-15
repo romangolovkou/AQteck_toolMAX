@@ -801,7 +801,7 @@ QCheckBox::indicator:checked {
                    </font>
                   </property>
                   <property name="text">
-                   <string>New slave ID</string>
+                   <string>New Slave ID</string>
                   </property>
                  </widget>
                 </item>

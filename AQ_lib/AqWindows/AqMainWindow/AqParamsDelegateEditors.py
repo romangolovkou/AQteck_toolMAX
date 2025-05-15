@@ -3,6 +3,7 @@ import datetime
 import ipaddress
 import socket
 import struct
+import re
 
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QFont
@@ -648,6 +649,110 @@ class AqBitLineEdit(AqTreeLineEdit):
             self.edit_done_signal.emit(self.manager_item_handler.get_sourse_item())
         except:
             print(self.objectName() + ' error editor')
+
+
+class AqBitMaskLineEdit(AqTreeLineEdit):
+    def __init__(self, param_attributes, parent=None):
+        super().__init__(param_attributes, parent)
+        self.param_size = param_attributes['param_size']
+        self.R_Only = 1 if param_attributes['R_Only'] == 1 and \
+            param_attributes["W_Only"] == 0 else 0
+        self.setReadOnly(True)
+
+    def get_bitmask_size(self):
+        bit_length_by_max = self.max_limit.bit_length()
+        bit_length_by_size = self.param_size * 8
+        return bit_length_by_size if bit_length_by_size < bit_length_by_max else bit_length_by_max
+
+    def set_value(self, value):
+        if value is None:
+            self.setText('')
+        else:
+            bin_value = bin(value)[2:]
+            bin_value = bin_value.zfill(self.get_bitmask_size())
+            bin_value = ' '.join(re.findall('.{1,4}', bin_value[::-1]))[::-1]
+            self.setText(str(bin_value))
+
+    def line_edit_changed_update_value(self, text):
+        # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        if self.R_Only == 0:
+            if text != '' and text is not None:
+                text = text.replace(' ', '')
+                value = int(text, 2)
+            else:
+                value = None
+            self.save_new_value(value)
+
+    def mousePressEvent(self, event):
+        if self.R_Only == 0:
+            try:
+                clicked_index = None
+                current_text = self.text()
+                # Получаем ширину текста с учетом метрик шрифта
+                # text_width = self.fontMetrics().width(self.text())
+                # start_len = len(current_text)
+                # Получаем позицию клика мыши
+                # у рядку нижче "-2" чарівне число отримане практичним шляхом
+                # невідоме зміщення без якого єдітор працює некорректно.
+                click_position = max(event.pos().x() - 2, 0)
+
+                # Получаем координаты каждого символа
+                char_coordinates = self.get_character_coordinates()
+
+                # Определяем, на какой символ был клик
+                for i, coord in enumerate(char_coordinates):
+                    if i < len(char_coordinates) - 1:
+                        next_coord = char_coordinates[i + 1]
+                        if coord <= click_position < next_coord:
+                            clicked_index = i
+                            break
+                    else:
+                        # Если клик был на последнем символе или за его пределами
+                        if click_position >= coord:
+                            clicked_index = i
+                            break
+
+                spaces = current_text[clicked_index:].count(' ')
+
+                current_text = current_text.replace(' ', '')
+                current_value = int(current_text, 2)
+
+                # Определяем на какой бит был клик
+                bit_index = int(len(self.text()) - clicked_index - spaces - 1)
+
+                # Меняем значение соответствующего бита
+                if 0 <= bit_index < len(self.text()) and self.text()[clicked_index] != ' ':
+                    new_value = current_value ^ (1 << bit_index)
+                    new_value = bin(new_value)
+                    new_bitmask = str(new_value)[2:]
+                    new_bitmask = new_bitmask.zfill(self.get_bitmask_size())
+                    bitmask_list = re.findall('.{1,4}', new_bitmask)
+                    new_bitmask = ' '.join(bitmask_list)
+                    QLineEdit.setText(self, new_bitmask)
+                    self.edit_done_signal.emit(self.manager_item_handler.get_sourse_item())
+            except Exception as e:
+                print(self.objectName() + f' error editor: {e}')
+
+    def get_character_coordinates(self):
+        # Получаем текущий текст
+        text = self.text()
+        font_metrics = self.fontMetrics()
+
+        # Список для хранения координат
+        coordinates = []
+        current_x = 0  # Начальная координата X
+
+        for char in text:
+            # Сохраняем текущую координату начала символа
+            coordinates.append(current_x)
+
+            # Получаем ширину текущего символа
+            char_width = font_metrics.horizontalAdvance(char)
+
+            # Обновляем текущую координату X для следующего символа
+            current_x += char_width
+
+        return coordinates
 
 
 class AqSignedToFloatTreeLineEdit(AqFloatTreeLineEdit):

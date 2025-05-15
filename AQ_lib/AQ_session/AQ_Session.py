@@ -7,7 +7,6 @@ from pymodbus.client import serial, ModbusSerialClient
 import serial.tools.list_ports
 from pymodbus.exceptions import ModbusIOException
 
-import AqUiWorker
 from AqBaseDevice import AqBaseDevice
 import pickle
 import io

@@ -44,6 +44,12 @@ class AqTreeView(QTreeView):
                                 background: #1e1f22;
                                 height: 10px;  /* Высота горизонтального скроллбара */
                             }
+                            QTreeView::branch:closed:has-children {
+                                image: url(UI/icons/right-arrow.png);
+                            }
+                            QTreeView::branch:open:has-children {
+                                image: url(UI/icons/down-arrow.png);
+                            }
                         """)
 
     def setModel(self, model):

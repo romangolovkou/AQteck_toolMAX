@@ -1,5 +1,5 @@
-from PySide6.QtCore import QTimer, Qt
-from PySide6.QtWidgets import QLineEdit, QLabel
+from PySide6.QtCore import QTimer, Qt, QPoint, QEvent
+from PySide6.QtWidgets import QLineEdit, QLabel, QListWidget, QApplication
 
 
 class AqSlaveIdLineEdit(QLineEdit):
@@ -94,7 +94,21 @@ class AqIpLineEdit(QLineEdit):
         self.red_blink_timer.timeout.connect(self.err_blink)
         self.anim_cnt = 0
         self.color_code = 0x2b #Берется из цвета background-color, первые два символа после # соответствуют RED
+        self.last_ip_list = None
 
+        # Создаём выпадающий список
+        self.dropdown = CustomListWidget(self)
+        self.dropdown.setWindowFlags(Qt.Popup)  # Делаем его всплывающим
+        self.dropdown.itemClicked.connect(self.insert_selected_ip)  # Подключаем обработчик клика
+
+        # Подключаем события
+        self.textEdited.connect(self.hide_dropdown)  # Скрывать список при вводе
+
+        # Устанавливаем глобальный фильтр событий
+        QApplication.instance().installEventFilter(self)
+
+    def set_last_ip_list(self, last_ip_list: list):
+        self.last_ip_list = last_ip_list
 
     def err_blink(self):
         if self.anim_cnt < 34:
@@ -115,6 +129,7 @@ class AqIpLineEdit(QLineEdit):
                                "border-bottom: 1px solid #5bb192; border-right: 1px solid #5bb192; \n"
                                "color: #D0D0D0; background-color: #2b2d30; border-radius: 4px; \n")
             self.red_blink_timer.stop()
+
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Left:
@@ -213,3 +228,243 @@ class AqIpLineEdit(QLineEdit):
         self.err_label.show()
         # Устанавливаем задержку в 2 секунды и затем удаляем метку
         QTimer.singleShot(3000, self.err_label.deleteLater)
+
+    def mousePressEvent(self, event):
+        """При клике показываем выпадающий список"""
+        if self.last_ip_list:
+            self.show_dropdown()
+        super().mousePressEvent(event)
+
+    def show_dropdown(self):
+        """Отображаем выпадающее окно под QLineEdit"""
+        self.dropdown.clear()
+        self.dropdown.addItems(self.last_ip_list)
+
+        # Вычисляем позицию (ниже QLineEdit)
+        pos = self.mapToGlobal(QPoint(0, self.height()))
+        self.dropdown.move(pos)
+
+        row_height = 19
+        self.dropdown.setFixedHeight(row_height * len(self.last_ip_list))
+        self.dropdown.show()
+
+    def hide_dropdown(self):
+        """Скрываем выпадающее окно при вводе текста"""
+        self.dropdown.hide()
+
+    def eventFilter(self, obj, event):
+        """Отслеживаем клики во всём приложении"""
+        if event.type() == QEvent.MouseButtonPress:
+            # Проверяем, был ли клик за пределами QLineEdit и QListWidget
+            if self.dropdown.isVisible() and not (self.underMouse() or self.dropdown.underMouse()):
+                self.hide_dropdown()
+        return super().eventFilter(obj, event)
+
+    def insert_selected_ip(self, item):
+        """Вставляем выбранный IP в QLineEdit"""
+        self.setText(item.text())
+        self.hide_dropdown()
+
+
+class CustomListWidget(QListWidget):
+    """Кастомный QListWidget, который скрывается при уводе мыши"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowFlags(Qt.Popup)  # Делаем всплывающим
+
+    def leaveEvent(self, event):
+        """При уводе мыши скрываем список"""
+        self.hide()
+
+
+class AqFloatLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    # def line_edit_changed_update_value(self, text):
+    #     # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+    #     if text != '' and text != '-':
+    #         value = float(text)
+    #     else:
+    #         value = None
+    #     self.save_new_value(value)
+
+    # def verify(self, value=None, show_err=False):
+    #     if value is None:
+    #         if self.text() != '' and self.text() is not None:
+    #             try:
+    #                 value = int(self.text())
+    #             except:
+    #                 value = str(self.text())
+    #         else:
+    #             return None
+    #
+    #     if self.min_limit is not None or self.max_limit is not None:
+    #         if value != '':
+    #             value = float(value)
+    #             if value < self.min_limit or value > self.max_limit:
+    #                 if show_err:
+    #                     self.red_blink_timer.start()
+    #                     if self.err_label is None:
+    #                         show_err_label(self)
+    #                 return False
+    #             else:
+    #                 if self.err_label is not None:
+    #                     try:
+    #                         self.err_label.hide()
+    #                         self.err_label.deleteLater()
+    #                         self.err_label = None
+    #                     except:
+    #                         pass
+    #
+    #                 return True
+
+    def keyPressEvent(self, event):
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position + 1)
+                return
+            elif key == Qt.Key_Backspace:
+                self.backspace()
+                # str_copy = self.text()
+                # self.verify(str_copy)
+                return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
+                return
+
+            if self.hasSelectedText():
+                self.backspace()
+
+            cursor_position = self.cursorPosition()
+            text = event.text()
+            if not text.isdigit() and text != '-' and text != '.':
+                # Якщо не цифра та не мінус
+                return
+            # Если цифра
+            else:
+                str_copy = self.text()
+                if text == '-':
+                    # Перевірка чи не порожня строка
+                    if str_copy.strip():
+                        if str_copy[0] == '-':
+                            return
+                        else:
+                            self.setCursorPosition(0)
+                            self.insert(text)
+                            self.setCursorPosition(cursor_position + 1)
+                            # str_copy = self.text()
+                            # user_data = float(str_copy)  # Преобразуем подстроку в целое число
+                            # self.verify(user_data, show_err=True)
+
+                            return
+                    else:
+                        self.setCursorPosition(0)
+                        self.insert(text)
+                        self.setCursorPosition(1)
+                        return
+                elif text == '.':
+                    if '.' in str_copy:
+                        return
+
+                # str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                # user_data = float(str_copy)  # Преобразуем подстроку в целое число
+                #
+                # self.verify(user_data, show_err=True)
+
+            super().keyPressEvent(event)
+
+
+class AqIntLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    # def line_edit_changed_update_value(self, text):
+    #     # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+    #     if text != '' and text != '-':
+    #         value = int(text)
+    #     else:
+    #         value = None
+    #     self.save_new_value(value)
+
+    def keyPressEvent(self, event):
+        if self.isReadOnly() is False:
+            key = event.key()
+            if key == Qt.Key_Left:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position - 1)
+                return
+            elif key == Qt.Key_Right:
+                cursor_position = self.cursorPosition()
+                self.setCursorPosition(cursor_position + 1)
+                return
+            elif key == Qt.Key_Backspace:
+                self.backspace()
+                str_copy = self.text()
+                # self.verify(str_copy)
+                return
+            elif key == Qt.Key_Return:
+                super().keyPressEvent(event)
+                return
+
+            if self.hasSelectedText():
+                self.backspace()
+
+            cursor_position = self.cursorPosition()
+            text = event.text()
+            if not text.isdigit() and text != '-':
+                # Якщо не цифра та не мінус
+                return
+            # Если цифра
+            else:
+                str_copy = self.text()
+                if text == '-':
+                    # Перевірка чи не порожня строка
+                    if str_copy.strip():
+                        if str_copy[0] == '-':
+                            return
+                        else:
+                            self.setCursorPosition(0)
+                            self.insert(text)
+                            self.setCursorPosition(cursor_position + 1)
+                            # str_copy = self.text()
+                            # user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                            # if self.min_limit is not None:
+                            #     if user_data < self.min_limit:
+                            #         self.red_blink_timer.start()
+                            #         show_err_label(self)
+                            # if self.max_limit is not None:
+                            #     if user_data > self.max_limit:
+                            #         self.red_blink_timer.start()
+                            #         show_err_label(self)
+                            # self.verify(user_data, show_err=True)
+
+                            return
+                    else:
+                        self.setCursorPosition(0)
+                        self.insert(text)
+                        self.setCursorPosition(1)
+                        return
+
+                # str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+                # user_data = int(str_copy)  # Преобразуем подстроку в целое число
+                # if self.min_limit is not None:
+                #     if user_data < self.min_limit:
+                #         self.red_blink_timer.start()
+                #         show_err_label(self)
+                # if self.max_limit is not None:
+                #     if user_data > self.max_limit:
+                #         self.red_blink_timer.start()
+                #         show_err_label(self)
+                # self.verify(user_data, show_err=True)
+
+            super().keyPressEvent(event)
+
+

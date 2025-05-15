@@ -31,7 +31,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.scan_stop_event = QEvent(QEvent.User)
         self.scan_stop_event.setAccepted(False)
 
-        self.name = 'Add devices'
+        self.name = AqTranslateManager.tr('Add devices')
         self.event_manager = AQ_EventManager.get_global_event_manager()
 
         self.selected_devices_list = []
@@ -82,7 +82,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         AqSettingsManager.load_last_combobox_state(self.ui.protocol_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.device_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.interface_combo_box)
-        AqSettingsManager.load_last_text_value(self.ui.ip_line_edit)
+        AqSettingsManager.load_last_ip_list(self.ui.ip_line_edit)
         AqSettingsManager.load_last_combobox_state(self.ui.boudrate_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.parity_combo_box)
         AqSettingsManager.load_last_combobox_state(self.ui.stopbits_combo_box)
@@ -131,6 +131,8 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.stackedWidget.setCurrentWidget(widget)
         self.ui.stackedWidget.setFixedHeight(height)
 
+        self.change_protocol_set_by_interface_selection()
+
     def change_page_by_device_scan_mode_selection(self):
         if self.ui.deviceRadioBtn.isChecked():
             selected_mode = 'device'
@@ -154,10 +156,23 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.ui.insideStackedWidget.setFixedHeight(height)
         self.change_page_by_interface_selection()
 
+    def change_protocol_set_by_interface_selection(self):
+        selected_item = self.ui.interface_combo_box.currentText()
+        protocol_list = AqDeviceFabrica.DeviceCreator.get_protocol_list(selected_item)
+
+        self.ui.protocol_combo_box.clear()
+        self.ui.protocol_combo_box.addItems(protocol_list)
+
+        try:
+            AqSettingsManager.load_last_combobox_state(self.ui.protocol_combo_box)
+        except:
+            self.ui.protocol_combo_box.setCurrentIndex(0)
+
+        self.change_device_set_by_protocol_selection()
+
     def change_device_set_by_protocol_selection(self):
         protocol = self.ui.protocol_combo_box.currentText()
         devices = AqDeviceFabrica.DeviceCreator.get_device_list_by_protocol(protocol)
-        interfaces = AqDeviceFabrica.DeviceCreator.get_interface_list()
         if len(devices) > 0:
             self.ui.device_combo_box.show()
             self.ui.device_combo_box_label.show()
@@ -165,21 +180,14 @@ class AqAddDeviceWidget(AqDialogTemplate):
             # потрапляємо сюди якщо автодетекшн
             self.ui.device_combo_box.hide()
             self.ui.device_combo_box_label.hide()
-            interfaces.remove('Offline')
         # Добавляем имена файлов в комбобокс
         self.ui.device_combo_box.clear()
         self.ui.device_combo_box.addItems(devices)
-        # Оновлюємо доступні інтерфейси
-        self.ui.interface_combo_box.clear()
-        self.ui.interface_combo_box.addItems(interfaces)
         try:
             AqSettingsManager.load_last_combobox_state(self.ui.device_combo_box)
-            AqSettingsManager.load_last_combobox_state(self.ui.interface_combo_box)
         except:
             self.ui.device_combo_box.setCurrentIndex(0)
-            self.ui.interface_combo_box.setCurrentIndex(0)
 
-        self.change_page_by_interface_selection()
 
     def find_button_clicked(self):
         # Декативуємо кнопку для запобігання подвійного натискання до завершення пошуку
@@ -195,6 +203,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if not is_valid_ip(ip):
                     self.ui.ip_line_edit.red_blink_timer.start()
                     self.ui.ip_line_edit.show_err_label()
+                    self.ui.findBtn.setEnabled(True)
                     return
             elif selected_item == 'Offline':
                 pass
@@ -202,6 +211,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 if self.ui.slave_id_line_edit.text() == '':
                     self.ui.slave_id_line_edit.red_blink_timer.start()
                     self.ui.slave_id_line_edit.show_err_label()
+                    self.ui.findBtn.setEnabled(True)
                     return
 
             self.start_search()
@@ -464,7 +474,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         AqSettingsManager.save_combobox_current_state(self.ui.boudrate_combo_box)
         AqSettingsManager.save_combobox_current_state(self.ui.parity_combo_box)
         AqSettingsManager.save_combobox_current_state(self.ui.stopbits_combo_box)
-        AqSettingsManager.save_current_text_value(self.ui.ip_line_edit)
+        AqSettingsManager.save_current_ip_to_list(self.ui.ip_line_edit)
         AqSettingsManager.save_current_text_value(self.ui.slave_id_line_edit)
 
     def add_devices_to_table_widget(self, found_devices):
@@ -696,6 +706,7 @@ class AqPasswordWidget(AqDialogTemplate):
         self.err_label.setStyleSheet("color: #fe2d2d; background-color: transparent; border-radius: 3px;\n")
         self.err_label.setFont(QFont("Segoe UI", 10))
         self.err_label.move(35, 60)
+        self.err_label.setFixedWidth(self.width() * 0.9)
         self.err_label.show()
 
         QTimer.singleShot(3000, self.err_label.deleteLater)

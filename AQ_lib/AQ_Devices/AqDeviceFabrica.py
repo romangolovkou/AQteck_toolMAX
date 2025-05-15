@@ -22,10 +22,11 @@ class DeviceCreator(object):
         cls.event_manager = _event_manager
 
     @classmethod
-    def get_protocol_list(cls):
+    def get_protocol_list(cls, protocol=''):
         protocol_list = list()
         protocol_list.append('Modbus')
-        protocol_list.append('AqAutoDetectionProtocol')
+        if protocol != 'Offline':
+            protocol_list.append('AqAutoDetectionProtocol')
 
         return protocol_list
 
@@ -70,6 +71,9 @@ class DeviceCreator(object):
             connect = AqConnectManager.create_connect(connect_settings, device_id)
             if connect is not None:
                 device = cls.__param_dict_to_device_object(param_dict, connect)
+
+            if device is None:
+                AqConnectManager.deleteConnect(connect)
 
         return device
 

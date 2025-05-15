@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 from PySide6.QtWidgets import QWidget, QLineEdit, QFormLayout
 
+from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate
 from AqDeviceInfoModel import AqDeviceInfoModel
 
@@ -20,7 +21,7 @@ class AqDeviceInfoWidget(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
-        self.name = 'Device info'
+        self.name = AqTranslateManager.tr('Device info')
         # loadDialogJsonStyle(self, self.ui)
         self.generalTextEditors = list()
         self.operatingTextEditors = list()
@@ -55,8 +56,13 @@ class AqDeviceInfoWidget(AqDialogTemplate):
             self.ui.operatingInfoLayout.setWidget(i, QFormLayout.LabelRole, line_edit)
             if item['item'] is not None:
                 editor = item['item'].get_editor()
-                line_edit = editor(item['item'].get_param_attributes(), self.ui.operatingInfoFrame)
-                line_edit.set_value(item['info_value'])
+                editor_obj = editor(item['item'].get_param_attributes(), self.ui.operatingInfoFrame)
+                editor_obj.set_value(item['info_value'])
+                value_text = editor_obj.text()
+                editor_obj.hide()
+                editor_obj.deleteLater()
+                line_edit = QLineEdit(self.ui.operatingInfoFrame)
+                line_edit.setText(value_text)
             else:
                 line_edit = QLineEdit(self.ui.operatingInfoFrame)
                 line_edit.setText(item['info_value'])

@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget, QCalendarWidget, QTableView, QHeaderView,
 
 from AqMessageManager import AqMessageManager
 from AqTranslateManager import AqTranslateManager
+from AqWatchListCore import AqWatchListCore
 from AqWindowTemplate import AqDialogTemplate
 
 
@@ -20,11 +21,12 @@ class AqRtcWindow(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
 
-        self.name = 'Set Date Time'
+        self.name = AqTranslateManager.tr('Set Date Time')
         self._date = None
         self._time = None
         self._time_zone = None
         self.__write_handler = None
+        AqWatchListCore.set_pause_flag(True)
 
         self._message_manager = AqMessageManager.get_global_message_manager()
         self.prepare_ui()
@@ -193,4 +195,5 @@ class AqRtcWindow(AqDialogTemplate):
 
     def close(self):
         self._message_manager.de_subscribe(self.message_signal.emit, 'rtc')
+        AqWatchListCore.set_pause_flag(False)
         super().close()

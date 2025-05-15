@@ -1,5 +1,6 @@
 import os
 import threading
+import zipfile
 from datetime import datetime
 import struct
 import time
@@ -19,6 +20,7 @@ from AqTreeViewItemModel import AqTreeItemModel
 
 from AqAutoDetectionLibrary import get_containers_count, \
     get_containers_offset, get_storage_container, parse_tree
+from AqZipFunc import extract_zip_with_cyrillic
 
 
 class AqAutoDetectionDevice(AqBaseDevice):
@@ -36,7 +38,14 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'date_time':        [0xF080, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
         'time_zone':        [0xF082, 1, 3, 16, 'AqAutoDetectSignedParamItem', False],
         'new_time_trig':    [0xF07F, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
-        'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False]
+        'new_date_time':    [0xF07D, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        # For calibration
+        'calib_code':       [61616, 2, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'calib_value':      [61618, 2, 3, 16, 'AqAutoDetectFloatParamItem', False],
+        # For log (archive)
+        'log_interval':     [900, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'log_num_files':    [901, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False],
+        'log_file_size':    [902, 1, 3, 16, 'AqAutoDetectUnsignedParamItem', False]
     }
 
 
@@ -46,6 +55,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
                        'error': AqTranslateManager.tr('Reboot failed. Please try again')}
     password_msg_dict = {'ok': AqTranslateManager.tr('Password settings successfully updated'),
                          'error': AqTranslateManager.tr('Can`t write new password settings. Please try again')}
+    updateFW_msg_dict = {'ok': AqTranslateManager.tr('Firmware file successfully load into device'),
+                         'error': AqTranslateManager.tr('Firmware file loading failed. Please try again')}
 
     # Format: 'file_name': [file_num, start_record_num, file_size (in bytes), R_Only, File Type, message_dict]
     _system_file = {
@@ -54,20 +65,23 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem', password_msg_dict],
         'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],  # file_size will be changed later in code
         'arch_header':  [0x4000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
-        'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None]
+        'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'calib':        [0xFFA0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'updateFW':     [0x0090, 0, 248, False, 'AqAutoDetectModbusFileItem', updateFW_msg_dict] # file_size will be changed later in code
     }
 
     system_params_dict = dict()
 
     # Add to init all what we need
-    def __init__(self, event_manager, connect: AqModbusConnect):
-        self._password = None
+    def __init__(self, event_manager, connect: AqModbusConnect, password=None):
+        self._password = password
         super().__init__(event_manager, connect)
         self._default_prg = None
-        self._password = None
+        # self._password = None
         self._connect = connect
 
     def init_device(self) -> bool:
+
         self.__create_system_params()
         self.__create_system_files()
         self._info['name'] = self.__sync_read_param(self.system_params_dict['name'])
@@ -104,9 +118,9 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._functions['password'] = True
         self._functions['gateway'] = self.__check_ugm_container()
         self._functions['set_slave_id'] = True
-        self._functions['calibration'] = False
+        self._functions['calibration'] = self.__check_calib_json()
         self._functions['log'] = False  # self.__check_archive_container() #now only true, заглушка
-        self._functions['fw_update'] = False
+        self._functions['fw_update'] = True
         self._functions['restart'] = True
 
         self._status = 'ok'
@@ -237,7 +251,11 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     if j < len(row) - 1:  # Убедимся, что мы не добавляем последнюю колонку
                         if j == 0:
                             # Замінюємо UID на ім'я параметру
-                            item_by_uid = self.__get_item_by_UID(int(cell_str, 16))
+                            try:
+                                item_by_uid = self.__get_item_by_UID(int(cell_str, 16))
+                            except Exception as e:
+                                continue
+
                             if item_by_uid is not None:
                                 parameter_attributes = item_by_uid.get_param_attributes()
                                 name = parameter_attributes.get('name', 'err_name')
@@ -277,6 +295,17 @@ class AqAutoDetectionDevice(AqBaseDevice):
         #         return False
 
         return True
+
+    def __check_calib_json(self):
+        try:
+            calib_file_first_page = self.__sync_read_file(self.system_params_dict['calib'])
+            if calib_file_first_page is None or len(calib_file_first_page) == 0:
+                return False
+            else:
+                return True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
 
     def __get_item_by_UID(self, uid):
         param_attributes = None
@@ -449,6 +478,103 @@ class AqAutoDetectionDevice(AqBaseDevice):
             print(f"Error occurred: {str(e)}")
             return 'decrypt_err'  # Помилка дешифрування
 
+    def read_calib_file(self):
+        try:
+            file_size = 64000
+            self.system_params_dict['calib'].set_file_size(file_size // 2)
+            calib_file = self.__sync_read_file(self.system_params_dict['calib'])
+
+            roaming_temp_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
+            # Проверяем наличие папки Roaming, если её нет - создаем
+            if not os.path.exists(roaming_temp_folder):
+                os.makedirs(roaming_temp_folder)
+
+            filename = self._info['name'] + '_' + self._info['version'] + '_' + 'FFA0'
+            FORMAT = '.zip'
+            full_filepath = os.path.join(roaming_temp_folder, filename + FORMAT)
+            with open(full_filepath, 'wb') as file:
+                file.write(calib_file)
+
+            extract_zip_with_cyrillic(full_filepath, roaming_temp_folder + '/calib')
+
+            return True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
+    def read_calib_coeff(self, param1, param2, param3):
+        DEBUG_REVERT = False
+        try:
+            calib_code_param = self.system_params_dict['calib_code']
+            if DEBUG_REVERT:
+                code_key = 0x1326 << 16 | param3 << 10 | param2 << 5 | param1
+            else:
+                code_key = 0x1326 << 16 | param1 << 10 | param2 << 5 | param3
+
+            calib_code_param.value = code_key
+            calib_code_param.param_status = 'changed'
+            if self.__sync_write_param(calib_code_param) != 'ok':
+                raise Exception('Calib access code error')
+
+            coeff = self.__sync_read_param(self.system_params_dict['calib_value'])
+
+            if isinstance(coeff, float):
+                return coeff
+            else:
+                return False
+
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
+    def write_calib_coeff(self, param1, param2, param3, value):
+        DEBUG_REVERT = False
+        try:
+            calib_code_param = self.system_params_dict['calib_code']
+            if DEBUG_REVERT:
+                code_key = 0x1326 << 16 | param3 << 10 | param2 << 5 | param1
+            else:
+                code_key = 0x1326 << 16 | param1 << 10 | param2 << 5 | param3
+
+            calib_code_param.value = code_key
+            calib_code_param.param_status = 'changed'
+            if self.__sync_write_param(calib_code_param) != 'ok':
+                raise Exception('Calib access code error')
+
+            calib_value_param = self.system_params_dict['calib_value']
+            calib_value_param.value = value
+            calib_value_param.param_status = 'changed'
+            if self.__sync_write_param(calib_value_param) != 'ok':
+                raise Exception('Calib access code error')
+
+            return True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
+    def read_calib_param(self, reg):
+        try:
+            item = self.__get_item_by_modbus_reg(reg)
+            item.param_status = 'changed'
+            return self.__sync_read_param(item)
+
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
+    def write_calib_param(self, reg, value):
+        try:
+            item = self.__get_item_by_modbus_reg(reg)
+            item.value = value
+            item.param_status = 'changed'
+            if self.__sync_write_param(item) != 'ok':
+                raise Exception('Calib access code error')
+
+            return True
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return False
+
     def get_configuration(self) -> AqDeviceConfig:
         config = AqDeviceConfig()
         config.device_name = self.info('name')
@@ -583,6 +709,9 @@ class AqAutoDetectionDevice(AqBaseDevice):
             archive_header = archive_header_bytes.decode('ANSI')
             # archive_header = archive_header_bytes.decode('UTF-8')
             archive_header = archive_header_bytes.decode('cp1251')
+
+            file_size = 64000
+            self.system_params_dict['archive'].set_file_size(file_size // 2)
             archive_bytes = self.__sync_read_file(self.system_params_dict['archive'])
             archive = archive_bytes.decode('ANSI')
             archive = archive_bytes.decode('cp1251')
@@ -598,11 +727,26 @@ class AqAutoDetectionDevice(AqBaseDevice):
         #
         # return model
 
+    def get_log_settings(self):
+        try:
+            log_interval = self.__sync_read_param(self.system_params_dict['log_interval'])
+            log_num_files = self.__sync_read_param(self.system_params_dict['log_num_files'])
+            log_file_size = self.__sync_read_param(self.system_params_dict['log_file_size'])
+
+            if isinstance(log_interval, int) and isinstance(log_num_files, int) and isinstance(log_file_size, int):
+                return {'log_interval': log_interval, 'log_num_files': log_num_files, 'log_file_size': log_file_size}
+            else:
+                return None
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            return None
+
     def get_password(self):
         return self._password
 
     def set_password(self, password: str):
-        self._password = str(password) if str(password) != '' else None
+        if password is not None:
+            self._password = str(password) if str(password) != '' else None
 
     def write_password(self, new_password):
         record_data = new_password.encode('1251')
@@ -624,3 +768,20 @@ class AqAutoDetectionDevice(AqBaseDevice):
                     if pass_file_item.get_status() == 'ok':
                         new_password = item_stack[0].value.decode('cp1251')
                         self.set_password(new_password)
+
+    def write_update_file(self, update_file_array, callback):
+        record_data = update_file_array
+        item = self.system_params_dict.get('updateFW', None)
+        item.value = record_data
+        file_size = None
+        item.set_file_size(file_size)
+        item.confirm_writing_callback = callback
+
+        # self.write_file(item, message_feedback_address='updateFW')
+        self.write_file(item)
+
+    def check_device_update_fw(self):
+        if self.__sync_read_param(self.system_params_dict['name']) == self.name:
+                return True
+        else:
+            return False

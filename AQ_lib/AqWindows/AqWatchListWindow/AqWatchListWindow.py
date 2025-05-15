@@ -36,7 +36,7 @@ class AqWatchListWidget(AqDialogTemplate):
         self.maximizeBtnEnable = False
         self.resizeFrameEnable = [True, 5]
 
-        self.name = 'Watch list'
+        self.name = AqTranslateManager.tr('Watch list')
 
         self.tree_model_for_view = AqWatchListTreeViewModel()
         self.ui.treeView.setModel(self.tree_model_for_view)

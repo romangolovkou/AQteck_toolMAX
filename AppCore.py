@@ -17,6 +17,7 @@ class Core(object):
         cls.session = AqCurrentSession(cls.event_manager, cls)
         AqConnectManager.init()
         DeviceCreator.init(cls.event_manager)
+        # CalibCreator.init(cls.event_manager)
         AqWatchListCore.init()
         AqSettingsManager.init()
 

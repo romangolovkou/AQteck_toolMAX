@@ -6,7 +6,8 @@ from PySide6.QtGui import QStandardItem
 
 from AqParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIntTreeLineEdit, \
     AqFloatTreeLineEdit, AqStringTreeLineEdit, AqDateTimeLineEdit, AqEnumROnlyTreeLineEdit, \
-    AqSignedToFloatTreeLineEdit, AqFloatEnumROnlyTreeLineEdit, AqFloatEnumTreeComboBox, AqBitLineEdit, AqIpTreeLineEdit
+    AqSignedToFloatTreeLineEdit, AqFloatEnumROnlyTreeLineEdit, AqFloatEnumTreeComboBox, AqBitLineEdit, \
+    AqIpTreeLineEdit, AqBitMaskLineEdit, AqTreeLineEdit
 
 
 class AqParamItem(QStandardItem):
@@ -430,6 +431,28 @@ class AqBitParamItem(AqParamItem):
         # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
         self.editor_RW = AqBitLineEdit
         self.editor_R_Only = AqUintTreeLineEdit
+
+    def get_editor(self):
+        param_attributes = self.data(Qt.UserRole)
+        if param_attributes is not None:
+            if (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
+                return self.editor_R_Only
+
+        return self.editor_RW
+
+
+class AqBitMaskParamItem(AqParamItem):
+    def __init__(self, param_attributes):
+        self.param_size = param_attributes.get('param_size', None)
+        if self.param_size is None:
+            raise Exception('AQ_BitMaskParamItemError: "param_size" is not exist')
+
+        if param_attributes.get('def_value', None) is None:
+            param_attributes['def_value'] = 0
+        super().__init__(param_attributes)
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor_RW = AqBitMaskLineEdit
+        self.editor_R_Only = AqBitMaskLineEdit
 
     def get_editor(self):
         param_attributes = self.data(Qt.UserRole)

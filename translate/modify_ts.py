@@ -108,15 +108,41 @@ def modify_custom_context(_txt_filename, _ts_filename):
             # Читаем все строки из файла .ts
             ts_lines = ts_file.readlines()
             # Залишаємо тільки строки після хідеру <name>Custom context</name>
-            cust_block_index = None
+            cust_block_index_start = None
+            cust_block_index_end = None
             for i in range(len(ts_lines)):
                 if '<name>Custom context</name>' in ts_lines[i]:
-                    cust_block_index = i
+                    cust_block_index_start = i
+                    break
 
-            if cust_block_index is not None:
-                ts_lines = ts_lines[cust_block_index:]
+            # Если начало блока найдено, ищем индекс конца блока
+            if cust_block_index_start is not None:
+                for i in range(cust_block_index_start, len(ts_lines)):
+                    if '</context>' in ts_lines[i]:
+                        cust_block_index_end = i
+                        break
+
+            if cust_block_index_start is not None and cust_block_index_end is not None:
+                ts_lines_custom_block = ts_lines[cust_block_index_start:cust_block_index_end]
             else:
                 raise Exception('Can`t find <name>Custom context</name>')
+
+            if cust_block_index_start is not None and cust_block_index_end is not None:
+                # Вырезаем блок из ts_lines
+                block_to_move = ts_lines[cust_block_index_start - 1:cust_block_index_end + 1]
+                # Удаляем этот блок из исходного места
+                del ts_lines[cust_block_index_start - 1:cust_block_index_end + 1]
+
+                # Пробегаемся по block_to_move и удаляем подстроку ' type="vanished"'
+                block_to_move = [line.replace(' type="vanished"', '') for line in block_to_move]
+
+                # Добавляем блок в конец списка
+                ts_lines = ts_lines[:-1] + block_to_move + [ts_lines[-1]]
+                with open(_ts_filename, 'w', encoding='utf-8') as ts_file:
+                    ts_file.writelines(ts_lines)
+            else:
+                raise Exception('Can`t find <name>Custom context</name> or </context>')
+
 
         custom_ts_context = ''
         for line in lines:
@@ -125,7 +151,7 @@ def modify_custom_context(_txt_filename, _ts_filename):
             # Создаем строку, которая должна присутствовать в файле .ts
             source_tag = f'<source>{line}</source>'
             # Проверяем, есть ли уже такая строка в файле .ts
-            if not any(source_tag in ts_line for ts_line in ts_lines):
+            if not any(source_tag in ts_line for ts_line in ts_lines_custom_block):
                 # Добавляем строку в структуру
                 custom_ts_context += f'''    <message>
         <source>{line}</source>
