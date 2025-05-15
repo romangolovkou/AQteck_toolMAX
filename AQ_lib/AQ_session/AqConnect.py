@@ -467,13 +467,13 @@ class AqModbusConnect(AqConnect):
                 #TEST FW BREAK RESPONCE
                 if isinstance(result, ModbusIOException):
                     # return 'modbus_error'
-                    item.data_from_network(None, True, 'modbus_error')
+                    item.confirm_writing(False, 'modbus_error')
                 elif isinstance(result, ExceptionResponse):
                     self.status = 'connect_err'
-                    item.data_from_network(None, True, 'modbus_error')
+                    item.confirm_writing(False, 'modbus_error')
                     return
-                else:
-                    item.data_from_network(result)
+#                else:
+#                    item.confirm_writing(True)
 
             # WARNING TODO:!!!!  !!!!!!!!
             # Тимчасова вставка для перевірки роботи файлу ребут,
