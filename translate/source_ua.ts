@@ -1106,7 +1106,7 @@
     <message>
         <location filename="../UI/forms/form.ui" line="2420"/>
         <source>Log data</source>
-        <translation type="unfinished"></translation>
+        <translation>Архів</translation>
     </message>
     <message>
         <source>Set slave ID</source>
@@ -1574,6 +1574,10 @@
     <message>
         <source>Log</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current device value</source>
+        <translation>Поточне значення приладу</translation>
     </message>
 </context>
 </TS>

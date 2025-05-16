@@ -21,6 +21,7 @@ from AqMessageManager import AqMessageManager
 from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqTreeViewItemModel import AqTreeViewItemModel
+from AqTypeValueWithErrCodeLib import check_err_code_in_value
 from DeviceNotInitedWidget import DeviceInitWidget
 from NoDevicesWidget import NoDeviceWidget
 
@@ -162,7 +163,7 @@ class AqCalibViewManager(QStackedWidget):
         self.devSnLabel.show()
         stepMeasureIntLineEdit.hide()
         stepMeasureFloatLineEdit.hide()
-        self.currentCalibValueFrame.hide()
+        # self.currentCalibValueFrame.hide()
 
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
@@ -268,15 +269,14 @@ class AqCalibViewManager(QStackedWidget):
         self.stepDescrLabel_1.setText(AqTranslateManager.tr('Do next:'))
         self.stepDescrLabel_3.setText(AqTranslateManager.tr('2. Press Run.'))
 
+        self.currentCalibValueLabel.setText(AqTranslateManager.tr('Current device value'))
+        self.activate_cur_calib_value_scan(True)
+
         self.stepPicLabel.setText(AqTranslateManager.tr('Connection diagram'))
         if user_settings['method'] == AqTranslateManager.tr('Reference source'):
             key = 'referenceSignal'
             self.stepMeasureLabel.hide()
             self.stepMeasureLineEdit.hide()
-
-            self.currentCalibValueFrame.show()
-            self.currentCalibValueLabel.setText(AqTranslateManager.tr('Current in value '))
-            self.activate_cur_calib_value_scan(True)
 
             self.stepDescrLabel_2.setText(AqTranslateManager.tr('1. Connect to ') +
                                            '<b>' + step_ui_settings['name'] + '</b>' + ' ' +
@@ -493,4 +493,5 @@ class AqCalibViewManager(QStackedWidget):
 
     def cur_calib_value_read(self):
         value = self.calibrator.get_cur_ch_value()
+        value = check_err_code_in_value(value)
         self.currentCalibValueLineEdit.setText(str(value))

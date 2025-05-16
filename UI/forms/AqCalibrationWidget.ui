@@ -822,6 +822,9 @@ border-radius: 4px;
                     <height>16777215</height>
                    </size>
                   </property>
+                  <property name="styleSheet">
+                   <string notr="true">border: none;</string>
+                  </property>
                  </widget>
                 </item>
                </layout>
