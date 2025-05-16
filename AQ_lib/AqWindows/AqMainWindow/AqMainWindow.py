@@ -71,7 +71,7 @@ class AqMainWindow(QMainWindow):
         # Відключення кнопок утіліт до відображення першого девайсу
 
         #Hot keys
-        self.shortcut_calib_develop = QShortcut(QKeySequence("Ctrl+Alt+C"), self)
+        self.shortcut_calib_develop = QShortcut(QKeySequence("F8"), self)
         self.shortcut_calib_develop.activated.connect(lambda: AqUiWorker.show_calib_window(True))
 
     def retranslate(self):
