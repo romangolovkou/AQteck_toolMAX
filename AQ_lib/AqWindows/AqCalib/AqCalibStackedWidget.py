@@ -6,7 +6,7 @@ from functools import partial
 from PySide2.QtCore import QTimer, Qt, Signal
 from PySide2.QtGui import QStandardItem, QPixmap
 # from PySide2.QtSvgWidgets import QSvgWidget
-from PySide2.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit
+from PySide2.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
 
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager

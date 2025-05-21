@@ -1,7 +1,8 @@
 from functools import partial
 
-from PySide6.QtCore import QCoreApplication, Signal
-from PySide6.QtGui import QKeySequence, QShortcut
+from PySide2.QtCore import QCoreApplication, Signal
+from PySide2.QtGui import QKeySequence
+from PySide2.QtWidgets import QShortcut
 
 import AqUiWorker
 from AqSettingsFunc import AqSettingsManager
