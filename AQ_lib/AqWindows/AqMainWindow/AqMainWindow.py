@@ -1,6 +1,7 @@
 from functools import partial
 
-from PySide2.QtCore import QCoreApplication, Signal
+from PySide6.QtCore import QCoreApplication, Signal
+from PySide6.QtGui import QKeySequence, QShortcut
 
 import AqUiWorker
 from AqSettingsFunc import AqSettingsManager
@@ -68,6 +69,10 @@ class AqMainWindow(QMainWindow):
         self.retranslate()
 
         # Відключення кнопок утіліт до відображення першого девайсу
+
+        #Hot keys
+        self.shortcut_calib_develop = QShortcut(QKeySequence("F8"), self)
+        self.shortcut_calib_develop.activated.connect(lambda: AqUiWorker.show_calib_window(True))
 
     def retranslate(self):
         self.ui.retranslateUi(self)
