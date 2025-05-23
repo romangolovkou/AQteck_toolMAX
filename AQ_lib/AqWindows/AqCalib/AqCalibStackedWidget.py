@@ -1,4 +1,5 @@
 import os
+import random
 import shutil
 from collections import deque
 from datetime import datetime
@@ -29,6 +30,8 @@ from NoDevicesWidget import NoDeviceWidget
 
 IMAGE_PREFIX = 'test_files/'
 
+TOLERANCE_PERCENT = 0.01
+WAIT_SAMPLES = 15
 
 class AqCalibViewManager(QStackedWidget):
     message_signal = Signal(str, str)
@@ -50,6 +53,7 @@ class AqCalibViewManager(QStackedWidget):
         self.samples = deque(maxlen=4)
         self.auto_next_step_signal.connect(self._step_run_btn_)
         self.auto_mode = False
+        self.auto_mode_wait_count = 0
 
         self._calib_device = None
         self.calib_dev_mode = False
@@ -526,6 +530,7 @@ class AqCalibViewManager(QStackedWidget):
             self.value_is_stable(value)
 
     def value_is_stable(self, value):
+        value = random.randint(3, 18)
         if isinstance(value, float) or isinstance(value, int):
             self.samples.append(value)
             if len(self.samples) >= self.samples.maxlen:
@@ -533,9 +538,18 @@ class AqCalibViewManager(QStackedWidget):
                 average = mean(self.samples)
                 if average < 1.0:
                     average = 1.0
-                tolerance = average * 0.01
+                tolerance = average * TOLERANCE_PERCENT
                 if float(devi) < tolerance:
                     self.auto_next_step_signal.emit()
+                else:
+                    self.auto_mode_wait_count = self.auto_mode_wait_count + 1
+                    if self.auto_mode_wait_count > WAIT_SAMPLES:
+                        self.auto_mode_wait_count = 0
+                        self._message_manager.send_message('calib',
+                                                           'Warning',
+                                                           AqTranslateManager.tr(
+                                                               'The signal is not stable!'))
+
         else:
             self.samples.clear()
 
