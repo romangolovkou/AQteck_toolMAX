@@ -1,9 +1,7 @@
 import os
 import shutil
-from collections import deque
 from datetime import datetime
 from functools import partial
-from statistics import pstdev, mean
 
 # import cairosvg
 from PySide6.QtCore import QTimer, Qt, Signal
@@ -32,7 +30,6 @@ IMAGE_PREFIX = 'test_files/'
 
 class AqCalibViewManager(QStackedWidget):
     message_signal = Signal(str, str)
-    auto_next_step_signal = Signal()
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -46,9 +43,6 @@ class AqCalibViewManager(QStackedWidget):
         self._message_manager.subscribe('calib', self.message_signal.emit)
 
         self.roaming_temp_folder = None
-
-        self.samples = deque(maxlen=4)
-        self.auto_next_step_signal.connect(self._step_run_btn_)
 
         self._calib_device = None
         self.calib_dev_mode = False
@@ -233,7 +227,6 @@ class AqCalibViewManager(QStackedWidget):
             raise Exception(self.objectName() + ' Error: wrong UI settings')
 
     def _run_calib_btn_clicked_(self):
-        self.samples.clear()
         self.user_settings['pinType'] = self.pinTypeComboBox.currentText()
         self.user_settings['_pinType'] = self.calibrator.check_pin_type_by_name(self.user_settings['pinType'])
         self.user_settings['input_outputType'] = self.input_outputTypeComboBox.currentText()
@@ -345,7 +338,6 @@ class AqCalibViewManager(QStackedWidget):
 
     def _step_run_btn_(self):
         self.activate_cur_calib_value_scan(False)
-        self.samples.clear()
         if self.stepMeasureLineEdit.text() == '' and self.user_settings['method'] == AqTranslateManager.tr('Reference meter'):
             self._message_manager.send_message('calib',
                                                'Warning',
@@ -503,18 +495,3 @@ class AqCalibViewManager(QStackedWidget):
         value = self.calibrator.get_cur_ch_value()
         value = check_err_code_in_value(value)
         self.currentCalibValueLineEdit.setText(str(value))
-        self.value_is_stable(value)
-
-    def value_is_stable(self, value):
-        if isinstance(value, float) or isinstance(value, int):
-            self.samples.append(value)
-            if len(self.samples) >= self.samples.maxlen:
-                devi = pstdev(self.samples)
-                average = mean(self.samples)
-                if average < 1.0:
-                    average = 1.0
-                tolerance = average * 0.01
-                if float(devi) < tolerance:
-                    self.auto_next_step_signal.emit()
-        else:
-            self.samples.clear()
