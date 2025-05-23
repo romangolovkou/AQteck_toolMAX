@@ -818,7 +818,7 @@ border-radius: 4px;
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>100</width>
+                    <width>200</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -879,9 +879,6 @@ border-radius: 4px;
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="spacing">
-              <number>20</number>
-             </property>
              <item>
               <widget class="QPushButton" name="backBtn">
                <property name="minimumSize">
@@ -915,6 +912,24 @@ border-radius: 4px;
                </property>
                <property name="text">
                 <string>Run</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="autoBtn">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Auto</string>
                </property>
               </widget>
              </item>

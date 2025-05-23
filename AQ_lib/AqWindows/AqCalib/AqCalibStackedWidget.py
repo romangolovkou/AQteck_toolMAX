@@ -49,6 +49,7 @@ class AqCalibViewManager(QStackedWidget):
 
         self.samples = deque(maxlen=4)
         self.auto_next_step_signal.connect(self._step_run_btn_)
+        self.auto_mode = False
 
         self._calib_device = None
         self.calib_dev_mode = False
@@ -74,6 +75,7 @@ class AqCalibViewManager(QStackedWidget):
         self.stepPicture = None
         self.stepBackBtn = None
         self.stepRunBtn = None
+        self.autoBtn = None
         self.tableWidget = None
         self.tableDescrLabel1 = None
         self.tableDescrLabel2 = None
@@ -114,6 +116,7 @@ class AqCalibViewManager(QStackedWidget):
         self.stepPicture = self.findChild(QLabel, 'picture')
         self.stepBackBtn = self.findChild(QPushButton, 'backBtn')
         self.stepRunBtn = self.findChild(QPushButton, 'runBtn')
+        self.autoBtn = self.findChild(QPushButton, 'autoBtn')
         self.tableWidget = self.findChild(AqCalibCoeffTable, 'tableWidget')
         self.tableDescrLabel1 = self.findChild(QLabel, 'descrLabel2_1')
         self.tableDescrLabel2 = self.findChild(QLabel, 'descrLabel2_2')
@@ -144,6 +147,7 @@ class AqCalibViewManager(QStackedWidget):
             self.stepPicture,
             self.stepBackBtn,
             self.stepRunBtn,
+            self.autoBtn,
             self.tableWidget,
             self.tableDescrLabel1,
             self.tableDescrLabel2,
@@ -177,7 +181,13 @@ class AqCalibViewManager(QStackedWidget):
         self.stepBackBtn.clicked.connect(self._back_btn_clicked_)
         self.tableBackBtn.clicked.connect(self._back_btn_clicked_)
         self.stepRunBtn.clicked.connect(self._step_run_btn_)
+        self.autoBtn.clicked.connect(self._auto_btn_clicked_)
         self.tableWriteCoeffBtn.clicked.connect(self._write_coeffs_btn_clicked_)
+
+        if self.calib_dev_mode is True:
+            self.autoBtn.show()
+        else:
+            self.autoBtn.hide()
 
         self.ui_settings = self.calibrator.get_ui_settings()
         self.load_combo_boxes()
@@ -265,7 +275,9 @@ class AqCalibViewManager(QStackedWidget):
                                                AqTranslateManager.tr('Start calibration failed! Check connections lines and try again.'))
 
     def _load_step_page_(self, user_settings):
-        self.stepRunBtn.setEnabled(True)
+        if self.auto_mode is False:
+            self.stepRunBtn.setEnabled(True)
+
         step_ui_settings = self.calibrator.calib_session.get_step_ui_settings()
 
         self.stepHeaderLabel.setText(user_settings['input_outputType'])
@@ -327,6 +339,7 @@ class AqCalibViewManager(QStackedWidget):
         #     print(f'image not found. Error: {e}')
 
     def _load_table_page_(self, context):
+        self.stepRunBtn.setEnabled(True)
         sensor_type = self.user_settings['pinType']
         self.tableDescrLabel1.setText(AqTranslateManager.tr('Calibration coefficients were calculated successfully'))
         self.tableDescrLabel2.setText(AqTranslateManager.tr('Sensor type:') + f' {sensor_type}')
@@ -338,6 +351,8 @@ class AqCalibViewManager(QStackedWidget):
         self.calibrator.return_saved_coeffs()
         self.calibrator.clear_session_cash()
         self.activate_cur_calib_value_scan(False)
+        self.stepRunBtn.setEnabled(True)
+        self.auto_mode = False
         self.setCurrentIndex(1)
         self._message_manager.send_message('calib',
                                            'Warning',
@@ -484,6 +499,9 @@ class AqCalibViewManager(QStackedWidget):
 
     def close_steps(self):
         self.activate_cur_calib_value_scan(False)
+        self.stepRunBtn.setEnabled(True)
+        self.auto_mode = False
+
         if self.roaming_temp_folder is not None and os.path.exists(self.roaming_temp_folder):
             shutil.rmtree(self.roaming_temp_folder)
 
@@ -503,7 +521,8 @@ class AqCalibViewManager(QStackedWidget):
         value = self.calibrator.get_cur_ch_value()
         value = check_err_code_in_value(value)
         self.currentCalibValueLineEdit.setText(str(value))
-        self.value_is_stable(value)
+        if self.auto_mode is True:
+            self.value_is_stable(value)
 
     def value_is_stable(self, value):
         if isinstance(value, float) or isinstance(value, int):
@@ -518,3 +537,7 @@ class AqCalibViewManager(QStackedWidget):
                     self.auto_next_step_signal.emit()
         else:
             self.samples.clear()
+
+    def _auto_btn_clicked_(self):
+        self.auto_mode = True
+        self.stepRunBtn.setEnabled(False)
