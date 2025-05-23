@@ -340,6 +340,7 @@ class AqCalibViewManager(QStackedWidget):
 
     def _load_table_page_(self, context):
         self.stepRunBtn.setEnabled(True)
+        self.auto_mode = False
         sensor_type = self.user_settings['pinType']
         self.tableDescrLabel1.setText(AqTranslateManager.tr('Calibration coefficients were calculated successfully'))
         self.tableDescrLabel2.setText(AqTranslateManager.tr('Sensor type:') + f' {sensor_type}')
