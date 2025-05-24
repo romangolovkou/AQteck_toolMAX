@@ -530,7 +530,6 @@ class AqCalibViewManager(QStackedWidget):
             self.value_is_stable(value)
 
     def value_is_stable(self, value):
-        value = random.randint(3, 18)
         if isinstance(value, float) or isinstance(value, int):
             self.samples.append(value)
             if len(self.samples) >= self.samples.maxlen:
