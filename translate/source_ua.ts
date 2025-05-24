@@ -279,16 +279,16 @@
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="670"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="709"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="804"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="856"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="951"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="963"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="975"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="859"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="969"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="981"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="993"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="896"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1066"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1084"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
@@ -298,14 +298,19 @@
         <translation>Далі</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1013"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1018"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1023"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="932"/>
+        <source>Auto</source>
+        <translation>Авто</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1031"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1036"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1041"/>
         <source>Новый столбец</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1084"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1102"/>
         <source>Write</source>
         <translation>Записати</translation>
     </message>
@@ -1572,12 +1577,16 @@
         <translation>Поточне значення приладу</translation>
     </message>
     <message>
+        <source>Current device value</source>
+        <translation>Поточне значення приладу</translation>
+    </message>
+    <message>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Current device value</source>
-        <translation>Поточне значення приладу</translation>
+        <source>The signal is not stable!</source>
+        <translation>Сигнал не стабільний!</translation>
     </message>
 </context>
 </TS>

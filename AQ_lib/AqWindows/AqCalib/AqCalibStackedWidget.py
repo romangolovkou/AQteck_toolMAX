@@ -248,6 +248,7 @@ class AqCalibViewManager(QStackedWidget):
 
     def _run_calib_btn_clicked_(self):
         self.samples.clear()
+        self.return_default_auto_btn_style_sheet()
         self.user_settings['pinType'] = self.pinTypeComboBox.currentText()
         self.user_settings['_pinType'] = self.calibrator.check_pin_type_by_name(self.user_settings['pinType'])
         self.user_settings['input_outputType'] = self.input_outputTypeComboBox.currentText()
@@ -358,6 +359,7 @@ class AqCalibViewManager(QStackedWidget):
         self.activate_cur_calib_value_scan(False)
         self.stepRunBtn.setEnabled(True)
         self.auto_mode = False
+        self.return_default_auto_btn_style_sheet()
         self.setCurrentIndex(1)
         self._message_manager.send_message('calib',
                                            'Warning',
@@ -506,6 +508,7 @@ class AqCalibViewManager(QStackedWidget):
         self.activate_cur_calib_value_scan(False)
         self.stepRunBtn.setEnabled(True)
         self.auto_mode = False
+        self.return_default_auto_btn_style_sheet()
 
         if self.roaming_temp_folder is not None and os.path.exists(self.roaming_temp_folder):
             shutil.rmtree(self.roaming_temp_folder)
@@ -553,5 +556,56 @@ class AqCalibViewManager(QStackedWidget):
             self.samples.clear()
 
     def _auto_btn_clicked_(self):
-        self.auto_mode = True
-        self.stepRunBtn.setEnabled(False)
+        if self.auto_mode is False:
+            self.auto_mode = True
+            self.stepRunBtn.setEnabled(False)
+            self.autoBtn.setStyleSheet("""QPushButton {
+                                            border: 1px solid #637A7B;
+                                        }
+                                        
+                                        QPushButton {
+                                             border-left: 1px solid #9ef1d3;
+                                            border-top: 1px solid #9ef1d3;
+                                            border-bottom: 1px solid #5bb192;
+                                            border-right: 1px solid #5bb192;
+                                            color: #FFFFFF;
+                                            background-color: #01bafa;
+                                            border-radius: 4px;
+                                            padding-left: 10px;
+                                            padding-right: 10px;
+                                        }
+                                        
+                                        QPushButton:hover {
+                                            background-color: #3c3e41;
+                                        }
+                                        QPushButton:pressed {
+                                             background-color: #429061;
+                                        }""")
+        else:
+            self.auto_mode = False
+            self.stepRunBtn.setEnabled(True)
+            self.return_default_auto_btn_style_sheet()
+
+    def return_default_auto_btn_style_sheet(self):
+        self.autoBtn.setStyleSheet("""QPushButton {
+                                                    border: 1px solid #637A7B;
+                                                }
+
+                                                QPushButton {
+                                                     border-left: 1px solid #9ef1d3;
+                                                    border-top: 1px solid #9ef1d3;
+                                                    border-bottom: 1px solid #5bb192;
+                                                    border-right: 1px solid #5bb192;
+                                                    color: #FFFFFF;
+                                                    background-color: #2b2d30;
+                                                    border-radius: 4px;
+                                                    padding-left: 10px;
+                                                    padding-right: 10px;
+                                                }
+
+                                                QPushButton:hover {
+                                                    background-color: #3c3e41;
+                                                }
+                                                QPushButton:pressed {
+                                                     background-color: #429061;
+                                                }""")
