@@ -672,8 +672,12 @@ class AqBitMaskLineEdit(AqTreeLineEdit):
         self.setReadOnly(True)
 
     def get_bitmask_size(self):
-        bit_length_by_max = self.max_limit.bit_length()
         bit_length_by_size = self.param_size * 8
+        if self.max_limit is not None:
+            bit_length_by_max = self.max_limit.bit_length()
+        else:
+            return bit_length_by_size
+
         return bit_length_by_size if bit_length_by_size < bit_length_by_max else bit_length_by_max
 
     def set_value(self, value):
