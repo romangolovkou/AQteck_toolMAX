@@ -206,6 +206,7 @@ class AqTreeViewManager(QStackedWidget):
         cur_par_default = ''
         if param_attributes.get('type', '') == 'enum':
             def_value = param_attributes.get('def_value', '')
+            min_limit = param_attributes.get('min_limit', 0)
             r_only = param_attributes.get('R_Only', 0)
             w_only = param_attributes.get('W_Only', 0)
             if def_value == '' or (r_only == 1 and w_only == 0):
@@ -213,7 +214,7 @@ class AqTreeViewManager(QStackedWidget):
             else:
                 enum_strings = param_attributes.get('enum_strings', [])
                 if len(enum_strings) > 0:
-                    def_str = enum_strings[def_value]
+                    def_str = enum_strings[def_value - min_limit]
                     cur_par_default = def_str
         elif param_attributes.get('visual_type', '') == 'ip_format':
             cur_par_default = ''

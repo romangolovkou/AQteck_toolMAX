@@ -137,6 +137,7 @@ class AqEnumTreeComboBox(QComboBox):
         # Отключение обработчика события колеса мыши
         self.wheelEvent = lambda event: event.ignore()
         self.manager_item_handler = None
+        self.min_limit = param_attributes.get('min_limit', '')
         self.enum_str_dict = param_attributes.get('enum_strings', '')
         enum_strings = self.enum_str_dict.values()
         enum_strings = list(enum_strings)
@@ -150,6 +151,7 @@ class AqEnumTreeComboBox(QComboBox):
 
     def updateIndex(self, index):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        index = index + self.min_limit
         string = self.itemText(index)
         key = self.get_key_by_value(self.enum_str_dict, string)
         self.save_new_value(key)
@@ -167,6 +169,7 @@ class AqEnumTreeComboBox(QComboBox):
 
     def set_value(self, value):
         if not self.hasFocus():
+            value = value - self.min_limit
             string = self.enum_str_dict.get(value, '')
             self.setCurrentText(string)
             # self.setCurrentIndex(value)
