@@ -71,7 +71,7 @@ class AqTreeLineEdit(QLineEdit):
                 return None
 
         if self.min_limit is not None or self.max_limit is not None:
-            if value != '':
+            if value != '' and value != '-':
                 value = int(value)
                 if value < self.min_limit or value > self.max_limit:
                     if show_err:
