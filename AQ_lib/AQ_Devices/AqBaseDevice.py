@@ -211,8 +211,9 @@ class AqBaseDevice(ABC):
             param_attributes = item.data(Qt.UserRole)
             if param_attributes is not None:
                 if not (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
-                    item.set_default_value(False)
-                    self.__add_param_to_update_stack(item)
+                    if param_attributes.get('visual_type', None) != 'ip_format':
+                        item.set_default_value(False)
+                        self.__add_param_to_update_stack(item)
 
         self.update_param_callback()
 
