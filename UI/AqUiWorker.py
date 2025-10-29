@@ -1,5 +1,6 @@
 import AppCore
 from AqAddDeviceWindow import AqAddDeviceWidget
+from AqArchiveWindow import AqArchiveWidget
 from AqCalibWindow import AqCalibWidget
 from AqDeviceInfoWidget import AqDeviceInfoWidget
 from AqGatewayWindow import AqGatewayWindow
@@ -57,7 +58,7 @@ def show_calib_window(dev_mode=False):
 
 def show_archive_window():
     if AppCore.Core.session.cur_active_device is not None:
-        dialog = AqUpdateFirmwareWidget(Ui_AqArchiveWidget)
+        dialog = AqArchiveWidget(Ui_AqArchiveWidget)
         dialog.set_logging_device(AppCore.Core.session.cur_active_device)
         dialog.exec()
 

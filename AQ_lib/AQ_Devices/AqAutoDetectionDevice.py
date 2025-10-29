@@ -119,7 +119,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._functions['gateway'] = self.__check_ugm_container()
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = self.__check_calib_json()
-        self._functions['log'] = False  # self.__check_archive_container() #now only true, заглушка
+        self._functions['log'] = self.__check_archive_container() #now only true, заглушка
         self._functions['fw_update'] = True
         self._functions['restart'] = True
 
@@ -285,14 +285,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return True
 
     def __check_archive_container(self):
-        # regs = [1540] #rs485_MODE
-        # for i in range(31):
-        #     regs.append(1024 + i*16) #R1-R31 (rules for gateway)
-        #
-        # for reg in regs:
-        #     item = self.__get_item_by_modbus_reg(reg)
-        #     if not isinstance(item, AqParamItem):
-        #         return False
 
         return True
 
