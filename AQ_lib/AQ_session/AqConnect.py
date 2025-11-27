@@ -374,6 +374,7 @@ class AqModbusConnect(AqConnect):
             file_num = param_attributes.get('file_num', '')
             start_record_num = param_attributes.get('start_record_num', '')
             left_to_read = param_attributes.get('file_size', '')
+            total_size = left_to_read
             summary_data = bytearray()
             while left_to_read > 0:
                 # read_size = max_record_size if left_to_read > max_record_size else left_to_read
@@ -385,11 +386,13 @@ class AqModbusConnect(AqConnect):
                 request.record_length = read_size
 
                 try:
-                    if left_to_read < 14000:
-                        x = 20 + 4
                     result = await self.client.read_file_record(self.slave_id, [request])
                     start_record_num += read_size
                     left_to_read -= read_size
+
+                    # Отправляем сигнал с обновлением прогресса
+                    progress = int(((total_size - left_to_read) / total_size) * 100)
+                    self.progress_updated.emit(progress, 'read_file')
                 except Exception as e:
                     print(f"Error occurred: {str(e)}")
                     item.data_from_network(None, True, 'modbus_error')

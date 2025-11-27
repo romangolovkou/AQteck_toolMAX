@@ -351,6 +351,27 @@ class AqAutoDetectPasswordFileItem(AqAutoDetectModbusFileItem):
         return encrypted_record_data
 
 
+class AqAutoDetectArchiveFileItem(AqAutoDetectModbusFileItem):
+    def __init__(self, param_attributes, get_password=None, msg_dict=None):
+        super().__init__(param_attributes, get_password, msg_dict)
+        self._default_file_num = param_attributes['file_num']
+
+    def set_file_num(self, new_file_num):
+        attr = self.get_param_attributes()
+        attr['file_num'] = new_file_num
+        self.setData(attr, Qt.UserRole)
+
+    def get_cur_file_num(self):
+        attr = self.get_param_attributes()
+        return attr['file_num']
+
+    def get_def_file_num(self):
+        return self._default_file_num
+
+    def reset_file_num(self):
+        self.set_file_num(self._default_file_num)
+
+
 class AqAutoDetectStringParamItem(AqStringParamItem, AqModbusItem):
     def __init__(self, param_attributes):
         super().__init__(param_attributes)

@@ -239,7 +239,12 @@
         <translation>Встановити</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqArchiveWindow.ui" line="609"/>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="541"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="614"/>
         <source>Save log</source>
         <translation>Скачати архів</translation>
     </message>
@@ -279,33 +284,33 @@
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="670"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="709"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="804"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="856"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="951"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="963"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="975"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="859"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="954"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="966"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="978"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="896"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1066"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="899"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1069"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="914"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="917"/>
         <source>Run</source>
         <translation>Далі</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1013"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1018"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1023"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1016"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1021"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1026"/>
         <source>Новый столбец</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1084"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1087"/>
         <source>Write</source>
         <translation>Записати</translation>
     </message>
@@ -1572,12 +1577,44 @@
         <translation>Поточне значення приладу</translation>
     </message>
     <message>
-        <source>Log</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Current device value</source>
         <translation>Поточне значення приладу</translation>
+    </message>
+    <message>
+        <source>Reading part</source>
+        <translation>Завантаження запису №</translation>
+    </message>
+    <message>
+        <source>Log</source>
+        <translation>Архів</translation>
+    </message>
+    <message>
+        <source>File access denied. The file may be occupied by another application.</source>
+        <translation>Доступ до файлу відхилено. Можливо файл зайнятий іншим додатком.</translation>
+    </message>
+    <message>
+        <source>Values must be an UINT</source>
+        <translation>Значення повинно бути UINT</translation>
+    </message>
+    <message>
+        <source>Parsing file</source>
+        <translation>Розбір записів файлу</translation>
+    </message>
+    <message>
+        <source>Read has been failed</source>
+        <translation>Вичтення файлу неуспішне</translation>
+    </message>
+    <message>
+        <source>less or more than permissible</source>
+        <translation>менше або більше допустимого</translation>
+    </message>
+    <message>
+        <source>Create CSV table</source>
+        <translation>Створення CSV таблиці</translation>
+    </message>
+    <message>
+        <source>Reading part_</source>
+        <translation>Завантаження запису_</translation>
     </message>
 </context>
 </TS>
