@@ -558,7 +558,12 @@ class AqAddDeviceTableWidget(QTableWidget):
             self.setRowCount(self.rowCount() + 1)
         # Создаем элементы таблицы для каждой строки
         checkbox_item = QTableWidgetItem()
-        name_item = QTableWidgetItem(device.info('name'))
+
+        if device.info('serial_num') is not None:
+            device_name = device.info('name') + ' ' + device.info('serial_num')
+        else:
+            device_name = device.info('name')
+        name_item = QTableWidgetItem(device_name)
         name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
         address_item = QTableWidgetItem(device.info('address'))
         address_item.setFlags(address_item.flags() & ~Qt.ItemIsEditable)
