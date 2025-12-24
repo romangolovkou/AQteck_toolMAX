@@ -109,7 +109,7 @@ class AqWatchListWidget(AqDialogTemplate):
 
     def create_new_row_for_tree_view(self, item):
         parameter_attributes = item.data(Qt.UserRole)
-        name = parameter_attributes.get('name', 'err_name')
+        cat_prefix_name = parameter_attributes.get('cat_prefix_name', 'err_name')
 
         parameter_item = AqParamManagerItem(item)
         parameter_item.setData(parameter_attributes, Qt.UserRole)
@@ -129,7 +129,7 @@ class AqWatchListCatalogItem(AqParamManagerItem):
     def __init__(self, watchItem):
         self._watchItem = watchItem
         param_attributes = dict()
-        param_attributes['name'] = watchItem.device.name
+        param_attributes['name'] = watchItem.device.name + ' ' + watchItem.device.info('serial_num')
         param_attributes['R_Only'] = 0
         param_attributes['W_Only'] = 0
         param_attributes['is_catalog'] = 1
