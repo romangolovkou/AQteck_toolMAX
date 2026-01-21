@@ -15,7 +15,7 @@ class AqModbusGenericConfiguration:
 
 
 def read_configuration_file(conf_filename):
-    file_path = '110_device_conf/' + conf_filename
+    file_path = '110_device_conf/' + conf_filename + '.csv'
     data = []
     if not os.path.isfile(file_path):
         raise Exception('AqGenericModbusError: Can`t find configuration for specified device')
