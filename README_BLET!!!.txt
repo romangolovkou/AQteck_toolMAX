@@ -26,6 +26,8 @@
 	Те саме потрібно повторити і для функції write_file_record та классу WriteFileRecordRequest 
 	(знаходяться у тих же файлах)
 
+	UPDATE!!!!!!!!! Правки з комментаря нижче наразі не втілюються (залишаємо оригінальний файл transport.py)
+	/*
 	В файле transport.py надо добавить else в функцию transport_close и сдвинуть под него
 	строки self.transport.close(), self.transport = None
         def transport_close(self, intern: bool = False, reconnect: bool = False) -> None:
@@ -46,6 +48,7 @@
                     self.transport = None   #Вот тут !!!!!!!!!!!!
             self.recv_buffer = b""
             if self.is_server:
+	*/
 
 2. (пункт нужно дополнить) В качестве IV для DES расшифровки используется 'superkey', а для ключа 
    используется хеш пароля прибора
