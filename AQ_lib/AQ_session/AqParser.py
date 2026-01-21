@@ -58,18 +58,30 @@ def parse_parameter(config_string: str):
             param_attributes['W_Only'] = 0
             param_attributes['write_func'] = int(attributes[5])
 
-        # Аттрибут з індексом 7 - мінимально можливе значення (необов'язковий)
-        if attributes[7] != '' and attributes[7] != '-':
-            param_attributes['min_limit'] = int(attributes[7])
-        # Аттрибут з індексом 8 - максимально можливе значення (необов'язковий)
-        if attributes[8] != '' and attributes[8] != '-':
-            param_attributes['max_limit'] = int(attributes[8])
-            # Аттрибут з індексом 9 - умовні одиниці виміру параметру.
-            # Має декоративне значення (необов'язковий). Приклад 'mV' '%' 'мкА' 'сек'
-        param_attributes['unit'] = attributes[9]
         # Аттрибут з індексом 6 - ім'я классу параметру та розмір параметру у бітах
         parts = attributes[6].split(' ')
         param_type = parts[0]
+
+        # Аттрибут з індексом 7 - мінимально можливе значення (необов'язковий)
+        if attributes[7] != '' and attributes[7] != '-':
+            if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
+                param_attributes['min_limit'] = float(attributes[7])
+            else:
+                param_attributes['min_limit'] = int(attributes[7])
+
+        # Аттрибут з індексом 8 - максимально можливе значення (необов'язковий)
+        if attributes[8] != '' and attributes[8] != '-':
+            if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
+                param_attributes['max_limit'] = float(attributes[8])
+            else:
+                param_attributes['max_limit'] = int(attributes[8])
+
+            # Аттрибут з індексом 9 - умовні одиниці виміру параметру.
+            # Має декоративне значення (необов'язковий). Приклад 'mV' '%' 'мкА' 'сек'
+        param_attributes['unit'] = attributes[9]
+        # # Аттрибут з індексом 6 - ім'я классу параметру та розмір параметру у бітах
+        # parts = attributes[6].split(' ')
+        # param_type = parts[0]
         if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusStringParamItem' or \
                 param_type == 'AqModbusDiscretParamItem' or param_type == 'AqDY500EnumParamItem' or \
                 param_type == 'AqDY500StringParamItem' or param_type == 'AqDY500DiscretParamItem' or \
