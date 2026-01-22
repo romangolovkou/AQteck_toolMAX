@@ -65,14 +65,22 @@ def parse_parameter(config_string: str):
         # Аттрибут з індексом 7 - мінимально можливе значення (необов'язковий)
         if attributes[7] != '' and attributes[7] != '-':
             if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
-                param_attributes['min_limit'] = float(attributes[7])
+                value_str = attributes[7]
+                if '..' in value_str:
+                    value_str = value_str.replace('..', '.')
+
+                param_attributes['min_limit'] = float(value_str)
             else:
                 param_attributes['min_limit'] = int(attributes[7])
 
         # Аттрибут з індексом 8 - максимально можливе значення (необов'язковий)
         if attributes[8] != '' and attributes[8] != '-':
             if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
-                param_attributes['max_limit'] = float(attributes[8])
+                value_str = attributes[8]
+                if '..' in value_str:
+                    value_str = value_str.replace('..', '.')
+
+                param_attributes['max_limit'] = float(value_str)
             else:
                 param_attributes['max_limit'] = int(attributes[8])
 
@@ -95,7 +103,11 @@ def parse_parameter(config_string: str):
 
         if attributes[10] != '' and attributes[10] != '-':
             if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
-                param_attributes['def_value'] = float(attributes[10])
+                value_str = attributes[10]
+                if '..' in value_str:
+                    value_str = value_str.replace('..', '.')
+
+                param_attributes['def_value'] = float(value_str)
             else:
                 param_attributes['def_value'] = int(attributes[10])
 
@@ -124,7 +136,10 @@ def parse_parameter(config_string: str):
 
                 param_attributes['enum_strings'] = enum_str_dict
 
-            multiply = float(attributes[12])
+            multiply_value_str = attributes[12]
+            if '..' in multiply_value_str:
+                multiply_value_str = multiply_value_str.replace('..', '.')
+            multiply = float(multiply_value_str)
             param_attributes['multiply'] = multiply
 
         item_class = param_type
