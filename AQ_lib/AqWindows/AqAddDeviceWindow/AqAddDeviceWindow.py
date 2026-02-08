@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QTableWidget, QCheckBox, QTableWidgetItem, QFrame,
 import AqBaseDevice
 import AqDeviceFabrica
 from AQ_EventManager import AQ_EventManager
+from AqCustomDHCP import DeviceDHCPButtonListener
 from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
 from AqSettingsFunc import AqSettingsManager
@@ -47,6 +48,9 @@ class AqAddDeviceWidget(AqDialogTemplate):
         # При старті одразу викликаємо оновлення стек-віджету та списку девайсів
         self.change_device_set_by_protocol_selection()
         self.change_page_by_interface_selection()
+
+        #TODO: temporary test
+        self.DHCP_Listener = DeviceDHCPButtonListener()
 
 
     def prepare_ui_objects(self):
