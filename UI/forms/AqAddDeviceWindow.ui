@@ -1710,6 +1710,9 @@ QCheckBox::indicator:checked {
                           <height>15</height>
                          </size>
                         </property>
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;The switch activates the function of setting the IP address for the device by pressing the service button.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="text">
                          <string/>
                         </property>
