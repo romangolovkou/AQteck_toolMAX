@@ -180,10 +180,15 @@ class AqAddDeviceWidget(AqDialogTemplate):
         if len(devices) > 0:
             self.ui.device_combo_box.show()
             self.ui.device_combo_box_label.show()
+            #HIDE ip_adresses_frame
+            self.ui.ipAdressesFrame.hide()
         else:
             # потрапляємо сюди якщо автодетекшн
             self.ui.device_combo_box.hide()
             self.ui.device_combo_box_label.hide()
+            #Show ip_ardesses_frame
+            self.ui.ipAdressesFrame.show()
+
         # Добавляем имена файлов в комбобокс
         self.ui.device_combo_box.clear()
         self.ui.device_combo_box.addItems(devices)

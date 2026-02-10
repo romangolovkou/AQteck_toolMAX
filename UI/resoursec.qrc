@@ -314,5 +314,6 @@
         <file>icons/parameter_list.png</file>
         <file>icons/gateway.png</file>
         <file>icons/master_eth_gateway.png</file>
+        <file>icons/question.png</file>
     </qresource>
 </RCC>
