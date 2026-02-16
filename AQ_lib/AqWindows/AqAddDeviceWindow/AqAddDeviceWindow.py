@@ -26,6 +26,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.minimizeBtnEnable = False
         self.maximizeBtnEnable = False
         self.pass_widget = None
+        self.DHCP_Listener = None
 
         # Створюємо та скидаємо евент примусової зупинки сканування мережі
         # для секції ScanNetwork (надає змогу передчасно зупинити потік сканування)
@@ -49,16 +50,15 @@ class AqAddDeviceWidget(AqDialogTemplate):
         self.change_device_set_by_protocol_selection()
         self.change_page_by_interface_selection()
 
-        #TODO: temporary test
-        self.DHCP_Listener = DeviceDHCPButtonListener()
-
-
     def prepare_ui_objects(self):
         # Прив'язуємо radiobattons до сторінок у внутрішьному стекед віджеті для ком-порту
         self.ui.deviceRadioBtn.toggled.connect(self.change_page_by_device_scan_mode_selection)
         self.ui.deviceRadioBtn.setChecked(True)
         self.ui.scanRadioBtn.toggled.connect(self.change_page_by_device_scan_mode_selection)
         self.ui.insideStackedWidget.setCurrentIndex(0)
+
+        # Прив'язуємо перемикач активації роздачі IP адреси з сервісної кнопки
+        self.ui.AqSwitchBtnWidget.toggled.connect(self.ip_adresses_switch_toggled)
 
         # Встановлюємо комбіновані імена в поля налаштувань (для збереження автозаповнення,
         # унікальні імена полів - це ключ для значення у auto_load_settings.ini)
@@ -520,6 +520,24 @@ class AqAddDeviceWidget(AqDialogTemplate):
             self.pass_widget = AqPasswordWidget(self.all_found_devices[row], row,
                                                 self.ui.tableWidget.replace_device_in_row)
             self.pass_widget.exec()
+
+    def ip_adresses_switch_toggled(self, state: bool):
+        if state:
+            self.DHCP_Listener = DeviceDHCPButtonListener(self)
+            self.DHCP_Listener.deviceIpRequest.connect(self.on_device_ip_request)
+        else:
+            if hasattr(self, "DHCP_Listener") and self.DHCP_Listener:
+                self.DHCP_Listener.deviceIpRequest.disconnect(self.on_device_ip_request)
+                self.DHCP_Listener.stop()
+
+                self.DHCP_Listener.deleteLater()
+                self.DHCP_Listener = None
+
+    def on_device_ip_request(self):  # , mac: bytes, xid: object, hostname: str):
+        ip = "192.168.0.66"
+
+        # сказать listener'у отправить ответ
+        self.DHCP_Listener.set_ip_and_send_offer(ip)
 
 
 class AqAddDeviceTableWidget(QTableWidget):

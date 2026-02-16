@@ -1725,7 +1725,7 @@ QCheckBox::indicator:checked {
                        </widget>
                       </item>
                       <item>
-                       <widget class="AqSwitchBtn" name="AqSwithBtnWidget" native="true"/>
+                       <widget class="AqSwitchBtn" name="AqSwitchBtnWidget" native="true"/>
                       </item>
                      </layout>
                     </widget>
