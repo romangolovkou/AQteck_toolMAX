@@ -534,7 +534,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
                 self.DHCP_Listener = None
 
     def on_device_ip_request(self):  # , mac: bytes, xid: object, hostname: str):
-        ip = "192.168.0.66"
+        ip = "10.0.6.66"
 
         # сказать listener'у отправить ответ
         self.DHCP_Listener.set_ip_and_send_offer(ip)

@@ -1,7 +1,7 @@
 from enum import Enum, IntEnum
 
 from PySide6.QtCore import QObject, Signal
-from PySide6.QtNetwork import QUdpSocket, QHostAddress, QAbstractSocket
+from PySide6.QtNetwork import QUdpSocket, QHostAddress, QAbstractSocket, QNetworkInterface
 import struct
 import socket
 
@@ -23,18 +23,21 @@ class DeviceDHCPButtonListener(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.sock = QUdpSocket(self)
+        self.sock_listener = QUdpSocket(self)
 
-        ok = self.sock.bind(
+        ok = self.sock_listener.bind(
             QHostAddress.AnyIPv4,
             50067,
             QUdpSocket.ShareAddress | QUdpSocket.ReuseAddressHint
         )
 
+        self.sock_sender = QUdpSocket(self)
+
+
         if not ok:
             raise RuntimeError("Cant connect with port 50067")
 
-        self.sock.readyRead.connect(self.on_ready_read)
+        self.sock_listener.readyRead.connect(self.on_ready_read)
 
         self.state = State.IDLE
 
@@ -43,12 +46,38 @@ class DeviceDHCPButtonListener(QObject):
             "mac": None,
             "xid": None,
             "ip": None,
+            "mask": None,
+            "interface_ip": None
         }
 
     def on_ready_read(self):
-        while self.sock.hasPendingDatagrams():
-            d = self.sock.receiveDatagram()
+        while self.sock_listener.hasPendingDatagrams():
+            d = self.sock_listener.receiveDatagram()
             data = bytes(d.data())
+
+            sender = d.senderAddress()
+            sender_port = d.senderPort()
+            iface_index = d.interfaceIndex()
+
+            print("DISCOVER от:", sender.toString(), sender_port)
+            print("Interface index:", iface_index)
+
+            # Найдём имя интерфейса
+            iface = QNetworkInterface.interfaceFromIndex(iface_index)
+            if iface.isValid():
+                print("Пришло через интерфейс:", iface.humanReadableName())
+            else:
+                print("Интерфейс не найден")
+
+            for entry in iface.addressEntries():
+                ip = entry.ip()
+                if ip.protocol() == QHostAddress.IPv4Protocol:
+                    local_ip = ip
+                    self.active_request['interface_ip'] = local_ip.toString()
+                    netmask = entry.netmask()
+                    self.active_request['mask'] = netmask.toString()
+                    print("Локальный IP интерфейса:", local_ip.toString())
+                    print("Маска:", netmask.toString())
 
             self.process_packet(data)
 
@@ -112,124 +141,131 @@ class DeviceDHCPButtonListener(QObject):
 
         self.active_request["ip"] = ip
 
-        data = build_dhcp_offer(
+        data = self.build_dhcp_offer(
             self.active_request["xid"],
             self.active_request["mac"],
             self.active_request["ip"]
         )
 
-        sent = self.sock.writeDatagram(
+        ok = self.sock_sender.bind(
+            QHostAddress(self.active_request['interface_ip']),
+            50067,
+            QUdpSocket.ShareAddress | QUdpSocket.ReuseAddressHint
+        )
+
+        if not ok:
+            raise RuntimeError("Cant connect sender sock with port 50067")
+
+        sent = self.sock_sender.writeDatagram(
             data,
             QHostAddress.Broadcast,
             50068
         )
 
         if sent == -1:
-            print("Send offer error:", self.sock.errorString())
+            print("Send offer error:", self.sock_sender.errorString())
         else:
             print("Sent offer bytes:", sent)
 
     def send_ack(self, xid: bytes, mac: bytes, ip: str):
-        data = build_dhcp_ack(xid, mac, ip)
+        data = self.build_dhcp_ack(xid, mac, ip)
 
-        sent = self.sock.writeDatagram(
+        sent = self.sock_sender.writeDatagram(
             data,
             QHostAddress.Broadcast,
             50068
         )
 
         if sent == -1:
-            print("Send ack error:", self.sock.errorString())
+            print("Send ack error:", self.sock_sender.errorString())
         else:
             print("Sent ack bytes:", sent)
 
     def stop(self):
-        if self.sock:
-            self.sock.close()
-            self.sock = None
+        if self.sock_listener:
+            self.sock_listener.close()
+            self.sock_listener = None
 
+    def build_dhcp_offer(self, xid: bytes, mac: bytes, ip: str) -> bytes:
+        pkt = bytearray(240)
 
-def build_dhcp_offer(xid: bytes, mac: bytes, ip: str) -> bytes:
-    pkt = bytearray(240)
+        pkt[0] = 2      # BOOTREPLY
+        pkt[1] = 1      # Ethernet
+        pkt[2] = 6
+        pkt[3] = 0
 
-    pkt[0] = 2      # BOOTREPLY
-    pkt[1] = 1      # Ethernet
-    pkt[2] = 6
-    pkt[3] = 0
+        struct.pack_into("!I", pkt, 4, xid)
+        struct.pack_into("!H", pkt, 10, 0x8000)  # broadcast flag
 
-    struct.pack_into("!I", pkt, 4, xid)
-    struct.pack_into("!H", pkt, 10, 0x8000)  # broadcast flag
+        pkt[16:20] = socket.inet_aton(ip)  # yiaddr
+        pkt[28:34] = mac
 
-    pkt[16:20] = socket.inet_aton(ip)  # yiaddr
-    pkt[28:34] = mac
+        pkt[236:240] = b"\x63\x82\x53\x63"
 
-    pkt[236:240] = b"\x63\x82\x53\x63"
+        opts = bytearray()
 
-    opts = bytearray()
+        # DHCP Message Type = OFFER
+        opts += b"\x35\x01\x02"
 
-    # DHCP Message Type = OFFER
-    opts += b"\x35\x01\x02"
+        # Server Identifier
+        opts += b"\x36\x04" + socket.inet_aton(self.active_request['interface_ip'])
 
-    # Server Identifier
-    opts += b"\x36\x04" + socket.inet_aton("192.168.0.1")
+        # Subnet Mask
+        opts += b"\x01\x04" + socket.inet_aton(self.active_request['mask'])
 
-    # Subnet Mask
-    opts += b"\x01\x04" + socket.inet_aton("255.255.255.0")
+        # Router
+        opts += b"\x03\x04" + socket.inet_aton(self.active_request['interface_ip'])
 
-    # Router
-    opts += b"\x03\x04" + socket.inet_aton("192.168.0.1")
+        # Lease Time (опционально, но желательно)
+        opts += b"\x33\x04\x00\x01\x51\x80"  # ~1 день
 
-    # Lease Time (опционально, но желательно)
-    opts += b"\x33\x04\x00\x01\x51\x80"  # ~1 день
+        opts += b"\xff"
 
-    opts += b"\xff"
+        return bytes(pkt + opts)
 
-    return bytes(pkt + opts)
+    def build_dhcp_ack(self, xid: bytes, mac: bytes, ip: str) -> bytes:
+        pkt = bytearray(240)  # BOOTP + cookie
 
+        # BOOTP fixed header
+        pkt[0] = 2          # op = BOOTREPLY
+        pkt[1] = 1          # htype = Ethernet
+        pkt[2] = 6          # hlen
+        pkt[3] = 0          # hops
 
-def build_dhcp_ack(xid: bytes, mac: bytes, ip: str) -> bytes:
-    pkt = bytearray(240)  # BOOTP + cookie
+        # вставляем XID напрямую
+        # pkt[4:8] = xid
 
-    # BOOTP fixed header
-    pkt[0] = 2          # op = BOOTREPLY
-    pkt[1] = 1          # htype = Ethernet
-    pkt[2] = 6          # hlen
-    pkt[3] = 0          # hops
+        struct.pack_into("!I", pkt, 4, xid)     # xid
+        struct.pack_into("!H", pkt, 10, 0x8000) # flags (broadcast)
 
-    # вставляем XID напрямую
-    # pkt[4:8] = xid
+        pkt[16:20] = socket.inet_aton(ip)       # yiaddr
+        pkt[28:34] = mac                        # chaddr
 
-    struct.pack_into("!I", pkt, 4, xid)     # xid
-    struct.pack_into("!H", pkt, 10, 0x8000) # flags (broadcast)
+        # Magic cookie
+        pkt[236:240] = b"\x63\x82\x53\x63"
 
-    pkt[16:20] = socket.inet_aton(ip)       # yiaddr
-    pkt[28:34] = mac                        # chaddr
+        # DHCP options
+        opts = bytearray()
 
-    # Magic cookie
-    pkt[236:240] = b"\x63\x82\x53\x63"
+        # DHCP Message Type = ACK
+        opts += b"\x35\x01\x05"
 
-    # DHCP options
-    opts = bytearray()
+        # Server Identifier (любой, но логично IP компа)
+        opts += b"\x36\x04" + socket.inet_aton(self.active_request['interface_ip'])
 
-    # DHCP Message Type = ACK
-    opts += b"\x35\x01\x05"
+        # Subnet mask
+        opts += b"\x01\x04" + socket.inet_aton(self.active_request['mask'])
 
-    # Server Identifier (любой, но логично IP компа)
-    opts += b"\x36\x04" + socket.inet_aton("192.168.0.1")
+        # Router (gateway)
+        opts += b"\x03\x04" + socket.inet_aton(self.active_request['interface_ip'])
 
-    # Subnet mask
-    opts += b"\x01\x04" + socket.inet_aton("255.255.255.0")
+        # Lease Time (опционально, но желательно)
+        opts += b"\x33\x04\x00\x01\x51\x80"  # ~1 день
 
-    # Router (gateway)
-    opts += b"\x03\x04" + socket.inet_aton("192.168.0.1")
+        # END
+        opts += b"\xff"
 
-    # Lease Time (опционально, но желательно)
-    opts += b"\x33\x04\x00\x01\x51\x80"  # ~1 день
-
-    # END
-    opts += b"\xff"
-
-    return bytes(pkt + opts)
+        return bytes(pkt + opts)
 
 
 
