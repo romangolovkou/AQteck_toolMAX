@@ -9,6 +9,7 @@ from PySide6.QtGui import QStandardItem, QPixmap
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
 
+import AqUiWorker
 from AqBaseTreeItems import AqParamManagerItem
 from AQ_EventManager import AQ_EventManager
 from AqBaseDevice import AqBaseDevice
@@ -33,7 +34,6 @@ class AqCalibViewManager(QStackedWidget):
 
     def __init__(self, parent):
         super().__init__(parent)
-        x = parent.parent()
         self.calibrator_is_ready = False
         self.event_manager = AQ_EventManager.get_global_event_manager()
         self.event_manager.register_event_handler('calib_close_steps', self.close_steps)
@@ -97,6 +97,7 @@ class AqCalibViewManager(QStackedWidget):
         self.channelsComboBox = self.findChild(QComboBox, 'channelsComboBox')
         self.methodComboBox = self.findChild(QComboBox, 'methodComboBox')
         self.runCalibBtn = self.findChild(QPushButton, 'runCalibBtn')
+        self.viewCoeffBtn = self.findChild(QPushButton, 'viewCoeffBtn')
 
         self.stepHeaderLabel = self.findChild(QLabel, 'headerLabel')
         self.stepStepsLabel = self.findChild(QLabel, 'stepsLabel')
@@ -172,6 +173,12 @@ class AqCalibViewManager(QStackedWidget):
         self.tableBackBtn.clicked.connect(self._back_btn_clicked_)
         self.stepRunBtn.clicked.connect(self._step_run_btn_)
         self.tableWriteCoeffBtn.clicked.connect(self._write_coeffs_btn_clicked_)
+
+        if self.calib_dev_mode:
+            self.viewCoeffBtn.clicked.connect(lambda: AqUiWorker.show_view_coeffs(self.calibrator))
+            self.viewCoeffBtn.show()
+        else:
+            self.viewCoeffBtn.hide()
 
         self.ui_settings = self.calibrator.get_ui_settings()
         self.load_combo_boxes()

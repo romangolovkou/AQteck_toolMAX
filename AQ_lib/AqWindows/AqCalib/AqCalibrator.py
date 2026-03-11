@@ -126,6 +126,41 @@ class AqCalibrator(object):
         self.calib_session.saved_coeffs[channel] = ch_dict
         return True
 
+    def get_all_channel_in_dev_cur_coeffs(self):
+        all_koeffs_model_dict = dict()
+        all_koeffs_rows_dict = dict()
+        all_sensors = list()
+
+        if hasattr(self, 'Inputs'):
+            all_sensors += self.Inputs.Sensors.get_all_sensors()
+        if hasattr(self, 'Outputs'):
+            all_sensors += self.Outputs.Sensors.get_all_sensors()
+
+        #make raw dict model
+        for sensor in all_sensors:
+            for channel in sensor.channels:
+                if all_koeffs_model_dict.get(channel.name, None) is None:
+                    all_koeffs_model_dict[channel.name] = dict()
+
+                coeffs = channel.coeffs
+                ch_dict = dict()
+                # збереження поточних коєфіцієнтів
+                for coeff in coeffs:
+                    access_code = coeff.get_access_code()
+                    cur_coefficient = self.device.read_calib_coeff(access_code.param1,
+                                                                   access_code.param2,
+                                                                   access_code.param3)
+
+                    if cur_coefficient is False:
+                        # return False
+                        cur_coefficient = 'read_error'
+
+                    ch_dict[coeff.name] = cur_coefficient
+
+                all_koeffs_model_dict[channel.name][sensor.name] = ch_dict
+
+        return all_koeffs_model_dict
+
     def set_ch_def_coeffs(self, channel):
         result = False
         coeffs = channel.coeffs

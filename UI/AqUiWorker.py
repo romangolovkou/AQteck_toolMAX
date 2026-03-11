@@ -11,6 +11,7 @@ from AqSetPasswordWidget import AqSetPasswordWindow
 from AqSetSlaveIdWindow import AqSetSlaveIdWindow
 from AqTranslateManager import AqTranslateManager
 from AqUpdateFirmwareWindow import AqUpdateFirmwareWidget
+from AqViewCoeffsWindow import AqViewCoeffsWidget
 from AqWatchListWindow import AqWatchListWidget
 from ui_AqArchiveWindow import Ui_AqArchiveWidget
 from ui_AqCalibrationWidget import Ui_AqCalibrationWidget
@@ -19,6 +20,7 @@ from ui_AqGatewayWindow import Ui_AqGatewayWidget
 from ui_AqSetPasswordWidget import Ui_AqSetPasswordWidget
 from ui_AqSetRtcWidget import Ui_AqRtcWidget
 from ui_AqSetSlaveIdWinWidget import Ui_AqSetSlaveIdWidget
+from ui_AqViewCoeffsWidget import Ui_AqViewCoeffsWidget
 from ui_AqWatchListWidget import Ui_AqWatchListWidget
 from ui_DeviceInfoDialog import Ui_DeviceInfoDialog
 from ui_AqAddDeviceWindow import Ui_AqAddDeviceWindowWidget
@@ -54,6 +56,11 @@ def show_calib_window(dev_mode=False):
         dialog = AqCalibWidget(Ui_AqCalibrationWidget)
         dialog.set_develop_mode(dev_mode)
         dialog.set_calib_device(AppCore.Core.session.cur_active_device)
+        dialog.exec()
+
+def show_view_coeffs(calibrator):
+    if AppCore.Core.session.cur_active_device is not None:
+        dialog = AqViewCoeffsWidget(Ui_AqViewCoeffsWidget, calibrator)
         dialog.exec()
 
 def show_archive_window():

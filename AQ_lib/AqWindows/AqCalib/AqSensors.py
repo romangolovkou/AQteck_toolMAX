@@ -21,6 +21,9 @@ class AqSensors(object):
             else:
                 self._sensors.append(AqSensor(sensor_data, loc_data))
 
+    def get_all_sensors(self):
+        return self._sensors
+
     def get_sensor(self, full_name: str):
         for sensor in self._sensors:
             if sensor.fullName == full_name:
