@@ -224,8 +224,8 @@ class AqArchiveWidget(AqDialogTemplate):
         first_line.append('Data/Time')
 
         for name in unique_sorted_names:
-            first_line.append(name + '.Value')
-            first_line.append(name + '.Quality')
+            first_line.append(str(name) + '.Value')
+            first_line.append(str(name) + '.Quality')
 
         csv_data.append(first_line)
 
@@ -305,7 +305,8 @@ class AqArchiveWidget(AqDialogTemplate):
                 value = int(line[2], 16)
             elif type == 'float' or \
                 type == 'fix_point_float':
-                value = struct.unpack('<f', line[2])[0]
+                raw = bytes.fromhex(line[2].decode())
+                value = struct.unpack('<f', raw)[0]
             elif type == 'enum':
                 try:
                     enum_str = parameter_attributes.get('enum_strings', None)
