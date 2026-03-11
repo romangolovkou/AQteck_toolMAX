@@ -279,7 +279,7 @@
     <message>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="581"/>
         <source>View coeffs</source>
-        <translation type="unfinished"></translation>
+        <translation>Перегляд коефф.</translation>
     </message>
     <message>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="637"/>
