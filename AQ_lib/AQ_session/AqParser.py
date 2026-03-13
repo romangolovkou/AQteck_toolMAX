@@ -142,6 +142,17 @@ def parse_parameter(config_string: str):
             multiply = float(multiply_value_str)
             param_attributes['multiply'] = multiply
 
+        if attributes[13] != '' and attributes[13] != '-':
+            value_str = attributes[13]
+            if value_str == 'little-endian' or value_str == 'big-endian':
+                param_attributes['byte_order'] = value_str
+
+        if attributes[14] != '' and attributes[14] != '-':
+            value_str = attributes[14]
+            if value_str == 'little-endian' or value_str == 'big-endian':
+                param_attributes['reg_order'] = value_str
+
+
         item_class = param_type
         if item_class is not None:
             return build_item(item_class, param_attributes)

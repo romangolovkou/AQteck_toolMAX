@@ -129,7 +129,8 @@ class AqWatchListCatalogItem(AqParamManagerItem):
     def __init__(self, watchItem):
         self._watchItem = watchItem
         param_attributes = dict()
-        param_attributes['name'] = watchItem.device.name + ' ' + watchItem.device.info('serial_num')
+        serial_num = watchItem.device.info('serial_num')
+        param_attributes['name'] = watchItem.device.name + ' ' + (serial_num if isinstance(serial_num, str) else 'no_serial')
         param_attributes['R_Only'] = 0
         param_attributes['W_Only'] = 0
         param_attributes['is_catalog'] = 1

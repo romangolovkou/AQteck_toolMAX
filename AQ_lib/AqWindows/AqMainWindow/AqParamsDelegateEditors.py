@@ -503,7 +503,10 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         if text != '' and text != '-':
-            value = float(text)
+            try:
+                value = float(text)
+            except Exception as e:
+                value = 0.0
         else:
             value = None
         self.save_new_value(value)
@@ -529,7 +532,10 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
 
         if self.min_limit is not None or self.max_limit is not None:
             if value != '':
-                value = float(value)
+                try:
+                    value = float(value)
+                except Exception as e:
+                    value = 0.0
                 if value < self.min_limit or value > self.max_limit:
                     if show_err:
                         self.red_blink_timer.start()
