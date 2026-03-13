@@ -2,7 +2,7 @@ import struct
 
 from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, AqUnsignedToFloatParamItem, \
-    AqFloatEnumParamItem, AqBitParamItem
+    AqFloatEnumParamItem, AqBitParamItem, AqBitMaskParamItem
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes, swap_registers
 
@@ -374,3 +374,8 @@ class AqModbusDiscretParamItem(AqBitParamItem, AqModbusItem):
         else:
             param_value = 0
         return param_value
+
+
+class AqModbusBitMaskParamItem(AqBitMaskParamItem, AqModbusUnsignedParamItem):
+    def __init__(self, param_attributes):
+        super().__init__(param_attributes)

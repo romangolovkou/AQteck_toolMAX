@@ -152,7 +152,6 @@ def parse_parameter(config_string: str):
             if value_str == 'little-endian' or value_str == 'big-endian':
                 param_attributes['reg_order'] = value_str
 
-
         item_class = param_type
         if item_class is not None:
             return build_item(item_class, param_attributes)
