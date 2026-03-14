@@ -4,6 +4,7 @@ import ipaddress
 import socket
 import struct
 import re
+from types import NoneType
 
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QFont
@@ -39,7 +40,7 @@ class AqTreeLineEdit(QLineEdit):
 
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        if text != '' and text is not None:
+        if text != '' and text is not None and text != 'None':
             value = int(text)
         else:
             value = None
@@ -169,7 +170,7 @@ class AqEnumTreeComboBox(QComboBox):
 
     def set_value(self, value):
         if not self.hasFocus():
-            value = value - self.min_limit
+            value = value - self.min_limit if not isinstance(value, NoneType) else self.min_limit
             string = self.enum_str_dict.get(value, '')
             self.setCurrentText(string)
             # self.setCurrentIndex(value)
