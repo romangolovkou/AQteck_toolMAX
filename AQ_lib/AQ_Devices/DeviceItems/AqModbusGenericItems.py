@@ -38,6 +38,17 @@ class AqModbusEnumParamItem(AqEnumParamItem, AqModbusItem):
                 packed_data = swap_bytes_at_registers(packed_data, reg_count)
 
             registers = struct.unpack('>H', packed_data)
+        elif self.param_size == 4:
+            packed_data = struct.pack('>I', self.value)
+
+            reg_count = self.param_size // 2
+            if self.byte_order == 'little-endian':
+                packed_data = swap_bytes_at_registers(packed_data, reg_count)
+
+            if self.reg_order == 'little-endian':
+                packed_data = swap_registers(packed_data)
+
+            registers = [struct.unpack('>H', packed_data[i:i + 2])[0] for i in range(0, len(packed_data), 2)]
         else:
             raise Exception('AqModbusEnumParamItemError: "param_size" is incorrect')
 
