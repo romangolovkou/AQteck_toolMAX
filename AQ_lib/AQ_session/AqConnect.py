@@ -305,6 +305,13 @@ class AqModbusConnect(AqConnect):
                     result = await self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
                 elif func == 1:
                     result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
+                elif func == '-': #if parameter is write only
+                    if item.value_in_device is None:
+                        item.set_default_value()
+
+                    item.value = item.value_in_device
+                    item.synchronized = True
+                    return
                 else:
                     item.data_from_network(None, True, 'modbus_error')
                     raise Exception('AqConnectError: in {} attributes "func" is not supported'.format(
