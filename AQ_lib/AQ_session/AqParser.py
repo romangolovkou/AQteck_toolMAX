@@ -48,14 +48,22 @@ def parse_parameter(config_string: str):
         # Аттрибут з індексом 2 - номер регістру
         param_attributes['modbus_reg'] = int(attributes[2])
         # Аттрибут з індексом 4 - номер функції для вичитки
-        param_attributes['read_func'] = int(attributes[4])
+        # param_attributes['read_func'] = int(attributes[4])
+        # Аттрибут з індексом 4 - номер функції для вичитки (додана можливість, робити параметр без функції вичитки (Тільки для запису))
         # Аттрибут з індексом 5 - номер функції для запису (необов'язковий)
-        if attributes[5] == '-':
+        if attributes[5] == '-' and attributes[4] != '-':
             param_attributes['R_Only'] = 1
             param_attributes['W_Only'] = 0
+            param_attributes['read_func'] = int(attributes[4])
+        elif attributes[5] != '-' and attributes[4] == '-':
+            param_attributes['R_Only'] = 0
+            param_attributes['W_Only'] = 1
+            param_attributes['read_func'] = attributes[4]
+            param_attributes['write_func'] = int(attributes[5])
         else:
             param_attributes['R_Only'] = 0
             param_attributes['W_Only'] = 0
+            param_attributes['read_func'] = int(attributes[4])
             param_attributes['write_func'] = int(attributes[5])
 
         # Аттрибут з індексом 6 - ім'я классу параметру та розмір параметру у бітах
