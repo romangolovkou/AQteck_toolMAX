@@ -175,8 +175,10 @@ class AqModbusItem(AqParamItem):
             raise Exception('ModbusItemError: "modbus_reg" or "param_size" not exist')
         # TODO: Переделать c размера в байхтах на колличество регистров
         read_func = param_attributes.get('read_func', None)
-        if read_func is None:
-            raise Exception('ModbusItemError: "read_func" is not exist')
+        if not (param_attributes.get('R_Only', None) == 0 and
+                param_attributes.get('W_Only', None) == 1):
+            if read_func is None:
+                raise Exception('ModbusItemError: "read_func" is not exist')
 
         if not (param_attributes.get('R_Only', None) == 1 and
                 param_attributes.get('W_Only', None) == 0):
