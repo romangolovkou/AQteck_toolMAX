@@ -1,4 +1,5 @@
 from AqBaseDevice import AqBaseDevice
+from AqBaseTreeItems import AqParamItem
 from AqConnect import AqModbusConnect
 from AqDeviceConfig import AqDeviceConfig
 from AqModbusTips import swap_bytes_at_registers, remove_empty_bytes
@@ -26,20 +27,43 @@ class AqGenericModbusDevice(AqBaseDevice):
             self._status = 'error'
             return False
 
-        # Вичтення рандомного параметру. Перевірка зв'язку
-        rand_item = self._device_tree.invisibleRootItem()
-        child_item = rand_item
-        while rand_item is not None:
-            rand_item = rand_item.child(0)
-            if rand_item is not None:
-                child_item = rand_item
+        # # Вичтення рандомного параметру. Перевірка зв'язку
+        # rand_item = self._device_tree.invisibleRootItem()
+        # child_item = rand_item
+        # while rand_item is not None:
+        #     rand_item = rand_item.child(0)
+        #     if rand_item is not None:
+        #         child_item = rand_item
 
-        child_item.set_local_event_manager(self._local_event_manager)
-        self.__sync_read_param(child_item)
-        if child_item.get_status() != 'ok':
+        # Вичтення параметру з наявною функцією вичтки. Перевірка зв'язку
+        root_item = self._device_tree.invisibleRootItem()
+        stack = [root_item]
+        child_item = None
+        items = []
+
+        while stack:
+            item = stack.pop()
+            items.append(item)
+
+            for i in range(item.rowCount()):
+                child = item.child(i, 0)
+                if child is not None:
+                    if isinstance(child, AqParamItem):
+                        param_attributes = child.get_param_attributes()
+                        if param_attributes.get('read_func') == 3:
+                            child_item = child
+                        stack.append(child)
+
+
+        if child_item is not None:
+            child_item.set_local_event_manager(self._local_event_manager)
+            self.__sync_read_param(child_item)
+            if child_item.get_status() != 'ok':
+                self._status = 'error'
+                return False
+        else:
             self._status = 'error'
             return False
-
 
 
         # TODO: describe rules to chache which functions are supported
