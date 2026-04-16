@@ -116,6 +116,8 @@ def parse_parameter(config_string: str):
                     value_str = value_str.replace('..', '.')
 
                 param_attributes['def_value'] = float(value_str)
+            elif param_type == 'AqModbusStringParamItem':
+                param_attributes['def_value'] = str(attributes[10])
             else:
                 param_attributes['def_value'] = int(attributes[10])
 
