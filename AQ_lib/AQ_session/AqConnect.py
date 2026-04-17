@@ -369,6 +369,11 @@ class AqModbusConnect(AqConnect):
                 else:
                     item.confirm_writing(True)
 
+                # Якщо параметр тільки для запису, то після запису скидаємо значення та його відображення в дереві в дефолт
+                if param_attributes.get("R_Only", 0) == 0 and param_attributes.get("W_Only", 0) == 1:
+                    item.set_default_value()
+                    item.synchronized = True
+
             except Exception as e:
                 print(f"Error occurred: {str(e)}")
                 raise
