@@ -248,9 +248,15 @@ class AqUintTreeLineEdit(AqTreeLineEdit):
                 str_copy = self.text()
                 self.verify(str_copy)
                 return
+            elif key == Qt.Key_Delete:
+                self.del_()  # Видалення символу справа від курсора
+                str_copy = self.text()
+                self.verify(str_copy)
+                return
             elif key == Qt.Key_Return:
                 super().keyPressEvent(event)
                 return
+
 
             cursor_position = self.cursorPosition()
             text = event.text()
@@ -438,6 +444,11 @@ class AqIntTreeLineEdit(AqTreeLineEdit):
                 str_copy = self.text()
                 self.verify(str_copy)
                 return
+            elif key == Qt.Key_Delete:
+                self.del_()  # Видалення символу справа від курсора
+                str_copy = self.text()
+                self.verify(str_copy)
+                return
             elif key == Qt.Key_Return:
                 super().keyPressEvent(event)
                 return
@@ -567,6 +578,11 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
                 return
             elif key == Qt.Key_Backspace:
                 self.backspace()
+                str_copy = self.text()
+                self.verify(str_copy)
+                return
+            elif key == Qt.Key_Delete:
+                self.del_()  # Видалення символу справа від курсора
                 str_copy = self.text()
                 self.verify(str_copy)
                 return
