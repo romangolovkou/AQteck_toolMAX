@@ -516,12 +516,13 @@ class AqAddDeviceWidget(AqDialogTemplate):
         if self.ui.AqSwitchBtnWidget.isChecked() and self.ui.ip_line_edit.isVisible():
             # Якщо активна вкладка Ethernet та включено роздачу IP з кнопки
             for dev_n in self.all_found_devices:
-                if device.info('name') == dev_n.info('name') and \
-                        device.info('serial_num') == dev_n.info('serial_num') and \
-                        device.info('version') == dev_n.info('version'):
-                    row = self.ui.tableWidget.rowCount()
-                    self.all_found_devices.remove(dev_n)
-                    return row
+                if 'IP' in device.info('address') and 'IP' in dev_n.info('address'):
+                    if device.info('name') == dev_n.info('name') and \
+                            device.info('serial_num') == dev_n.info('serial_num') and \
+                            device.info('version') == dev_n.info('version'):
+                        row = self.ui.tableWidget.rowCount()
+                        self.all_found_devices.remove(dev_n)
+                        return row
 
         return None
 
