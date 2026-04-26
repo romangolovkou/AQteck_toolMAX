@@ -1697,7 +1697,7 @@ QCheckBox::indicator:checked {
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="ipArdessesHintLabel">
+                       <widget class="QLabel" name="ipAdressesHintLabel">
                         <property name="minimumSize">
                          <size>
                           <width>15</width>
@@ -1728,6 +1728,19 @@ QCheckBox::indicator:checked {
                        <widget class="AqSwitchBtn" name="AqSwitchBtnWidget" native="true"/>
                       </item>
                      </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="ipAdressesInfoLabel">
+                     <property name="text">
+                      <string>The IP address in the field below will be set on the device when the service button is pressed. An automatic connection attempt will then occur. If the connection is successful, the IP address in the field below will be incremented automatically.</string>
+                     </property>
+                     <property name="scaledContents">
+                      <bool>false</bool>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                    <item>
