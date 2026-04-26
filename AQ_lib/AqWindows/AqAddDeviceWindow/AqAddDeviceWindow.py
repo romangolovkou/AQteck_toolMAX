@@ -1,5 +1,7 @@
+import ipaddress
 import os
 import threading
+from functools import partial
 
 import serial
 from PySide6.QtCore import Qt, QSettings, QThread, Signal, QEvent, QPoint, QTimer
@@ -12,6 +14,7 @@ from AQ_EventManager import AQ_EventManager
 from AqCustomDHCP import DeviceDHCPButtonListener
 from AqIsValidIpFunc import is_valid_ip
 from AqAddDevicesConnectErrorLabel import AqAddDeviceConnectErrorLabel
+from AqMessageManager import AqMessageManager
 from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
 from AqWindowTemplate import AqDialogTemplate, AqWindowTemplate
@@ -19,6 +22,8 @@ from ui_AqEnterPassWidget import Ui_AqEnterPassWidget
 
 
 class AqAddDeviceWidget(AqDialogTemplate):
+    message_signal = Signal(str, str)
+
     def __init__(self, _ui, parent=None):
         super().__init__(parent)
         self.ui = _ui()
@@ -35,6 +40,10 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
         self.name = AqTranslateManager.tr('Add devices')
         self.event_manager = AQ_EventManager.get_global_event_manager()
+
+        self._message_manager = AqMessageManager.get_global_message_manager()
+        self.message_signal.connect(partial(self._message_manager.show_message, self))
+        self._message_manager.subscribe('AddDevice', self.message_signal.emit)
 
         self.selected_devices_list = []
         # Рєєструємо обробники подій
@@ -59,6 +68,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
         # Прив'язуємо перемикач активації роздачі IP адреси з сервісної кнопки
         self.ui.AqSwitchBtnWidget.toggled.connect(self.ip_adresses_switch_toggled)
+        self.ui.ipAdressesInfoLabel.hide()
 
         # Встановлюємо комбіновані імена в поля налаштувань (для збереження автозаповнення,
         # унікальні імена полів - це ключ для значення у auto_load_settings.ini)
@@ -257,6 +267,9 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def search_successful(self, found_devices):
         if len(found_devices) > 0:
+            if self.ui.AqSwitchBtnWidget.isChecked() and self.ui.ip_line_edit.isVisible():
+                self.increment_IP()
+
             for device in found_devices:
                 for found_device in self.all_found_devices:
                     if device.info('address') == found_device.info('address'):
@@ -488,11 +501,29 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def add_devices_to_table_widget(self, found_devices):
         for i in range(len(found_devices)):
-            self.ui.tableWidget.append_device_row(found_devices[i])
+            # Перевірка на небажані дублікати (поки що для роздачі IP з кнопки)
+            duplicate_row = self.check_forbidden_device_duplicate(found_devices[i])
+            if duplicate_row is not None:
+                self.ui.tableWidget.replace_device_in_row(found_devices[i], duplicate_row-1)
+            else:
+                self.ui.tableWidget.append_device_row(found_devices[i])
 
         # Відображаємо кнопку "додати"
         if len(found_devices) > 0:
             self.ui.addBtn.show()
+
+    def check_forbidden_device_duplicate(self, device) -> None | int:
+        if self.ui.AqSwitchBtnWidget.isChecked() and self.ui.ip_line_edit.isVisible():
+            # Якщо активна вкладка Ethernet та включено роздачу IP з кнопки
+            for dev_n in self.all_found_devices:
+                if device.info('name') == dev_n.info('name') and \
+                        device.info('serial_num') == dev_n.info('serial_num') and \
+                        device.info('version') == dev_n.info('version'):
+                    row = self.ui.tableWidget.rowCount()
+                    self.all_found_devices.remove(dev_n)
+                    return row
+
+        return None
 
     def add_found_devices_to_all_list(self, found_devices):
         for i in range(len(found_devices)):
@@ -523,21 +554,47 @@ class AqAddDeviceWidget(AqDialogTemplate):
 
     def ip_adresses_switch_toggled(self, state: bool):
         if state:
+            self.ui.ipAdressesInfoLabel.show()
             self.DHCP_Listener = DeviceDHCPButtonListener(self)
             self.DHCP_Listener.deviceIpRequest.connect(self.on_device_ip_request)
+            self.DHCP_Listener.deviceSetIpSuccess.connect(self.on_device_set_ip_successed)
+            self.DHCP_Listener.reset()
         else:
+            self.ui.ipAdressesInfoLabel.hide()
             if hasattr(self, "DHCP_Listener") and self.DHCP_Listener:
                 self.DHCP_Listener.deviceIpRequest.disconnect(self.on_device_ip_request)
+                self.DHCP_Listener.deviceSetIpSuccess.disconnect(self.on_device_set_ip_successed)
                 self.DHCP_Listener.stop()
 
                 self.DHCP_Listener.deleteLater()
                 self.DHCP_Listener = None
 
     def on_device_ip_request(self):  # , mac: bytes, xid: object, hostname: str):
-        ip = "10.0.6.66"
+        ip = self.ui.ip_line_edit.text()
+        if not is_valid_ip(ip):
+            self._message_manager.send_message('AddDevice', "Error", AqTranslateManager.tr('The IP in the input field is not valid.'))
+            self.DHCP_Listener.reset()
+            return
 
         # сказать listener'у отправить ответ
         self.DHCP_Listener.set_ip_and_send_offer(ip)
+
+    def on_device_set_ip_successed(self):  # , mac: bytes, xid: object, hostname: str):
+        self._message_manager.send_message('AddDevice', "Success",
+                                           AqTranslateManager.tr('IP successfully sent to the device'))
+
+        self.find_button_clicked()
+
+    def increment_IP(self):
+        ip = self.ui.ip_line_edit.text()
+        if not is_valid_ip(ip):
+            return
+
+        ip = ipaddress.IPv4Address(ip)
+        next_ip = ip + 1
+
+        ip = str(next_ip)
+        self.ui.ip_line_edit.setText(ip)
 
 
 class AqAddDeviceTableWidget(QTableWidget):

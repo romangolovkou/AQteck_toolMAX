@@ -19,6 +19,7 @@ class State(Enum):
 
 class DeviceDHCPButtonListener(QObject):
     deviceIpRequest = Signal()  # (bytes, object, str)
+    deviceSetIpSuccess = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -131,7 +132,9 @@ class DeviceDHCPButtonListener(QObject):
                 return  # UI ещё не дал IP
 
             self.send_ack(xid, mac, ip)
-            self.state = "DONE"
+            self.state = State.DONE
+            self.reset()
+            self.deviceSetIpSuccess.emit()
 
             return
 
@@ -146,6 +149,10 @@ class DeviceDHCPButtonListener(QObject):
             self.active_request["mac"],
             self.active_request["ip"]
         )
+
+        # Переконнект до сокету, якщо все відкритий
+        if self.sock_sender.state() != QAbstractSocket.UnconnectedState:
+            self.sock_sender.close()
 
         ok = self.sock_sender.bind(
             QHostAddress(self.active_request['interface_ip']),
@@ -164,6 +171,7 @@ class DeviceDHCPButtonListener(QObject):
 
         if sent == -1:
             print("Send offer error:", self.sock_sender.errorString())
+            self.reset()
         else:
             print("Sent offer bytes:", sent)
 
@@ -266,6 +274,18 @@ class DeviceDHCPButtonListener(QObject):
         opts += b"\xff"
 
         return bytes(pkt + opts)
+
+    def reset(self):
+        self.state = State.IDLE
+
+        # Active DHCP context
+        self.active_request = {
+            "mac": None,
+            "xid": None,
+            "ip": None,
+            "mask": None,
+            "interface_ip": None
+        }
 
 
 
