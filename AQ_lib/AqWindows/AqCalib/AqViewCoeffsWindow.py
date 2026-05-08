@@ -1,8 +1,8 @@
 from functools import partial
 
-from PySide6.QtCore import Signal, QTimer, QThread, QAbstractTableModel, Qt, QRect
-from PySide6.QtGui import QPainter
-from PySide6.QtWidgets import QHeaderView, QTableView, QStackedWidget
+from PySide2.QtCore import Signal, QTimer, QThread, QAbstractTableModel, Qt, QRect
+from PySide2.QtGui import QPainter
+from PySide2.QtWidgets import QHeaderView, QTableView, QStackedWidget
 
 from AQ_EventManager import AQ_EventManager
 from AqCalibCreator import AqCalibCreator

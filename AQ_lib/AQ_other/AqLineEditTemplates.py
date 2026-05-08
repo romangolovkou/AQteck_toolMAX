@@ -1,6 +1,6 @@
-from PySide6.QtCore import QTimer, Qt, QPoint, QEvent
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QLineEdit, QLabel, QListWidget, QApplication
+from PySide2.QtCore import QTimer, Qt, QPoint, QEvent
+from PySide2.QtGui import QFont
+from PySide2.QtWidgets import QLineEdit, QLabel, QListWidget, QApplication
 
 
 

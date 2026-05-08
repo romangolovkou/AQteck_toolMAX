@@ -1,7 +1,7 @@
 import threading
 from abc import ABC, abstractmethod
 
-from PySide6.QtCore import Qt, QModelIndex, Signal
+from PySide2.QtCore import Qt, QModelIndex, Signal
 
 from AqConnect import AqConnect
 from AqBaseTreeItems import AqParamItem

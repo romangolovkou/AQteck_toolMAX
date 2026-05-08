@@ -4,8 +4,8 @@ import os
 import struct
 from functools import partial
 
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import QFileDialog
+from PySide2.QtCore import Signal, Qt
+from PySide2.QtWidgets import QFileDialog
 
 from AQ_EventManager import AQ_EventManager
 from AqCustomNamesByUID import *
