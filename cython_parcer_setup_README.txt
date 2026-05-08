@@ -6,5 +6,6 @@
 "Розробка класичних додатків С++, та встановити це розширення)
 
 Запуск:
- потрібно запустити компілятор викликавши call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+ потрібно запустити компілятор викликавши call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat" або вручну запустити 
+ з директорії на вказаним шляхом.
  а потім викликати запуск скрипту з аргументами: python cyton_parcer_setup.py build_ext --inplace 

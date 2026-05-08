@@ -4,6 +4,7 @@ import ipaddress
 import socket
 import struct
 import re
+from types import NoneType
 
 from PySide2.QtCore import Qt, QTimer, Signal
 from PySide2.QtGui import QFont
@@ -39,7 +40,7 @@ class AqTreeLineEdit(QLineEdit):
 
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
-        if text != '' and text is not None:
+        if text != '' and text is not None and text != 'None':
             value = int(text)
         else:
             value = None
@@ -71,7 +72,7 @@ class AqTreeLineEdit(QLineEdit):
                 return None
 
         if self.min_limit is not None or self.max_limit is not None:
-            if value != '':
+            if value != '' and value != '-':
                 value = int(value)
                 if value < self.min_limit or value > self.max_limit:
                     if show_err:
@@ -137,6 +138,7 @@ class AqEnumTreeComboBox(QComboBox):
         # Отключение обработчика события колеса мыши
         self.wheelEvent = lambda event: event.ignore()
         self.manager_item_handler = None
+        self.min_limit = param_attributes.get('min_limit', '')
         self.enum_str_dict = param_attributes.get('enum_strings', '')
         enum_strings = self.enum_str_dict.values()
         enum_strings = list(enum_strings)
@@ -150,6 +152,7 @@ class AqEnumTreeComboBox(QComboBox):
 
     def updateIndex(self, index):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
+        index = index + self.min_limit
         string = self.itemText(index)
         key = self.get_key_by_value(self.enum_str_dict, string)
         self.save_new_value(key)
@@ -167,6 +170,7 @@ class AqEnumTreeComboBox(QComboBox):
 
     def set_value(self, value):
         if not self.hasFocus():
+            value = value - self.min_limit if not isinstance(value, NoneType) else self.min_limit
             string = self.enum_str_dict.get(value, '')
             self.setCurrentText(string)
             # self.setCurrentIndex(value)
@@ -244,9 +248,15 @@ class AqUintTreeLineEdit(AqTreeLineEdit):
                 str_copy = self.text()
                 self.verify(str_copy)
                 return
+            elif key == Qt.Key_Delete:
+                self.del_()  # Видалення символу справа від курсора
+                str_copy = self.text()
+                self.verify(str_copy)
+                return
             elif key == Qt.Key_Return:
                 super().keyPressEvent(event)
                 return
+
 
             cursor_position = self.cursorPosition()
             text = event.text()
@@ -434,6 +444,11 @@ class AqIntTreeLineEdit(AqTreeLineEdit):
                 str_copy = self.text()
                 self.verify(str_copy)
                 return
+            elif key == Qt.Key_Delete:
+                self.del_()  # Видалення символу справа від курсора
+                str_copy = self.text()
+                self.verify(str_copy)
+                return
             elif key == Qt.Key_Return:
                 super().keyPressEvent(event)
                 return
@@ -500,7 +515,10 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
     def line_edit_changed_update_value(self, text):
         # Этот метод вызывается каждый раз, когда текст в QLineEdit изменяется
         if text != '' and text != '-':
-            value = float(text)
+            try:
+                value = float(text)
+            except Exception as e:
+                value = 0.0
         else:
             value = None
         self.save_new_value(value)
@@ -526,7 +544,10 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
 
         if self.min_limit is not None or self.max_limit is not None:
             if value != '':
-                value = float(value)
+                try:
+                    value = float(value)
+                except Exception as e:
+                    value = 0.0
                 if value < self.min_limit or value > self.max_limit:
                     if show_err:
                         self.red_blink_timer.start()
@@ -557,6 +578,11 @@ class AqFloatTreeLineEdit(AqTreeLineEdit):
                 return
             elif key == Qt.Key_Backspace:
                 self.backspace()
+                str_copy = self.text()
+                self.verify(str_copy)
+                return
+            elif key == Qt.Key_Delete:
+                self.del_()  # Видалення символу справа від курсора
                 str_copy = self.text()
                 self.verify(str_copy)
                 return
@@ -672,8 +698,12 @@ class AqBitMaskLineEdit(AqTreeLineEdit):
         self.setReadOnly(True)
 
     def get_bitmask_size(self):
-        bit_length_by_max = self.max_limit.bit_length()
         bit_length_by_size = self.param_size * 8
+        if self.max_limit is not None:
+            bit_length_by_max = self.max_limit.bit_length()
+        else:
+            return bit_length_by_size
+
         return bit_length_by_size if bit_length_by_size < bit_length_by_max else bit_length_by_max
 
     def set_value(self, value):

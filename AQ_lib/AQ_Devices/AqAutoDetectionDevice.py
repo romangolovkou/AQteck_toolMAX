@@ -64,8 +64,8 @@ class AqAutoDetectionDevice(AqBaseDevice):
         'status':       [0x0001, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
         'password':     [0x0010, 0, 248, False, 'AqAutoDetectPasswordFileItem', password_msg_dict],
         'default_prg':  [0xFFE0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],  # file_size will be changed later in code
-        'arch_header':  [0x4000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
-        'archive':      [0x1000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'arch_index':   [0x4000, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
+        'archive':      [0x1000, 0, 248, True, 'AqAutoDetectArchiveFileItem', None],
         'calib':        [0xFFA0, 0, 248, True, 'AqAutoDetectModbusFileItem', None],
         'updateFW':     [0x0090, 0, 248, False, 'AqAutoDetectModbusFileItem', updateFW_msg_dict] # file_size will be changed later in code
     }
@@ -119,7 +119,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         self._functions['gateway'] = self.__check_ugm_container()
         self._functions['set_slave_id'] = True
         self._functions['calibration'] = self.__check_calib_json()
-        self._functions['log'] = False  # self.__check_archive_container() #now only true, заглушка
+        self._functions['log'] = self.__check_archive_container() #now only true, заглушка
         self._functions['fw_update'] = True
         self._functions['restart'] = True
 
@@ -285,14 +285,6 @@ class AqAutoDetectionDevice(AqBaseDevice):
         return True
 
     def __check_archive_container(self):
-        # regs = [1540] #rs485_MODE
-        # for i in range(31):
-        #     regs.append(1024 + i*16) #R1-R31 (rules for gateway)
-        #
-        # for reg in regs:
-        #     item = self.__get_item_by_modbus_reg(reg)
-        #     if not isinstance(item, AqParamItem):
-        #         return False
 
         return True
 
@@ -306,6 +298,12 @@ class AqAutoDetectionDevice(AqBaseDevice):
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             return False
+
+    def get_item_by_UID(self, uid):
+        for item in self._params_list:
+            parameter_attributes = item.data(Qt.UserRole)
+            if parameter_attributes.get('UID', 0) == uid:
+                return item
 
     def __get_item_by_UID(self, uid):
         param_attributes = None
@@ -698,34 +696,98 @@ class AqAutoDetectionDevice(AqBaseDevice):
         item.value = record_data
         self.write_file(item, message_feedback_address='main')
 
+    # def read_archive(self, progress_signal):
+    #     self.read_archive_thread = threading.Thread(target=self.read_archive_thread)
+    #     self.read_archive_thread.daemon = True
+    #     self.read_archive_thread.start()
+    #
+    # def read_archive_thread(self):
+    #     try:
+    #         archive_header_bytes = self.__sync_read_file(self.system_params_dict['arch_header'])
+    #         archive_header = archive_header_bytes.decode('ANSI')
+    #         # archive_header = archive_header_bytes.decode('UTF-8')
+    #         archive_header = archive_header_bytes.decode('cp1251')
+    #
+    #         file_size = 64000
+    #         self.system_params_dict['archive'].set_file_size(file_size // 2)
+    #         archive_bytes = self.__sync_read_file(self.system_params_dict['archive'])
+    #         archive = archive_bytes.decode('ANSI')
+    #         archive = archive_bytes.decode('cp1251')
+    #         return archive_header
+    #     except Exception as e:
+    #         print(f"Error occurred: {str(e)}")
+    #         return 'decrypt_err'  # Помилка дешифрування
+
     def read_archive(self):
-        self.read_archive_thread = threading.Thread(target=self.read_archive_thread)
-        self.read_archive_thread.daemon = True
-        self.read_archive_thread.start()
+        file_size = 64000
+        self.system_params_dict['arch_index'].set_file_size(file_size // 2)
+        archive_index_bytes = self.__sync_read_file(self.system_params_dict['arch_index'])
+        archives_count = int(len(archive_index_bytes)/4)
+        archive_bytes = bytes()
 
-    def read_archive_thread(self):
-        try:
-            archive_header_bytes = self.__sync_read_file(self.system_params_dict['arch_header'])
-            archive_header = archive_header_bytes.decode('ANSI')
-            # archive_header = archive_header_bytes.decode('UTF-8')
-            archive_header = archive_header_bytes.decode('cp1251')
+        file_size = 64000
+        def_file_num = self.system_params_dict['archive'].get_def_file_num()
+        self.system_params_dict['archive'].set_file_size(file_size // 2)
 
-            file_size = 64000
-            self.system_params_dict['archive'].set_file_size(file_size // 2)
-            archive_bytes = self.__sync_read_file(self.system_params_dict['archive'])
-            archive = archive_bytes.decode('ANSI')
-            archive = archive_bytes.decode('cp1251')
-            return archive_header
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            return 'decrypt_err'  # Помилка дешифрування
+        for i in range(archives_count):
+            try:
+                self.system_params_dict['archive'].set_file_num(def_file_num + i)
+                archive_bytes_temp = self.__sync_read_file(self.system_params_dict['archive'])
+                pos = archive_bytes_temp.rfind(b"\r\n")
+                archive_bytes += archive_bytes_temp[:pos+2]
 
-        # if status_file != 'decrypt_err' and status_file != 'connect_err' and \
-        #         status_file != 'modbus_err' and status_file is not None:
-        #     data = self.__parse_status_file(status_file)
-        #     model = self.__load_data_to_info_model(data)
-        #
-        # return model
+            except Exception as e:
+                raise e
+
+        self.system_params_dict['archive'].reset_file_num()
+
+        lines = list()
+        parts = archive_bytes.split(b'\r\n')
+        for part in parts:
+            try:
+                if part:
+                    timestamp, uid, value_bytes, status = self.__parse_arch_record(part)
+                    lines.append([timestamp, uid, value_bytes, status])
+
+            except Exception as e:
+                lines.append(['Invalid record'])
+
+        return lines
+
+    def __parse_arch_record(self, record: bytes):
+        # 1) минимум должно быть:
+        # 4 + 1 + 8 + 1 + 1 + 1 = 16 байт (без value)
+        if len(record) < 16:
+            raise ValueError("record too short")
+
+        # --- timestamp ---
+        timestamp_bytes = record[:4]
+        timestamp = int.from_bytes(timestamp_bytes, "little")
+
+        # разделитель после timestamp
+        if record[4] != ord(";"):
+            raise ValueError("missing delimiter 1")
+
+        # --- ID ---
+        id_bytes = record[5:13]
+        uid = id_bytes
+
+        # разделитель после ID
+        if record[13] != ord(";"):
+            raise ValueError("missing delimiter 2")
+
+        # --- статус (последний байт) ---
+        status_temp = record[-1]
+        status = int(chr(status_temp))
+
+        # перед статусом должен быть разделитель
+        if record[-2] != ord(";"):
+            raise ValueError("missing delimiter 3")
+
+        # --- value ---
+        value_bytes = record[14:-2]  # всё между разделителями
+
+        return timestamp, uid, value_bytes, status
 
     def get_log_settings(self):
         try:

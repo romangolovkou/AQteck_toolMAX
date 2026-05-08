@@ -239,7 +239,12 @@
         <translation>Встановити</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqArchiveWindow.ui" line="609"/>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="541"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqArchiveWindow.ui" line="614"/>
         <source>Save log</source>
         <translation>Скачати архів</translation>
     </message>
@@ -252,60 +257,65 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="358"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="364"/>
         <source>Input type</source>
         <translation>Тип входів</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="410"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="416"/>
         <source>Channels</source>
         <translation>Канали</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="462"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="468"/>
         <source>Calib method</source>
         <translation>Метод калібрування</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="514"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="520"/>
         <source>Run calibrate</source>
         <translation>Старт калібрування</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="583"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="610"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="581"/>
+        <source>View coeffs</source>
+        <translation>Перегляд коефф.</translation>
+    </message>
+    <message>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="637"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="655"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="670"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="664"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="691"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="709"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="804"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="856"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="951"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="963"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="975"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="724"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="763"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="858"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="913"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1008"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1020"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1032"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="896"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1066"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="953"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1123"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="914"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="971"/>
         <source>Run</source>
         <translation>Далі</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1013"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1018"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1023"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1070"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1075"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1080"/>
         <source>Новый столбец</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1084"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1141"/>
         <source>Write</source>
         <translation>Записати</translation>
     </message>
@@ -794,6 +804,14 @@
     <message>
         <location filename="../UI/forms/AqSetSlaveIdWinWidget.ui" line="898"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;userMessage&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AqViewCoeffsWidget</name>
+    <message>
+        <location filename="../UI/forms/AqViewCoeffsWidget.ui" line="14"/>
+        <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1572,12 +1590,48 @@
         <translation>Поточне значення приладу</translation>
     </message>
     <message>
-        <source>Log</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Current device value</source>
         <translation>Поточне значення приладу</translation>
+    </message>
+    <message>
+        <source>Reading part</source>
+        <translation>Завантаження запису №</translation>
+    </message>
+    <message>
+        <source>Log</source>
+        <translation>Архів</translation>
+    </message>
+    <message>
+        <source>File access denied. The file may be occupied by another application.</source>
+        <translation>Доступ до файлу відхилено. Можливо файл зайнятий іншим додатком.</translation>
+    </message>
+    <message>
+        <source>Values must be an UINT</source>
+        <translation>Значення повинно бути UINT</translation>
+    </message>
+    <message>
+        <source>Parsing file</source>
+        <translation>Розбір записів файлу</translation>
+    </message>
+    <message>
+        <source>Read has been failed</source>
+        <translation>Вичтення файлу неуспішне</translation>
+    </message>
+    <message>
+        <source>less or more than permissible</source>
+        <translation>менше або більше допустимого</translation>
+    </message>
+    <message>
+        <source>Create CSV table</source>
+        <translation>Створення CSV таблиці</translation>
+    </message>
+    <message>
+        <source>Reading part_</source>
+        <translation>Завантаження запису_</translation>
+    </message>
+    <message>
+        <source>View coeffs</source>
+        <translation>Перегляд коефіцієнтів</translation>
     </message>
 </context>
 </TS>

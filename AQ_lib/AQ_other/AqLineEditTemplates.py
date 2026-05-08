@@ -1,5 +1,7 @@
-from PySide2.QtCore import QTimer, Qt, QPoint, QEvent
-from PySide2.QtWidgets import QLineEdit, QLabel, QListWidget, QApplication
+from PySide6.QtCore import QTimer, Qt, QPoint, QEvent
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QLineEdit, QLabel, QListWidget, QApplication
+
 
 
 class AqSlaveIdLineEdit(QLineEdit):
@@ -467,4 +469,95 @@ class AqIntLineEdit(QLineEdit):
 
             super().keyPressEvent(event)
 
+
+class AqUintLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.min_limit = None
+        self.max_limit = None
+        self.err_label = None
+
+    def verify(self, value=None, show_err=False):
+        if value is None:
+            if self.text() != '' and self.text() is not None:
+                try:
+                    value = int(self.text())
+                except:
+                    value = str(self.text())
+            else:
+                return None
+
+        if self.min_limit is not None or self.max_limit is not None:
+            if value != '' and value != '-':
+                value = int(value)
+                if value < self.min_limit or value > self.max_limit:
+                    if show_err:
+                        if self.err_label is None:
+                            self.show_err_label()
+                    return False
+                else:
+                    if self.err_label is not None:
+                        try:
+                            self.err_label.hide()
+                            self.err_label.deleteLater()
+                            self.err_label = None
+                        except Exception as e:
+                            self.err_label = None
+
+                    self.err_label = None
+
+                    return True
+
+    def set_value(self, value):
+        self.setText(str(value))
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == Qt.Key_Left:
+            cursor_position = self.cursorPosition()
+            self.setCursorPosition(cursor_position - 1)
+            return
+        elif key == Qt.Key_Right:
+            cursor_position = self.cursorPosition()
+            self.setCursorPosition(cursor_position + 1)
+            return
+        elif key == Qt.Key_Backspace:
+            self.backspace()
+            str_copy = self.text()
+            self.verify(str_copy, show_err=True)
+            return
+        elif key == Qt.Key_Return:
+            super().keyPressEvent(event)
+            return
+
+        cursor_position = self.cursorPosition()
+        text = event.text()
+        if not text.isdigit():
+            # Якщо не цифра
+            return
+        # Если цифра
+        else:
+            if self.hasSelectedText():
+                self.backspace()
+
+            str_copy = self.text()
+            str_copy = str_copy[:cursor_position] + text + str_copy[cursor_position:]
+            user_data = int(str_copy)  # Преобразуем подстроку в целое число
+
+            self.verify(user_data, show_err=True)
+
+        super().keyPressEvent(event)
+
+    def show_err_label(self):
+        # Получаем координаты поля ввода относительно диалогового окна
+        rect = self.geometry()
+        pos = self.mapTo(self, rect.topRight())
+        self.err_label = QLabel('Invalid value, valid ({}...{})'.format(self.min_limit, self.max_limit), self.parent())
+        self.err_label.setStyleSheet("color: #fe2d2d; \n")
+        self.err_label.setFont(QFont("Segoe UI", 11))
+        self.err_label.setFixedSize(200, 12)
+        self.err_label.move(pos.x() - 300, pos.y() + 5)
+        self.err_label.show()
+        # Устанавливаем задержку в 2 секунды и затем удаляем метку
+        QTimer.singleShot(3000, self.err_label.deleteLater)
 

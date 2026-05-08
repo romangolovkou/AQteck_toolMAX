@@ -1,7 +1,8 @@
 set INNO="c:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc
 
 rem set /p VER=<..\..\Version.txt
-set VER=0.0.1
+rem set VER=0.0.2
+set VER=0.0.2_itp18
 
 echo load version string %VER%
 

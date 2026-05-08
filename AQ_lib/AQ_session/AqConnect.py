@@ -305,6 +305,13 @@ class AqModbusConnect(AqConnect):
                     result = await self.client.read_discrete_inputs(modbus_reg, 1, self.slave_id)
                 elif func == 1:
                     result = await self.client.read_coils(modbus_reg, 1, self.slave_id)
+                elif func == '-': #if parameter is write only
+                    if item.value_in_device is None:
+                        item.set_default_value()
+
+                    item.value = item.value_in_device
+                    item.synchronized = True
+                    return
                 else:
                     item.data_from_network(None, True, 'modbus_error')
                     raise Exception('AqConnectError: in {} attributes "func" is not supported'.format(
@@ -362,6 +369,11 @@ class AqModbusConnect(AqConnect):
                 else:
                     item.confirm_writing(True)
 
+                # Якщо параметр тільки для запису, то після запису скидаємо значення та його відображення в дереві в дефолт
+                if param_attributes.get("R_Only", 0) == 0 and param_attributes.get("W_Only", 0) == 1:
+                    item.set_default_value()
+                    item.synchronized = True
+
             except Exception as e:
                 print(f"Error occurred: {str(e)}")
                 raise
@@ -374,6 +386,7 @@ class AqModbusConnect(AqConnect):
             file_num = param_attributes.get('file_num', '')
             start_record_num = param_attributes.get('start_record_num', '')
             left_to_read = param_attributes.get('file_size', '')
+            total_size = left_to_read
             summary_data = bytearray()
             while left_to_read > 0:
                 # read_size = max_record_size if left_to_read > max_record_size else left_to_read
@@ -385,11 +398,13 @@ class AqModbusConnect(AqConnect):
                 request.record_length = read_size
 
                 try:
-                    if left_to_read < 14000:
-                        x = 20 + 4
                     result = await self.client.read_file_record(self.slave_id, [request])
                     start_record_num += read_size
                     left_to_read -= read_size
+
+                    # Отправляем сигнал с обновлением прогресса
+                    progress = int(((total_size - left_to_read) / total_size) * 100)
+                    self.progress_updated.emit(progress, 'read_file')
                 except Exception as e:
                     print(f"Error occurred: {str(e)}")
                     item.data_from_network(None, True, 'modbus_error')

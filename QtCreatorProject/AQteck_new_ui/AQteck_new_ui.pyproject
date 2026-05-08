@@ -11,6 +11,7 @@
         "../../UI/forms/AqSetPasswordWidget.ui",
         "../../UI/forms/AqSetRtcWidget.ui",
         "../../UI/forms/AqSetSlaveIdWinWidget.ui",
+        "../../UI/forms/AqViewCoeffsWidget.ui",
         "../../UI/forms/AqWatchListWidget.ui",
         "../../UI/forms/AqWindowTemplate.ui",
         "../../UI/forms/DeviceInfoDialog.ui",

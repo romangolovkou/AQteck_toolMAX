@@ -15,7 +15,7 @@ class AqModbusGenericConfiguration:
 
 
 def read_configuration_file(conf_filename):
-    file_path = '110_device_conf/' + conf_filename
+    file_path = '110_device_conf/' + conf_filename + '.csv'
     data = []
     if not os.path.isfile(file_path):
         raise Exception('AqGenericModbusError: Can`t find configuration for specified device')
@@ -106,7 +106,7 @@ def get_params_tree(data: list):
                 break
 
         if start is None or end is None:
-            raise Exception('AqGenericModbusError: Configuration can`t read. Can`t find "System_params" in file')
+            raise Exception('AqGenericModbusError: Configuration can`t read. Can`t find "Param_descr_area" in file')
 
         # Створюємо список імен каталогів
         catalogs_name_list = list()

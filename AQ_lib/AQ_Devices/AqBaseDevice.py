@@ -1,7 +1,7 @@
 import threading
 from abc import ABC, abstractmethod
 
-from PySide2.QtCore import Qt, QModelIndex
+from PySide6.QtCore import Qt, QModelIndex, Signal
 
 from AqConnect import AqConnect
 from AqBaseTreeItems import AqParamItem
@@ -211,8 +211,9 @@ class AqBaseDevice(ABC):
             param_attributes = item.data(Qt.UserRole)
             if param_attributes is not None:
                 if not (param_attributes.get('R_Only', 0) == 1 and param_attributes.get('W_Only', 0) == 0):
-                    item.set_default_value(False)
-                    self.__add_param_to_update_stack(item)
+                    if param_attributes.get('visual_type', None) != 'ip_format':
+                        item.set_default_value(False)
+                        self.__add_param_to_update_stack(item)
 
         self.update_param_callback()
 
@@ -322,14 +323,24 @@ class AqBaseDevice(ABC):
             self._core_cv.notify()
         self._update_param_stack.clear()
 
-    def __convert_tree_branch_to_list(self, item):
+    def __convert_tree_branch_to_list(self, item, path=None):
+        if path is None:
+            path = []
+
+        name = item.get_param_attributes().get('name', '')
+        current_path = path + [name] if name else path
+
         param_attributes = item.get_param_attributes()
         if param_attributes.get('is_catalog', 0) == 1:
             row_count = item.rowCount()
             for row in range(row_count):
                 child_item = item.child(row)
-                self.__convert_tree_branch_to_list(child_item)
+                self.__convert_tree_branch_to_list(child_item, current_path)
         else:
+            # Параметр — добавляем в список вместе с путём
+            full_path = ".".join(current_path)
+            param_attributes['cat_prefix_name'] = full_path
+            item.setData(param_attributes, Qt.UserRole)
             self._params_list.append(item)
             item.set_local_event_manager(self._local_event_manager)
 

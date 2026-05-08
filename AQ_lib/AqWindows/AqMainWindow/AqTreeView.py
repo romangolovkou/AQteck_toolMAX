@@ -149,10 +149,11 @@ class AqTreeView(QTreeView):
                     # action_watch = context_menu.addAction("Add parameter to Watch list")
                     # # Подключаем обработчик события выбора действия
                     # action_watch.triggered.connect(lambda: self.model().add_parameter_to_watch_list(index))
-                    # Добавляем действие в контекстное меню
-                    action_read = context_menu.addAction(AqTranslateManager.tr("Read parameter"))
-                    # Подключаем обработчик события выбора действия
-                    action_read.triggered.connect(lambda: self.model().read_parameter(index))
+                    if not (cat_or_param_attributes.get("R_Only", 0) == 0 and cat_or_param_attributes.get("W_Only", 0) == 1):
+                        # Добавляем действие в контекстное меню
+                        action_read = context_menu.addAction(AqTranslateManager.tr("Read parameter"))
+                        # Подключаем обработчик события выбора действия
+                        action_read.triggered.connect(lambda: self.model().read_parameter(index))
                     if not (cat_or_param_attributes.get("R_Only", 0) == 1 and cat_or_param_attributes.get("W_Only", 0) == 0):
                         action_write = context_menu.addAction(AqTranslateManager.tr("Write parameter"))
                         # Подключаем обработчик события выбора действия

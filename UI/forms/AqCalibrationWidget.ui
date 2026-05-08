@@ -186,6 +186,12 @@ border-radius: 4px;
       </property>
       <item alignment="Qt::AlignLeft">
        <widget class="QFrame" name="DevInfoFrame">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -259,7 +265,7 @@ border-radius: 4px;
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -530,6 +536,54 @@ border-radius: 4px;
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item alignment="Qt::AlignHCenter">
+                  <widget class="QFrame" name="ViewCoeffFrame">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_19">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="viewCoeffBtn">
+                      <property name="minimumSize">
+                       <size>
+                        <width>150</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>150</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <pointsize>10</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>View coeffs</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
                  </item>
                 </layout>
                </widget>

@@ -48,7 +48,10 @@ class DeviceCreator(object):
         if protocol == 'Modbus':
             # Получаем список файлов в указанной директории
             try:
-                devices = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+                devices_temp = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+                for device in devices_temp:
+                    if '.csv' in device:
+                        devices.append(device.removesuffix('.csv'))
             except:
                 devices.clear()
                 devices.append('Not configuration catalog')

@@ -290,7 +290,7 @@ border-radius: 4px;
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="logIntervalLineEdit">
+             <widget class="AqUintLineEdit" name="logIntervalLineEdit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -348,7 +348,7 @@ border-radius: 4px;
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="logNumberFilesLineEdit">
+             <widget class="AqUintLineEdit" name="logNumberFilesLineEdit">
               <property name="minimumSize">
                <size>
                 <width>100</width>
@@ -400,7 +400,7 @@ border-radius: 4px;
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="logFileSizeLineEdit">
+             <widget class="AqUintLineEdit" name="logFileSizeLineEdit">
               <property name="minimumSize">
                <size>
                 <width>100</width>
@@ -496,6 +496,18 @@ border-radius: 4px;
          </property>
          <item>
           <widget class="QFrame" name="progressBarFrame">
+           <property name="minimumSize">
+            <size>
+             <width>280</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
            </property>
@@ -518,44 +530,31 @@ border-radius: 4px;
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
-             <widget class="QProgressBar" name="logProgressBar">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="progressTextLabel">
               <property name="font">
                <font>
-                <pointsize>9</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
-              <property name="styleSheet">
-               <string notr="true">
-QProgressBar {
-    border-radius: 5px;
-    text-align: center;
-}
-QProgressBar::chunk {
-    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,
-        stop:0 rgba(0, 100, 255, 180), /* Начало синего */
-        stop:0.5 rgba(0, 150, 255, 255), /* Яркий синий */
-        stop:1 rgba(0, 100, 255, 180)); /* Конец синего */
-}
-</string>
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QProgressBar" name="progressBar">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>5</height>
+               </size>
               </property>
               <property name="value">
                <number>0</number>
               </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
               <property name="textVisible">
-               <bool>true</bool>
-              </property>
-              <property name="invertedAppearance">
                <bool>false</bool>
-              </property>
-              <property name="textDirection">
-               <enum>QProgressBar::TopToBottom</enum>
-              </property>
-              <property name="format">
-               <string notr="true">%p%</string>
               </property>
              </widget>
             </item>
@@ -564,6 +563,12 @@ QProgressBar::chunk {
          </item>
          <item>
           <widget class="QFrame" name="saveLogBtnFrame">
+           <property name="maximumSize">
+            <size>
+             <width>130</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
            </property>
@@ -621,6 +626,13 @@ QProgressBar::chunk {
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AqUintLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">AqLineEditTemplates.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

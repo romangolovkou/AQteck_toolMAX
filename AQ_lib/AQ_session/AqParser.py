@@ -48,28 +48,56 @@ def parse_parameter(config_string: str):
         # Аттрибут з індексом 2 - номер регістру
         param_attributes['modbus_reg'] = int(attributes[2])
         # Аттрибут з індексом 4 - номер функції для вичитки
-        param_attributes['read_func'] = int(attributes[4])
+        # param_attributes['read_func'] = int(attributes[4])
+        # Аттрибут з індексом 4 - номер функції для вичитки (додана можливість, робити параметр без функції вичитки (Тільки для запису))
         # Аттрибут з індексом 5 - номер функції для запису (необов'язковий)
-        if attributes[5] == '-':
+        if attributes[5] == '-' and attributes[4] != '-':
             param_attributes['R_Only'] = 1
             param_attributes['W_Only'] = 0
+            param_attributes['read_func'] = int(attributes[4])
+        elif attributes[5] != '-' and attributes[4] == '-':
+            param_attributes['R_Only'] = 0
+            param_attributes['W_Only'] = 1
+            param_attributes['read_func'] = attributes[4]
+            param_attributes['write_func'] = int(attributes[5])
         else:
             param_attributes['R_Only'] = 0
             param_attributes['W_Only'] = 0
+            param_attributes['read_func'] = int(attributes[4])
             param_attributes['write_func'] = int(attributes[5])
 
-        # Аттрибут з індексом 7 - мінимально можливе значення (необов'язковий)
-        if attributes[7] != '' and attributes[7] != '-':
-            param_attributes['min_limit'] = int(attributes[7])
-        # Аттрибут з індексом 8 - максимально можливе значення (необов'язковий)
-        if attributes[8] != '' and attributes[8] != '-':
-            param_attributes['max_limit'] = int(attributes[8])
-            # Аттрибут з індексом 9 - умовні одиниці виміру параметру.
-            # Має декоративне значення (необов'язковий). Приклад 'mV' '%' 'мкА' 'сек'
-        param_attributes['unit'] = attributes[9]
         # Аттрибут з індексом 6 - ім'я классу параметру та розмір параметру у бітах
         parts = attributes[6].split(' ')
         param_type = parts[0]
+
+        # Аттрибут з індексом 7 - мінимально можливе значення (необов'язковий)
+        if attributes[7] != '' and attributes[7] != '-':
+            if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
+                value_str = attributes[7]
+                if '..' in value_str:
+                    value_str = value_str.replace('..', '.')
+
+                param_attributes['min_limit'] = float(value_str)
+            else:
+                param_attributes['min_limit'] = int(attributes[7])
+
+        # Аттрибут з індексом 8 - максимально можливе значення (необов'язковий)
+        if attributes[8] != '' and attributes[8] != '-':
+            if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
+                value_str = attributes[8]
+                if '..' in value_str:
+                    value_str = value_str.replace('..', '.')
+
+                param_attributes['max_limit'] = float(value_str)
+            else:
+                param_attributes['max_limit'] = int(attributes[8])
+
+            # Аттрибут з індексом 9 - умовні одиниці виміру параметру.
+            # Має декоративне значення (необов'язковий). Приклад 'mV' '%' 'мкА' 'сек'
+        param_attributes['unit'] = attributes[9]
+        # # Аттрибут з індексом 6 - ім'я классу параметру та розмір параметру у бітах
+        # parts = attributes[6].split(' ')
+        # param_type = parts[0]
         if param_type == 'AqModbusEnumParamItem' or param_type == 'AqModbusStringParamItem' or \
                 param_type == 'AqModbusDiscretParamItem' or param_type == 'AqDY500EnumParamItem' or \
                 param_type == 'AqDY500StringParamItem' or param_type == 'AqDY500DiscretParamItem' or \
@@ -83,7 +111,13 @@ def parse_parameter(config_string: str):
 
         if attributes[10] != '' and attributes[10] != '-':
             if param_type == 'AqModbusFloatParamItem' or param_type == 'AqDY500FloatParamItem':
-                param_attributes['def_value'] = float(attributes[10])
+                value_str = attributes[10]
+                if '..' in value_str:
+                    value_str = value_str.replace('..', '.')
+
+                param_attributes['def_value'] = float(value_str)
+            elif param_type == 'AqModbusStringParamItem':
+                param_attributes['def_value'] = str(attributes[10])
             else:
                 param_attributes['def_value'] = int(attributes[10])
 
@@ -112,8 +146,21 @@ def parse_parameter(config_string: str):
 
                 param_attributes['enum_strings'] = enum_str_dict
 
-            multiply = float(attributes[12])
+            multiply_value_str = attributes[12]
+            if '..' in multiply_value_str:
+                multiply_value_str = multiply_value_str.replace('..', '.')
+            multiply = float(multiply_value_str)
             param_attributes['multiply'] = multiply
+
+        if attributes[13] != '' and attributes[13] != '-':
+            value_str = attributes[13]
+            if value_str == 'little-endian' or value_str == 'big-endian':
+                param_attributes['byte_order'] = value_str
+
+        if attributes[14] != '' and attributes[14] != '-':
+            value_str = attributes[14]
+            if value_str == 'little-endian' or value_str == 'big-endian':
+                param_attributes['reg_order'] = value_str
 
         item_class = param_type
         if item_class is not None:
