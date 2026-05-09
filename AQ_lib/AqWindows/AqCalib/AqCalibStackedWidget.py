@@ -425,14 +425,14 @@ class AqCalibViewManager(QStackedWidget):
             self.roaming_temp_folder = os.path.join(os.getenv('APPDATA'), 'AQteck tool MAX', 'Roaming', 'temp')
             calib_path = self.roaming_temp_folder + '/calib/'
             try:
-                # AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
-                #                                  calib_path + 'current_calibr.json')
-                AqCalibCreator.prepare_json_file('test_files/FI210-8T_calibr.json', calib_path + 'current_calibr.json')
+                AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
+                                                 calib_path + 'current_calibr.json')
+                # AqCalibCreator.prepare_json_file('test_files/FI210-8T_calibr.json', calib_path + 'current_calibr.json')
                 data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
 
-                # AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
-                #                                  calib_path + 'current_loc.json')
-                AqCalibCreator.prepare_json_file('test_files/FI210-8T.json', calib_path + 'current_loc.json')
+                AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
+                                                 calib_path + 'current_loc.json')
+                # AqCalibCreator.prepare_json_file('test_files/FI210-8T.json', calib_path + 'current_loc.json')
                 loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
 
                 current_lang = AqTranslateManager.get_current_lang().lower()
