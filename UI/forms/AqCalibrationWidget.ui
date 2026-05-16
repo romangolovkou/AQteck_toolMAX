@@ -265,7 +265,7 @@ border-radius: 4px;
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="stackedWidgetPage1">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -780,8 +780,11 @@ border-radius: 4px;
                </property>
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>14</pointsize>
                 </font>
+               </property>
+               <property name="text">
+                <string/>
                </property>
               </widget>
              </item>
@@ -798,6 +801,11 @@ border-radius: 4px;
                  <width>100</width>
                  <height>30</height>
                 </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
                </property>
               </widget>
              </item>
@@ -876,8 +884,17 @@ border-radius: 4px;
                     <height>16777215</height>
                    </size>
                   </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>14</pointsize>
+                   </font>
+                  </property>
                   <property name="styleSheet">
-                   <string notr="true">border: none;</string>
+                   <string notr="true">border: none;
+color: #FFFF66;</string>
+                  </property>
+                  <property name="text">
+                   <string/>
                   </property>
                  </widget>
                 </item>
