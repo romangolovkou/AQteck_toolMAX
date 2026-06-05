@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QWidget, QFrame, QMenu
 
 import AqUiWorker
 from AQ_EventManager import AQ_EventManager
+from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqBaseDevice import AqBaseDevice
 from AqTranslateManager import AqTranslateManager
 from ui_AqLeftDeviceWidget import Ui_AqLeftDeviceWidget
@@ -148,6 +149,9 @@ class AqLeftDeviceWidget(QWidget):
         action_delete = context_menu.addAction(AqTranslateManager.tr("Delete device"))
         action_save_config = context_menu.addAction(AqTranslateManager.tr("Save configuration"))
         action_load_config = context_menu.addAction(AqTranslateManager.tr("Load configuration"))
+        if type(self.device) is AqAutoDetectionDevice:
+            action_save_dev_image = context_menu.addAction(AqTranslateManager.tr("Save image for Offline mode"))
+            action_save_dev_image.triggered.connect(lambda: self.device.save_device_image(message_feedback_address='main'))
         # Подключаем обработчик события выбора действия
         action_read.triggered.connect(lambda: self.device.read_parameters(message_feedback_address='main'))
         action_write.triggered.connect(lambda: self.device.write_parameters(message_feedback_address='main'))

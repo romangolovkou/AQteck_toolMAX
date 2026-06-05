@@ -468,6 +468,23 @@ class AqAutoDetectionDevice(AqBaseDevice):
 
         return full_file
 
+    def save_device_image(self, message_feedback_address=None):
+        try:
+            def_prg_file = self.__read_default_prg()
+
+            filename = self._info['name'] + '_' + self._info['version'] + '.prg'
+            full_filepath = os.path.join('auto_detect_conf', filename)
+            with open(full_filepath, 'wb') as file:
+                file.write(def_prg_file)
+
+            if message_feedback_address is not None:
+                self._message_manager.send_message(message_feedback_address, 'Success',
+                                                   AqTranslateManager.tr('Image has been saved'))
+        except:
+            if message_feedback_address is not None:
+                self._message_manager.send_message(message_feedback_address, 'Error',
+                                                   AqTranslateManager.tr('Can`t save the image'))
+
     def __read_status_file(self):
         try:
             status_file = self.__sync_read_file(self.system_params_dict['status'])
