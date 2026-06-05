@@ -3,6 +3,7 @@ import threading
 
 import serial.tools.list_ports
 
+from AqAutoDetectionDeviceOffline import AqAutoDetectionDeviceOffline
 from AqIsValidIpFunc import is_valid_ip
 from AqAutoDetectionDevice import AqAutoDetectionDevice
 from AqConnect import AqComConnectSettings, AqOfflineConnectSettings, AqIpConnectSettings
@@ -11,7 +12,8 @@ from AqGenericModbusLibrary import read_configuration_file
 # імпорти нижче не видаляти, потрібні для globals()
 from AqGenericModbusDevice import AqGenericModbusDevice
 from AqNPT_1K_Items import AqNPT_1K_StringParamItem
-PATH = '110_device_conf/'
+MB_GENERIC_PATH = '110_device_conf/'
+AUTO_DETECT_PATH = 'auto_detect_conf/'
 
 
 class DeviceCreator(object):
@@ -25,8 +27,9 @@ class DeviceCreator(object):
     def get_protocol_list(cls, protocol=''):
         protocol_list = list()
         protocol_list.append('Modbus')
-        if protocol != 'Offline':
-            protocol_list.append('AqAutoDetectionProtocol')
+        protocol_list.append('AqAutoDetectionProtocol')
+        # if protocol != 'Offline':
+        #     protocol_list.append('AqAutoDetectionProtocol')
 
         return protocol_list
 
@@ -48,7 +51,7 @@ class DeviceCreator(object):
         if protocol == 'Modbus':
             # Получаем список файлов в указанной директории
             try:
-                devices_temp = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+                devices_temp = [f for f in os.listdir(MB_GENERIC_PATH) if os.path.isfile(os.path.join(MB_GENERIC_PATH, f))]
                 for device in devices_temp:
                     if '.csv' in device:
                         devices.append(device.removesuffix('.csv'))
@@ -56,8 +59,25 @@ class DeviceCreator(object):
                 devices.clear()
                 devices.append('Not configuration catalog')
 
-            if len(devices) == 0:
-                devices.append('Not available configuration')
+            # if len(devices) == 0:
+            #     devices.append('Not available configuration')
+
+        if protocol == 'AqAutoDetectionProtocol':
+            # Получаем список файлов в указанной директории
+            try:
+                devices_temp = [f for f in os.listdir(AUTO_DETECT_PATH) if os.path.isfile(os.path.join(AUTO_DETECT_PATH, f))]
+                for device in devices_temp:
+                    if '.prg' in device:
+                        devices.append(device.removesuffix('.prg'))
+            except:
+                devices.clear()
+                devices.append('Not configuration catalog')
+
+            # if len(devices) == 0:
+            #     devices.append('Not available configuration')
+
+        if len(devices) == 0:
+            devices.append('Not available configuration')
 
         return devices
 
@@ -85,7 +105,14 @@ class DeviceCreator(object):
         device = None
 
         device_type = param_dict.get('device_type')
-        if device_type == 'AqAutoDetectionDevice':
+        interface_type = param_dict.get('interface_type')
+        if device_type == 'AqAutoDetectionDevice' and interface_type == 'Offline':
+            try:
+                device = AqAutoDetectionDeviceOffline(cls.event_manager, connect, param_dict=param_dict)
+            except Exception as e:
+                print(f"{str(e)}")
+                device = None
+        elif device_type == 'AqAutoDetectionDevice':
             try:
                 device = AqAutoDetectionDevice(cls.event_manager, connect)
             except Exception as e:
