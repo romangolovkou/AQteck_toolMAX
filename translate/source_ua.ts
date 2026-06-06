@@ -1633,5 +1633,17 @@
         <source>View coeffs</source>
         <translation>Перегляд коефіцієнтів</translation>
     </message>
+    <message>
+        <source>Save image for Offline mode</source>
+        <translation>Зберегти образ для оффлайн режиму</translation>
+    </message>
+    <message>
+        <source>Can`t save the image</source>
+        <translation>Не вдалося зберегти образ</translation>
+    </message>
+    <message>
+        <source>Image has been saved</source>
+        <translation>Образ збережено</translation>
+    </message>
 </context>
 </TS>
