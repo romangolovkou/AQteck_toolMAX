@@ -174,7 +174,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         interface = self.ui.interface_combo_box.currentText()
         protocol = self.ui.protocol_combo_box.currentText()
         devices = AqDeviceFabrica.DeviceCreator.get_device_list_by_protocol(protocol)
-        if len(devices) > 0 and interface == 'Offline':
+        if len(devices) > 0 and (interface == 'Offline' or protocol == 'Modbus'):
             self.ui.device_combo_box.show()
             self.ui.device_combo_box_label.show()
         else:
