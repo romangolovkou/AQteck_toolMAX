@@ -472,6 +472,10 @@ class AqAutoDetectionDevice(AqBaseDevice):
         try:
             def_prg_file = self.__read_default_prg()
 
+            # Проверяем если папки нет - создаем
+            conf_dir = 'auto_detect_conf'
+            os.makedirs(conf_dir, exist_ok=True)
+
             filename = self._info['name'] + '_' + self._info['version'] + '.prg'
             full_filepath = os.path.join('auto_detect_conf', filename)
             with open(full_filepath, 'wb') as file:
@@ -480,7 +484,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
             if message_feedback_address is not None:
                 self._message_manager.send_message(message_feedback_address, 'Success',
                                                    AqTranslateManager.tr('Image has been saved'))
-        except:
+        except Exception as e:
             if message_feedback_address is not None:
                 self._message_manager.send_message(message_feedback_address, 'Error',
                                                    AqTranslateManager.tr('Can`t save the image'))
