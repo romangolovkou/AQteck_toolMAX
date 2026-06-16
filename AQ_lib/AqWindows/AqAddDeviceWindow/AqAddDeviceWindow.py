@@ -251,7 +251,7 @@ class AqAddDeviceWidget(AqDialogTemplate):
         if len(found_devices) > 0:
             for device in found_devices:
                 for found_device in self.all_found_devices:
-                    if device.info('address') == found_device.info('address'):
+                    if device.info('address') == found_device.info('address') and device.info('address') != 'Offline':
                         return
 
             self.add_devices_to_table_widget(found_devices)
