@@ -1645,5 +1645,9 @@
         <source>Image has been saved</source>
         <translation>Образ збережено</translation>
     </message>
+    <message>
+        <source>Can`t save the image. (This feature only works if the application is run as administrator.)</source>
+        <translation>Не вдалося зберегти образ. (Ця функція працює, лише якщо додаток запущено від імені адміністратора.)</translation>
+    </message>
 </context>
 </TS>

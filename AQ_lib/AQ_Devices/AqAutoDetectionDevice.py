@@ -487,7 +487,7 @@ class AqAutoDetectionDevice(AqBaseDevice):
         except Exception as e:
             if message_feedback_address is not None:
                 self._message_manager.send_message(message_feedback_address, 'Error',
-                                                   AqTranslateManager.tr('Can`t save the image'))
+                                                   AqTranslateManager.tr('Can`t save the image. (This feature only works if the application is run as administrator.)'))
 
     def __read_status_file(self):
         try:
