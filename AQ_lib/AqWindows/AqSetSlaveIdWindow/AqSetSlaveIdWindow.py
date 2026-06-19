@@ -82,7 +82,10 @@ class AqSetSlaveIdWindow(AqDialogTemplate):
     def change_device_set_by_protocol_selection(self):
         protocol = self.ui.protocol_combo_box.currentText()
         devices = AqDeviceFabrica.DeviceCreator.get_device_list_by_protocol(protocol)
-        devices.remove('МВ110-24_1ТД.csv')
+        try:
+            devices.remove('МВ110-24_1ТД')
+        except Exception as e:
+            print(f'Reamove МВ110-24_1ТД Failed, {e}')
         if len(devices) > 0:
             self.ui.device_combo_box.show()
             self.ui.device_combo_box_label.show()
