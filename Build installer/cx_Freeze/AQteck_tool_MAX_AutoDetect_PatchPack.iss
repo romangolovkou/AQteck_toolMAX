@@ -3,7 +3,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{598AA9FD-1145-4030-92C8-DC578F409437}
+AppId={{D168F49F-8732-43FA-84B2-74DA10D1237B}
 AppName=AQteck tMAX PatchPack __VERSION__
 AppVersion=__VERSION__
 ;AppVerName=AQteck tool MAX v0.01
