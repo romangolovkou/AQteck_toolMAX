@@ -1,4 +1,6 @@
+import asyncio
 from dataclasses import dataclass
+from time import sleep
 
 from AqCalibParamSetting import AqCalibParamSetting
 from AqCalibSession import AqCalibSession
@@ -182,6 +184,7 @@ class AqCalibrator(object):
         for param in channel_cfg_params:
             self.calib_session.saved_cfg_params_values[param] = self.device.read_calib_param(param.register)
             result &= self.device.write_calib_param(param.register, param.value)
+            sleep(0.05)
 
         return result
 
@@ -191,12 +194,14 @@ class AqCalibrator(object):
         for param in channel_cfg_params:
             value = self.calib_session.saved_cfg_params_values[param]
             result &= self.device.write_calib_param(param.register, value)
+            sleep(0.05)
 
         return result
 
     def set_ch_out_value(self, channel, value):
         result = True
         self.set_ch_cfg(channel)
+        sleep(0.05)
         calib_param_value = channel.calib_param_value
         result &= self.device.write_calib_param(calib_param_value.register, value)
 
