@@ -4,8 +4,9 @@ from datetime import datetime
 from functools import partial
 
 # import cairosvg
-from PySide6.QtCore import QTimer, Qt, Signal
-from PySide6.QtGui import QStandardItem, QPixmap
+from PySide6.QtCore import QTimer, Qt, Signal, QSize
+from PySide6.QtGui import QStandardItem, QPixmap, QPainter
+from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
 
@@ -329,6 +330,41 @@ class AqCalibViewManager(QStackedWidget):
         #     self.stepPicture.show()
         # except Exception as e:
         #     print(f'image not found. Error: {e}')
+        try:
+            svg_path = self.roaming_temp_folder + '/calib/' + self.calibrator.calib_session.image[key]
+            # svg_path = 'test_files/' + self.calibrator.calib_session.image[key]
+
+            # Используем QSvgRenderer для отрисовки SVG в pixmap
+            renderer = QSvgRenderer(svg_path)
+            if not renderer.isValid():
+                print("Invalid SVG file or failed to load")
+                raise Exception
+            else:
+                size = renderer.defaultSize()
+                print(f"Default SVG size: {size.width()} x {size.height()}")
+                print("SVG file loaded successfully")
+
+            width_coeff = size.width()/size.height()
+
+            BASE_HEIGHT = 150
+
+            # Создаем QPixmap нужного размера
+            pixmap = QPixmap(QSize(BASE_HEIGHT*width_coeff, BASE_HEIGHT))
+            # Очищаем pixmap (делаем прозрачным фон)
+            pixmap.fill(Qt.transparent)
+
+            painter = QPainter(pixmap)
+            renderer.render(painter)
+            painter.end()
+
+            # Устанавливаем pixmap в label
+            # self.stepPicture.setFixedSize(120, 120)
+            self.stepPicture.setPixmap(pixmap)
+            self.stepPicture.show()
+
+        except Exception as e:
+            print(f'image not found. Error: {e}')
+
 
     def _load_table_page_(self, context):
         sensor_type = self.user_settings['pinType']
@@ -428,13 +464,15 @@ class AqCalibViewManager(QStackedWidget):
             try:
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
                                                  calib_path + 'current_calibr.json')
-                # AqCalibCreator.prepare_json_file('test_files/FI210-8T_calibr.json', calib_path + 'current_calibr.json')
                 data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
+                # AqCalibCreator.prepare_json_file('test_files/FO210-8A_calibr.json', 'test_files/current_calibr.json')
+                # data = AqCalibCreator.load_json('test_files/current_calibr.json')
 
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
                                                  calib_path + 'current_loc.json')
-                # AqCalibCreator.prepare_json_file('test_files/FI210-8T.json', calib_path + 'current_loc.json')
                 loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
+                # AqCalibCreator.prepare_json_file('test_files/FO210-8A.json', 'test_files/current_loc.json')
+                # loc_data = AqCalibCreator.load_json('test_files/current_loc.json')
 
                 current_lang = AqTranslateManager.get_current_lang().lower()
                 if current_lang == 'ua':
