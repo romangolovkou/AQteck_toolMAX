@@ -1,4 +1,3 @@
-import asyncio
 from dataclasses import dataclass
 from time import sleep
 
@@ -186,7 +185,7 @@ class AqCalibrator(object):
             write_try = 3
             while write_try:
                 result &= self.device.write_calib_param(param.register, param.value)
-                asyncio.sleep(0.1)
+                sleep(0.1)
                 if self.device.read_calib_param(param.register) == param.value:
                     write_try = 0
 
@@ -202,7 +201,7 @@ class AqCalibrator(object):
             write_try = 3
             while write_try:
                 result &= self.device.write_calib_param(param.register, value)
-                asyncio.sleep(0.1)
+                sleep(0.1)
                 if self.device.read_calib_param(param.register) == param.value:
                     write_try = 0
 
@@ -217,7 +216,7 @@ class AqCalibrator(object):
         write_try = 3
         while write_try:
             result &= self.device.write_calib_param(calib_param_value.register, value)
-            asyncio.sleep(0.1)
+            sleep(0.1)
             if self.device.read_calib_param(calib_param_value.register) == calib_param_value.value:
                 write_try = 0
 
