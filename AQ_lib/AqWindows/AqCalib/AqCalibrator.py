@@ -277,8 +277,9 @@ class AqCalibrator(object):
         self.calib_session.make_calculation()
 
     def return_saved_coeffs(self):
-        for channel in self.calib_session.session_channels:
-            self.set_ch_saved_coeffs(channel)
+        if self.calib_session is not None:
+            for channel in self.calib_session.session_channels:
+                self.set_ch_saved_coeffs(channel)
 
     def clear_session_cash(self):
         self.calib_session.clear_calib_cash()

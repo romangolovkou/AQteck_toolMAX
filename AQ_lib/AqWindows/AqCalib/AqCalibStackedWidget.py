@@ -1,10 +1,11 @@
 import os
 import shutil
+import threading
 from datetime import datetime
 from functools import partial
 
 # import cairosvg
-from PySide6.QtCore import QTimer, Qt, Signal, QSize
+from PySide6.QtCore import QTimer, Qt, Signal, QSize, QThread
 from PySide6.QtGui import QStandardItem, QPixmap, QPainter
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtSvgWidgets import QSvgWidget
@@ -525,6 +526,9 @@ class AqCalibViewManager(QStackedWidget):
             QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
 
     def close_steps(self):
+        ret_coeffs_tread = threading.Thread(target=self.calibrator.return_saved_coeffs, daemon=True)
+        ret_coeffs_tread.start()
+        # self.calibrator.return_saved_coeffs()
         self.activate_cur_calib_value_scan(False)
         if self.roaming_temp_folder is not None and os.path.exists(self.roaming_temp_folder):
             shutil.rmtree(self.roaming_temp_folder)
