@@ -227,10 +227,14 @@ class AqCalibViewManager(QStackedWidget):
         key = self.input_outputTypeComboBox.currentText()
         channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
         if self.channelsComboBox is not None:
+            cur_text = self.channelsComboBox.currentText()
             self.channelsComboBox.clear()
             self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
             for channel in channels:
                 self.channelsComboBox.addItem(channel)
+
+            if cur_text in channels:
+                self.channelsComboBox.setCurrentText(cur_text)
 
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
