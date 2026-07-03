@@ -188,8 +188,8 @@ class AqCalibrator(object):
                 sleep(0.1)
                 if self.device.read_calib_param(param.register) == param.value:
                     write_try = 0
-
-                write_try -= 1
+                else:
+                    write_try -= 1
 
         return result
 
@@ -204,8 +204,8 @@ class AqCalibrator(object):
                 sleep(0.1)
                 if self.device.read_calib_param(param.register) == param.value:
                     write_try = 0
-
-                write_try -= 1
+                else:
+                    write_try -= 1
 
         return result
 
@@ -219,8 +219,8 @@ class AqCalibrator(object):
             sleep(0.1)
             if self.device.read_calib_param(calib_param_value.register) == calib_param_value.value:
                 write_try = 0
-
-            write_try -= 1
+            else:
+                write_try -= 1
 
         return result
 

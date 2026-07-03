@@ -538,7 +538,7 @@ class AqCalibViewManager(QStackedWidget):
         else:
             if self.cur_calib_value_thread is not None:
                 self.cur_calib_value_thread.requestInterruption()
-                self.cur_calib_value_thread.wait()  # Дождаться завершения
+                self.cur_calib_value_thread.wait(1000)  # Дождаться завершения
 
     def cur_calib_value_read(self):
         value = self.calibrator.get_cur_ch_value()

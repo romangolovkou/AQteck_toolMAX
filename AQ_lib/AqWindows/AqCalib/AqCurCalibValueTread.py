@@ -19,7 +19,7 @@ class CurCalibValueThread(QThread):
                 time.sleep(1)
                 self.result_signal.emit(result_data)  # Отправка сигнала с данными обратно в главное окно
                 # По завершении успешного выполнения
-                self.finished.emit()
+                # self.finished.emit()
             except Exception as e:
                 # В случае ошибки передаем текст ошибки обратно в главный поток
                 self.error.emit(str(e))
