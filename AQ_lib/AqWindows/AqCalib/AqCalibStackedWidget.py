@@ -307,6 +307,7 @@ class AqCalibViewManager(QStackedWidget):
             elif line_edit_type == 'FloatWithErrorCode' or line_edit_type == 'Float':
                 self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureFloatLineEdit')
 
+            self.stepMeasureLineEdit.setText('')
             self.stepMeasureLineEdit.show()
             self.stepDescrLabel_2.setText('1. ' + '<b>' + step_ui_settings['name'] + '</b>' + ' ' +
                                            AqTranslateManager.tr('produces a signal with the value') +
