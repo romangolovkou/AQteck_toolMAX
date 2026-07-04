@@ -178,6 +178,7 @@ class AqCalibrator(object):
 
     def set_ch_cfg(self, channel):
         result = True
+        read_ok = True
         self.calib_session.saved_cfg_params_values = dict()
         channel_cfg_params = channel.get_all_ch_cfg_params
         for param in channel_cfg_params:
@@ -195,12 +196,11 @@ class AqCalibrator(object):
                 else:
                     write_try -= 1
 
-
-
-        return result
+        return result & read_ok
 
     def set_saved_cur_ch_cfg(self, channel):
         result = True
+        read_ok = True
         channel_cfg_params = channel.get_all_ch_cfg_params
         for param in channel_cfg_params:
             value = self.calib_session.saved_cfg_params_values[param]
@@ -217,10 +217,11 @@ class AqCalibrator(object):
                 else:
                     write_try -= 1
 
-        return result
+        return result & read_ok
 
     def set_ch_out_value(self, channel, value):
         result = True
+        read_ok = True
         self.set_ch_cfg(channel)
         calib_param_value = channel.calib_param_value
         write_try = 3
@@ -236,7 +237,7 @@ class AqCalibrator(object):
             else:
                 write_try -= 1
 
-        return result
+        return result & read_ok
 
     def get_cur_ch_value(self):
         cur_channel = self.calib_session.get_cur_channel()
