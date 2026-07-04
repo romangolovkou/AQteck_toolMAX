@@ -265,7 +265,8 @@ class AqCalibViewManager(QStackedWidget):
             self._load_step_page_(self.user_settings)
             self.setCurrentIndex(2)
         else:
-            self.setCurrentIndex(1)
+            # self.setCurrentIndex(1)
+            self._back_btn_clicked_()
             self._message_manager.send_message('calib',
                                                'Error',
                                                AqTranslateManager.tr('Start calibration failed! Check connections lines and try again.'))
@@ -434,10 +435,10 @@ class AqCalibViewManager(QStackedWidget):
         if self.calibrator.pre_ch_calib_func(self.user_settings):
             self._load_step_page_(self.user_settings)
         else:
+            self._back_btn_clicked_()
             self._message_manager.send_message('calib',
                                                'Error',
                                                AqTranslateManager.tr('Calibration step failed! Check connections lines and try again.'))
-            self._back_btn_clicked_()
 
         return False
 
