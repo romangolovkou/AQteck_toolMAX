@@ -185,11 +185,17 @@ class AqCalibrator(object):
             write_try = 3
             while write_try:
                 result &= self.device.write_calib_param(param.register, param.value)
-                sleep(0.1)
-                if self.device.read_calib_param(param.register) == param.value:
+                sleep(0.1*(4-write_try))
+                read_ok = True
+                read_ok &= self.device.read_calib_param(param.register) == param.value
+                sleep(0.1*(4-write_try))
+                read_ok &= self.device.read_calib_param(param.register) == param.value
+                if read_ok:
                     write_try = 0
                 else:
                     write_try -= 1
+
+
 
         return result
 
@@ -201,8 +207,12 @@ class AqCalibrator(object):
             write_try = 3
             while write_try:
                 result &= self.device.write_calib_param(param.register, value)
-                sleep(0.1)
-                if self.device.read_calib_param(param.register) == param.value:
+                sleep(0.1*(4-write_try))
+                read_ok = True
+                read_ok &= self.device.read_calib_param(param.register) == value
+                sleep(0.1*(4-write_try))
+                read_ok &= self.device.read_calib_param(param.register) == value
+                if read_ok:
                     write_try = 0
                 else:
                     write_try -= 1
@@ -216,8 +226,12 @@ class AqCalibrator(object):
         write_try = 3
         while write_try:
             result &= self.device.write_calib_param(calib_param_value.register, value)
-            sleep(0.1)
-            if self.device.read_calib_param(calib_param_value.register) == calib_param_value.value:
+            sleep(0.1*(4-write_try))
+            read_ok = True
+            read_ok &= self.device.read_calib_param(calib_param_value.register) == value
+            sleep(0.1 * (4 - write_try))
+            read_ok &= self.device.read_calib_param(calib_param_value.register) == value
+            if read_ok:
                 write_try = 0
             else:
                 write_try -= 1
