@@ -10,6 +10,7 @@ AppVersion=__VERSION__
 ;AppVerName=AQteck tool MAX v0.01
 AppPublisher=AQteck
 DefaultDirName={autopf}\AQteck tool MAX
+DisableDirPage=no
 ChangesAssociations=yes
 DefaultGroupName=AQteck tool MAX
 AllowNoIcons=yes

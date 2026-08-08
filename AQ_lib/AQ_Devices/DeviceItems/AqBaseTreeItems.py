@@ -9,6 +9,12 @@ from AqParamsDelegateEditors import AqEnumTreeComboBox, AqUintTreeLineEdit, AqIn
     AqSignedToFloatTreeLineEdit, AqFloatEnumROnlyTreeLineEdit, AqFloatEnumTreeComboBox, AqBitLineEdit, \
     AqIpTreeLineEdit, AqBitMaskLineEdit, AqTreeLineEdit
 
+# Only for debug!!!!   Need be comment
+# LOG_FILE = "limits.log"
+# # Открываем лог один раз
+# log_file = open(LOG_FILE, "a", encoding="utf-8", buffering=1)
+# # Для каждого параметра храним минимум и максимум
+# parameter_limits = {}
 
 class AqParamItem(QStandardItem):
     def __init__(self, param_attributes):
@@ -98,8 +104,46 @@ class AqParamItem(QStandardItem):
                     self.validate(new_value)
                     self._value = new_value
                     self.synchronized = True
+                    # self.__write_values()
                 except:
                     self.synchronized = False
+
+    #ONLY FOR DEBUG!!! NEED COMMENT
+    # def __write_values(self):
+    #     """
+    #     parameter_name - имя параметра (str)
+    #     value - текущее значение (int/float)
+    #     """
+    #
+    #     def write_log(parameter_name, limit_type, value):
+    #         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # до миллисекунд
+    #
+    #         log_file.write(
+    #             f"{timestamp}; {parameter_name}; {limit_type}; {value}\n"
+    #         )
+    #
+    #         # Сразу записать на диск
+    #         log_file.flush()
+    #
+    #     value = self.value
+    #     param_attrs = self.data(Qt.UserRole)
+    #     parameter_name = param_attrs['name']
+    #
+    #     if 'Значення float' in parameter_name:
+    #         if parameter_name not in parameter_limits:
+    #             parameter_limits[parameter_name] = {
+    #                 "min": value,
+    #                 "max": value
+    #             }
+    #             return
+    #
+    #         if value < parameter_limits[parameter_name]["min"]:
+    #             parameter_limits[parameter_name]["min"] = value
+    #             write_log(parameter_name, "MIN", value)
+    #
+    #         elif value > parameter_limits[parameter_name]["max"]:
+    #             parameter_limits[parameter_name]["max"] = value
+    #             write_log(parameter_name, "MAX", value)
 
     def data_for_network(self):
         return self.pack()

@@ -288,34 +288,38 @@
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="709"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="724"/>
         <location filename="../UI/forms/AqCalibrationWidget.ui" line="763"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="858"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="913"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1008"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1020"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1032"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="866"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="930"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1025"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1037"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1049"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="953"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1123"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="970"/>
+        <source>Cancel</source>
+        <translation>Відміна</translation>
+    </message>
+    <message>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1140"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="971"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="988"/>
         <source>Run</source>
         <translation>Далі</translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1070"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1075"/>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1080"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1087"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1092"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1097"/>
         <source>Новый столбец</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1141"/>
+        <location filename="../UI/forms/AqCalibrationWidget.ui" line="1158"/>
         <source>Write</source>
         <translation>Записати</translation>
     </message>
@@ -1632,6 +1636,22 @@
     <message>
         <source>View coeffs</source>
         <translation>Перегляд коефіцієнтів</translation>
+    </message>
+    <message>
+        <source>Save image for Offline mode</source>
+        <translation>Зберегти образ для оффлайн режиму</translation>
+    </message>
+    <message>
+        <source>Can`t save the image</source>
+        <translation>Не вдалося зберегти образ</translation>
+    </message>
+    <message>
+        <source>Image has been saved</source>
+        <translation>Образ збережено</translation>
+    </message>
+    <message>
+        <source>Can`t save the image. (This feature only works if the application is run as administrator.)</source>
+        <translation>Не вдалося зберегти образ. (Ця функція працює, лише якщо додаток запущено від імені адміністратора.)</translation>
     </message>
 </context>
 </TS>

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from time import sleep
 
 from AqCalibParamSetting import AqCalibParamSetting
 from AqCalibSession import AqCalibSession
@@ -177,30 +178,66 @@ class AqCalibrator(object):
 
     def set_ch_cfg(self, channel):
         result = True
+        read_ok = True
         self.calib_session.saved_cfg_params_values = dict()
         channel_cfg_params = channel.get_all_ch_cfg_params
         for param in channel_cfg_params:
             self.calib_session.saved_cfg_params_values[param] = self.device.read_calib_param(param.register)
-            result &= self.device.write_calib_param(param.register, param.value)
+            write_try = 3
+            while write_try:
+                result &= self.device.write_calib_param(param.register, param.value)
+                sleep(0.1*(4-write_try))
+                read_ok = True
+                read_ok &= self.device.read_calib_param(param.register) == param.value
+                sleep(0.1*(4-write_try))
+                read_ok &= self.device.read_calib_param(param.register) == param.value
+                if read_ok:
+                    write_try = 0
+                else:
+                    write_try -= 1
 
-        return result
+        return result & read_ok
 
     def set_saved_cur_ch_cfg(self, channel):
         result = True
+        read_ok = True
         channel_cfg_params = channel.get_all_ch_cfg_params
         for param in channel_cfg_params:
             value = self.calib_session.saved_cfg_params_values[param]
-            result &= self.device.write_calib_param(param.register, value)
+            write_try = 3
+            while write_try:
+                result &= self.device.write_calib_param(param.register, value)
+                sleep(0.1*(4-write_try))
+                read_ok = True
+                read_ok &= self.device.read_calib_param(param.register) == value
+                sleep(0.1*(4-write_try))
+                read_ok &= self.device.read_calib_param(param.register) == value
+                if read_ok:
+                    write_try = 0
+                else:
+                    write_try -= 1
 
-        return result
+        return result & read_ok
 
     def set_ch_out_value(self, channel, value):
         result = True
+        read_ok = True
         self.set_ch_cfg(channel)
         calib_param_value = channel.calib_param_value
-        result &= self.device.write_calib_param(calib_param_value.register, value)
+        write_try = 3
+        while write_try:
+            result &= self.device.write_calib_param(calib_param_value.register, value)
+            sleep(0.1*(4-write_try))
+            read_ok = True
+            read_ok &= self.device.read_calib_param(calib_param_value.register) == value
+            sleep(0.1 * (4 - write_try))
+            read_ok &= self.device.read_calib_param(calib_param_value.register) == value
+            if read_ok:
+                write_try = 0
+            else:
+                write_try -= 1
 
-        return result
+        return result & read_ok
 
     def get_cur_ch_value(self):
         cur_channel = self.calib_session.get_cur_channel()
@@ -255,8 +292,9 @@ class AqCalibrator(object):
         self.calib_session.make_calculation()
 
     def return_saved_coeffs(self):
-        for channel in self.calib_session.session_channels:
-            self.set_ch_saved_coeffs(channel)
+        if self.calib_session is not None:
+            for channel in self.calib_session.session_channels:
+                self.set_ch_saved_coeffs(channel)
 
     def clear_session_cash(self):
         self.calib_session.clear_calib_cash()

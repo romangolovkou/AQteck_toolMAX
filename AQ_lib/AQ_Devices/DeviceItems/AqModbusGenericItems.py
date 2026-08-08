@@ -3,6 +3,7 @@ import struct
 from AqBaseTreeItems import AqUnsignedParamItem, AqModbusItem, AqEnumParamItem, AqSignedParamItem, \
     AqFloatParamItem, AqStringParamItem, AqDateTimeParamItem, AqSignedToFloatParamItem, AqUnsignedToFloatParamItem, \
     AqFloatEnumParamItem, AqBitParamItem, AqBitMaskParamItem
+from AqModbusGenericDelegateEditors import AqModbusGenericEnumTreeComboBox, AqModbusGenericEnumROnlyTreeLineEdit
 # from AQ_ParseFunc import reverse_modbus_registers, swap_modbus_bytes, remove_empty_bytes
 from AqModbusTips import reverse_registers, swap_bytes_at_registers, remove_empty_bytes, swap_registers
 
@@ -16,6 +17,9 @@ class AqModbusEnumParamItem(AqEnumParamItem, AqModbusItem):
         super().__init__(param_attributes)
         self.byte_order = param_attributes.get('byte_order', 'big-endian')
         self.reg_order = param_attributes.get('reg_order', 'big-endian')
+        # editor це не об'єкт, а посилання на класс, сам об'єкт повинен бути створений у делегаті
+        self.editor_RW = AqModbusGenericEnumTreeComboBox
+        self.editor_R_Only = AqModbusGenericEnumROnlyTreeLineEdit
 
     def pack(self):
         # костиль для enum з розміром два регістра

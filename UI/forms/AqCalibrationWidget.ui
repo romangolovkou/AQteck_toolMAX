@@ -967,7 +967,7 @@ color: #FFFF66;</string>
                 </font>
                </property>
                <property name="text">
-                <string>Back</string>
+                <string>Cancel</string>
                </property>
               </widget>
              </item>

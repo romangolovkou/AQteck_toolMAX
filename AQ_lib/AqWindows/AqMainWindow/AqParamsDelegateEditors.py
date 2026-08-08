@@ -209,6 +209,7 @@ class AqEnumROnlyTreeLineEdit(AqTreeLineEdit):
         self.enum_str_dict = param_attributes.get('enum_strings', '')
 
     def set_value(self, value):
+        value = value - self.min_limit if not isinstance(value, NoneType) else self.min_limit
         self.setText(self.enum_str_dict.get(value, ''))
 
 

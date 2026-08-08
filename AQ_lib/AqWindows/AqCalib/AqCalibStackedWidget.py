@@ -1,12 +1,15 @@
 import os
 import shutil
+import threading
 from datetime import datetime
 from functools import partial
 
-from PySide2.QtCore import QTimer, Qt, Signal
-from PySide2.QtGui import QStandardItem, QPixmap
-# from PySide2.QtSvgWidgets import QSvgWidget
-from PySide2.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
+# import cairosvg
+from PySide6.QtCore import QTimer, Qt, Signal, QSize, QThread
+from PySide6.QtGui import QStandardItem, QPixmap, QPainter
+from PySide6.QtSvg import QSvgRenderer
+from PySide6.QtSvgWidgets import QSvgWidget
+from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
 
 import AqUiWorker
 from AqBaseTreeItems import AqParamManagerItem
@@ -135,7 +138,7 @@ class AqCalibViewManager(QStackedWidget):
             self.stepDescrLabel_3,
             self.stepMeasureLabel,
             self.stepPicLabel,
-            # self.stepPicture,
+            self.stepPicture,
             self.stepBackBtn,
             self.stepRunBtn,
             self.tableWidget,
@@ -224,10 +227,14 @@ class AqCalibViewManager(QStackedWidget):
         key = self.input_outputTypeComboBox.currentText()
         channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
         if self.channelsComboBox is not None:
+            cur_text = self.channelsComboBox.currentText()
             self.channelsComboBox.clear()
             self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
             for channel in channels:
                 self.channelsComboBox.addItem(channel)
+
+            if cur_text in channels:
+                self.channelsComboBox.setCurrentText(cur_text)
 
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
@@ -258,7 +265,8 @@ class AqCalibViewManager(QStackedWidget):
             self._load_step_page_(self.user_settings)
             self.setCurrentIndex(2)
         else:
-            self.setCurrentIndex(1)
+            # self.setCurrentIndex(1)
+            self._back_btn_clicked_()
             self._message_manager.send_message('calib',
                                                'Error',
                                                AqTranslateManager.tr('Start calibration failed! Check connections lines and try again.'))
@@ -305,6 +313,7 @@ class AqCalibViewManager(QStackedWidget):
             elif line_edit_type == 'FloatWithErrorCode' or line_edit_type == 'Float':
                 self.stepMeasureLineEdit = self.findChild(QLineEdit, 'measureFloatLineEdit')
 
+            self.stepMeasureLineEdit.setText('')
             self.stepMeasureLineEdit.show()
             self.stepDescrLabel_2.setText('1. ' + '<b>' + step_ui_settings['name'] + '</b>' + ' ' +
                                            AqTranslateManager.tr('produces a signal with the value') +
@@ -328,6 +337,41 @@ class AqCalibViewManager(QStackedWidget):
         #     self.stepPicture.show()
         # except Exception as e:
         #     print(f'image not found. Error: {e}')
+        try:
+            svg_path = self.roaming_temp_folder + '/calib/' + self.calibrator.calib_session.image[key]
+            # svg_path = 'test_files/' + self.calibrator.calib_session.image[key]
+
+            # Используем QSvgRenderer для отрисовки SVG в pixmap
+            renderer = QSvgRenderer(svg_path)
+            if not renderer.isValid():
+                print("Invalid SVG file or failed to load")
+                raise Exception
+            else:
+                size = renderer.defaultSize()
+                print(f"Default SVG size: {size.width()} x {size.height()}")
+                print("SVG file loaded successfully")
+
+            width_coeff = size.width()/size.height()
+
+            BASE_HEIGHT = 150
+
+            # Создаем QPixmap нужного размера
+            pixmap = QPixmap(QSize(BASE_HEIGHT*width_coeff, BASE_HEIGHT))
+            # Очищаем pixmap (делаем прозрачным фон)
+            pixmap.fill(Qt.transparent)
+
+            painter = QPainter(pixmap)
+            renderer.render(painter)
+            painter.end()
+
+            # Устанавливаем pixmap в label
+            # self.stepPicture.setFixedSize(120, 120)
+            self.stepPicture.setPixmap(pixmap)
+            self.stepPicture.show()
+
+        except Exception as e:
+            print(f'image not found. Error: {e}')
+
 
     def _load_table_page_(self, context):
         sensor_type = self.user_settings['pinType']
@@ -391,10 +435,10 @@ class AqCalibViewManager(QStackedWidget):
         if self.calibrator.pre_ch_calib_func(self.user_settings):
             self._load_step_page_(self.user_settings)
         else:
+            self._back_btn_clicked_()
             self._message_manager.send_message('calib',
                                                'Error',
                                                AqTranslateManager.tr('Calibration step failed! Check connections lines and try again.'))
-            self._back_btn_clicked_()
 
         return False
 
@@ -427,13 +471,15 @@ class AqCalibViewManager(QStackedWidget):
             try:
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '_calibr.json',
                                                  calib_path + 'current_calibr.json')
-                # AqCalibCreator.prepare_json_file('test_files/FI210-8T_calibr.json', calib_path + 'current_calibr.json')
                 data = AqCalibCreator.load_json(calib_path + 'current_calibr.json')
+                # AqCalibCreator.prepare_json_file('test_files/FO210-8A_calibr.json', 'test_files/current_calibr.json')
+                # data = AqCalibCreator.load_json('test_files/current_calibr.json')
 
                 AqCalibCreator.prepare_json_file(calib_path + self.calib_device.name + '.json',
                                                  calib_path + 'current_loc.json')
-                # AqCalibCreator.prepare_json_file('test_files/FI210-8T.json', calib_path + 'current_loc.json')
                 loc_data = AqCalibCreator.load_json(calib_path + 'current_loc.json')
+                # AqCalibCreator.prepare_json_file('test_files/FO210-8A.json', 'test_files/current_loc.json')
+                # loc_data = AqCalibCreator.load_json('test_files/current_loc.json')
 
                 current_lang = AqTranslateManager.get_current_lang().lower()
                 if current_lang == 'ua':
@@ -485,6 +531,9 @@ class AqCalibViewManager(QStackedWidget):
             QTimer.singleShot(50, lambda: self.check_is_calibrator_ready())
 
     def close_steps(self):
+        ret_coeffs_tread = threading.Thread(target=self.calibrator.return_saved_coeffs, daemon=True)
+        ret_coeffs_tread.start()
+        # self.calibrator.return_saved_coeffs()
         self.activate_cur_calib_value_scan(False)
         if self.roaming_temp_folder is not None and os.path.exists(self.roaming_temp_folder):
             shutil.rmtree(self.roaming_temp_folder)
@@ -499,7 +548,7 @@ class AqCalibViewManager(QStackedWidget):
         else:
             if self.cur_calib_value_thread is not None:
                 self.cur_calib_value_thread.requestInterruption()
-                self.cur_calib_value_thread.wait()  # Дождаться завершения
+                self.cur_calib_value_thread.wait(1000)  # Дождаться завершения
 
     def cur_calib_value_read(self):
         value = self.calibrator.get_cur_ch_value()

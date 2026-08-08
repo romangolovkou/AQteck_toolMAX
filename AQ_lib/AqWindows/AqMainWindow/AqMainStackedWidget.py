@@ -214,7 +214,16 @@ class AqTreeViewManager(QStackedWidget):
             else:
                 enum_strings = param_attributes.get('enum_strings', [])
                 if len(enum_strings) > 0:
-                    def_str = enum_strings[def_value - min_limit]
+                    #TODO:
+                    # цей if вимушений костиль який за ознакою наявності аттрибуту 'UID' у параметра (автодетекшн)
+                    # виконує різні строки для автодетекшн та модбасгенерік параметрів
+                    if 'UID' in param_attributes.keys():
+                        #autodetection parameter
+                        def_str = enum_strings[def_value - min_limit]
+                    else:
+                        #ModbasGeneric parameter
+                        def_str = enum_strings[def_value]
+
                     cur_par_default = def_str
         elif param_attributes.get('visual_type', '') == 'ip_format':
             cur_par_default = ''
