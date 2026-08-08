@@ -233,19 +233,20 @@ class AqCalibViewManager(QStackedWidget):
 
     def _load_channel_combo_box_(self):
         key = self.input_outputTypeComboBox.currentText()
-        channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
-        if self.channelsComboBox is not None:
-            cur_text = self.channelsComboBox.currentText()
-            self.channelsComboBox.clear()
-            self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
-            for channel in channels:
-                self.channelsComboBox.addItem(channel)
+        if key != '':
+            channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
+            if self.channelsComboBox is not None:
+                cur_text = self.channelsComboBox.currentText()
+                self.channelsComboBox.clear()
+                self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
+                for channel in channels:
+                    self.channelsComboBox.addItem(channel)
 
-            if cur_text in channels:
-                self.channelsComboBox.setCurrentText(cur_text)
+                if cur_text in channels:
+                    self.channelsComboBox.setCurrentText(cur_text)
 
-        else:
-            raise Exception(self.objectName() + ' Error: wrong UI settings')
+            else:
+                raise Exception(self.objectName() + ' Error: wrong UI settings')
 
     def _run_calib_btn_clicked_(self):
         self.user_settings['pinType'] = self.pinTypeComboBox.currentText()
