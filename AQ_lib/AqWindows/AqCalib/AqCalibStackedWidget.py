@@ -21,6 +21,7 @@ from AqCalibrator import AqCalibrator
 from AqCurCalibValueTread import CurCalibValueThread
 from AqInitCalibTread import InitCalibThread
 from AqMessageManager import AqMessageManager
+from AqSettingsFunc import AqSettingsManager
 from AqTranslateManager import AqTranslateManager
 from AqTreeView import AqTreeView
 from AqTreeViewItemModel import AqTreeViewItemModel
@@ -170,6 +171,7 @@ class AqCalibViewManager(QStackedWidget):
 
         self.pinTypeComboBox.currentIndexChanged.connect(self._load_input_output_type_combo_box_)
         self.input_outputTypeComboBox.currentIndexChanged.connect(self._load_channel_combo_box_)
+        self.input_outputTypeComboBox.textActivated.connect(self._input_output_type_combo_box_changed_by_user)
         self.runCalibBtn.clicked.connect(self._run_calib_btn_clicked_)
         self.stepBackBtn.clicked.connect(self._back_btn_clicked_)
         self.tableBackBtn.clicked.connect(self._back_btn_clicked_)
@@ -220,24 +222,31 @@ class AqCalibViewManager(QStackedWidget):
             self.input_outputTypeComboBox.clear()
             for inputType in inputTypes:
                 self.input_outputTypeComboBox.addItem(inputType)
+
+            AqSettingsManager.load_last_combobox_state(self.input_outputTypeComboBox)
         else:
             raise Exception(self.objectName() + ' Error: wrong UI settings')
+
+    def _input_output_type_combo_box_changed_by_user(self):
+        AqSettingsManager.save_combobox_current_state(self.input_outputTypeComboBox)
+        self._load_channel_combo_box_()
 
     def _load_channel_combo_box_(self):
         key = self.input_outputTypeComboBox.currentText()
-        channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
-        if self.channelsComboBox is not None:
-            cur_text = self.channelsComboBox.currentText()
-            self.channelsComboBox.clear()
-            self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
-            for channel in channels:
-                self.channelsComboBox.addItem(channel)
+        if key != '':
+            channels = self.ui_settings[self.pinTypeComboBox.currentText()][key]
+            if self.channelsComboBox is not None:
+                cur_text = self.channelsComboBox.currentText()
+                self.channelsComboBox.clear()
+                self.channelsComboBox.addItem(AqTranslateManager.tr('All channels'))
+                for channel in channels:
+                    self.channelsComboBox.addItem(channel)
 
-            if cur_text in channels:
-                self.channelsComboBox.setCurrentText(cur_text)
+                if cur_text in channels:
+                    self.channelsComboBox.setCurrentText(cur_text)
 
-        else:
-            raise Exception(self.objectName() + ' Error: wrong UI settings')
+            else:
+                raise Exception(self.objectName() + ' Error: wrong UI settings')
 
     def _run_calib_btn_clicked_(self):
         self.user_settings['pinType'] = self.pinTypeComboBox.currentText()
@@ -324,19 +333,6 @@ class AqCalibViewManager(QStackedWidget):
         else:
             raise Exception('method error')
 
-        # try:
-        #     # Конвертируем SVG → PNG в память
-        #     svg_path = self.roaming_temp_folder + '/calib/' + self.calibrator.calib_session.image[key]
-        #     with open(svg_path, 'rb') as f:
-        #         svg_data = f.read()
-        #
-        #     png_bytes = cairosvg.svg2png(bytestring=svg_data)
-        #     pixmap = QPixmap()
-        #     pixmap.loadFromData(png_bytes)
-        #     self.stepPicture.setPixmap(pixmap)
-        #     self.stepPicture.show()
-        # except Exception as e:
-        #     print(f'image not found. Error: {e}')
         try:
             svg_path = self.roaming_temp_folder + '/calib/' + self.calibrator.calib_session.image[key]
             # svg_path = 'test_files/' + self.calibrator.calib_session.image[key]
