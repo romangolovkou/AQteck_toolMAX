@@ -1,4 +1,4 @@
-from PySide6.QtCore import Signal
+from PySide2.QtCore import Signal
 
 from AqParamsDelegateEditors import AqEnumTreeComboBox, AqEnumROnlyTreeLineEdit
 

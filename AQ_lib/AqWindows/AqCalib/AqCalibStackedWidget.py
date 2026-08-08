@@ -5,11 +5,11 @@ from datetime import datetime
 from functools import partial
 
 # import cairosvg
-from PySide6.QtCore import QTimer, Qt, Signal, QSize, QThread
-from PySide6.QtGui import QStandardItem, QPixmap, QPainter
-from PySide6.QtSvg import QSvgRenderer
-from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
+from PySide2.QtCore import QTimer, Qt, Signal, QSize, QThread
+from PySide2.QtGui import QStandardItem, QPixmap, QPainter
+from PySide2.QtSvg import QSvgRenderer
+#from PySide2.QtSvgWidgets import QSvgWidget
+from PySide2.QtWidgets import QStackedWidget, QComboBox, QPushButton, QLabel, QLineEdit, QFrame
 
 import AqUiWorker
 from AqBaseTreeItems import AqParamManagerItem
